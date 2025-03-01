@@ -323,6 +323,7 @@
         const DATA_URL = 'https://raw.githubusercontent.com/OPSSinapi/production-dashboard/main/data.json';
         const UPDATE_INTERVAL = 2 * 60 * 1000; // Check updates every 2 minutes
         const CYCLE_INTERVAL = 10000; // Display each variant for 10 seconds
+        const BUFFER_HOURS = 1; // Buffer beyond end time
 
         // State variables
         let productionData = { variants: [], supervisors: [] };
@@ -500,16 +501,15 @@
             return null;
         }
 
-        // Create hourly chart with improvements
+        // Create hourly chart with precise start/end times
         function createHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-data');
             chartContainer.innerHTML = '';
 
-            // Parse times
+            // Parse start and end times
             const startHour = parseTimeToHour(variant["Start Time"]) || 7;
             const endHour = parseTimeToHour(variant["End Time"]) || 19;
-            const now = new Date();
-            const currentHour = now.getHours();
+            const displayEndHour = endHour + BUFFER_HOURS; // Add buffer
 
             // Get break hours
             const breakHours = [];
@@ -526,14 +526,9 @@
                 }
             });
 
-            // Determine end hour based on production
-            const lastProductionHour = variant.cumulativeProduction.reduce((max, val, idx) => 
-                val > 0 ? Math.max(max, idx) : max, startHour);
-            const displayEndHour = Math.min(Math.max(endHour, lastProductionHour + 1), currentHour + 1);
-
             // Calculate max value for scaling
             let maxCumulative = 0;
-            for (let i = startHour; i < displayEndHour; i++) {
+            for (let i = startHour; i <= displayEndHour; i++) {
                 maxCumulative = Math.max(maxCumulative, 
                     variant.cumulativeTargets?.[i] || 0, 
                     variant.cumulativeProduction?.[i] || 0);
@@ -541,7 +536,7 @@
             const maxValue = maxCumulative * 1.1 || 10;
 
             // Create bars
-            for (let i = startHour; i < displayEndHour; i++) {
+            for (let i = startHour; i <= displayEndHour; i++) {
                 const hourDiv = document.createElement('div');
                 hourDiv.className = 'hour-column';
                 if (breakHours.includes(i)) hourDiv.classList.add('break-hour');
@@ -588,7 +583,7 @@
 
             // Add schedule markers
             const chartWidth = chartContainer.parentElement.offsetWidth - 40; // Account for padding
-            const hourWidth = chartWidth / (displayEndHour - startHour);
+            const hourWidth = chartWidth / (displayEndHour - startHour + 1); // Include all hours
             const parentContainer = chartContainer.parentElement;
 
             const startMarker = document.createElement('div');
