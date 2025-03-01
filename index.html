@@ -565,16 +565,36 @@
             }
         }
 
+        // Parse time string to hour
+        function parseTimeToHour(timeStr) {
+            if (!timeStr) return null;
+            
+            // Handle HH:MM format
+            const timeParts = timeStr.split(':');
+            if (timeParts.length === 2) {
+                return parseInt(timeParts[0], 10);
+            }
+            
+            // Handle other formats if needed
+            return null;
+        }
+
         // Create the chart using cumulative targets and production
         function createHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-data');
             chartContainer.innerHTML = '';
 
+            // Parse start and end times from variant data
+            const startTimeHour = parseTimeToHour(variant["Start Time"]) || 7;  // Default to 7 if not provided
+            const endTimeHour = parseTimeToHour(variant["End Time"]) || 19;     // Default to 19 if not provided
+            
+            // Get current hour to potentially limit the display
             const now = new Date();
             const currentHour = now.getHours();
-
-            const startHour = 7;
-            const endHour = Math.min(currentHour + 1, 19);
+            
+            // Start and end hours for the graph - show up to current hour if within the shift
+            const startHour = startTimeHour;
+            const endHour = Math.min(endTimeHour, currentHour + 1);
 
             // Find max values for scaling the chart using cumulative values
             let maxCumulative = 0;
