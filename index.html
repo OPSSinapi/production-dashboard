@@ -323,7 +323,6 @@
         const DATA_URL = 'https://raw.githubusercontent.com/OPSSinapi/production-dashboard/main/data.json';
         const UPDATE_INTERVAL = 2 * 60 * 1000; // Check updates every 2 minutes
         const CYCLE_INTERVAL = 10000; // Display each variant for 10 seconds
-        const BUFFER_HOURS = 1; // Buffer beyond end time
 
         // State variables
         let productionData = { variants: [], supervisors: [] };
@@ -358,29 +357,29 @@
             }, 10000);
         }
 
-        // Add fallback data
+        // Add fallback data matching SUM SUM500V2
         function addFallbackData() {
             productionData.variants = [{
-                "variant": "LEVO XL1150SCi",
+                "variant": "SUM SUM500V2",
                 "Start Time": "07:30",
-                "End Time": "17:30",
+                "End Time": "18:30",
                 "Break Start (Lunch)": "13:40",
                 "Break End (Lunch)": "14:10",
                 "Break Start (Tea)": "10:25",
                 "Break End (Tea)": "10:40",
-                "OT Break Start (Tea)": "16:45",
-                "OT Break End (Tea)": "17:00",
-                "totalavailableWorkHours": 9,
-                "cycleTime": 99,
-                "hourlyTarget": 36,
-                "dailyTarget": 327,
-                "dailyBoxTarget": 18,
-                "currentTotal": 198,
-                "currentBoxTotal": 11,
-                "progressPercentage": 61,
-                "batches": { "25022671": { "total": 198, "boxes": 11 } },
-                "cumulativeTargets": [0,0,0,0,0,0,0,40,80,120,160,200,240,240,280,320,320,320,320,320,320,320,320,320],
-                "cumulativeProduction": [0,0,0,0,0,0,0,0,36,36,54,126,144,162,180,198,198,198,198,198,198,198,198,198]
+                "OT Break Start (Tea)": "17:45",
+                "OT Break End (Tea)": "18:00",
+                "totalavailableWorkHours": 10,
+                "cycleTime": 28.24,
+                "hourlyTarget": 127,
+                "dailyTarget": 1274,
+                "dailyBoxTarget": 63,
+                "currentTotal": 740,
+                "currentBoxTotal": 37,
+                "progressPercentage": 58,
+                "batches": { "25022669": { "total": 740, "boxes": 37 } },
+                "cumulativeTargets": [0, 0, 0, 0, 0, 0, 0, 127, 254, 381, 508, 635, 762, 889, 1016, 1143, 1270, 1274, 1274, 1274, 1274, 1274, 1274, 1274],
+                "cumulativeProduction": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 141, 282, 423, 564, 705, 740, 740, 740, 740, 740, 740, 740, 740, 740]
             }];
             filterVariantsBySupervisor();
             if (filteredVariants.length > 0) {
@@ -501,15 +500,14 @@
             return null;
         }
 
-        // Create hourly chart with precise start/end times
+        // Create hourly chart with precise start/end times and breaks
         function createHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-data');
             chartContainer.innerHTML = '';
 
             // Parse start and end times
-            const startHour = parseTimeToHour(variant["Start Time"]) || 7;
-            const endHour = parseTimeToHour(variant["End Time"]) || 19;
-            const displayEndHour = endHour + BUFFER_HOURS; // Add buffer
+            const startHour = parseTimeToHour(variant["Start Time"]) || 7; // 7:30 -> 7
+            const endHour = parseTimeToHour(variant["End Time"]) || 19;   // 18:30 -> 18
 
             // Get break hours
             const breakHours = [];
@@ -528,7 +526,7 @@
 
             // Calculate max value for scaling
             let maxCumulative = 0;
-            for (let i = startHour; i <= displayEndHour; i++) {
+            for (let i = startHour; i <= endHour; i++) {
                 maxCumulative = Math.max(maxCumulative, 
                     variant.cumulativeTargets?.[i] || 0, 
                     variant.cumulativeProduction?.[i] || 0);
@@ -536,7 +534,7 @@
             const maxValue = maxCumulative * 1.1 || 10;
 
             // Create bars
-            for (let i = startHour; i <= displayEndHour; i++) {
+            for (let i = startHour; i <= endHour; i++) {
                 const hourDiv = document.createElement('div');
                 hourDiv.className = 'hour-column';
                 if (breakHours.includes(i)) hourDiv.classList.add('break-hour');
@@ -583,7 +581,7 @@
 
             // Add schedule markers
             const chartWidth = chartContainer.parentElement.offsetWidth - 40; // Account for padding
-            const hourWidth = chartWidth / (displayEndHour - startHour + 1); // Include all hours
+            const hourWidth = chartWidth / (endHour - startHour + 1); // Include all hours
             const parentContainer = chartContainer.parentElement;
 
             const startMarker = document.createElement('div');
