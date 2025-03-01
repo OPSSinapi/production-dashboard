@@ -150,76 +150,42 @@
             color: var(--dark-color);
         }
 
-        .hourly-data {
-            display: flex;
+        .chart-area {
+            flex: 1;
+            position: relative;
+            min-height: 300px; /* Ensure minimum height for charts */
+        }
+
+        canvas {
+            width: 100%;
             height: 100%;
         }
 
-        .hour-column {
-            flex: 1;
+        .legend {
             display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 0 10px;
-            position: relative;
+            justify-content: center;
+            margin: 10px 0;
         }
 
-        .hour-label {
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .bar-container {
-            width: 80%;
-            height: 85%;
-            position: relative;
+        .legend-item {
             display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
             align-items: center;
+            margin: 0 10px;
         }
 
-        .target-line {
-            position: absolute;
-            width: 120%;
-            border-top: 3px dashed var(--danger-color);
-            font-weight: bold;
-            color: var(--danger-color);
-            text-align: right;
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            margin-right: 5px;
+            border-radius: 2px;
         }
 
-        .target-label {
-            position: absolute;
-            top: -25px;
-            right: -40px;
-            color: var(--danger-color);
-            font-weight: bold;
-        }
-
-        .bar {
-            width: 100%;
+        .production-color {
             background-color: var(--secondary-color);
-            border-radius: 5px 5px 0 0;
-            position: relative;
-            transition: height 1s ease;
         }
 
-        .bar.above-target {
+        .target-color {
             background-color: var(--success-color);
-        }
-
-        .bar.below-target {
-            background-color: var(--danger-color);
-        }
-
-        .bar-value {
-            position: absolute;
-            top: -25px;
-            width: 100%;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.1rem;
         }
 
         .footer {
@@ -307,175 +273,6 @@
             border: 1px solid var(--secondary-color);
             font-size: clamp(0.8rem, 1rem, 1rem);
             font-family: inherit;
-        }
-
-        .chart-area {
-            flex: 1;
-            position: relative;
-            min-height: 300px; /* Ensure minimum height for charts */
-        }
-
-        /* Line chart */
-        .line-chart {
-            height: 100%;
-            width: 100%;
-            position: relative;
-        }
-
-        .chart-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 30px;
-            border-left: 1px solid #ddd;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .horizontal-lines div {
-            position: absolute;
-            left: 0;
-            right: 0;
-            border-top: 1px dashed #ddd;
-        }
-
-        .vertical-lines div {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            border-left: 1px dashed #ddd;
-        }
-
-        .line-chart-labels {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-        }
-
-        .line-chart-labels div {
-            text-align: center;
-        }
-
-        .line-path {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 30px;
-            overflow: visible;
-        }
-
-        .production-line {
-            stroke: var(--secondary-color);
-            stroke-width: 3;
-            fill: none;
-        }
-
-        .target-line-path {
-            stroke: var(--success-color);
-            stroke-width: 3;
-            fill: none;
-        }
-
-        .legend {
-            display: flex;
-            justify-content: center;
-            margin: 10px 0;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin: 0 10px;
-        }
-
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            margin-right: 5px;
-            border-radius: 2px;
-        }
-
-        .production-color {
-            background-color: var(--secondary-color);
-        }
-
-        .target-color {
-            background-color: var(--success-color);
-        }
-
-        /* Bar chart */
-        .bar-chart {
-            display: flex;
-            height: 100%;
-            align-items: flex-end;
-            justify-content: center;
-            gap: 20px;
-            padding-top: 20px;
-        }
-
-        .bar-column {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100px; /* Increased width for larger bars */
-        }
-
-        .bar-chart-bar {
-            width: 100%;
-            border-radius: 4px 4px 0 0;
-            text-align: center;
-            position: relative;
-            min-height: 40px; /* Increased minimum height for better visibility */
-            transition: height 1s ease-in-out;
-        }
-
-        .bar-chart-label {
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        .bar-chart-value {
-            position: absolute;
-            top: -25px;
-            width: 100%;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .production-bar {
-            background-color: var(--secondary-color);
-        }
-
-        .target-bar {
-            background-color: var(--success-color);
-        }
-
-        /* Updated colors to match screenshot */
-        .production-color, .production-line, .production-bar {
-            background-color: #3B82F6;
-            stroke: #3B82F6;
-        }
-        
-        .target-color, .target-line-path, .target-bar {
-            background-color: #10B981;
-            stroke: #10B981;
-        }
-        
-        .total-actual, .progress-value {
-            color: #3B82F6;
-        }
-        
-        .total-target {
-            color: #10B981;
-        }
-        
-        .total-progress {
-            color: #F59E0B;
         }
 
         /* Debug Popup Styles */
@@ -593,10 +390,6 @@
                 min-height: 250px;
             }
 
-            .bar-column {
-                width: 80px; /* Adjust bar width on smaller screens */
-            }
-
             .debug-popup {
                 width: 95%;
                 max-width: 95%;
@@ -641,9 +434,7 @@
                     <div class="chart">
                         <div class="chart-title">Cumulative Daily Production Progress</div>
                         <div class="chart-area">
-                            <div class="line-chart" id="cumulative-chart">
-                                <!-- Line chart will be rendered here -->
-                            </div>
+                            <canvas id="cumulative-chart"></canvas>
                             <div class="legend">
                                 <div class="legend-item">
                                     <div class="legend-color production-color"></div>
@@ -659,9 +450,7 @@
                     <div class="chart">
                         <div class="chart-title">Hourly Production Progress</div>
                         <div class="chart-area">
-                            <div class="bar-chart" id="hourly-chart">
-                                <!-- Bar chart will be rendered here -->
-                            </div>
+                            <canvas id="hourly-chart"></canvas>
                             <div class="legend">
                                 <div class="legend-item">
                                     <div class="legend-color production-color"></div>
@@ -987,10 +776,14 @@
             }
         }
 
-        // Render the cumulative chart (using cumulativeProduction and cumulativeTargets)
+        // Render the cumulative chart (using cumulativeProduction and cumulativeTargets) with Canvas
         function renderCumulativeChart(variant) {
-            const chartContainer = document.getElementById('cumulative-chart');
-            chartContainer.innerHTML = '';
+            const canvas = document.getElementById('cumulative-chart');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.parentElement.clientWidth;
+            const height = canvas.height = canvas.parentElement.clientHeight - 40; // Account for legend space
+
+            ctx.clearRect(0, 0, width, height);
 
             // Prepare data by mapping cumulativeProduction and cumulativeTargets into a table
             const hours = [
@@ -1033,7 +826,7 @@
             });
 
             if (sortedData.length === 0) {
-                chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
+                ctx.fillText('No data available', width / 2, height / 2, width);
                 return;
             }
 
@@ -1044,84 +837,78 @@
             });
             maxValue = maxValue * 1.1; // Add some headroom
 
-            // Create grid for the chart background
-            const chartGrid = document.createElement('div');
-            chartGrid.className = 'chart-grid';
-            
-            // Add horizontal grid lines (5 lines)
-            const horizontalLines = document.createElement('div');
-            horizontalLines.className = 'horizontal-lines';
-            for (let i = 0; i < 5; i++) {
-                const line = document.createElement('div');
-                line.style.bottom = `${(i / 4) * 100}%`; // 5 lines, 4 intervals
-                horizontalLines.appendChild(line);
-            }
-            chartGrid.appendChild(horizontalLines);
-            
-            // Add vertical grid lines (one per hour)
-            const verticalLines = document.createElement('div');
-            verticalLines.className = 'vertical-lines';
-            for (let i = 1; i < sortedData.length; i++) {
-                const line = document.createElement('div');
-                line.style.left = `${(i / (sortedData.length - 1)) * 100}%`;
-                verticalLines.appendChild(line);
-            }
-            chartGrid.appendChild(verticalLines);
-            chartContainer.appendChild(chartGrid);
+            // Draw grid
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            const gridHeight = height - 40; // Leave space for labels
+            const gridWidth = width - 60; // Leave space for y-axis
+            const numGridLines = 5;
+            const stepX = gridWidth / (sortedData.length - 1);
+            const stepY = gridHeight / numGridLines;
 
-            // Add x-axis labels
-            const labels = document.createElement('div');
-            labels.className = 'line-chart-labels';
+            // Horizontal grid lines
+            for (let i = 0; i <= numGridLines; i++) {
+                ctx.beginPath();
+                ctx.moveTo(50, 20 + i * stepY);
+                ctx.lineTo(50 + gridWidth, 20 + i * stepY);
+                ctx.stroke();
+            }
+
+            // Vertical grid lines
+            for (let i = 0; i < sortedData.length; i++) {
+                ctx.beginPath();
+                ctx.moveTo(50 + i * stepX, 20);
+                ctx.lineTo(50 + i * stepX, 20 + gridHeight);
+                ctx.stroke();
+            }
+
+            // Draw x-axis labels
+            ctx.fillStyle = var(--dark-color);
+            ctx.font = '0.8rem sans-serif';
             sortedData.forEach((item, index) => {
-                const label = document.createElement('div');
-                label.textContent = item.hour;
-                label.style.width = `${100 / sortedData.length}%`;
-                labels.appendChild(label);
+                ctx.fillText(item.hour, 50 + index * stepX - 10, height - 10);
             });
-            chartContainer.appendChild(labels);
 
-            // Create SVG for lines (smooth, no dots)
-            const svgNS = "http://www.w3.org/2000/svg";
-            const svg = document.createElementNS(svgNS, "svg");
-            svg.setAttribute("width", "100%");
-            svg.setAttribute("height", "100%");
-            svg.setAttribute("class", "line-path");
-
-            // Create production line (smooth, no dots) - pull from data.json
-            const productionPoints = sortedData.map((item, index) => {
-                const x = (index / (sortedData.length - 1)) * 100;
-                const y = item.production ? 100 - ((item.production / maxValue) * 100) : 100;
-                return `${x},${y}`;
-            }).join(" ");
-            
-            if (productionPoints) {
-                const productionLine = document.createElementNS(svgNS, "polyline");
-                productionLine.setAttribute("points", productionPoints);
-                productionLine.setAttribute("class", "production-line");
-                svg.appendChild(productionLine);
+            // Draw y-axis labels (simplified for brevity, could be more detailed)
+            for (let i = 0; i <= numGridLines; i++) {
+                const value = Math.round((numGridLines - i) * (maxValue / numGridLines));
+                ctx.fillText(value, 20, 20 + i * stepY + 5);
             }
 
-            // Create target line (smooth, no dots) - pull from data.json
-            const targetPoints = sortedData.map((item, index) => {
-                const x = (index / (sortedData.length - 1)) * 100;
-                const y = item.target ? 100 - ((item.target / maxValue) * 100) : 100;
-                return `${x},${y}`;
-            }).join(" ");
-            
-            if (targetPoints) {
-                const targetLine = document.createElementNS(svgNS, "polyline");
-                targetLine.setAttribute("points", targetPoints);
-                targetLine.setAttribute("class", "target-line-path");
-                svg.appendChild(targetLine);
-            }
+            // Draw lines for production (blue) and target (green)
+            ctx.lineWidth = 3;
 
-            chartContainer.appendChild(svg);
+            // Production line (blue)
+            ctx.strokeStyle = var(--secondary-color);
+            ctx.beginPath();
+            sortedData.forEach((item, index) => {
+                const x = 50 + index * stepX;
+                const y = 20 + gridHeight - ((item.production / maxValue) * gridHeight);
+                if (index === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Target line (green)
+            ctx.strokeStyle = var(--success-color);
+            ctx.beginPath();
+            sortedData.forEach((item, index) => {
+                const x = 50 + index * stepX;
+                const y = 20 + gridHeight - ((item.target / maxValue) * gridHeight);
+                if (index === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
         }
 
-        // Render the hourly bar chart (using hourlyProduction and hourlyTargets)
+        // Render the hourly bar chart (using hourlyProduction and hourlyTargets) with Canvas
         function renderHourlyChart(variant) {
-            const chartContainer = document.getElementById('hourly-chart');
-            chartContainer.innerHTML = '';
+            const canvas = document.getElementById('hourly-chart');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.parentElement.clientWidth;
+            const height = canvas.height = canvas.parentElement.clientHeight - 40; // Account for legend space
+
+            ctx.clearRect(0, 0, width, height);
 
             // Prepare data by mapping hourlyProduction and hourlyTargets into a table
             const hours = [
@@ -1199,96 +986,29 @@
             const minValue = 50; // Higher minimum value to ensure larger bars
             const maxValue = Math.max(production, target, minValue) * 2; // Increased scaling factor for larger bars
 
-            // Create production bar
-            const productionColumn = document.createElement('div');
-            productionColumn.className = 'bar-column';
-            
-            const productionBar = document.createElement('div');
-            productionBar.className = 'bar-chart-bar production-bar';
-            productionBar.style.height = `${Math.max((production / maxValue) * 100, 20)}%`; // Minimum 20% height for visibility
-            
-            const productionValue = document.createElement('div');
-            productionValue.className = 'bar-chart-value';
-            productionValue.textContent = production;
-            productionBar.appendChild(productionValue);
-            
-            productionColumn.appendChild(productionBar);
-            
-            const productionLabel = document.createElement('div');
-            productionLabel.className = 'bar-chart-label';
-            productionLabel.textContent = 'Production';
-            productionColumn.appendChild(productionLabel);
-            
-            chartContainer.appendChild(productionColumn);
-            
-            // Create target bar
-            const targetColumn = document.createElement('div');
-            targetColumn.className = 'bar-column';
-            
-            const targetBar = document.createElement('div');
-            targetBar.className = 'bar-chart-bar target-bar';
-            targetBar.style.height = `${Math.max((target / maxValue) * 100, 20)}%`; // Minimum 20% height for visibility
-            
-            const targetValue = document.createElement('div');
-            targetValue.className = 'bar-chart-value';
-            targetValue.textContent = target;
-            targetBar.appendChild(targetValue);
-            
-            targetColumn.appendChild(targetBar);
-            
-            const targetLabel = document.createElement('div');
-            targetLabel.className = 'bar-chart-label';
-            targetLabel.textContent = 'Target';
-            targetColumn.appendChild(targetLabel);
-            
-            chartContainer.appendChild(targetColumn);
-        }
+            // Draw bars
+            const barWidth = 80;
+            const gap = 20;
+            const totalWidth = barWidth * 2 + gap;
+            const xOffset = (width - totalWidth) / 2;
 
-        // Cycle to the next variant
-        function cycleVariants() {
-            if (!filteredVariants || filteredVariants.length === 0 || !isAutocycling) {
-                return;
-            }
+            ctx.fillStyle = var(--secondary-color);
+            const productionHeight = (production / maxValue) * (height - 40); // Leave space for labels
+            ctx.fillRect(xOffset, height - 40 - productionHeight, barWidth, productionHeight);
 
-            updateCycleProgress(0);
+            ctx.fillStyle = var(--success-color);
+            const targetHeight = (target / maxValue) * (height - 40);
+            ctx.fillRect(xOffset + barWidth + gap, height - 40 - targetHeight, barWidth, targetHeight);
 
-            currentVariantIndex = (currentVariantIndex + 1) % filteredVariants.length;
-            displayVariant(currentVariantIndex);
+            // Draw bar labels and values
+            ctx.fillStyle = var(--dark-color);
+            ctx.font = '1.1rem sans-serif';
+            ctx.fillText(production, xOffset + barWidth / 2 - 10, height - 50);
+            ctx.fillText(target, xOffset + barWidth + gap + barWidth / 2 - 10, height - 50);
 
-            animateProgress();
-        }
-
-        // Animate the progress bar for timing
-        function animateProgress() {
-            let progress = 0;
-            const interval = 100;
-            const steps = CYCLE_INTERVAL / interval;
-
-            const progressInterval = setInterval(() => {
-                progress += (100 / steps);
-                if (progress > 100) {
-                    progress = 100;
-                    clearInterval(progressInterval);
-                }
-                updateCycleProgress(progress);
-            }, interval);
-        }
-
-        // Update the cycle progress bar
-        function updateCycleProgress(percent) {
-            document.getElementById('cycle-progress').style.width = `${percent}%`;
-        }
-
-        // Toggle auto-cycling
-        function toggleAutoCycle() {
-            isAutocycling = !isAutocycling;
-            const button = document.getElementById('auto-cycle-button');
-            if (button) {
-                button.textContent = isAutocycling ? 'Stop Auto-Cycle' : 'Start Auto-Cycle';
-                button.className = isAutocycling 
-                    ? 'auto-cycle-button' 
-                    : 'auto-cycle-button start';
-            }
+            // Draw bar labels (Production and Target)
+            ctx.fillText('Production', xOffset + barWidth / 2 - 20, height - 20);
+            ctx.fillText('Target', xOffset + barWidth + gap + barWidth / 2 - 20, height - 20);
         }
 
         // Show debug popup
@@ -1365,6 +1085,53 @@
         function hideDebugPopup() {
             document.getElementById('debugPopup').classList.remove('show');
             document.getElementById('overlay').classList.remove('show');
+        }
+
+        // Cycle to the next variant
+        function cycleVariants() {
+            if (!filteredVariants || filteredVariants.length === 0 || !isAutocycling) {
+                return;
+            }
+
+            updateCycleProgress(0);
+
+            currentVariantIndex = (currentVariantIndex + 1) % filteredVariants.length;
+            displayVariant(currentVariantIndex);
+
+            animateProgress();
+        }
+
+        // Animate the progress bar for timing
+        function animateProgress() {
+            let progress = 0;
+            const interval = 100;
+            const steps = CYCLE_INTERVAL / interval;
+
+            const progressInterval = setInterval(() => {
+                progress += (100 / steps);
+                if (progress > 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                }
+                updateCycleProgress(progress);
+            }, interval);
+        }
+
+        // Update the cycle progress bar
+        function updateCycleProgress(percent) {
+            document.getElementById('cycle-progress').style.width = `${percent}%`;
+        }
+
+        // Toggle auto-cycling
+        function toggleAutoCycle() {
+            isAutocycling = !isAutocycling;
+            const button = document.getElementById('auto-cycle-button');
+            if (button) {
+                button.textContent = isAutocycling ? 'Stop Auto-Cycle' : 'Start Auto-Cycle';
+                button.className = isAutocycling 
+                    ? 'auto-cycle-button' 
+                    : 'auto-cycle-button start';
+            }
         }
 
         // Initialize the dashboard when the page loads
