@@ -366,7 +366,8 @@
                     hourlyProduction: [0,0,0,0,0,0,0,65,78,92,83,0,0,0,0,0,0,0,0,0,0,0,0,0],
                     dailyTarget: 320,
                     currentTotal: 318,
-                    currentBoxTotal: 17
+                    currentBoxTotal: 17,
+                    progressPercentage: 99
                 }],
                 supervisors: [{
                     name: "TEST Supervisor",
@@ -375,11 +376,13 @@
                             variant: "TEST Product XYZ",
                             hourlyProduction: [0,0,0,0,0,0,0,65,78,92,83,0,0,0,0,0,0,0,0,0,0,0,0,0],
                             currentTotal: 318,
-                            dailyTarget: 320
+                            dailyTarget: 320,
+                            progressPercentage: 99
                         }
                     },
                     totalProduction: 318,
-                    totalTarget: 320
+                    totalTarget: 320,
+                    progressPercentage: 99
                 }]
             };
 
@@ -531,9 +534,8 @@
             `;
             totalsDisplay.appendChild(totalTarget);
 
-            const progress = variant.currentTotal && variant.dailyTarget 
-                ? Math.floor((variant.currentTotal / variant.dailyTarget) * 100) 
-                : 0;
+            // Use the pre-calculated progress percentage from the server
+            const progress = variant.progressPercentage || 0;
 
             const totalProgress = document.createElement('div');
             totalProgress.className = 'total-item';
@@ -544,8 +546,8 @@
             totalsDisplay.appendChild(totalProgress);
 
             if (variant.devicesPerBox) {
-                const boxesCompleted = variant.currentBoxTotal || Math.floor(variant.currentTotal / variant.devicesPerBox);
-                const totalBoxes = variant.dailyBoxTarget || Math.ceil(variant.dailyTarget / variant.devicesPerBox);
+                const boxesCompleted = variant.currentBoxTotal || 0;
+                const totalBoxes = variant.dailyBoxTarget || 0;
 
                 const boxInfo = document.createElement('div');
                 boxInfo.className = 'total-item';
@@ -610,6 +612,7 @@
                 const bar = document.createElement('div');
                 bar.className = 'bar';
 
+                // Use hourly performance data if available, otherwise calculate
                 if (hourValue >= hourTarget && hourTarget > 0) {
                     bar.classList.add('above-target');
                 } else if (hourValue > 0) {
