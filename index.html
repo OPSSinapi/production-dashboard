@@ -275,6 +275,19 @@
             font-family: inherit;
         }
 
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--dark-color);
+        }
+
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
         /* Debug Popup Styles */
         .debug-popup {
             display: none;
@@ -421,12 +434,12 @@
 
         <div class="content">
             <div class="variant-info">
-                <div class="variant-name" id="variant-name">Product Variant: Loading...</div>
+                <div class="variant-name" id="variant-name">Loading...</div>
                 <div class="cycle-time" id="cycle-time">Target Cycle Time: Loading...</div>
             </div>
 
             <div class="totals-display" id="totals-display">
-                <!-- Will be populated with total information -->
+                <div class="loading">Loading data...</div>
             </div>
 
             <div class="chart-container">
@@ -500,6 +513,7 @@
         let lastUpdateTime = null;
         let selectedSupervisor = 'all';
         let isAutocycling = true;
+        let isLoading = true;
 
         // Initialize the dashboard
         function initDashboard() {
@@ -516,6 +530,8 @@
                 currentVariantIndex = 0;
                 if (filteredVariants.length > 0) {
                     displayVariant(currentVariantIndex);
+                } else {
+                    showLoadingOrError('No variants available for this supervisor.');
                 }
             });
 
@@ -530,80 +546,6 @@
 
             // Start progress bar animation
             animateProgress();
-
-            // Fallback if no data after 10 seconds
-            setTimeout(() => {
-                if (filteredVariants.length === 0) {
-                    addFallbackData();
-                }
-            }, 10000);
-        }
-
-        // Add fallback data if no data is loaded
-        function addFallbackData() {
-            productionData = {
-                timestamp: new Date().toISOString(),
-                variants: [{
-                    variant: "TEST Product XYZ",
-                    cycleTime: 45,
-                    hourlyTarget: 80,
-                    dailyTarget: 320,
-                    currentTotal: 318,
-                    progressPercentage: 99,
-                    batches: {
-                        "TEST123": {
-                            total: 318,
-                            boxes: 17
-                        }
-                    },
-                    hourlyProduction: [
-                        {"hour": "08:30", "production": 65},
-                        {"hour": "09:30", "production": 78},
-                        {"hour": "10:30", "production": 92},
-                        {"hour": "11:30", "production": 83}
-                    ],
-                    cumulativeTargets: [
-                        {"hour": "08:30", "target": 80},
-                        {"hour": "09:30", "target": 160},
-                        {"hour": "10:30", "target": 240},
-                        {"hour": "11:30", "target": 320}
-                    ],
-                    cumulativeProduction: [
-                        {"hour": "08:30", "production": 65},
-                        {"hour": "09:30", "production": 143},
-                        {"hour": "10:30", "production": 235},
-                        {"hour": "11:30", "production": 318}
-                    ],
-                    hourlyTargets: [
-                        {"hour": "08:30", "target": 80},
-                        {"hour": "09:30", "target": 80},
-                        {"hour": "10:30", "target": 80},
-                        {"hour": "11:30", "target": 80}
-                    ]
-                }],
-                supervisors: [{
-                    name: "TEST Supervisor",
-                    variants: {
-                        "TEST Product XYZ": {
-                            variant: "TEST Product XYZ",
-                            currentTotal: 318,
-                            dailyTarget: 320,
-                            progressPercentage: 99
-                        }
-                    },
-                    totalProduction: 318,
-                    totalTarget: 320,
-                    progressPercentage: 99
-                }]
-            };
-
-            // Update the date display to March 1, 2025
-            document.getElementById('current-date').textContent = 'March 1, 2025';
-            
-            filterVariantsBySupervisor();
-            if (filteredVariants.length > 0) {
-                displayVariant(0);
-            }
         }
 
         // Fetch production data from GitHub
@@ -611,7 +553,12 @@
             try {
                 const cacheBuster = '?_=' + new Date().getTime();
                 const fullUrl = DATA_URL + cacheBuster;
-                const response = await fetch(fullUrl);
+                const response = await fetch(fullUrl, {
+                    mode: 'cors', // Ensure CORS is handled
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -643,10 +590,17 @@
 
                     if (filteredVariants.length > 0) {
                         displayVariant(currentVariantIndex);
+                    } else {
+                        showLoadingOrError('No data available.');
                     }
                 }
+                isLoading = false;
+                updateLoadingState();
             } catch (error) {
                 console.error('Error fetching data:', error);
+                isLoading = false;
+                showLoadingOrError(`Failed to load data: ${error.message}`);
+                addFallbackData(); // Use fallback data if fetch fails
             }
         }
 
@@ -714,10 +668,12 @@
         // Display data for the specified variant
         function displayVariant(index) {
             if (!filteredVariants || filteredVariants.length === 0) {
+                showLoadingOrError('No variants available.');
                 return;
             }
 
             const variant = filteredVariants[index];
+            isLoading = false;
 
             document.getElementById('variant-name').textContent = `Product Variant: ${variant.variant}`;
             document.getElementById('cycle-time').textContent = `Target Cycle Time: ${variant.cycleTime} sec/unit`;
@@ -726,6 +682,7 @@
             updateTotalsDisplay(variant);
             renderCumulativeChart(variant);
             renderHourlyChart(variant);
+            updateLoadingState();
         }
 
         // Update the totals display
@@ -1009,6 +966,97 @@
             // Draw bar labels (Production and Target)
             ctx.fillText('Production', xOffset + barWidth / 2 - 20, height - 20);
             ctx.fillText('Target', xOffset + barWidth + gap + barWidth / 2 - 20, height - 20);
+        }
+
+        // Add fallback data if fetch fails
+        function addFallbackData() {
+            productionData = {
+                timestamp: new Date().toISOString(),
+                variants: [{
+                    variant: "TEST Product XYZ",
+                    cycleTime: 45,
+                    hourlyTarget: 80,
+                    dailyTarget: 320,
+                    currentTotal: 318,
+                    progressPercentage: 99,
+                    batches: {
+                        "TEST123": {
+                            total: 318,
+                            boxes: 17
+                        }
+                    },
+                    hourlyProduction: [
+                        {"hour": "08:30", "production": 65},
+                        {"hour": "09:30", "production": 78},
+                        {"hour": "10:30", "production": 92},
+                        {"hour": "11:30", "production": 83}
+                    ],
+                    cumulativeTargets: [
+                        {"hour": "08:30", "target": 80},
+                        {"hour": "09:30", "target": 160},
+                        {"hour": "10:30", "target": 240},
+                        {"hour": "11:30", "target": 320}
+                    ],
+                    cumulativeProduction: [
+                        {"hour": "08:30", "production": 65},
+                        {"hour": "09:30", "production": 143},
+                        {"hour": "10:30", "production": 235},
+                        {"hour": "11:30", "production": 318}
+                    ],
+                    hourlyTargets: [
+                        {"hour": "08:30", "target": 80},
+                        {"hour": "09:30", "target": 80},
+                        {"hour": "10:30", "target": 80},
+                        {"hour": "11:30", "target": 80}
+                    ]
+                }],
+                supervisors: [{
+                    name: "TEST Supervisor",
+                    variants: {
+                        "TEST Product XYZ": {
+                            variant: "TEST Product XYZ",
+                            currentTotal: 318,
+                            dailyTarget: 320,
+                            progressPercentage: 99
+                        }
+                    },
+                    totalProduction: 318,
+                    totalTarget: 320,
+                    progressPercentage: 99
+                }]
+            };
+
+            // Update the date display to March 1, 2025
+            document.getElementById('current-date').textContent = 'March 1, 2025';
+            
+            filterVariantsBySupervisor();
+            if (filteredVariants.length > 0) {
+                displayVariant(0);
+            }
+        }
+
+        // Show loading or error message
+        function showLoadingOrError(message) {
+            const totalsDisplay = document.getElementById('totals-display');
+            totalsDisplay.innerHTML = `<div class="${isLoading ? 'loading' : 'error'}">${message}</div>`;
+            document.getElementById('variant-name').textContent = 'Loading...';
+            document.getElementById('cycle-time').textContent = 'Target Cycle Time: Loading...';
+            const charts = document.querySelectorAll('canvas');
+            charts.forEach(chart => {
+                const ctx = chart.getContext('2d');
+                ctx.clearRect(0, 0, chart.width, chart.height);
+                ctx.fillText('No data available', chart.width / 2, chart.height / 2, chart.width);
+            });
+        }
+
+        // Update loading state in UI
+        function updateLoadingState() {
+            const totalsDisplay = document.getElementById('totals-display');
+            if (isLoading) {
+                totalsDisplay.innerHTML = '<div class="loading">Loading data...</div>';
+            } else if (!filteredVariants || filteredVariants.length === 0) {
+                showLoadingOrError('No data available.');
+            }
         }
 
         // Show debug popup
