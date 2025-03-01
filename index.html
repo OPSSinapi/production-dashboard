@@ -123,7 +123,7 @@
 
         .hourly-data {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
             height: 100%;
             gap: 12px;
             padding-bottom: 25px;
@@ -136,7 +136,7 @@
             justify-content: flex-end;
             align-items: center;
             position: relative;
-            min-width: 60px;
+            min-width: 70px;
             padding: 0 6px;
         }
 
@@ -156,7 +156,7 @@
 
         .bar-container {
             width: 100%;
-            height: 85%;
+            height: 80%;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -170,13 +170,14 @@
             border-top: 2px dashed var(--danger-color);
             font-weight: 500;
             color: var(--danger-color);
-            text-align: right;
+            text-align: center;
         }
 
         .target-label {
             position: absolute;
             top: -22px;
-            right: -35px;
+            left: 50%;
+            transform: translateX(-50%);
             color: var(--danger-color);
             font-size: 0.9rem;
             font-weight: 500;
@@ -188,19 +189,20 @@
 
         .bar {
             width: 100%;
-            background-color: var(--secondary-color);
+            height: 0; /* Start at 0 for animation */
+            background-color: var(--danger-color);
             border-radius: 6px 6px 0 0;
             position: relative;
-            transition: height 0.8s ease-out;
+            transition: height 0.8s ease-out, background-color 0.3s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .bar.above-target {
-            background: linear-gradient(45deg, var(--success-color), #86efac);
+            background-color: var(--success-color);
         }
 
         .bar.below-target {
-            background: linear-gradient(45deg, var(--danger-color), #f87171);
+            background-color: var(--danger-color);
         }
 
         .bar-value {
@@ -221,7 +223,7 @@
         .schedule-marker {
             position: absolute;
             height: 100%;
-            width: 3px;
+            width: 4px;
             top: 0;
             z-index: 10;
             border-radius: 2px;
@@ -235,6 +237,16 @@
         .end-marker {
             background: linear-gradient(0deg, var(--danger-color), #f43f5e);
             box-shadow: 0 0 8px var(--danger-color);
+        }
+
+        .break-marker {
+            position: absolute;
+            height: 100%;
+            width: 2px;
+            top: 0;
+            z-index: 5;
+            background: linear-gradient(0deg, var(--highlight-color), rgba(165, 180, 252, 0.3));
+            border-radius: 1px;
         }
 
         .footer {
@@ -504,7 +516,7 @@
 
         // Update date and time
         function updateDateTime() {
-            const now = new Date();
+            const now = new Date('March 1, 2025'); // Set to current date as specified
             document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
             document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
@@ -561,7 +573,7 @@
             return null;
         }
 
-        // Create hourly chart with redesigned start/end and break visuals
+        // Create hourly chart with clear, visible bars
         function createHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-data');
             chartContainer.innerHTML = '';
@@ -594,7 +606,7 @@
             }
             const maxValue = maxCumulative * 1.1 || 10;
 
-            // Create bars
+            // Create bars with visibility and clarity
             for (let i = startHour; i <= endHour; i++) {
                 const hourDiv = document.createElement('div');
                 hourDiv.className = 'hour-column';
@@ -623,6 +635,8 @@
                 } else if (cumulativeProduction > 0) {
                     bar.classList.add('below-target');
                 }
+                // Set initial height to 0 for animation
+                bar.style.height = '0';
                 setTimeout(() => {
                     bar.style.height = `${(cumulativeProduction / maxValue) * 100}%`;
                 }, 100 * (i - startHour));
@@ -640,7 +654,7 @@
                 chartContainer.appendChild(hourDiv);
             }
 
-            // Add schedule markers dynamically from data.json with improved visuals
+            // Add schedule markers dynamically from data.json
             const chartWidth = chartContainer.parentElement.offsetWidth - 60; // Account for padding
             const hourWidth = chartWidth / (endHour - startHour + 1); // Include all hours
             const parentContainer = chartContainer.parentElement;
@@ -648,26 +662,20 @@
             const startMarker = document.createElement('div');
             startMarker.className = 'schedule-marker start-marker';
             startMarker.style.left = '30px';
-            startMarker.style.width = '4px';
             startMarker.title = `Start: ${variant["Start Time"]}`;
             parentContainer.appendChild(startMarker);
 
             const endMarker = document.createElement('div');
             endMarker.className = 'schedule-marker end-marker';
             endMarker.style.left = `${30 + (endHour - startHour) * hourWidth}px`;
-            endMarker.style.width = '4px';
             endMarker.title = `End: ${variant["End Time"]}`;
             parentContainer.appendChild(endMarker);
 
             // Add break window indicators as subtle overlays
             breakHours.forEach(hour => {
                 const breakMarker = document.createElement('div');
-                breakMarker.style.position = 'absolute';
+                breakMarker.className = 'break-marker';
                 breakMarker.style.left = `${30 + (hour - startHour) * hourWidth}px`;
-                breakMarker.style.height = '100%';
-                breakMarker.style.width = '2px';
-                breakMarker.style.background = `linear-gradient(0deg, var(--highlight-color), rgba(165, 180, 252, 0.3))`;
-                breakMarker.style.zIndex = 5;
                 breakMarker.title = `Break: ${variant[`Break Start (Tea)`] || variant[`Break Start (Lunch)`] || variant[`OT Break Start (Tea)`]} - ${variant[`Break End (Tea)`] || variant[`Break End (Lunch)`] || variant[`OT Break End (Tea)`]}`;
                 parentContainer.appendChild(breakMarker);
             });
