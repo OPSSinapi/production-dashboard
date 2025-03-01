@@ -921,7 +921,7 @@
             sortedData.forEach((item, index) => {
                 const point = document.createElement('div');
                 point.className = 'line-point';
-                const percentage = item.production / maxValue * 80; // 80% of height for scaling
+                const percentage = (item.production / maxValue) * 80; // 80% of height for scaling
                 point.style.left = `${(index / (sortedData.length - 1)) * 100}%`;
                 point.style.bottom = `${percentage}%`;
                 point.style.transform = `translateX(-50%) scaleY(${percentage > 0 ? 1 : 0})`;
@@ -935,7 +935,7 @@
             sortedData.forEach((item, index) => {
                 const point = document.createElement('div');
                 point.className = 'line-point';
-                const percentage = item.target / maxValue * 80; // 80% of height for scaling
+                const percentage = (item.target / maxValue) * 80; // 80% of height for scaling
                 point.style.left = `${(index / (sortedData.length - 1)) * 100}%`;
                 point.style.bottom = `${percentage}%`;
                 point.style.transform = `translateX(-50%) scaleY(${percentage > 0 ? 1 : 0})`;
@@ -943,7 +943,7 @@
             });
             chartContainer.appendChild(targetContainer);
 
-            // Connect points with pseudo-elements or additional styling for smooth lines (simplified)
+            // Ensure containers are positioned correctly for smooth lines (simplified)
             productionContainer.style.position = 'absolute';
             productionContainer.style.top = '20px';
             productionContainer.style.left = '0';
