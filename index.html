@@ -7,12 +7,12 @@
     <style>
         :root {
             --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --success-color: #2ecc71;
-            --warning-color: #f39c12;
+            --secondary-color: #3B82F6; /* Blue color from screenshot */
+            --success-color: #10B981;   /* Green color from screenshot */
+            --warning-color: #F59E0B;   /* Amber color from screenshot */
             --danger-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #34495e;
+            --light-color: #f3f4f6;     /* Light gray from screenshot */
+            --dark-color: #1e293b;      /* Dark blue-gray from screenshot */
         }
 
         body {
@@ -79,7 +79,7 @@
             margin-bottom: 10px;
             background-color: var(--dark-color);
             color: white;
-            padding: 10px 20px;
+            padding: 15px 20px;
             border-radius: 8px;
         }
 
@@ -90,6 +90,16 @@
 
         .cycle-time {
             font-size: 1.8rem;
+        }
+        
+        /* Make the header style match the screenshot */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .chart-container {
@@ -229,29 +239,30 @@
         }
 
         .totals-display {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            margin-bottom: 20px;
             font-size: 1.2rem;
-            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .total-item {
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 10px;
-            background-color: var(--light-color);
-            border-radius: 5px;
-            margin: 5px;
-            min-width: 150px;
         }
 
         .total-label {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            font-size: 1.4rem;
+            color: var(--dark-color);
         }
 
         .total-value {
-            font-size: 1.8rem;
+            font-size: 2.5rem;
+            font-weight: bold;
         }
 
         .total-target {
@@ -415,6 +426,7 @@
             text-align: center;
             position: relative;
             min-height: 30px;
+            transition: height 1s ease-in-out;
         }
 
         .bar-chart-label {
@@ -436,6 +448,29 @@
 
         .target-bar {
             background-color: var(--success-color);
+        }
+        
+        /* Updated colors to match screenshot */
+        .production-color, .production-line, .production-dot, .production-bar {
+            background-color: #3B82F6;
+            stroke: #3B82F6;
+        }
+        
+        .target-color, .target-line-path, .target-dot, .target-bar {
+            background-color: #10B981;
+            stroke: #10B981;
+        }
+        
+        .total-actual, .progress-value {
+            color: #3B82F6;
+        }
+        
+        .total-target {
+            color: #10B981;
+        }
+        
+        .total-progress {
+            color: #F59E0B;
         }
 
         /* Key metrics panel */
@@ -501,7 +536,7 @@
                 <div class="subtitle">Medical Device Assembly</div>
             </div>
             <div class="date-time">
-                <div class="date" id="current-date">Loading...</div>
+                <div class="date" id="current-date">March 1, 2025</div>
                 <div class="time" id="current-time">Loading...</div>
                 <div class="update-info" id="last-update">Last updated: Never</div>
             </div>
@@ -567,7 +602,7 @@
                 <div class="key-metrics">
                     <div class="key-metrics-title">Key Metrics</div>
                     <div class="metrics-grid" id="key-metrics-grid">
-                        <!-- Key metrics will be added here -->
+                        <!-- Key metrics will be added here dynamically -->
                     </div>
                 </div>
             </div>
@@ -777,9 +812,11 @@
         function updateDateTime() {
             const now = new Date();
 
+            // Format: "March 1, 2025"
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
 
+            // Format: "21:24:14" (HH:MM:SS)
             document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', {
                 hour12: false,
                 hour: '2-digit',
@@ -863,6 +900,19 @@
             // Add all target hours to the data
             const dataMap = new Map();
             
+            // Get work start and end time
+            let startTime = "07:30"; // Default start time
+            let endTime = "18:30";   // Default end time
+            
+            if (variant["Start Time"]) {
+                startTime = variant["Start Time"];
+            }
+            
+            if (variant["End Time"]) {
+                endTime = variant["End Time"];
+            }
+            
+            // Process cumulative targets
             if (variant.cumulativeTargets && variant.cumulativeTargets.length > 0) {
                 variant.cumulativeTargets.forEach(item => {
                     if (!dataMap.has(item.hour)) {
@@ -873,7 +923,7 @@
                 });
             }
             
-            // Add all production hours to the data
+            // Process cumulative production
             if (variant.cumulativeProduction && variant.cumulativeProduction.length > 0) {
                 variant.cumulativeProduction.forEach(item => {
                     if (!dataMap.has(item.hour)) {
@@ -910,7 +960,7 @@
             // Add some headroom
             maxValue = maxValue * 1.1;
 
-            // Create grid
+            // Create grid for the chart background
             const chartGrid = document.createElement('div');
             chartGrid.className = 'chart-grid';
             
@@ -918,6 +968,7 @@
             const horizontalLines = document.createElement('div');
             horizontalLines.className = 'horizontal-lines';
             
+            // Create 5 horizontal grid lines
             const numHorizontalLines = 5;
             for (let i = 0; i < numHorizontalLines; i++) {
                 const line = document.createElement('div');
@@ -931,6 +982,7 @@
             const verticalLines = document.createElement('div');
             verticalLines.className = 'vertical-lines';
             
+            // Add one vertical line for each data point except the first
             for (let i = 1; i < sortedData.length; i++) {
                 const line = document.createElement('div');
                 line.style.left = `${(i / (sortedData.length - 1)) * 100}%`;
@@ -1031,22 +1083,45 @@
             // Get current hour
             const now = new Date();
             const currentHour = now.getHours();
-            const hourStr = `${String(currentHour).padStart(2, '0')}:30`;
             
-            // Find target for current hour
-            let target = variant.hourlyTarget || 0;
-            if (variant.hourlyTargets) {
-                const targetEntry = variant.hourlyTargets.find(t => t.hour === hourStr);
-                if (targetEntry) {
-                    target = targetEntry.target;
-                }
+            // Get the latest hour with data
+            let latestHour = null;
+            let latestProduction = 0;
+            let latestTarget = 0;
+            
+            // First try to find the latest hour in hourlyTargets
+            if (variant.hourlyTargets && variant.hourlyTargets.length > 0) {
+                // Sort by hour in descending order
+                const sortedHourTargets = [...variant.hourlyTargets].sort((a, b) => {
+                    const timeA = a.hour.split(':').map(Number);
+                    const timeB = b.hour.split(':').map(Number);
+                    
+                    if (timeA[0] !== timeB[0]) {
+                        return timeB[0] - timeA[0]; // Sort in descending order
+                    }
+                    return timeB[1] - timeA[1];
+                });
+                
+                // Get the latest hour and its target
+                latestHour = sortedHourTargets[0].hour;
+                latestTarget = sortedHourTargets[0].target;
+            } else {
+                // Fallback to hourlyTarget
+                latestTarget = variant.hourlyTarget || 0;
+                latestHour = `${String(currentHour).padStart(2, '0')}:30`;
             }
             
-            // Get production for current hour
-            const production = variant.hourlyProduction && variant.hourlyProduction[currentHour] || 0;
+            // Find production for the latest hour
+            if (variant.hourlyProduction) {
+                // Extract the hour from latestHour (format HH:MM)
+                const hour = parseInt(latestHour.split(':')[0]);
+                
+                // Get production for that hour
+                latestProduction = variant.hourlyProduction[hour] || 0;
+            }
             
             // Find max value for scaling
-            const maxValue = Math.max(target, production) * 1.2;
+            const maxValue = Math.max(latestTarget, latestProduction) * 1.2;
 
             // Create production bar
             const productionColumn = document.createElement('div');
