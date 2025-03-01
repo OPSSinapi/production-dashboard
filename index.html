@@ -38,7 +38,7 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid var(--secondary-color);
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .title {
@@ -90,16 +90,6 @@
 
         .cycle-time {
             font-size: 1.8rem;
-        }
-        
-        /* Make the header style match the screenshot */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e2e8f0;
         }
 
         .chart-container {
@@ -536,7 +526,7 @@
                 <div class="subtitle">Medical Device Assembly</div>
             </div>
             <div class="date-time">
-                <div class="date" id="current-date">March 1, 2025</div>
+                <div class="date" id="current-date">February 27, 2025</div>
                 <div class="time" id="current-time">Loading...</div>
                 <div class="update-info" id="last-update">Last updated: Never</div>
             </div>
@@ -682,25 +672,36 @@
                     dailyTarget: 320,
                     currentTotal: 318,
                     progressPercentage: 99,
+                    batches: {
+                        "TEST123": {
+                            total: 318,
+                            boxes: 17
+                        }
+                    },
+                    hourlyProduction: [
+                        {"hour": "08:30", "production": 65},
+                        {"hour": "09:30", "production": 78},
+                        {"hour": "10:30", "production": 92},
+                        {"hour": "11:30", "production": 83}
+                    ],
                     cumulativeTargets: [
-                        { hour: "07:30", target: 80 },
-                        { hour: "08:30", target: 160 },
-                        { hour: "09:30", target: 240 },
-                        { hour: "10:30", target: 320 }
+                        {"hour": "08:30", "target": 80},
+                        {"hour": "09:30", "target": 160},
+                        {"hour": "10:30", "target": 240},
+                        {"hour": "11:30", "target": 320}
                     ],
                     cumulativeProduction: [
-                        { hour: "07:30", production: 65 },
-                        { hour: "08:30", production: 143 },
-                        { hour: "09:30", production: 235 },
-                        { hour: "10:30", production: 318 }
+                        {"hour": "08:30", "production": 65},
+                        {"hour": "09:30", "production": 143},
+                        {"hour": "10:30", "production": 235},
+                        {"hour": "11:30", "production": 318}
                     ],
                     hourlyTargets: [
-                        { hour: "07:30", target: 80 },
-                        { hour: "08:30", target: 80 },
-                        { hour: "09:30", target: 80 },
-                        { hour: "10:30", target: 80 }
-                    ],
-                    hourlyProduction: [65, 78, 92, 83, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                        {"hour": "08:30", "target": 80},
+                        {"hour": "09:30", "target": 80},
+                        {"hour": "10:30", "target": 80},
+                        {"hour": "11:30", "target": 80}
+                    ]
                 }],
                 supervisors: [{
                     name: "TEST Supervisor",
@@ -718,6 +719,9 @@
                 }]
             };
 
+            // Update the date display to Feb 27 2025
+            document.getElementById('current-date').textContent = 'February 27, 2025';
+            
             filterVariantsBySupervisor();
             if (filteredVariants.length > 0) {
                 displayVariant(0);
@@ -743,7 +747,12 @@
 
                     const updateTime = new Date(data.timestamp);
                     document.getElementById('last-update').textContent = 
-                        'Last updated: ' + updateTime.toLocaleTimeString();
+                        'Last updated: ' + updateTime.toLocaleTimeString('en-US', {
+                            hour12: false,
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
 
                     updateSupervisorDropdown();
                     filterVariantsBySupervisor();
@@ -812,9 +821,8 @@
         function updateDateTime() {
             const now = new Date();
 
-            // Format: "March 1, 2025"
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+            // Format: "February 27, 2025"
+            document.getElementById('current-date').textContent = 'February 27, 2025';
 
             // Format: "21:24:14" (HH:MM:SS)
             document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', {
@@ -848,6 +856,7 @@
             const totalsDisplay = document.getElementById('totals-display');
             totalsDisplay.innerHTML = '';
 
+            // Current Total
             const totalActual = document.createElement('div');
             totalActual.className = 'total-item';
             totalActual.innerHTML = `
@@ -856,6 +865,7 @@
             `;
             totalsDisplay.appendChild(totalActual);
 
+            // Daily Target
             const totalTarget = document.createElement('div');
             totalTarget.className = 'total-item';
             totalTarget.innerHTML = `
@@ -864,9 +874,8 @@
             `;
             totalsDisplay.appendChild(totalTarget);
 
-            // Use the pre-calculated progress percentage from the server
+            // Progress Percentage
             const progress = variant.progressPercentage || 0;
-
             const totalProgress = document.createElement('div');
             totalProgress.className = 'total-item';
             totalProgress.innerHTML = `
@@ -875,6 +884,7 @@
             `;
             totalsDisplay.appendChild(totalProgress);
 
+            // Boxes (if available)
             if (variant.dailyBoxTarget) {
                 const boxesCompleted = variant.currentBoxTotal || 0;
                 const totalBoxes = variant.dailyBoxTarget || 0;
@@ -951,8 +961,8 @@
                     });
                 }
             }
-            
-            // Convert map to array and sort by hour
+
+            // Sort the data by hour
             const sortedData = Array.from(dataMap.values()).sort((a, b) => {
                 // Convert times to comparable values (assuming HH:MM format)
                 const timeA = a.hour.split(':').map(Number);
@@ -1033,7 +1043,7 @@
             // Create production line
             const productionPoints = sortedData
                 .filter(item => item.production !== undefined && item.production !== null && item.production > 0)
-                .map((item, index, arr) => {
+                .map((item) => {
                     const x = sortedData.findIndex(d => d.hour === item.hour) / (sortedData.length - 1) * 100;
                     const y = 100 - ((item.production / maxValue) * 100);
                     return `${x},${y}`;
@@ -1133,7 +1143,7 @@
                     latestProduction = sortedProduction[0].production || 0;
                 }
             }
-            
+
             // Now find the matching target for that hour
             if (latestHour && variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
                 const targetForHour = variant.hourlyTargets.find(item => item.hour === latestHour);
@@ -1153,55 +1163,6 @@
             
             // Find max value for scaling
             const maxValue = Math.max(latestTarget, latestProduction) * 1.2;
-        }
-
-        // Render the hourly bar chart
-        function renderHourlyChart(variant) {
-            const chartContainer = document.getElementById('hourly-chart');
-            chartContainer.innerHTML = '';
-
-            // Get current hour
-            const now = new Date();
-            const currentHour = now.getHours();
-            
-            // Get the latest hour with data
-            let latestHour = null;
-            let latestProduction = 0;
-            let latestTarget = 0;
-            
-            // First try to find the latest hour in hourlyTargets
-            if (variant.hourlyTargets && variant.hourlyTargets.length > 0) {
-                // Sort by hour in descending order
-                const sortedHourTargets = [...variant.hourlyTargets].sort((a, b) => {
-                    const timeA = a.hour.split(':').map(Number);
-                    const timeB = b.hour.split(':').map(Number);
-                    
-                    if (timeA[0] !== timeB[0]) {
-                        return timeB[0] - timeA[0]; // Sort in descending order
-                    }
-                    return timeB[1] - timeA[1];
-                });
-                
-                // Get the latest hour and its target
-                latestHour = sortedHourTargets[0].hour;
-                latestTarget = sortedHourTargets[0].target;
-            } else {
-                // Fallback to hourlyTarget
-                latestTarget = variant.hourlyTarget || 0;
-                latestHour = `${String(currentHour).padStart(2, '0')}:30`;
-            }
-            
-            // Find production for the latest hour
-            if (variant.hourlyProduction) {
-                // Extract the hour from latestHour (format HH:MM)
-                const hour = parseInt(latestHour.split(':')[0]);
-                
-                // Get production for that hour
-                latestProduction = variant.hourlyProduction[hour] || 0;
-            }
-            
-            // Find max value for scaling
-            const maxValue = Math.max(latestTarget, latestProduction) * 1.2;
 
             // Create production bar
             const productionColumn = document.createElement('div');
@@ -1209,11 +1170,11 @@
             
             const productionBar = document.createElement('div');
             productionBar.className = 'bar-chart-bar production-bar';
-            productionBar.style.height = `${(production / maxValue) * 100}%`;
+            productionBar.style.height = `${(latestProduction / maxValue) * 100}%`;
             
             const productionValue = document.createElement('div');
             productionValue.className = 'bar-chart-value';
-            productionValue.textContent = production;
+            productionValue.textContent = latestProduction;
             productionBar.appendChild(productionValue);
             
             productionColumn.appendChild(productionBar);
@@ -1231,11 +1192,11 @@
             
             const targetBar = document.createElement('div');
             targetBar.className = 'bar-chart-bar target-bar';
-            targetBar.style.height = `${(target / maxValue) * 100}%`;
+            targetBar.style.height = `${(latestTarget / maxValue) * 100}%`;
             
             const targetValue = document.createElement('div');
             targetValue.className = 'bar-chart-value';
-            targetValue.textContent = target;
+            targetValue.textContent = latestTarget;
             targetBar.appendChild(targetValue);
             
             targetColumn.appendChild(targetBar);
@@ -1306,18 +1267,25 @@
                 return variant.currentTotal || 0;
             }
             
-            // Return the latest cumulative production
-            const sortedProduction = [...variant.cumulativeProduction].sort((a, b) => {
-                const timeA = a.hour.split(':').map(Number);
-                const timeB = b.hour.split(':').map(Number);
+            // Check if we have the new data format
+            if (variant.cumulativeProduction[0].hour !== undefined) {
+                // Sort by hour in descending order
+                const sortedProduction = [...variant.cumulativeProduction].sort((a, b) => {
+                    const timeA = a.hour.split(':').map(Number);
+                    const timeB = b.hour.split(':').map(Number);
+                    
+                    if (timeA[0] !== timeB[0]) {
+                        return timeB[0] - timeA[0]; // Sort in descending order
+                    }
+                    return timeB[1] - timeA[1];
+                });
                 
-                if (timeA[0] !== timeB[0]) {
-                    return timeB[0] - timeA[0]; // Sort in descending order
-                }
-                return timeB[1] - timeA[1];
-            });
-            
-            return sortedProduction[0].production;
+                // Return the production value of the latest hour
+                return sortedProduction[0].production;
+            } else {
+                // Old format - return the last value
+                return variant.cumulativeProduction[variant.cumulativeProduction.length - 1];
+            }
         }
 
         // Cycle to the next variant
