@@ -4,20 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Production Dashboard</title>
-    <!-- React -->
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-    
-    <!-- Babel for JSX transformation -->
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    
-    <!-- Recharts -->
     <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
-    
-    <!-- Axios for data fetching -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
@@ -56,9 +47,14 @@
                 };
 
                 fetchProductionData();
+                
+                // Refresh data every minute
+                const dataInterval = setInterval(fetchProductionData, 60000);
+
+                return () => clearInterval(dataInterval);
             }, []);
 
-            // Auto-cycling logic
+            // Auto-cycling and time update logic
             useEffect(() => {
                 if (!productionData) return;
 
@@ -80,7 +76,7 @@
 
             // If data is not loaded yet
             if (!productionData) {
-                return <div>Loading production data...</div>;
+                return <div className="flex items-center justify-center min-h-screen text-2xl">Loading production data...</div>;
             }
 
             // Extract current variant
@@ -197,6 +193,10 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div className="text-center mt-4 text-gray-500">
+                        Last Updated: {new Date(productionData.timestamp).toLocaleString()}
                     </div>
                 </div>
             );
