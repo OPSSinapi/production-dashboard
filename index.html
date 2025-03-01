@@ -658,62 +658,74 @@
             animateProgress();
         }
 
-        // Fetch production data from GitHub
-        async function fetchProductionData() {
-            try {
-                console.log('Attempting to fetch data from:', DATA_URL);
-                const cacheBuster = '?_=' + new Date().getTime();
-                const fullUrl = DATA_URL + cacheBuster;
-                const response = await fetch(fullUrl, {
-                    mode: 'cors', // Ensure CORS is handled
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
+        // Fetch production data from GitHub with retries
+        async function fetchProductionData(retryCount = 3, delay = 1000) {
+            for (let i = 0; i < retryCount; i++) {
+                try {
+                    console.log(`Attempting to fetch data from: ${DATA_URL} (Attempt ${i + 1}/${retryCount})`);
+                    const cacheBuster = '?_=' + new Date().getTime();
+                    const fullUrl = DATA_URL + cacheBuster;
+                    const response = await fetch(fullUrl, {
+                        mode: 'cors', // Ensure CORS is handled
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('Fetched data:', data);
+
+                    // Validate data structure
+                    if (!data.variants || !Array.isArray(data.variants) || !data.supervisors || !Array.isArray(data.supervisors)) {
+                        throw new Error('Invalid data structure in data.json');
+                    }
+
+                    if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
+                        productionData = data;
+                        lastUpdateTime = data.timestamp;
+
+                        const updateTime = new Date(data.timestamp);
+                        document.getElementById('last-update').textContent = 
+                            'Last updated: ' + updateTime.toLocaleTimeString('en-US', {
+                                hour12: false,
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                            });
+
+                        updateSupervisorDropdown();
+                        filterVariantsBySupervisor();
+
+                        document.getElementById('total-variants').textContent = filteredVariants.length;
+
+                        if (currentVariantIndex >= filteredVariants.length) {
+                            currentVariantIndex = 0;
+                        }
+
+                        if (filteredVariants.length > 0) {
+                            displayVariant(currentVariantIndex);
+                        } else {
+                            showLoadingOrError('No data available.');
+                        }
+                    }
+                    isLoading = false;
+                    updateLoadingState();
+                    return; // Exit on success
+                } catch (error) {
+                    console.error(`Fetch attempt ${i + 1} failed:`, error);
+                    if (i < retryCount - 1) {
+                        await new Promise(resolve => setTimeout(resolve, delay * (i + 1))); // Exponential backoff
+                        continue;
+                    }
+                    isLoading = false;
+                    showLoadingOrError(`Failed to load data after ${retryCount} attempts: ${error.message}`);
+                    addFallbackData(); // Use fallback only after retries fail
+                    displayVariant(0); // Force display fallback data
                 }
-
-                const data = await response.json();
-                console.log('Fetched data:', data);
-
-                if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
-                    productionData = data;
-                    lastUpdateTime = data.timestamp;
-
-                    const updateTime = new Date(data.timestamp);
-                    document.getElementById('last-update').textContent = 
-                        'Last updated: ' + updateTime.toLocaleTimeString('en-US', {
-                            hour12: false,
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
-                        });
-
-                    updateSupervisorDropdown();
-                    filterVariantsBySupervisor();
-
-                    document.getElementById('total-variants').textContent = filteredVariants.length;
-
-                    if (currentVariantIndex >= filteredVariants.length) {
-                        currentVariantIndex = 0;
-                    }
-
-                    if (filteredVariants.length > 0) {
-                        displayVariant(currentVariantIndex);
-                    } else {
-                        showLoadingOrError('No data available.');
-                    }
-                }
-                isLoading = false;
-                updateLoadingState();
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                isLoading = false;
-                showLoadingOrError(`Failed to load data: ${error.message}`);
-                addFallbackData(); // Use fallback data if fetch fails
-                displayVariant(0); // Force display fallback data
             }
         }
 
@@ -1081,8 +1093,9 @@
             chartContainer.appendChild(targetColumn);
         }
 
-        // Add fallback data if fetch fails
+        // Add fallback data if fetch fails (optional, only as a last resort)
         function addFallbackData() {
+            console.warn('Using fallback data due to fetch failure.');
             productionData = {
                 timestamp: new Date().toISOString(),
                 variants: [{
