@@ -251,21 +251,6 @@
             font-size: 1rem;
             font-family: inherit;
         }
-
-        .debug-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px;
-            font-family: monospace;
-            font-size: 12px;
-            max-height: 150px;
-            overflow-y: auto;
-            z-index: 1000;
-        }
     </style>
 </head>
 <body>
@@ -314,19 +299,7 @@
         </div>
     </div>
 
-    <!-- Debug Panel -->
-    <div class="debug-panel" id="debug-panel">Debug information will appear here...</div>
-
     <script>
-        // Debug function to log information
-        function debugLog(message) {
-            console.log(message);
-            const debugPanel = document.getElementById('debug-panel');
-            const timestamp = new Date().toLocaleTimeString();
-            debugPanel.innerHTML += `<div>[${timestamp}] ${message}</div>`;
-            debugPanel.scrollTop = debugPanel.scrollHeight;
-        }
-
         // Configuration
         const DATA_URL = 'https://raw.githubusercontent.com/OPSSinapi/production-dashboard/main/data.json';
         const UPDATE_INTERVAL = 5 * 60 * 1000; // Check for updates every 5 minutes
@@ -344,15 +317,12 @@
 
         // Initialize the dashboard
         function initDashboard() {
-            debugLog("Dashboard initialization started");
-
             // Update clock
             updateDateTime();
             setInterval(updateDateTime, 1000);
 
             // Set up supervisor filter change event
             document.getElementById('supervisor-select').addEventListener('change', function() {
-                debugLog(`Supervisor changed to: ${this.value}`);
                 selectedSupervisor = this.value;
                 filterVariantsBySupervisor();
 
@@ -360,8 +330,6 @@
                 currentVariantIndex = 0;
                 if (filteredVariants.length > 0) {
                     displayVariant(currentVariantIndex);
-                } else {
-                    debugLog("No variants to display after filtering");
                 }
             });
 
@@ -380,7 +348,6 @@
             // Fallback if no data after 10 seconds
             setTimeout(() => {
                 if (filteredVariants.length === 0) {
-                    debugLog("No data loaded after 10 seconds, adding fallback data");
                     addFallbackData();
                 }
             }, 10000);
@@ -424,41 +391,24 @@
 
         // Fetch production data from GitHub
         async function fetchProductionData() {
-            debugLog(`Starting fetch from: ${DATA_URL}`);
-
             try {
                 const cacheBuster = '?_=' + new Date().getTime();
                 const fullUrl = DATA_URL + cacheBuster;
-                debugLog(`Full URL with cache buster: ${fullUrl}`);
-
                 const response = await fetch(fullUrl);
-                debugLog(`Fetch response status: ${response.status}`);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
 
                 const text = await response.text();
-                debugLog(`Received data length: ${text.length} characters`);
-                debugLog(`First 100 characters: ${text.substring(0, 100)}...`);
-
                 let data;
                 try {
                     data = JSON.parse(text);
-                    debugLog("Successfully parsed JSON data");
                 } catch (parseError) {
-                    debugLog(`Error parsing JSON: ${parseError.message}`);
                     throw parseError;
                 }
 
                 if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
-                    debugLog(`Data timestamp changed: ${data.timestamp}`);
-                    debugLog(`Data has variants: ${data.variants && data.variants.length > 0}`);
-                    debugLog(`Number of variants: ${data.variants ? data.variants.length : 0}`);
-                    if (data.variants && data.variants.length > 0) {
-                        debugLog(`First variant: ${data.variants[0].variant}`);
-                    }
-
                     productionData = data;
                     lastUpdateTime = data.timestamp;
 
@@ -470,7 +420,6 @@
                     filterVariantsBySupervisor();
 
                     document.getElementById('total-variants').textContent = filteredVariants.length;
-                    debugLog(`Filtered variants count: ${filteredVariants.length}`);
 
                     if (currentVariantIndex >= filteredVariants.length) {
                         currentVariantIndex = 0;
@@ -478,14 +427,9 @@
 
                     if (filteredVariants.length > 0) {
                         displayVariant(currentVariantIndex);
-                    } else {
-                        debugLog("No variants to display after filtering");
                     }
-                } else {
-                    debugLog("Data timestamp unchanged, not updating");
                 }
             } catch (error) {
-                debugLog(`Error fetching data: ${error.message}`);
                 console.error('Error fetching data:', error);
             }
         }
@@ -500,13 +444,11 @@
             }
 
             if (productionData.supervisors && productionData.supervisors.length > 0) {
-                debugLog(`Adding ${productionData.supervisors.length} supervisors to dropdown`);
                 productionData.supervisors.forEach(supervisor => {
                     const option = document.createElement('option');
                     option.value = supervisor.name;
                     option.textContent = supervisor.name;
                     selectElement.appendChild(option);
-                    debugLog(`Added supervisor: ${supervisor.name}`);
                 });
             }
 
@@ -520,24 +462,17 @@
 
         // Filter variants by selected supervisor
         function filterVariantsBySupervisor() {
-            debugLog(`Filtering variants by supervisor: ${selectedSupervisor}`);
-
             if (selectedSupervisor === 'all') {
                 filteredVariants = productionData.variants || [];
-                debugLog(`Showing all variants: ${filteredVariants.length}`);
             } else {
                 const supervisor = productionData.supervisors.find(s => s.name === selectedSupervisor);
 
                 if (supervisor && supervisor.variants) {
                     const supervisorVariantKeys = Object.keys(supervisor.variants);
-                    debugLog(`Supervisor has ${supervisorVariantKeys.length} variants`);
-
                     filteredVariants = productionData.variants.filter(variant => 
                         supervisorVariantKeys.includes(variant.variant));
-                    debugLog(`Filtered to ${filteredVariants.length} variants for supervisor`);
                 } else {
                     filteredVariants = [];
-                    debugLog("No variants found for selected supervisor");
                 }
             }
 
@@ -562,12 +497,10 @@
         // Display data for the specified variant
         function displayVariant(index) {
             if (!filteredVariants || filteredVariants.length === 0) {
-                debugLog("No variants to display");
                 return;
             }
 
             const variant = filteredVariants[index];
-            debugLog(`Displaying variant: ${variant.variant}`);
 
             document.getElementById('variant-name').textContent = `Product Variant: ${variant.variant}`;
             document.getElementById('cycle-time').textContent = `Target Cycle Time: ${variant.cycleTime} sec/unit`;
@@ -631,11 +564,9 @@
 
             const now = new Date();
             const currentHour = now.getHours();
-            debugLog(`Current hour: ${currentHour}`);
 
             const startHour = 7;
             const endHour = Math.min(currentHour + 1, 19);
-            debugLog(`Showing hours from ${startHour} to ${endHour}`);
 
             let maxTarget = 0;
             let maxProduction = 0;
@@ -650,7 +581,6 @@
             }
 
             const maxValue = Math.max(maxTarget * 1.5, maxProduction * 1.2, 10);
-            debugLog(`Chart max value: ${maxValue}`);
 
             for (let i = startHour; i < endHour; i++) {
                 const hourLabel = i < 10 ? `0${i}:00` : `${i}:00`;
@@ -716,7 +646,6 @@
             updateCycleProgress(0);
 
             currentVariantIndex = (currentVariantIndex + 1) % filteredVariants.length;
-            debugLog(`Cycling to variant ${currentVariantIndex + 1} of ${filteredVariants.length}`);
             displayVariant(currentVariantIndex);
 
             animateProgress();
