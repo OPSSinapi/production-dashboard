@@ -565,7 +565,7 @@
             }
         }
 
-        // Create the hourly production chart based on cumulative data
+        // Create the hourly production chart using cumulative data directly
         function createHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-data');
             chartContainer.innerHTML = '';
@@ -576,32 +576,13 @@
             const startHour = 7;
             const endHour = Math.min(currentHour + 1, 19);
 
-            let maxTarget = 0;
-            let maxProduction = 0;
-
-            // Find max values for scaling the chart
-            for (let i = startHour; i < endHour; i++) {
-                if (variant.cumulativeTargets && variant.cumulativeTargets[i]) {
-                    maxTarget = Math.max(maxTarget, variant.cumulativeTargets[i]);
-                }
-                if (variant.cumulativeProduction && variant.cumulativeProduction[i]) {
-                    maxProduction = Math.max(maxProduction, variant.cumulativeProduction[i]);
-                }
-            }
-
-            const maxValue = Math.max(maxTarget * 1.2, maxProduction * 1.2, 10);
-
-            // Calculate hourly targets and production from cumulative values
-            const hourlyTargets = [];
-            const hourlyProduction = [];
-
-            for (let i = 0; i < 24; i++) {
-                const prevTargetHour = i > 0 ? variant.cumulativeTargets[i-1] : 0;
-                const prevProdHour = i > 0 ? variant.cumulativeProduction[i-1] : 0;
-                
-                hourlyTargets[i] = (variant.cumulativeTargets[i] || 0) - prevTargetHour;
-                hourlyProduction[i] = (variant.cumulativeProduction[i] || 0) - prevProdHour;
-            }
+            // Find max values for scaling the chart - use the last hour's cumulative value
+            const maxTarget = variant.cumulativeTargets ? 
+                Math.max(...variant.cumulativeTargets.slice(0, endHour)) : 0;
+            const maxProduction = variant.cumulativeProduction ? 
+                Math.max(...variant.cumulativeProduction.slice(0, endHour)) : 0;
+            
+            const maxValue = Math.max(maxTarget * 1.1, maxProduction * 1.1, 10);
 
             for (let i = startHour; i < endHour; i++) {
                 const hourLabel = i < 10 ? `0${i}:00` : `${i}:00`;
@@ -612,39 +593,49 @@
                 const barContainer = document.createElement('div');
                 barContainer.className = 'bar-container';
 
-                // Only add target line if there's a target for this hour
-                if (hourlyTargets[i] > 0) {
+                // Get cumulative values for this hour
+                const cumulativeTarget = variant.cumulativeTargets ? (variant.cumulativeTargets[i] || 0) : 0;
+                const cumulativeProduction = variant.cumulativeProduction ? (variant.cumulativeProduction[i] || 0) : 0;
+                
+                // Calculate hourly increments for display and coloring
+                const prevTargetHour = i > 0 ? (variant.cumulativeTargets ? (variant.cumulativeTargets[i-1] || 0) : 0) : 0;
+                const prevProdHour = i > 0 ? (variant.cumulativeProduction ? (variant.cumulativeProduction[i-1] || 0) : 0) : 0;
+                
+                const hourlyTarget = cumulativeTarget - prevTargetHour;
+                const hourlyProduction = cumulativeProduction - prevProdHour;
+
+                // Add target line if there's a target for this hour
+                if (cumulativeTarget > 0) {
                     const targetLine = document.createElement('div');
                     targetLine.className = 'target-line';
-                    targetLine.style.bottom = `${(hourlyTargets[i] / maxValue) * 100}%`;
+                    targetLine.style.bottom = `${(cumulativeTarget / maxValue) * 100}%`;
 
                     const targetLabel = document.createElement('div');
                     targetLabel.className = 'target-label';
-                    targetLabel.textContent = hourlyTargets[i];
+                    targetLabel.textContent = cumulativeTarget;
                     targetLine.appendChild(targetLabel);
 
                     barContainer.appendChild(targetLine);
                 }
 
-                const hourValue = hourlyProduction[i] || 0;
-                const hourTarget = hourlyTargets[i] || 0;
-
                 const bar = document.createElement('div');
                 bar.className = 'bar';
 
-                if (hourValue >= hourTarget && hourTarget > 0) {
+                // Color code based on hourly production vs target
+                if (hourlyProduction >= hourlyTarget && hourlyTarget > 0) {
                     bar.classList.add('above-target');
-                } else if (hourValue > 0) {
+                } else if (hourlyProduction > 0) {
                     bar.classList.add('below-target');
                 }
 
+                // Set bar height using cumulative production
                 setTimeout(() => {
-                    bar.style.height = `${(hourValue / maxValue) * 100}%`;
+                    bar.style.height = `${(cumulativeProduction / maxValue) * 100}%`;
                 }, 100 * (i - startHour));
 
                 const barValue = document.createElement('div');
                 barValue.className = 'bar-value';
-                barValue.textContent = hourValue;
+                barValue.textContent = cumulativeProduction;
                 bar.appendChild(barValue);
 
                 barContainer.appendChild(bar);
