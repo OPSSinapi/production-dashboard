@@ -356,7 +356,7 @@
         .line-dot {
             fill: white;
             stroke-width: 2;
-            r: 5; /* Increased from 4 */
+            r: 5;
         }
 
         .production-dot {
@@ -440,7 +440,7 @@
         .target-bar {
             background-color: var(--success-color);
         }
-        
+
         /* Updated colors to match screenshot */
         .production-color, .production-line, .production-dot, .production-bar {
             background-color: #3B82F6;
@@ -527,7 +527,7 @@
                 <div class="subtitle">Medical Device Assembly</div>
             </div>
             <div class="date-time">
-                <div class="date" id="current-date">February 27, 2025</div>
+                <div class="date" id="current-date">March 1, 2025</div>
                 <div class="time" id="current-time">Loading...</div>
                 <div class="update-info" id="last-update">Last updated: Never</div>
             </div>
@@ -720,8 +720,8 @@
                 }]
             };
 
-            // Update the date display to Feb 27 2025
-            document.getElementById('current-date').textContent = 'February 27, 2025';
+            // Update the date display to March 1, 2025
+            document.getElementById('current-date').textContent = 'March 1, 2025';
             
             filterVariantsBySupervisor();
             if (filteredVariants.length > 0) {
@@ -822,10 +822,10 @@
         function updateDateTime() {
             const now = new Date();
 
-            // Format: "February 27, 2025"
-            document.getElementById('current-date').textContent = 'February 27, 2025';
+            // Format: "March 1, 2025"
+            document.getElementById('current-date').textContent = 'March 1, 2025';
 
-            // Format: "21:24:14" (HH:MM:SS)
+            // Format: "HH:MM:SS" (24-hour)
             document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', {
                 hour12: false,
                 hour: '2-digit',
@@ -905,73 +905,43 @@
             const chartContainer = document.getElementById('cumulative-chart');
             chartContainer.innerHTML = '';
 
-            // Prepare data
+            // Prepare data from the variant
+            const hours = [
+                "08:30", "09:30", "10:30", "11:30", "12:30", "13:30", 
+                "14:30", "15:30", "16:30", "17:30", "18:30"
+            ];
             const dataMap = new Map();
-            
-            // Check if we have the new object format for cumulativeProduction and cumulativeTargets
-            const hasNewFormat = variant.cumulativeProduction && 
-                                Array.isArray(variant.cumulativeProduction) && 
-                                variant.cumulativeProduction.length > 0 && 
-                                variant.cumulativeProduction[0].hour !== undefined;
-                                
-            if (hasNewFormat) {
-                // Process cumulative targets first
-                if (variant.cumulativeTargets && variant.cumulativeTargets.length > 0) {
-                    variant.cumulativeTargets.forEach(item => {
-                        if (!dataMap.has(item.hour)) {
-                            dataMap.set(item.hour, { hour: item.hour, target: item.target, production: 0 });
-                        } else {
-                            dataMap.get(item.hour).target = item.target;
-                        }
-                    });
-                }
-                
-                // Process cumulative production
-                if (variant.cumulativeProduction && variant.cumulativeProduction.length > 0) {
-                    variant.cumulativeProduction.forEach(item => {
-                        if (!dataMap.has(item.hour)) {
-                            dataMap.set(item.hour, { hour: item.hour, target: 0, production: item.production });
-                        } else {
-                            dataMap.get(item.hour).production = item.production;
-                        }
-                    });
-                }
-            } else {
-                // Handle old format (array of values)
-                // This is just for backwards compatibility
-                const hours = [];
-                for (let i = 7; i <= 18; i++) {
-                    hours.push(`${String(i).padStart(2, '0')}:30`);
-                }
-                
-                if (variant.cumulativeTargets && Array.isArray(variant.cumulativeTargets)) {
-                    variant.cumulativeTargets.forEach((target, index) => {
-                        const hour = hours[index] || `${String(index + 7).padStart(2, '0')}:30`;
-                        dataMap.set(hour, { hour, target, production: 0 });
-                    });
-                }
-                
-                if (variant.cumulativeProduction && Array.isArray(variant.cumulativeProduction)) {
-                    variant.cumulativeProduction.forEach((production, index) => {
-                        const hour = hours[index] || `${String(index + 7).padStart(2, '0')}:30`;
-                        if (dataMap.has(hour)) {
-                            dataMap.get(hour).production = production;
-                        } else {
-                            dataMap.set(hour, { hour, target: 0, production });
-                        }
-                    });
-                }
+
+            // Populate data map with cumulative targets (ensuring all hours are included)
+            if (variant.cumulativeTargets && Array.isArray(variant.cumulativeTargets)) {
+                variant.cumulativeTargets.forEach(item => {
+                    dataMap.set(item.hour, { hour: item.hour, target: item.target || 0, production: 0 });
+                });
             }
+
+            // Populate data map with cumulative production (ensuring all hours are included)
+            if (variant.cumulativeProduction && Array.isArray(variant.cumulativeProduction)) {
+                variant.cumulativeProduction.forEach(item => {
+                    if (dataMap.has(item.hour)) {
+                        dataMap.get(item.hour).production = item.production || 0;
+                    } else {
+                        dataMap.set(item.hour, { hour: item.hour, target: 0, production: item.production || 0 });
+                    }
+                });
+            }
+
+            // Fill in missing hours with zeros
+            hours.forEach(hour => {
+                if (!dataMap.has(hour)) {
+                    dataMap.set(hour, { hour, target: 0, production: 0 });
+                }
+            });
 
             // Sort the data by hour
             const sortedData = Array.from(dataMap.values()).sort((a, b) => {
-                // Convert times to comparable values (assuming HH:MM format)
                 const timeA = a.hour.split(':').map(Number);
                 const timeB = b.hour.split(':').map(Number);
-                
-                if (timeA[0] !== timeB[0]) {
-                    return timeA[0] - timeB[0];
-                }
+                if (timeA[0] !== timeB[0]) return timeA[0] - timeB[0];
                 return timeA[1] - timeB[1];
             });
 
@@ -985,53 +955,42 @@
             sortedData.forEach(item => {
                 maxValue = Math.max(maxValue, item.target || 0, item.production || 0);
             });
-
-            // Add some headroom
-            maxValue = maxValue * 1.1;
+            maxValue = maxValue * 1.1; // Add some headroom
 
             // Create grid for the chart background
             const chartGrid = document.createElement('div');
             chartGrid.className = 'chart-grid';
             
-            // Add horizontal grid lines
+            // Add horizontal grid lines (5 lines)
             const horizontalLines = document.createElement('div');
             horizontalLines.className = 'horizontal-lines';
-            
-            // Create 5 horizontal grid lines
-            const numHorizontalLines = 5;
-            for (let i = 0; i < numHorizontalLines; i++) {
+            for (let i = 0; i < 5; i++) {
                 const line = document.createElement('div');
-                line.style.bottom = `${(i / (numHorizontalLines - 1)) * 100}%`;
+                line.style.bottom = `${(i / 4) * 100}%`; // 5 lines, 4 intervals
                 horizontalLines.appendChild(line);
             }
-            
             chartGrid.appendChild(horizontalLines);
             
-            // Add vertical grid lines
+            // Add vertical grid lines (one per hour)
             const verticalLines = document.createElement('div');
             verticalLines.className = 'vertical-lines';
-            
-            // Add one vertical line for each data point except the first
             for (let i = 1; i < sortedData.length; i++) {
                 const line = document.createElement('div');
                 line.style.left = `${(i / (sortedData.length - 1)) * 100}%`;
                 verticalLines.appendChild(line);
             }
-            
             chartGrid.appendChild(verticalLines);
             chartContainer.appendChild(chartGrid);
 
             // Add x-axis labels
             const labels = document.createElement('div');
             labels.className = 'line-chart-labels';
-            
             sortedData.forEach((item, index) => {
                 const label = document.createElement('div');
                 label.textContent = item.hour;
                 label.style.width = `${100 / sortedData.length}%`;
                 labels.appendChild(label);
             });
-            
             chartContainer.appendChild(labels);
 
             // Create SVG for lines
@@ -1041,62 +1000,52 @@
             svg.setAttribute("height", "100%");
             svg.setAttribute("class", "line-path");
 
-            // Create production line
-            const productionPoints = sortedData
-                .filter(item => item.production !== undefined && item.production !== null)
-                .map((item) => {
-                    const x = sortedData.findIndex(d => d.hour === item.hour) / (sortedData.length - 1) * 100;
-                    const y = 100 - ((item.production / maxValue) * 100);
-                    return `${x},${y}`;
-                });
-
-            if (productionPoints.length > 0) {
+            // Create production line and dots
+            const productionPoints = sortedData.map((item, index) => {
+                const x = (index / (sortedData.length - 1)) * 100;
+                const y = item.production ? 100 - ((item.production / maxValue) * 100) : 100;
+                return `${x},${y}`;
+            }).join(" ");
+            
+            if (productionPoints) {
                 const productionLine = document.createElementNS(svgNS, "polyline");
-                productionLine.setAttribute("points", productionPoints.join(" "));
+                productionLine.setAttribute("points", productionPoints);
                 productionLine.setAttribute("class", "production-line");
                 svg.appendChild(productionLine);
 
-                // Add dots for all production points (even zero values)
-                sortedData
-                    .forEach((item) => {
-                        const x = sortedData.findIndex(d => d.hour === item.hour) / (sortedData.length - 1) * 100;
-                        const y = item.production ? 100 - ((item.production / maxValue) * 100) : 100; // 100% if zero
-                        
-                        const dot = document.createElementNS(svgNS, "circle");
-                        dot.setAttribute("cx", x + "%");
-                        dot.setAttribute("cy", y + "%");
-                        dot.setAttribute("class", "line-dot production-dot");
-                        svg.appendChild(dot);
-                    });
+                sortedData.forEach((item, index) => {
+                    const x = (index / (sortedData.length - 1)) * 100;
+                    const y = item.production ? 100 - ((item.production / maxValue) * 100) : 100;
+                    const dot = document.createElementNS(svgNS, "circle");
+                    dot.setAttribute("cx", `${x}%`);
+                    dot.setAttribute("cy", `${y}%`);
+                    dot.setAttribute("class", "line-dot production-dot");
+                    svg.appendChild(dot);
+                });
             }
 
-            // Create target line
-            const targetPoints = sortedData
-                .filter(item => item.target !== undefined && item.target !== null)
-                .map((item) => {
-                    const x = sortedData.findIndex(d => d.hour === item.hour) / (sortedData.length - 1) * 100;
-                    const y = 100 - ((item.target / maxValue) * 100);
-                    return `${x},${y}`;
-                });
-
-            if (targetPoints.length > 0) {
+            // Create target line and dots
+            const targetPoints = sortedData.map((item, index) => {
+                const x = (index / (sortedData.length - 1)) * 100;
+                const y = item.target ? 100 - ((item.target / maxValue) * 100) : 100;
+                return `${x},${y}`;
+            }).join(" ");
+            
+            if (targetPoints) {
                 const targetLine = document.createElementNS(svgNS, "polyline");
-                targetLine.setAttribute("points", targetPoints.join(" "));
+                targetLine.setAttribute("points", targetPoints);
                 targetLine.setAttribute("class", "target-line-path");
                 svg.appendChild(targetLine);
 
-                // Add dots for all target points (even zero values)
-                sortedData
-                    .forEach((item) => {
-                        const x = sortedData.findIndex(d => d.hour === item.hour) / (sortedData.length - 1) * 100;
-                        const y = item.target ? 100 - ((item.target / maxValue) * 100) : 100; // 100% if zero
-                        
-                        const dot = document.createElementNS(svgNS, "circle");
-                        dot.setAttribute("cx", x + "%");
-                        dot.setAttribute("cy", y + "%");
-                        dot.setAttribute("class", "line-dot target-dot");
-                        svg.appendChild(dot);
-                    });
+                sortedData.forEach((item, index) => {
+                    const x = (index / (sortedData.length - 1)) * 100;
+                    const y = item.target ? 100 - ((item.target / maxValue) * 100) : 100;
+                    const dot = document.createElementNS(svgNS, "circle");
+                    dot.setAttribute("cx", `${x}%`);
+                    dot.setAttribute("cy", `${y}%`);
+                    dot.setAttribute("class", "line-dot target-dot");
+                    svg.appendChild(dot);
+                });
             }
 
             chartContainer.appendChild(svg);
@@ -1107,71 +1056,29 @@
             const chartContainer = document.getElementById('hourly-chart');
             chartContainer.innerHTML = '';
 
-            // Get the latest hour with data from hourlyProduction
-            let latestHour = null;
-            let latestProduction = 0;
-            let latestTarget = 0;
-            
-            // Check if hourlyProduction is an array of objects with hour and production
-            if (variant.hourlyProduction && Array.isArray(variant.hourlyProduction) && 
-                variant.hourlyProduction.length > 0 && variant.hourlyProduction[0].hour) {
-                
-                // Sort hourlyProduction by hour in descending order
-                const sortedProduction = [...variant.hourlyProduction].sort((a, b) => {
-                    const timeA = a.hour.split(':').map(Number);
-                    const timeB = b.hour.split(':').map(Number);
-                    
-                    if (timeA[0] !== timeB[0]) {
-                        return timeB[0] - timeA[0]; // Sort in descending order
-                    }
-                    return timeB[1] - timeA[1];
-                });
-                
-                // First check for the current hour in server time (matches screenshot)
-                const currentServerHour = 16; // 16:30 based on screenshot
-                const currentHourStr = `${String(currentServerHour).padStart(2, '0')}:30`;
-                const currentHourData = sortedProduction.find(item => item.hour === currentHourStr);
-                
-                if (currentHourData) {
-                    latestHour = currentHourStr;
-                    latestProduction = currentHourData.production || 0;
-                } else {
-                    // If no current hour data, get the latest hour with production data
-                    for (const item of sortedProduction) {
-                        if (item.production !== undefined) {
-                            latestHour = item.hour;
-                            latestProduction = item.production || 0;
-                            break;
-                        }
-                    }
-                    
-                    // If still no hour found, use the latest hour anyway
-                    if (!latestHour && sortedProduction.length > 0) {
-                        latestHour = sortedProduction[0].hour;
-                        latestProduction = sortedProduction[0].production || 0;
-                    }
+            // Use 16:30 as the fixed hour to match the screenshot
+            const targetHour = "16:30";
+            let production = 0;
+            let target = 0;
+
+            // Find production for 16:30 from hourlyProduction
+            if (variant.hourlyProduction && Array.isArray(variant.hourlyProduction)) {
+                const productionData = variant.hourlyProduction.find(item => item.hour === targetHour);
+                if (productionData) {
+                    production = productionData.production || 0;
                 }
             }
 
-            // Now find the matching target for that hour
-            if (latestHour && variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
-                const targetForHour = variant.hourlyTargets.find(item => item.hour === latestHour);
-                if (targetForHour) {
-                    latestTarget = targetForHour.target;
+            // Find target for 16:30 from hourlyTargets
+            if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+                const targetData = variant.hourlyTargets.find(item => item.hour === targetHour);
+                if (targetData) {
+                    target = targetData.target || 0;
                 }
             }
-            
-            // If still no hour found, use fallback
-            if (!latestHour) {
-                const now = new Date();
-                const currentHour = now.getHours();
-                latestHour = `${String(currentHour).padStart(2, '0')}:30`;
-                latestTarget = variant.hourlyTarget || 0;
-                latestProduction = 0;
-            }
-            
+
             // Find max value for scaling
-            const maxValue = Math.max(latestTarget, latestProduction) * 1.2;
+            const maxValue = Math.max(production, target) * 1.2;
 
             // Create production bar
             const productionColumn = document.createElement('div');
@@ -1179,11 +1086,11 @@
             
             const productionBar = document.createElement('div');
             productionBar.className = 'bar-chart-bar production-bar';
-            productionBar.style.height = `${(latestProduction / maxValue) * 100}%`;
+            productionBar.style.height = `${(production / maxValue) * 100}%`;
             
             const productionValue = document.createElement('div');
             productionValue.className = 'bar-chart-value';
-            productionValue.textContent = latestProduction;
+            productionValue.textContent = production;
             productionBar.appendChild(productionValue);
             
             productionColumn.appendChild(productionBar);
@@ -1201,11 +1108,11 @@
             
             const targetBar = document.createElement('div');
             targetBar.className = 'bar-chart-bar target-bar';
-            targetBar.style.height = `${(latestTarget / maxValue) * 100}%`;
+            targetBar.style.height = `${(target / maxValue) * 100}%`;
             
             const targetValue = document.createElement('div');
             targetValue.className = 'bar-chart-value';
-            targetValue.textContent = latestTarget;
+            targetValue.textContent = target;
             targetBar.appendChild(targetValue);
             
             targetColumn.appendChild(targetBar);
@@ -1276,25 +1183,15 @@
                 return variant.currentTotal || 0;
             }
             
-            // Check if we have the new data format
-            if (variant.cumulativeProduction[0].hour !== undefined) {
-                // Sort by hour in descending order
-                const sortedProduction = [...variant.cumulativeProduction].sort((a, b) => {
-                    const timeA = a.hour.split(':').map(Number);
-                    const timeB = b.hour.split(':').map(Number);
-                    
-                    if (timeA[0] !== timeB[0]) {
-                        return timeB[0] - timeA[0]; // Sort in descending order
-                    }
-                    return timeB[1] - timeA[1];
-                });
-                
-                // Return the production value of the latest hour
-                return sortedProduction[0].production;
-            } else {
-                // Old format - return the last value
-                return variant.cumulativeProduction[variant.cumulativeProduction.length - 1];
-            }
+            // Sort by hour in descending order
+            const sortedProduction = [...variant.cumulativeProduction].sort((a, b) => {
+                const timeA = a.hour.split(':').map(Number);
+                const timeB = b.hour.split(':').map(Number);
+                if (timeA[0] !== timeB[0]) return timeB[0] - timeA[0];
+                return timeB[1] - timeA[1];
+            });
+            
+            return sortedProduction[0].production;
         }
 
         // Cycle to the next variant
