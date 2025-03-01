@@ -10,7 +10,7 @@
     <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -36,6 +36,7 @@
             const [lastUpdated, setLastUpdated] = useState("Never");
             const [loadFallback, setLoadFallback] = useState(false);
             const [selectedSupervisor, setSelectedSupervisor] = useState('all');
+            const [cycleProgress, setCycleProgress] = useState(0);
 
             // Fetch production data
             useEffect(() => {
@@ -95,19 +96,32 @@
                     return () => clearInterval(timeInterval);
                 }
 
+                // Reset cycle progress
+                setCycleProgress(0);
+
+                // Animate cycle progress
+                const progressInterval = setInterval(() => {
+                    setCycleProgress(prev => {
+                        if (prev >= 100) return 100;
+                        return prev + 1;
+                    });
+                }, 100);
+
                 // Set up auto-cycling between variants
                 const cycleInterval = setInterval(() => {
                     setCurrentVariantIndex((prev) => {
                         const filteredVariants = filterVariantsBySupervisor(productionData, selectedSupervisor);
                         return (prev + 1) % filteredVariants.length;
                     });
+                    setCycleProgress(0);
                 }, 10000);
 
                 return () => {
                     clearInterval(timeInterval);
                     clearInterval(cycleInterval);
+                    clearInterval(progressInterval);
                 };
-            }, [productionData, isAutocycling, selectedSupervisor]);
+            }, [productionData, isAutocycling, selectedSupervisor, currentVariantIndex]);
 
             // Filter variants by supervisor
             const filterVariantsBySupervisor = (data, supervisorName) => {
@@ -305,9 +319,9 @@
             const latestProduction = getLatestCumulativeProduction(currentVariant);
 
             return (
-                <div className="bg-gray-100 min-h-screen p-4">
+                <div className="min-h-screen p-4">
                     {/* Header */}
-                    <div className="text-center mb-4">
+                    <div className="bg-white p-4 mb-4 rounded-lg shadow text-center">
                         <h1 className="text-4xl font-bold text-gray-800">Production Dashboard</h1>
                         <p className="text-2xl text-gray-600">Medical Device Assembly Plant</p>
                     </div>
@@ -338,59 +352,17 @@
                             <h2 className="text-3xl font-semibold text-gray-700">
                                 Variant: {currentVariant.variant}
                             </h2>
-                            <div className="flex items-center gap-4">
-                                <div className="text-gray-500 text-lg">
-                                    Cycle Time: <span className="font-bold">{currentVariant.cycleTime} sec</span>
-                                </div>
-                                <button 
-                                    onClick={() => setIsAutocycling(!isAutocycling)}
-                                    className={`px-4 py-2 rounded text-white ${isAutocycling ? 'bg-red-500' : 'bg-green-500'}`}
-                                >
-                                    {isAutocycling ? 'Stop Auto-Cycle' : 'Start Auto-Cycle'}
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Key Metrics Section */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                            <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
-                                <span className="font-medium">Current Total:</span>
-                                <span className="font-bold text-2xl">{currentVariant.currentTotal}</span>
-                            </div>
-                            <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
-                                <span className="font-medium">Daily Target:</span>
-                                <span className="font-bold text-2xl">{currentVariant.dailyTarget}</span>
-                            </div>
-                            <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
-                                <span className="font-medium">Hourly Target:</span>
-                                <span className="font-bold text-2xl">{currentVariant.hourlyTarget}</span>
-                            </div>
-                            <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
-                                <span className="font-medium">Progress:</span>
-                                <span className={`font-bold text-2xl ${
-                                    currentVariant.progressPercentage >= 90 ? 'text-green-600' : 
-                                    currentVariant.progressPercentage >= 70 ? 'text-blue-600' : 'text-red-600'
-                                }`}>
-                                    {currentVariant.progressPercentage}%
-                                </span>
-                            </div>
-                            {currentVariant.dailyBoxTarget > 0 && (
-                                <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
-                                    <span className="font-medium">Boxes:</span>
-                                    <span className="font-bold text-2xl">
-                                        {currentVariant.currentBoxTotal} / {currentVariant.dailyBoxTarget}
-                                    </span>
-                                </div>
-                            )}
-                            <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
-                                <span className="font-medium">Latest Cumulative:</span>
-                                <span className="font-bold text-2xl">{latestProduction}</span>
-                            </div>
+                            <button 
+                                onClick={() => setIsAutocycling(!isAutocycling)}
+                                className={`px-4 py-2 rounded text-white ${isAutocycling ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}
+                            >
+                                {isAutocycling ? 'Stop Auto-Cycle' : 'Start Auto-Cycle'}
+                            </button>
                         </div>
 
                         {/* Charts */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                            <div className="bg-gray-50 p-4 rounded-lg">
+                            <div>
                                 <h3 className="text-xl font-semibold mb-2">Cumulative Daily Production Progress</h3>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <LineChart data={lineChartData}>
@@ -421,7 +393,7 @@
                                 </ResponsiveContainer>
                             </div>
 
-                            <div className="bg-gray-50 p-4 rounded-lg">
+                            <div>
                                 <h3 className="text-xl font-semibold mb-2">Hourly Production Progress</h3>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <BarChart data={barChartData}>
@@ -445,7 +417,44 @@
                             </div>
                         </div>
 
-                        {/* Batch Information */}
+                        {/* Key Metrics Section - Styled to match the image */}
+                        <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                            <h3 className="text-xl font-semibold mb-4">Key Metrics</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="flex justify-between">
+                                    <span>Current Total:</span>
+                                    <span className="font-bold">{currentVariant.currentTotal}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Daily Target:</span>
+                                    <span className="font-bold">{currentVariant.dailyTarget}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Hourly Target:</span>
+                                    <span className="font-bold">{currentVariant.hourlyTarget}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Progress:</span>
+                                    <span className="text-blue-600 font-bold">
+                                        {currentVariant.progressPercentage}%
+                                    </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Latest Cumulative Production:</span>
+                                    <span className="font-bold">{latestProduction}</span>
+                                </div>
+                                {currentVariant.dailyBoxTarget > 0 && (
+                                    <div className="flex justify-between">
+                                        <span>Boxes:</span>
+                                        <span className="font-bold">
+                                            {currentVariant.currentBoxTotal} / {currentVariant.dailyBoxTarget}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Batch Information - Optional */}
                         {currentVariant.batches && Object.keys(currentVariant.batches).length > 0 && (
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h3 className="text-xl font-semibold mb-4">Batch Information</h3>
@@ -462,3 +471,39 @@
                                                 <span className="font-bold">{batchData.boxes}</span>
                                             </div>
                                         </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Footer with progress indicator */}
+                    <div className="bg-white p-3 rounded-lg shadow">
+                        <div className="flex justify-between items-center text-gray-500 mb-2">
+                            <div>
+                                Cycling through variants: {currentVariantIndex + 1}/{filteredVariants.length}
+                            </div>
+                            <div>
+                                {currentTime.toLocaleDateString()} {currentTime.toLocaleTimeString()}
+                            </div>
+                            <div>
+                                Last Updated: {lastUpdated}
+                            </div>
+                        </div>
+                        
+                        {/* Progress bar for cycling animation */}
+                        <div className="h-2 bg-gray-200 rounded overflow-hidden">
+                            <div 
+                                className="h-full bg-blue-500 transition-all duration-100"
+                                style={{ width: `${cycleProgress}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<ProductionDashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>
