@@ -895,9 +895,6 @@
             chartContainer.innerHTML = '';
 
             // Prepare data
-            const chartData = [];
-            
-            // Add all target hours to the data
             const dataMap = new Map();
             
             // Get work start and end time
@@ -1014,9 +1011,9 @@
 
             // Create production line
             const productionPoints = sortedData
-                .filter(item => item.production !== undefined && item.production !== null)
+                .filter(item => item.production !== undefined && item.production !== null && item.production > 0)
                 .map((item, index, arr) => {
-                    const x = (index / (arr.length - 1)) * 100;
+                    const x = sortedData.findIndex(d => d.hour === item.hour) / (sortedData.length - 1) * 100;
                     const y = 100 - ((item.production / maxValue) * 100);
                     return `${x},${y}`;
                 });
@@ -1029,9 +1026,9 @@
 
                 // Add dots for production points
                 sortedData
-                    .filter(item => item.production !== undefined && item.production !== null)
-                    .forEach((item, index, arr) => {
-                        const x = (index / (arr.length - 1)) * 100;
+                    .filter(item => item.production !== undefined && item.production !== null && item.production > 0)
+                    .forEach((item) => {
+                        const x = sortedData.findIndex(d => d.hour === item.hour) / (sortedData.length - 1) * 100;
                         const y = 100 - ((item.production / maxValue) * 100);
                         
                         const dot = document.createElementNS(svgNS, "circle");
@@ -1044,9 +1041,9 @@
 
             // Create target line
             const targetPoints = sortedData
-                .filter(item => item.target !== undefined && item.target !== null)
-                .map((item, index, arr) => {
-                    const x = (index / (arr.length - 1)) * 100;
+                .filter(item => item.target !== undefined && item.target !== null && item.target > 0)
+                .map((item) => {
+                    const x = sortedData.findIndex(d => d.hour === item.hour) / (sortedData.length - 1) * 100;
                     const y = 100 - ((item.target / maxValue) * 100);
                     return `${x},${y}`;
                 });
@@ -1059,9 +1056,9 @@
 
                 // Add dots for target points
                 sortedData
-                    .filter(item => item.target !== undefined && item.target !== null)
-                    .forEach((item, index, arr) => {
-                        const x = (index / (arr.length - 1)) * 100;
+                    .filter(item => item.target !== undefined && item.target !== null && item.target > 0)
+                    .forEach((item) => {
+                        const x = sortedData.findIndex(d => d.hour === item.hour) / (sortedData.length - 1) * 100;
                         const y = 100 - ((item.target / maxValue) * 100);
                         
                         const dot = document.createElementNS(svgNS, "circle");
@@ -1073,6 +1070,55 @@
             }
 
             chartContainer.appendChild(svg);
+        }
+
+        // Render the hourly bar chart
+        function renderHourlyChart(variant) {
+            const chartContainer = document.getElementById('hourly-chart');
+            chartContainer.innerHTML = '';
+
+            // Get current hour
+            const now = new Date();
+            const currentHour = now.getHours();
+            
+            // Get the latest hour with data
+            let latestHour = null;
+            let latestProduction = 0;
+            let latestTarget = 0;
+            
+            // First try to find the latest hour in hourlyTargets
+            if (variant.hourlyTargets && variant.hourlyTargets.length > 0) {
+                // Sort by hour in descending order
+                const sortedHourTargets = [...variant.hourlyTargets].sort((a, b) => {
+                    const timeA = a.hour.split(':').map(Number);
+                    const timeB = b.hour.split(':').map(Number);
+                    
+                    if (timeA[0] !== timeB[0]) {
+                        return timeB[0] - timeA[0]; // Sort in descending order
+                    }
+                    return timeB[1] - timeA[1];
+                });
+                
+                // Get the latest hour and its target
+                latestHour = sortedHourTargets[0].hour;
+                latestTarget = sortedHourTargets[0].target;
+            } else {
+                // Fallback to hourlyTarget
+                latestTarget = variant.hourlyTarget || 0;
+                latestHour = `${String(currentHour).padStart(2, '0')}:30`;
+            }
+            
+            // Find production for the latest hour
+            if (variant.hourlyProduction) {
+                // Extract the hour from latestHour (format HH:MM)
+                const hour = parseInt(latestHour.split(':')[0]);
+                
+                // Get production for that hour
+                latestProduction = variant.hourlyProduction[hour] || 0;
+            }
+            
+            // Find max value for scaling
+            const maxValue = Math.max(latestTarget, latestProduction) * 1.2;
         }
 
         // Render the hourly bar chart
