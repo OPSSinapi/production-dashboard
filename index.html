@@ -35,6 +35,7 @@
             const [currentTime, setCurrentTime] = useState(new Date());
             const [lastUpdated, setLastUpdated] = useState("Never");
             const [loadFallback, setLoadFallback] = useState(false);
+            const [selectedSupervisor, setSelectedSupervisor] = useState('all');
 
             // Fetch production data
             useEffect(() => {
@@ -53,6 +54,7 @@
                         }
 
                         const data = await response.json();
+                        console.log("Fetched data successfully");
                         setProductionData(data);
                         setLastUpdated(new Date(data.timestamp).toLocaleString());
                     } catch (error) {
@@ -95,14 +97,33 @@
 
                 // Set up auto-cycling between variants
                 const cycleInterval = setInterval(() => {
-                    setCurrentVariantIndex((prev) => (prev + 1) % productionData.variants.length);
+                    setCurrentVariantIndex((prev) => {
+                        const filteredVariants = filterVariantsBySupervisor(productionData, selectedSupervisor);
+                        return (prev + 1) % filteredVariants.length;
+                    });
                 }, 10000);
 
                 return () => {
                     clearInterval(timeInterval);
                     clearInterval(cycleInterval);
                 };
-            }, [productionData, isAutocycling]);
+            }, [productionData, isAutocycling, selectedSupervisor]);
+
+            // Filter variants by supervisor
+            const filterVariantsBySupervisor = (data, supervisorName) => {
+                if (!data || !data.variants) return [];
+                
+                if (supervisorName === 'all') {
+                    return data.variants;
+                }
+                
+                const supervisor = data.supervisors.find(s => s.name === supervisorName);
+                if (!supervisor || !supervisor.variants) return [];
+                
+                const supervisorVariantNames = Object.keys(supervisor.variants);
+                return data.variants.filter(variant => 
+                    supervisorVariantNames.includes(variant.variant));
+            };
 
             // Fallback data if fetch fails
             const useFallbackData = () => {
@@ -111,21 +132,29 @@
                     variants: [{
                         variant: "TEST Product XYZ",
                         cycleTime: 45,
-                        devicesPerBox: 18,
                         hourlyTarget: 80,
                         dailyTarget: 320,
-                        dailyBoxTarget: 16,
                         currentTotal: 318,
-                        currentBoxTotal: 17,
                         progressPercentage: 99,
-                        batches: {
-                            "TEST123": {
-                                total: 318,
-                                boxes: 17
-                            }
-                        },
-                        cumulativeTargets: [0,0,0,0,0,0,0,80,160,240,320,320,320,320,320,320,320,320,320,320,320,320,320,320],
-                        cumulativeProduction: [0,0,0,0,0,0,0,65,143,235,318,318,318,318,318,318,318,318,318,318,318,318,318,318]
+                        cumulativeTargets: [
+                            { hour: "07:30", target: 80 },
+                            { hour: "08:30", target: 160 },
+                            { hour: "09:30", target: 240 },
+                            { hour: "10:30", target: 320 }
+                        ],
+                        cumulativeProduction: [
+                            { hour: "07:30", production: 65 },
+                            { hour: "08:30", production: 143 },
+                            { hour: "09:30", production: 235 },
+                            { hour: "10:30", production: 318 }
+                        ],
+                        hourlyTargets: [
+                            { hour: "07:30", target: 80 },
+                            { hour: "08:30", target: 80 },
+                            { hour: "09:30", target: 80 },
+                            { hour: "10:30", target: 80 }
+                        ],
+                        hourlyProduction: [65, 78, 92, 83, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                     }],
                     supervisors: [{
                         name: "TEST Supervisor",
@@ -161,51 +190,119 @@
                 );
             }
 
-            // Extract current variant
-            const currentVariant = productionData.variants[currentVariantIndex];
+            // Get filtered variants based on selected supervisor
+            const filteredVariants = filterVariantsBySupervisor(productionData, selectedSupervisor);
+            
+            // If no variants match the filter, show error message
+            if (filteredVariants.length === 0) {
+                return (
+                    <div className="flex items-center justify-center min-h-screen text-2xl">
+                        <div className="text-center">
+                            <p>No variants found for selected supervisor</p>
+                            <button 
+                                onClick={() => setSelectedSupervisor('all')}
+                                className="px-4 py-2 mt-4 rounded bg-blue-500 text-white"
+                            >
+                                Show All Variants
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
 
-            // Prepare data for charts
-            const prepareLineChartData = () => {
-                // Convert the arrays to a proper format for Recharts
-                const data = [];
+            // Make sure currentVariantIndex is valid
+            if (currentVariantIndex >= filteredVariants.length) {
+                setCurrentVariantIndex(0);
+            }
+
+            // Extract current variant
+            const currentVariant = filteredVariants[currentVariantIndex];
+
+            // Prepare data for line chart
+            const prepareLineChartData = (variant) => {
+                // Create a map to hold data for each hour
+                const dataMap = new Map();
                 
-                // Start at hour 8 by default (or first hour with data)
-                const startHour = 8;
-                const endHour = 19;
-                
-                for (let hour = startHour; hour <= endHour; hour++) {
-                    const hourLabel = `${String(hour).padStart(2, "0")}:30`;
-                    data.push({
-                        name: hourLabel,
-                        production: currentVariant.cumulativeProduction[hour] || 0,
-                        target: currentVariant.cumulativeTargets[hour] || 0
+                // Add all target hours to the map
+                if (variant.cumulativeTargets && variant.cumulativeTargets.length > 0) {
+                    variant.cumulativeTargets.forEach(item => {
+                        if (!dataMap.has(item.hour)) {
+                            dataMap.set(item.hour, { name: item.hour, target: item.target, production: 0 });
+                        } else {
+                            dataMap.get(item.hour).target = item.target;
+                        }
                     });
                 }
                 
-                return data;
+                // Add all production hours to the map
+                if (variant.cumulativeProduction && variant.cumulativeProduction.length > 0) {
+                    variant.cumulativeProduction.forEach(item => {
+                        if (!dataMap.has(item.hour)) {
+                            dataMap.set(item.hour, { name: item.hour, target: 0, production: item.production });
+                        } else {
+                            dataMap.get(item.hour).production = item.production;
+                        }
+                    });
+                }
+                
+                // Convert map to array and sort by hour
+                const chartData = Array.from(dataMap.values()).sort((a, b) => {
+                    // Convert times to comparable values (assuming HH:MM format)
+                    const timeA = a.name.split(':').map(Number);
+                    const timeB = b.name.split(':').map(Number);
+                    
+                    if (timeA[0] !== timeB[0]) {
+                        return timeA[0] - timeB[0];
+                    }
+                    return timeA[1] - timeB[1];
+                });
+                
+                return chartData;
             };
 
             // Prepare data for bar chart
-            const prepareBarChartData = () => {
-                // For the current hour or last hour with data
-                const currentHour = new Date().getHours();
-                const hourLabel = `${String(currentHour).padStart(2, "0")}:30`;
+            const prepareBarChartData = (variant) => {
+                const now = new Date();
+                const hour = now.getHours();
+                
+                // Find the closest hourly target (they're in HH:30 format)
+                const hourStr = `${hour.toString().padStart(2, '0')}:30`;
+                const targetEntry = variant.hourlyTargets && variant.hourlyTargets.find(t => t.hour === hourStr);
+                const target = targetEntry ? targetEntry.target : variant.hourlyTarget;
+                
+                // Get hourly production (if available) for current hour
+                const production = variant.hourlyProduction && variant.hourlyProduction[hour] || 0;
                 
                 return [{
-                    name: hourLabel,
-                    Production: currentVariant.currentTotal || 0,
-                    Target: currentVariant.hourlyTarget || 127
+                    name: hourStr,
+                    Production: production,
+                    Target: target
                 }];
             };
 
-            const chartData = prepareLineChartData();
-            const barData = prepareBarChartData();
-
             // Get latest cumulative production
-            const getLatestCumulativeProduction = () => {
-                const currentHour = new Date().getHours();
-                return currentVariant.cumulativeProduction[currentHour] || currentVariant.currentTotal || 0;
+            const getLatestCumulativeProduction = (variant) => {
+                if (!variant.cumulativeProduction || variant.cumulativeProduction.length === 0) {
+                    return variant.currentTotal || 0;
+                }
+                
+                // Return the latest cumulative production
+                const sortedProduction = [...variant.cumulativeProduction].sort((a, b) => {
+                    const timeA = a.hour.split(':').map(Number);
+                    const timeB = b.hour.split(':').map(Number);
+                    
+                    if (timeA[0] !== timeB[0]) {
+                        return timeB[0] - timeA[0]; // Sort in descending order
+                    }
+                    return timeB[1] - timeA[1];
+                });
+                
+                return sortedProduction[0].production;
             };
+
+            const lineChartData = prepareLineChartData(currentVariant);
+            const barChartData = prepareBarChartData(currentVariant);
+            const latestProduction = getLatestCumulativeProduction(currentVariant);
 
             return (
                 <div className="bg-gray-100 min-h-screen p-4">
@@ -215,6 +312,25 @@
                         <p className="text-2xl text-gray-600">Medical Device Assembly Plant</p>
                     </div>
 
+                    {/* Supervisor Filter */}
+                    <div className="mb-4 flex justify-end">
+                        <select 
+                            className="px-4 py-2 border rounded shadow"
+                            value={selectedSupervisor}
+                            onChange={(e) => {
+                                setSelectedSupervisor(e.target.value);
+                                setCurrentVariantIndex(0);
+                            }}
+                        >
+                            <option value="all">All Supervisors</option>
+                            {productionData.supervisors && productionData.supervisors.map(supervisor => (
+                                <option key={supervisor.name} value={supervisor.name}>
+                                    {supervisor.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
                     {/* Main content */}
                     <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
                         {/* Variant header with auto-cycle button */}
@@ -222,12 +338,54 @@
                             <h2 className="text-3xl font-semibold text-gray-700">
                                 Variant: {currentVariant.variant}
                             </h2>
-                            <button 
-                                onClick={() => setIsAutocycling(!isAutocycling)}
-                                className={`px-4 py-2 rounded text-white ${isAutocycling ? 'bg-red-500' : 'bg-green-500'}`}
-                            >
-                                {isAutocycling ? 'Stop Auto-Cycle' : 'Start Auto-Cycle'}
-                            </button>
+                            <div className="flex items-center gap-4">
+                                <div className="text-gray-500 text-lg">
+                                    Cycle Time: <span className="font-bold">{currentVariant.cycleTime} sec</span>
+                                </div>
+                                <button 
+                                    onClick={() => setIsAutocycling(!isAutocycling)}
+                                    className={`px-4 py-2 rounded text-white ${isAutocycling ? 'bg-red-500' : 'bg-green-500'}`}
+                                >
+                                    {isAutocycling ? 'Stop Auto-Cycle' : 'Start Auto-Cycle'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Key Metrics Section */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
+                                <span className="font-medium">Current Total:</span>
+                                <span className="font-bold text-2xl">{currentVariant.currentTotal}</span>
+                            </div>
+                            <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
+                                <span className="font-medium">Daily Target:</span>
+                                <span className="font-bold text-2xl">{currentVariant.dailyTarget}</span>
+                            </div>
+                            <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
+                                <span className="font-medium">Hourly Target:</span>
+                                <span className="font-bold text-2xl">{currentVariant.hourlyTarget}</span>
+                            </div>
+                            <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
+                                <span className="font-medium">Progress:</span>
+                                <span className={`font-bold text-2xl ${
+                                    currentVariant.progressPercentage >= 90 ? 'text-green-600' : 
+                                    currentVariant.progressPercentage >= 70 ? 'text-blue-600' : 'text-red-600'
+                                }`}>
+                                    {currentVariant.progressPercentage}%
+                                </span>
+                            </div>
+                            {currentVariant.dailyBoxTarget > 0 && (
+                                <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
+                                    <span className="font-medium">Boxes:</span>
+                                    <span className="font-bold text-2xl">
+                                        {currentVariant.currentBoxTotal} / {currentVariant.dailyBoxTarget}
+                                    </span>
+                                </div>
+                            )}
+                            <div className="flex justify-between p-4 bg-gray-50 rounded shadow">
+                                <span className="font-medium">Latest Cumulative:</span>
+                                <span className="font-bold text-2xl">{latestProduction}</span>
+                            </div>
                         </div>
 
                         {/* Charts */}
@@ -235,7 +393,7 @@
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h3 className="text-xl font-semibold mb-2">Cumulative Daily Production Progress</h3>
                                 <ResponsiveContainer width="100%" height={300}>
-                                    <LineChart data={chartData}>
+                                    <LineChart data={lineChartData}>
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis dataKey="name" />
                                         <YAxis />
@@ -266,7 +424,7 @@
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <h3 className="text-xl font-semibold mb-2">Hourly Production Progress</h3>
                                 <ResponsiveContainer width="100%" height={300}>
-                                    <BarChart data={barData}>
+                                    <BarChart data={barChartData}>
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis dataKey="name" />
                                         <YAxis />
@@ -287,62 +445,20 @@
                             </div>
                         </div>
 
-                        {/* Key Metrics */}
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                            <h3 className="text-xl font-semibold mb-4">Key Metrics</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="flex justify-between p-3 bg-white rounded shadow">
-                                    <span className="font-medium">Current Total:</span>
-                                    <span className="font-bold text-2xl">{currentVariant.currentTotal}</span>
-                                </div>
-                                <div className="flex justify-between p-3 bg-white rounded shadow">
-                                    <span className="font-medium">Daily Target:</span>
-                                    <span className="font-bold text-2xl">{currentVariant.dailyTarget}</span>
-                                </div>
-                                <div className="flex justify-between p-3 bg-white rounded shadow">
-                                    <span className="font-medium">Hourly Target:</span>
-                                    <span className="font-bold text-2xl">{currentVariant.hourlyTarget}</span>
-                                </div>
-                                <div className="flex justify-between p-3 bg-white rounded shadow">
-                                    <span className="font-medium">Progress:</span>
-                                    <span className={`font-bold text-2xl ${
-                                        currentVariant.progressPercentage >= 90 ? 'text-green-600' : 
-                                        currentVariant.progressPercentage >= 70 ? 'text-blue-600' : 'text-red-600'
-                                    }`}>
-                                        {currentVariant.progressPercentage}%
-                                    </span>
-                                </div>
-                                <div className="flex justify-between p-3 bg-white rounded shadow">
-                                    <span className="font-medium">Latest Cumulative:</span>
-                                    <span className="font-bold text-2xl">{getLatestCumulativeProduction()}</span>
-                                </div>
-                                {currentVariant.cycleTime && (
-                                    <div className="flex justify-between p-3 bg-white rounded shadow">
-                                        <span className="font-medium">Cycle Time:</span>
-                                        <span className="font-bold text-2xl">{currentVariant.cycleTime} sec</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="flex justify-between items-center text-gray-500">
-                        <div>
-                            Variant: {currentVariantIndex + 1}/{productionData.variants.length}
-                        </div>
-                        <div>
-                            {currentTime.toLocaleDateString()} {currentTime.toLocaleTimeString()}
-                        </div>
-                        <div>
-                            Last Updated: {lastUpdated}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        ReactDOM.render(<ProductionDashboard />, document.getElementById('root'));
-    </script>
-</body>
-</html>
+                        {/* Batch Information */}
+                        {currentVariant.batches && Object.keys(currentVariant.batches).length > 0 && (
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h3 className="text-xl font-semibold mb-4">Batch Information</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {Object.entries(currentVariant.batches).map(([batchId, batchData]) => (
+                                        <div key={batchId} className="p-3 bg-white rounded shadow">
+                                            <div className="font-medium">Batch: {batchId}</div>
+                                            <div className="flex justify-between mt-1">
+                                                <span>Total:</span>
+                                                <span className="font-bold">{batchData.total}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Boxes:</span>
+                                                <span className="font-bold">{batchData.boxes}</span>
+                                            </div>
+                                        </div>
