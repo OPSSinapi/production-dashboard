@@ -1,0 +1,804 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000; min-height: 14.0px}
+    span.s1 {font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html lang="en"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;title&gt;Production Dashboard&lt;/title&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;style&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>:root {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--primary-color: #2c3e50;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--secondary-color: #3498db;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--success-color: #2ecc71;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--warning-color: #f39c12;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--danger-color: #e74c3c;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--light-color: #ecf0f1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>--dark-color: #34495e;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>body {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: var(--light-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--primary-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overflow: hidden;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.dashboard-container {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex-direction: column;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 100vh;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 20px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>box-sizing: border-box;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.header {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: space-between;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding-bottom: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-bottom: 2px solid var(--secondary-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.title {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 2.5rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: bold;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--primary-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.subtitle {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 1.8rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--secondary-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: 500;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.date-time {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>text-align: right;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 1.4rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.date {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: bold;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.time {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 1.8rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-top: 5px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.content {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex: 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex-direction: column;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.variant-info {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: space-between;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-bottom: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: var(--dark-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: white;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 10px 20px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.variant-name {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 1.8rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: bold;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.cycle-time {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 1.8rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.chart-container {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex: 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: white;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 8px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 20px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 8px rgba(0,0,0,0.1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overflow: hidden;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.hourly-data {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.hour-column {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex: 1;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex-direction: column;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: flex-end;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 0 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: relative;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.hour-label {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: bold;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-top: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.bar-container {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 80%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 85%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: relative;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>flex-direction: column;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: flex-end;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>align-items: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.target-line {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: absolute;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 120%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-top: 3px dashed var(--danger-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: bold;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--danger-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>text-align: right;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.target-label {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: absolute;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>top: -25px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>right: -40px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--danger-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: bold;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.bar {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: var(--secondary-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 5px 5px 0 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: relative;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>transition: height 1s ease;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.bar.above-target {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: var(--success-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.bar.below-target {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: var(--danger-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.bar-value {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: absolute;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>top: -25px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>text-align: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: bold;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 1.1rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.footer {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-top: 20px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>text-align: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--dark-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.progress-bar {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: var(--light-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 5px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-top: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overflow: hidden;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.progress {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>height: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: var(--secondary-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>transition: width 0.5s linear;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 0%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.update-info {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 0.8rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--dark-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>text-align: right;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-top: 5px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.totals-display {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: space-between;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-bottom: 15px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 1.4rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.total-item {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>text-align: center;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: var(--light-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 5px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>min-width: 150px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.total-label {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-weight: bold;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-bottom: 5px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.total-value {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 1.8rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.total-target {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--danger-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.total-actual {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--secondary-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.total-progress {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: var(--success-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.supervisor-filter {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>display: flex;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>justify-content: flex-end;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin-bottom: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.supervisor-filter select {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 8px 12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border-radius: 5px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>border: 1px solid var(--secondary-color);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 1rem;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: inherit;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Debug panel for troubleshooting */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.debug-panel {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: fixed;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>bottom: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>left: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background-color: rgba(0, 0, 0, 0.8);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: white;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 10px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: monospace;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-size: 12px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>max-height: 150px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>overflow-y: auto;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>z-index: 1000;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;body&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="dashboard-container"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="header"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="title"&gt;Production Dashboard&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="subtitle"&gt;Medical Device Assembly&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="date-time"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="date" id="current-date"&gt;Loading...&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="time" id="current-time"&gt;Loading...&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="update-info" id="last-update"&gt;Last updated: Never&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="supervisor-filter"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;select id="supervisor-select"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;option value="all"&gt;All Supervisors&lt;/option&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- Supervisor options will be added dynamically --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="content"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="variant-info"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="variant-name" id="variant-name"&gt;Product Variant: Loading...&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="cycle-time" id="cycle-time"&gt;Target Cycle Time: Loading...&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="totals-display" id="totals-display"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;!-- Will be populated with total information --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="chart-container"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="hourly-data" id="hourly-data"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;!-- Hour columns will be dynamically generated --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="footer"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div&gt;Cycling through variants: &lt;span id="current-variant-index"&gt;0&lt;/span&gt;/&lt;span id="total-variants"&gt;0&lt;/span&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;div class="progress-bar"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="progress" id="cycle-progress"&gt;&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;!-- Debug Panel --&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="debug-panel" id="debug-panel"&gt;Debug information will appear here...&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Debug function to log information</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function debugLog(message) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>console.log(message);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const debugPanel = document.getElementById('debug-panel');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const timestamp = new Date().toLocaleTimeString();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>debugPanel.innerHTML += `&lt;div&gt;[${timestamp}] ${message}&lt;/div&gt;`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>debugPanel.scrollTop = debugPanel.scrollHeight;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Configuration</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const DATA_URL = 'https://raw.githubusercontent.com/OPSSinapi/production-dashboard/main/data.json';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const UPDATE_INTERVAL = 5 * 60 * 1000; // Check for updates every 5 minutes</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const CYCLE_INTERVAL = 10000; // Time to display each variant (10 seconds)</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// State variables</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let productionData = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>variants: [],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>supervisors: []</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>};</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let filteredVariants = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let currentVariantIndex = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let lastUpdateTime = null;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>let selectedSupervisor = 'all';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Initialize the dashboard</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function initDashboard() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>debugLog("Dashboard initialization started");</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Update clock</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>updateDateTime();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>setInterval(updateDateTime, 1000);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Set up supervisor filter change event</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('supervisor-select').addEventListener('change', function() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>debugLog(`Supervisor changed to: ${this.value}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>selectedSupervisor = this.value;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>filterVariantsBySupervisor();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Reset variant index</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>currentVariantIndex = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (filteredVariants.length &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>displayVariant(currentVariantIndex);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog("No variants to display after filtering");</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Load initial data</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>fetchProductionData();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Set up refresh interval</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>setInterval(fetchProductionData, UPDATE_INTERVAL);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Start cycling through variants</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>setInterval(cycleVariants, CYCLE_INTERVAL);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Start progress bar animation</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>animateProgress();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Fallback if no data after 10 seconds</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>setTimeout(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (filteredVariants.length === 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog("No data loaded after 10 seconds, adding fallback data");</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>addFallbackData();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, 10000);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Add fallback data if no data is loaded</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function addFallbackData() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>productionData = {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>timestamp: new Date().toISOString(),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>variants: [{</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>variant: "TEST Product XYZ",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>cycleTime: 45,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>devicesPerBox: 18,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>hourlyTarget: 80,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>hourlyTargetArray: [0,0,0,0,0,0,0,80,80,80,80,80,80,80,80,0,0,0,0,0,0,0,0,0],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>hourlyProduction: [0,0,0,0,0,0,0,65,78,92,83,0,0,0,0,0,0,0,0,0,0,0,0,0],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>dailyTarget: 320,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>currentTotal: 318,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>currentBoxTotal: 17</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>supervisors: [{</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>name: "TEST Supervisor",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>variants: {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>"TEST Product XYZ": {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>variant: "TEST Product XYZ",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>hourlyProduction: [0,0,0,0,0,0,0,65,78,92,83,0,0,0,0,0,0,0,0,0,0,0,0,0],</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>currentTotal: 318,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>dailyTarget: 320</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>totalProduction: 318,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>totalTarget: 320</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}]</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>filterVariantsBySupervisor();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (filteredVariants.length &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>displayVariant(0);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Fetch production data from GitHub</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>async function fetchProductionData() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>debugLog(`Starting fetch from: ${DATA_URL}`);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>try {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Add cache-busting query param</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const cacheBuster = '?_=' + new Date().getTime();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const fullUrl = DATA_URL + cacheBuster;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>debugLog(`Full URL with cache buster: ${fullUrl}`);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const response = await fetch(fullUrl);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>debugLog(`Fetch response status: ${response.status}`);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (!response.ok) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>throw new Error(`HTTP error! Status: ${response.status}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const text = await response.text();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>debugLog(`Received data length: ${text.length} characters`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>debugLog(`First 100 characters: ${text.substring(0, 100)}...`);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>let data;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>try {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>data = JSON.parse(text);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog("Successfully parsed JSON data");</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} catch (parseError) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog(`Error parsing JSON: ${parseError.message}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>throw parseError;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Check if the data has actually changed by comparing timestamps</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog(`Data timestamp changed: ${data.timestamp}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog(`Data has variants: ${data.variants &amp;&amp; data.variants.length &gt; 0}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog(`Number of variants: ${data.variants ? data.variants.length : 0}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (data.variants &amp;&amp; data.variants.length &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>debugLog(`First variant: ${data.variants[0].variant}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>productionData = data;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>lastUpdateTime = data.timestamp;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Update last update time display</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const updateTime = new Date(data.timestamp);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>document.getElementById('last-update').textContent =<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>'Last updated: ' + updateTime.toLocaleTimeString();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Update supervisor dropdown</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>updateSupervisorDropdown();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Filter variants by selected supervisor</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>filterVariantsBySupervisor();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Update variant count</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>document.getElementById('total-variants').textContent = filteredVariants.length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog(`Filtered variants count: ${filteredVariants.length}`);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Reset index if out of bounds</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (currentVariantIndex &gt;= filteredVariants.length) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>currentVariantIndex = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Display current variant</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (filteredVariants.length &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>displayVariant(currentVariantIndex);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>debugLog("No variants to display after filtering");</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog("Data timestamp unchanged, not updating");</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} catch (error) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>debugLog(`Error fetching data: ${error.message}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>console.error('Error fetching data:', error);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Update supervisor dropdown</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function updateSupervisorDropdown() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const selectElement = document.getElementById('supervisor-select');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const currentValue = selectElement.value;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Clear existing options except the 'All' option</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>while (selectElement.options.length &gt; 1) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>selectElement.remove(1);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Add supervisors from data</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (productionData.supervisors &amp;&amp; productionData.supervisors.length &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>debugLog(`Adding ${productionData.supervisors.length} supervisors to dropdown`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>productionData.supervisors.forEach(supervisor =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const option = document.createElement('option');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>option.value = supervisor.name;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>option.textContent = supervisor.name;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>selectElement.appendChild(option);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog(`Added supervisor: ${supervisor.name}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Restore selected value if it still exists, otherwise select 'all'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (Array.from(selectElement.options).some(opt =&gt; opt.value === currentValue)) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>selectElement.value = currentValue;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>selectElement.value = 'all';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>selectedSupervisor = 'all';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Filter variants by selected supervisor</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function filterVariantsBySupervisor() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>debugLog(`Filtering variants by supervisor: ${selectedSupervisor}`);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (selectedSupervisor === 'all') {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Show all variants</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>filteredVariants = productionData.variants || [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>debugLog(`Showing all variants: ${filteredVariants.length}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Find the selected supervisor</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const supervisor = productionData.supervisors.find(s =&gt; s.name === selectedSupervisor);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (supervisor &amp;&amp; supervisor.variants) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Get the variants for this supervisor</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const supervisorVariantKeys = Object.keys(supervisor.variants);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog(`Supervisor has ${supervisorVariantKeys.length} variants`);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Filter the full variants list to match the supervisor's variants</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>filteredVariants = productionData.variants.filter(variant =&gt;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>supervisorVariantKeys.includes(variant.variant));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog(`Filtered to ${filteredVariants.length} variants for supervisor`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>filteredVariants = [];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>debugLog("No variants found for selected supervisor");</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Update the variant count</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('total-variants').textContent = filteredVariants.length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Update date and time</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function updateDateTime() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const now = new Date();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Format date</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const options = { year: 'numeric', month: 'long', day: 'numeric' };</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Format time</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>hour12: false,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>hour: '2-digit',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>minute: '2-digit',</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>second: '2-digit'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Display data for the specified variant</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function displayVariant(index) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!filteredVariants || filteredVariants.length === 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>debugLog("No variants to display");</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return; // No data to display yet</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const variant = filteredVariants[index];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>debugLog(`Displaying variant: ${variant.variant}`);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Update variant information</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('variant-name').textContent = `Product Variant: ${variant.variant}`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('cycle-time').textContent = `Target Cycle Time: ${variant.cycleTime} sec/unit`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('current-variant-index').textContent = (index + 1);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Update totals display</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>updateTotalsDisplay(variant);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Create hourly production chart</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>createHourlyChart(variant);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Update the totals display</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function updateTotalsDisplay(variant) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const totalsDisplay = document.getElementById('totals-display');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>totalsDisplay.innerHTML = '';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Current total</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const totalActual = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>totalActual.className = 'total-item';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>totalActual.innerHTML = `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="total-label"&gt;Current Total&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="total-value total-actual"&gt;${variant.currentTotal || 0}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>totalsDisplay.appendChild(totalActual);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Daily target</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const totalTarget = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>totalTarget.className = 'total-item';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>totalTarget.innerHTML = `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="total-label"&gt;Daily Target&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="total-value total-target"&gt;${variant.dailyTarget || 0}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>totalsDisplay.appendChild(totalTarget);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Progress percentage</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const progress = variant.currentTotal &amp;&amp; variant.dailyTarget<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>? Math.floor((variant.currentTotal / variant.dailyTarget) * 100)<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>: 0;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const totalProgress = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>totalProgress.className = 'total-item';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>totalProgress.innerHTML = `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="total-label"&gt;Progress&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>&lt;div class="total-value total-progress"&gt;${progress}%&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>totalsDisplay.appendChild(totalProgress);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Boxes info</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (variant.devicesPerBox) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const boxesCompleted = variant.currentBoxTotal || Math.floor(variant.currentTotal / variant.devicesPerBox);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const totalBoxes = variant.dailyBoxTarget || Math.ceil(variant.dailyTarget / variant.devicesPerBox);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const boxInfo = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>boxInfo.className = 'total-item';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>boxInfo.innerHTML = `</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="total-label"&gt;Boxes&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>&lt;div class="total-value"&gt;${boxesCompleted} / ${totalBoxes}&lt;/div&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>totalsDisplay.appendChild(boxInfo);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Create the hourly production chart</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function createHourlyChart(variant) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const chartContainer = document.getElementById('hourly-data');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>chartContainer.innerHTML = '';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Get current hour to determine which hours to show</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const now = new Date();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const currentHour = now.getHours();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>debugLog(`Current hour: ${currentHour}`);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Show hours from 7AM to current hour (or 6PM if after hours)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const startHour = 7; // 7AM</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const endHour = Math.min(currentHour + 1, 19); // Current hour or 7PM</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>debugLog(`Showing hours from ${startHour} to ${endHour}`);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Calculate maximum value for chart scaling</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let maxTarget = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let maxProduction = 0;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>for (let i = startHour; i &lt; endHour; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (variant.hourlyTargetArray &amp;&amp; variant.hourlyTargetArray[i]) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>maxTarget = Math.max(maxTarget, variant.hourlyTargetArray[i]);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (variant.hourlyProduction &amp;&amp; variant.hourlyProduction[i]) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>maxProduction = Math.max(maxProduction, variant.hourlyProduction[i]);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const maxValue = Math.max(maxTarget * 1.5, maxProduction * 1.2, 10);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>debugLog(`Chart max value: ${maxValue}`);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Create hour columns</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>for (let i = startHour; i &lt; endHour; i++) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const hourLabel = i &lt; 10 ? `0${i}:00` : `${i}:00`;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const hourDiv = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>hourDiv.className = 'hour-column';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const barContainer = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>barContainer.className = 'bar-container';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Add target line (if target exists for this hour)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (variant.hourlyTargetArray &amp;&amp; variant.hourlyTargetArray[i]) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const targetLine = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>targetLine.className = 'target-line';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>targetLine.style.bottom = `${(variant.hourlyTargetArray[i] / maxValue) * 100}%`;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const targetLabel = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>targetLabel.className = 'target-label';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>targetLabel.textContent = variant.hourlyTargetArray[i];</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>targetLine.appendChild(targetLabel);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>barContainer.appendChild(targetLine);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Add the production bar (if production exists for this hour)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const hourValue = variant.hourlyProduction[i] || 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const hourTarget = variant.hourlyTargetArray ? (variant.hourlyTargetArray[i] || 0) : 0;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const bar = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>bar.className = 'bar';</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (hourValue &gt;= hourTarget &amp;&amp; hourTarget &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>bar.classList.add('above-target');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} else if (hourValue &gt; 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>bar.classList.add('below-target');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Animate bar height with a delay</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>bar.style.height = `${(hourValue / maxValue) * 100}%`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}, 100 * (i - startHour));</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const barValue = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>barValue.className = 'bar-value';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>barValue.textContent = hourValue;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>bar.appendChild(barValue);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>barContainer.appendChild(bar);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>hourDiv.appendChild(barContainer);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Add hour label</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const hourLabelDiv = document.createElement('div');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>hourLabelDiv.className = 'hour-label';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>hourLabelDiv.textContent = hourLabel;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>hourDiv.appendChild(hourLabelDiv);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>chartContainer.appendChild(hourDiv);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Cycle to the next variant</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function cycleVariants() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (!filteredVariants || filteredVariants.length === 0) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return; // No data to cycle through yet</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>updateCycleProgress(0);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>currentVariantIndex = (currentVariantIndex + 1) % filteredVariants.length;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>debugLog(`Cycling to variant ${currentVariantIndex + 1} of ${filteredVariants.length}`);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>displayVariant(currentVariantIndex);</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Animate progress bar</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>animateProgress();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Animate the progress bar for timing</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function animateProgress() {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>let progress = 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const interval = 100; // Update every 100ms</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const steps = CYCLE_INTERVAL / interval;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">            </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const progressInterval = setInterval(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>progress += (100 / steps);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (progress &gt; 100) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>progress = 100;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>clearInterval(progressInterval);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>updateCycleProgress(progress);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, interval);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Update the cycle progress bar</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function updateCycleProgress(percent) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('cycle-progress').style.width = `${percent}%`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>// Initialize the dashboard when the page loads</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>window.onload = initDashboard;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+</body>
+</html>
