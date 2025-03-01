@@ -565,7 +565,7 @@
             }
         }
 
-        // Create the hourly production chart using cumulative data directly
+        // Create the chart using cumulative targets and production
         function createHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-data');
             chartContainer.innerHTML = '';
@@ -576,13 +576,20 @@
             const startHour = 7;
             const endHour = Math.min(currentHour + 1, 19);
 
-            // Find max values for scaling the chart - use the last hour's cumulative value
-            const maxTarget = variant.cumulativeTargets ? 
-                Math.max(...variant.cumulativeTargets.slice(0, endHour)) : 0;
-            const maxProduction = variant.cumulativeProduction ? 
-                Math.max(...variant.cumulativeProduction.slice(0, endHour)) : 0;
+            // Find max values for scaling the chart using cumulative values
+            let maxCumulative = 0;
             
-            const maxValue = Math.max(maxTarget * 1.1, maxProduction * 1.1, 10);
+            for (let i = startHour; i < endHour; i++) {
+                if (variant.cumulativeTargets && variant.cumulativeTargets[i]) {
+                    maxCumulative = Math.max(maxCumulative, variant.cumulativeTargets[i]);
+                }
+                if (variant.cumulativeProduction && variant.cumulativeProduction[i]) {
+                    maxCumulative = Math.max(maxCumulative, variant.cumulativeProduction[i]);
+                }
+            }
+            
+            // Add some headroom to the chart
+            const maxValue = maxCumulative * 1.1 || 10;
 
             for (let i = startHour; i < endHour; i++) {
                 const hourLabel = i < 10 ? `0${i}:00` : `${i}:00`;
@@ -593,18 +600,8 @@
                 const barContainer = document.createElement('div');
                 barContainer.className = 'bar-container';
 
-                // Get cumulative values for this hour
-                const cumulativeTarget = variant.cumulativeTargets ? (variant.cumulativeTargets[i] || 0) : 0;
-                const cumulativeProduction = variant.cumulativeProduction ? (variant.cumulativeProduction[i] || 0) : 0;
-                
-                // Calculate hourly increments for display and coloring
-                const prevTargetHour = i > 0 ? (variant.cumulativeTargets ? (variant.cumulativeTargets[i-1] || 0) : 0) : 0;
-                const prevProdHour = i > 0 ? (variant.cumulativeProduction ? (variant.cumulativeProduction[i-1] || 0) : 0) : 0;
-                
-                const hourlyTarget = cumulativeTarget - prevTargetHour;
-                const hourlyProduction = cumulativeProduction - prevProdHour;
-
-                // Add target line if there's a target for this hour
+                // Add cumulative target line
+                const cumulativeTarget = variant.cumulativeTargets && variant.cumulativeTargets[i] || 0;
                 if (cumulativeTarget > 0) {
                     const targetLine = document.createElement('div');
                     targetLine.className = 'target-line';
@@ -618,17 +615,20 @@
                     barContainer.appendChild(targetLine);
                 }
 
+                // Get cumulative production for this hour
+                const cumulativeProduction = variant.cumulativeProduction && variant.cumulativeProduction[i] || 0;
+
                 const bar = document.createElement('div');
                 bar.className = 'bar';
 
-                // Color code based on hourly production vs target
-                if (hourlyProduction >= hourlyTarget && hourlyTarget > 0) {
+                // Color the bar based on whether production is ahead of or behind target
+                if (cumulativeProduction >= cumulativeTarget && cumulativeTarget > 0) {
                     bar.classList.add('above-target');
-                } else if (hourlyProduction > 0) {
+                } else if (cumulativeProduction > 0) {
                     bar.classList.add('below-target');
                 }
 
-                // Set bar height using cumulative production
+                // Animate the bar height based on cumulative production
                 setTimeout(() => {
                     bar.style.height = `${(cumulativeProduction / maxValue) * 100}%`;
                 }, 100 * (i - startHour));
