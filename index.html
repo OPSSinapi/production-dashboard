@@ -14,6 +14,9 @@
     <!-- Recharts -->
     <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
     
+    <!-- Axios for data fetching -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -35,20 +38,30 @@
             ResponsiveContainer 
         } = Recharts;
 
-        const productionData = {
-            // Your JSON data here (the same data you've been using)
-        };
-
         const ProductionDashboard = () => {
+            const [productionData, setProductionData] = useState(null);
             const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
             const [isAutocycling, setIsAutocycling] = useState(true);
             const [currentTime, setCurrentTime] = useState(new Date());
 
-            // Extract current variant
-            const currentVariant = productionData.variants[currentVariantIndex];
+            // Fetch production data
+            useEffect(() => {
+                const fetchProductionData = async () => {
+                    try {
+                        const response = await axios.get('data.json');
+                        setProductionData(response.data);
+                    } catch (error) {
+                        console.error('Error fetching production data:', error);
+                    }
+                };
+
+                fetchProductionData();
+            }, []);
 
             // Auto-cycling logic
             useEffect(() => {
+                if (!productionData) return;
+
                 const timeInterval = setInterval(() => {
                     setCurrentTime(new Date());
                 }, 60000);
@@ -63,7 +76,15 @@
                     clearInterval(timeInterval);
                     clearInterval(cycleInterval);
                 };
-            }, [currentVariantIndex, isAutocycling]);
+            }, [productionData, currentVariantIndex, isAutocycling]);
+
+            // If data is not loaded yet
+            if (!productionData) {
+                return <div>Loading production data...</div>;
+            }
+
+            // Extract current variant
+            const currentVariant = productionData.variants[currentVariantIndex];
 
             const findMostRecentDataPoint = () => {
                 const cumulativeData = currentVariant.cumulativeProduction;
