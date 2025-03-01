@@ -361,13 +361,14 @@
                     variant: "TEST Product XYZ",
                     cycleTime: 45,
                     devicesPerBox: 18,
+                    hourlyTarget: 80,
                     dailyTarget: 320,
                     dailyBoxTarget: 16,
                     currentTotal: 318,
                     currentBoxTotal: 17,
                     progressPercentage: 99,
                     batches: {
-                        "TEST001": {
+                        "TEST123": {
                             total: 318,
                             boxes: 17
                         }
@@ -539,7 +540,7 @@
             `;
             totalsDisplay.appendChild(totalTarget);
 
-            // Use the pre-calculated progress percentage
+            // Use the pre-calculated progress percentage from the server
             const progress = variant.progressPercentage || 0;
 
             const totalProgress = document.createElement('div');
@@ -564,16 +565,10 @@
             }
         }
 
-        // Create the hourly production chart using cumulative data
+        // Create the hourly production chart based on cumulative data
         function createHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-data');
             chartContainer.innerHTML = '';
-
-            // Make sure we have the required data
-            if (!variant.cumulativeTargets || !variant.cumulativeProduction) {
-                console.error("Missing cumulative data for variant:", variant.variant);
-                return;
-            }
 
             const now = new Date();
             const currentHour = now.getHours();
@@ -581,36 +576,33 @@
             const startHour = 7;
             const endHour = Math.min(currentHour + 1, 19);
 
-            // Determine the max values for scaling
             let maxTarget = 0;
             let maxProduction = 0;
 
+            // Find max values for scaling the chart
             for (let i = startHour; i < endHour; i++) {
-                if (variant.cumulativeTargets[i]) {
+                if (variant.cumulativeTargets && variant.cumulativeTargets[i]) {
                     maxTarget = Math.max(maxTarget, variant.cumulativeTargets[i]);
                 }
-                if (variant.cumulativeProduction[i]) {
+                if (variant.cumulativeProduction && variant.cumulativeProduction[i]) {
                     maxProduction = Math.max(maxProduction, variant.cumulativeProduction[i]);
                 }
             }
 
             const maxValue = Math.max(maxTarget * 1.2, maxProduction * 1.2, 10);
 
-            // Generate hourly production data from cumulative data
+            // Calculate hourly targets and production from cumulative values
+            const hourlyTargets = [];
             const hourlyProduction = [];
+
             for (let i = 0; i < 24; i++) {
-                const prevHour = i > 0 ? variant.cumulativeProduction[i-1] : 0;
-                hourlyProduction[i] = variant.cumulativeProduction[i] - prevHour;
+                const prevTargetHour = i > 0 ? variant.cumulativeTargets[i-1] : 0;
+                const prevProdHour = i > 0 ? variant.cumulativeProduction[i-1] : 0;
+                
+                hourlyTargets[i] = (variant.cumulativeTargets[i] || 0) - prevTargetHour;
+                hourlyProduction[i] = (variant.cumulativeProduction[i] || 0) - prevProdHour;
             }
 
-            // Generate hourly target data from cumulative data
-            const hourlyTarget = [];
-            for (let i = 0; i < 24; i++) {
-                const prevHour = i > 0 ? variant.cumulativeTargets[i-1] : 0;
-                hourlyTarget[i] = variant.cumulativeTargets[i] - prevHour;
-            }
-
-            // Create the chart columns
             for (let i = startHour; i < endHour; i++) {
                 const hourLabel = i < 10 ? `0${i}:00` : `${i}:00`;
 
@@ -620,40 +612,36 @@
                 const barContainer = document.createElement('div');
                 barContainer.className = 'bar-container';
 
-                // Add hourly target line if there's a target for this hour
-                if (hourlyTarget[i] > 0) {
+                // Only add target line if there's a target for this hour
+                if (hourlyTargets[i] > 0) {
                     const targetLine = document.createElement('div');
                     targetLine.className = 'target-line';
-                    targetLine.style.bottom = `${(hourlyTarget[i] / maxValue) * 100}%`;
+                    targetLine.style.bottom = `${(hourlyTargets[i] / maxValue) * 100}%`;
 
                     const targetLabel = document.createElement('div');
                     targetLabel.className = 'target-label';
-                    targetLabel.textContent = hourlyTarget[i];
+                    targetLabel.textContent = hourlyTargets[i];
                     targetLine.appendChild(targetLabel);
 
                     barContainer.appendChild(targetLine);
                 }
 
-                // Create production bar
                 const hourValue = hourlyProduction[i] || 0;
-                const hourTargetValue = hourlyTarget[i] || 0;
+                const hourTarget = hourlyTargets[i] || 0;
 
                 const bar = document.createElement('div');
                 bar.className = 'bar';
 
-                // Color the bar based on whether it exceeded target
-                if (hourValue >= hourTargetValue && hourTargetValue > 0) {
+                if (hourValue >= hourTarget && hourTarget > 0) {
                     bar.classList.add('above-target');
                 } else if (hourValue > 0) {
                     bar.classList.add('below-target');
                 }
 
-                // Animate the bar height
                 setTimeout(() => {
                     bar.style.height = `${(hourValue / maxValue) * 100}%`;
                 }, 100 * (i - startHour));
 
-                // Add value label to the bar
                 const barValue = document.createElement('div');
                 barValue.className = 'bar-value';
                 barValue.textContent = hourValue;
@@ -662,7 +650,6 @@
                 barContainer.appendChild(bar);
                 hourDiv.appendChild(barContainer);
 
-                // Add hour label at the bottom
                 const hourLabelDiv = document.createElement('div');
                 hourLabelDiv.className = 'hour-label';
                 hourLabelDiv.textContent = hourLabel;
