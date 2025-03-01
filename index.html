@@ -872,26 +872,26 @@
             }
         }
 
-        // Render the cumulative chart
+        // Render the cumulative chart (using cumulativeProduction and cumulativeTargets)
         function renderCumulativeChart(variant) {
             const chartContainer = document.getElementById('cumulative-chart');
             chartContainer.innerHTML = '';
 
-            // Prepare data from the variant
+            // Prepare data by mapping cumulativeProduction and cumulativeTargets into a table
             const hours = [
                 "08:30", "09:30", "10:30", "11:30", "12:30", "13:30", 
                 "14:30", "15:30", "16:30", "17:30", "18:30"
             ];
             const dataMap = new Map();
 
-            // Populate data map with cumulative targets (ensuring all hours are included)
+            // Map cumulative targets to include all hours
             if (variant.cumulativeTargets && Array.isArray(variant.cumulativeTargets)) {
                 variant.cumulativeTargets.forEach(item => {
                     dataMap.set(item.hour, { hour: item.hour, target: item.target || 0, production: 0 });
                 });
             }
 
-            // Populate data map with cumulative production (ensuring all hours are included)
+            // Map cumulative production to include all hours
             if (variant.cumulativeProduction && Array.isArray(variant.cumulativeProduction)) {
                 variant.cumulativeProduction.forEach(item => {
                     if (dataMap.has(item.hour)) {
@@ -965,7 +965,7 @@
             });
             chartContainer.appendChild(labels);
 
-            // Create SVG for lines (no dots)
+            // Create SVG for lines (smooth, no dots)
             const svgNS = "http://www.w3.org/2000/svg";
             const svg = document.createElementNS(svgNS, "svg");
             svg.setAttribute("width", "100%");
@@ -1003,33 +1003,84 @@
             chartContainer.appendChild(svg);
         }
 
-        // Render the hourly bar chart
+        // Render the hourly bar chart (using hourlyProduction and hourlyTargets)
         function renderHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-chart');
             chartContainer.innerHTML = '';
 
-            // Use 16:30 as the fixed hour to match the screenshot
-            const targetHour = "16:30";
+            // Prepare data by mapping hourlyProduction and hourlyTargets into a table
+            const hours = [
+                "08:30", "09:30", "10:30", "11:30", "12:30", "13:30", 
+                "14:30", "15:30", "16:30", "17:30", "18:30"
+            ];
+            const dataMap = new Map();
+
+            // Map hourly targets to include all hours
+            if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+                variant.hourlyTargets.forEach(item => {
+                    dataMap.set(item.hour, { hour: item.hour, target: item.target || 0, production: 0 });
+                });
+            }
+
+            // Map hourly production to include all hours
+            if (variant.hourlyProduction && Array.isArray(variant.hourlyProduction)) {
+                variant.hourlyProduction.forEach(item => {
+                    if (dataMap.has(item.hour)) {
+                        dataMap.get(item.hour).production = item.production || 0;
+                    } else {
+                        dataMap.set(item.hour, { hour: item.hour, target: 0, production: item.production || 0 });
+                    }
+                });
+            }
+
+            // Fill in missing hours with zeros
+            hours.forEach(hour => {
+                if (!dataMap.has(hour)) {
+                    dataMap.set(hour, { hour, target: 0, production: 0 });
+                }
+            });
+
+            // Sort the data by hour
+            const sortedData = Array.from(dataMap.values()).sort((a, b) => {
+                const timeA = a.hour.split(':').map(Number);
+                const timeB = b.hour.split(':').map(Number);
+                if (timeA[0] !== timeB[0]) return timeA[0] - timeB[0];
+                return timeA[1] - timeB[1];
+            });
+
+            // Find the latest hour (most recent with non-zero production or target, default to 16:30 if none)
+            let latestHour = "16:30"; // Default to 16:30 as per screenshot
             let production = 0;
             let target = 0;
 
-            // Find production for 16:30 from hourlyProduction
-            if (variant.hourlyProduction && Array.isArray(variant.hourlyProduction)) {
-                const productionData = variant.hourlyProduction.find(item => item.hour === targetHour);
-                if (productionData) {
-                    production = productionData.production || 0;
+            if (sortedData.length > 0) {
+                // Sort by hour in descending order to find the latest
+                const reversedData = [...sortedData].sort((a, b) => {
+                    const timeA = a.hour.split(':').map(Number);
+                    const timeB = b.hour.split(':').map(Number);
+                    if (timeA[0] !== timeB[0]) return timeB[0] - timeA[0];
+                    return timeB[1] - timeA[1];
+                });
+
+                // Find the first hour with non-zero production or target
+                for (const item of reversedData) {
+                    if (item.production > 0 || item.target > 0) {
+                        latestHour = item.hour;
+                        production = item.production;
+                        target = item.target;
+                        break;
+                    }
+                }
+
+                // If no non-zero values, use the last hour (18:30) or default to 16:30
+                if (production === 0 && target === 0) {
+                    const defaultData = sortedData.find(item => item.hour === latestHour) || sortedData[sortedData.length - 1];
+                    production = defaultData.production || 0;
+                    target = defaultData.target || 0;
                 }
             }
 
-            // Find target for 16:30 from hourlyTargets
-            if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
-                const targetData = variant.hourlyTargets.find(item => item.hour === targetHour);
-                if (targetData) {
-                    target = targetData.target || 0;
-                }
-            }
-
-            // Find max value for scaling, with a higher minimum value for better visibility
+            // Find max value for scaling (independent of cumulative chart)
             const minValue = 50; // Higher minimum value to ensure larger bars
             const maxValue = Math.max(production, target, minValue) * 2; // Increased scaling factor for larger bars
 
