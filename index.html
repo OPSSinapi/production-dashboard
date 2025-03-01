@@ -8,7 +8,6 @@
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
@@ -34,36 +33,67 @@
             const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
             const [isAutocycling, setIsAutocycling] = useState(true);
             const [currentTime, setCurrentTime] = useState(new Date());
+            const [lastUpdated, setLastUpdated] = useState("Never");
+            const [loadFallback, setLoadFallback] = useState(false);
 
             // Fetch production data
             useEffect(() => {
                 const fetchProductionData = async () => {
                     try {
-                        const response = await axios.get('data.json');
-                        setProductionData(response.data);
+                        // Use raw github URL to fetch the data
+                        const response = await fetch('https://raw.githubusercontent.com/OPSSinapi/production-dashboard/main/data.json', {
+                            cache: 'no-store',
+                            headers: {
+                                'Cache-Control': 'no-cache'
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+                        setProductionData(data);
+                        setLastUpdated(new Date(data.timestamp).toLocaleString());
                     } catch (error) {
                         console.error('Error fetching production data:', error);
+                        if (loadFallback) {
+                            useFallbackData();
+                        }
                     }
                 };
 
                 fetchProductionData();
                 
+                // Set a timeout to load fallback data if fetch fails
+                const fallbackTimeout = setTimeout(() => {
+                    if (!productionData) {
+                        setLoadFallback(true);
+                    }
+                }, 5000);
+                
                 // Refresh data every minute
                 const dataInterval = setInterval(fetchProductionData, 60000);
 
-                return () => clearInterval(dataInterval);
-            }, []);
+                return () => {
+                    clearInterval(dataInterval);
+                    clearTimeout(fallbackTimeout);
+                };
+            }, [loadFallback]);
 
             // Auto-cycling and time update logic
             useEffect(() => {
-                if (!productionData) return;
-
+                // Update current time every minute
                 const timeInterval = setInterval(() => {
                     setCurrentTime(new Date());
                 }, 60000);
 
-                if (!isAutocycling) return;
+                // If we don't have data yet or auto-cycling is off, don't set up cycling
+                if (!productionData || !isAutocycling) {
+                    return () => clearInterval(timeInterval);
+                }
 
+                // Set up auto-cycling between variants
                 const cycleInterval = setInterval(() => {
                     setCurrentVariantIndex((prev) => (prev + 1) % productionData.variants.length);
                 }, 10000);
@@ -72,85 +102,176 @@
                     clearInterval(timeInterval);
                     clearInterval(cycleInterval);
                 };
-            }, [productionData, currentVariantIndex, isAutocycling]);
+            }, [productionData, isAutocycling]);
+
+            // Fallback data if fetch fails
+            const useFallbackData = () => {
+                const fallbackData = {
+                    timestamp: new Date().toISOString(),
+                    variants: [{
+                        variant: "TEST Product XYZ",
+                        cycleTime: 45,
+                        devicesPerBox: 18,
+                        hourlyTarget: 80,
+                        dailyTarget: 320,
+                        dailyBoxTarget: 16,
+                        currentTotal: 318,
+                        currentBoxTotal: 17,
+                        progressPercentage: 99,
+                        batches: {
+                            "TEST123": {
+                                total: 318,
+                                boxes: 17
+                            }
+                        },
+                        cumulativeTargets: [0,0,0,0,0,0,0,80,160,240,320,320,320,320,320,320,320,320,320,320,320,320,320,320],
+                        cumulativeProduction: [0,0,0,0,0,0,0,65,143,235,318,318,318,318,318,318,318,318,318,318,318,318,318,318]
+                    }],
+                    supervisors: [{
+                        name: "TEST Supervisor",
+                        variants: {
+                            "TEST Product XYZ": {
+                                variant: "TEST Product XYZ",
+                                currentTotal: 318,
+                                dailyTarget: 320,
+                                progressPercentage: 99
+                            }
+                        },
+                        totalProduction: 318,
+                        totalTarget: 320,
+                        progressPercentage: 99
+                    }]
+                };
+                
+                setProductionData(fallbackData);
+                setLastUpdated("Using fallback data");
+            };
 
             // If data is not loaded yet
             if (!productionData) {
-                return <div className="flex items-center justify-center min-h-screen text-2xl">Loading production data...</div>;
+                return (
+                    <div className="flex items-center justify-center min-h-screen text-2xl">
+                        <div className="text-center">
+                            <p>Loading production data...</p>
+                            <p className="text-sm text-gray-500 mt-2">
+                                If this takes too long, fallback data will be used.
+                            </p>
+                        </div>
+                    </div>
+                );
             }
 
             // Extract current variant
             const currentVariant = productionData.variants[currentVariantIndex];
 
-            const findMostRecentDataPoint = () => {
-                const cumulativeData = currentVariant.cumulativeProduction;
-                return cumulativeData[cumulativeData.length - 1];
+            // Prepare data for charts
+            const prepareLineChartData = () => {
+                // Convert the arrays to a proper format for Recharts
+                const data = [];
+                
+                // Start at hour 8 by default (or first hour with data)
+                const startHour = 8;
+                const endHour = 19;
+                
+                for (let hour = startHour; hour <= endHour; hour++) {
+                    const hourLabel = `${String(hour).padStart(2, "0")}:30`;
+                    data.push({
+                        name: hourLabel,
+                        production: currentVariant.cumulativeProduction[hour] || 0,
+                        target: currentVariant.cumulativeTargets[hour] || 0
+                    });
+                }
+                
+                return data;
             };
 
-            const latestDataPoint = findMostRecentDataPoint();
+            // Prepare data for bar chart
+            const prepareBarChartData = () => {
+                // For the current hour or last hour with data
+                const currentHour = new Date().getHours();
+                const hourLabel = `${String(currentHour).padStart(2, "0")}:30`;
+                
+                return [{
+                    name: hourLabel,
+                    Production: currentVariant.currentTotal || 0,
+                    Target: currentVariant.hourlyTarget || 127
+                }];
+            };
+
+            const chartData = prepareLineChartData();
+            const barData = prepareBarChartData();
+
+            // Get latest cumulative production
+            const getLatestCumulativeProduction = () => {
+                const currentHour = new Date().getHours();
+                return currentVariant.cumulativeProduction[currentHour] || currentVariant.currentTotal || 0;
+            };
 
             return (
                 <div className="bg-gray-100 min-h-screen p-4">
+                    {/* Header */}
                     <div className="text-center mb-4">
-                        <h1 className="text-3xl font-bold text-gray-800">Production Dashboard</h1>
-                        <p className="text-xl text-gray-600">Medical Device Assembly Plant</p>
+                        <h1 className="text-4xl font-bold text-gray-800">Production Dashboard</h1>
+                        <p className="text-2xl text-gray-600">Medical Device Assembly Plant</p>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow-lg p-6">
+                    {/* Main content */}
+                    <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
+                        {/* Variant header with auto-cycle button */}
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-semibold text-gray-700">
+                            <h2 className="text-3xl font-semibold text-gray-700">
                                 Variant: {currentVariant.variant}
                             </h2>
                             <button 
                                 onClick={() => setIsAutocycling(!isAutocycling)}
-                                className="px-4 py-2 rounded bg-red-500 text-white"
+                                className={`px-4 py-2 rounded text-white ${isAutocycling ? 'bg-red-500' : 'bg-green-500'}`}
                             >
                                 {isAutocycling ? 'Stop Auto-Cycle' : 'Start Auto-Cycle'}
                             </button>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-6">
-                            <div>
-                                <h4 className="text-lg font-semibold mb-2">Cumulative Daily Production Progress</h4>
+                        {/* Charts */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h3 className="text-xl font-semibold mb-2">Cumulative Daily Production Progress</h3>
                                 <ResponsiveContainer width="100%" height={300}>
-                                    <LineChart data={currentVariant.cumulativeProduction}>
+                                    <LineChart data={chartData}>
                                         <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="hour" />
+                                        <XAxis dataKey="name" />
                                         <YAxis />
                                         <Tooltip />
-                                        <Legend 
-                                            layout="horizontal" 
-                                            verticalAlign="top" 
-                                            align="right"
-                                        />
+                                        <Legend />
                                         <Line 
                                             type="monotone" 
                                             dataKey="production" 
                                             name="Cumulative Production" 
                                             stroke="#3B82F6" 
-                                            strokeWidth={3}
+                                            strokeWidth={2}
+                                            dot={{ r: 5 }}
+                                            activeDot={{ r: 8 }}
                                         />
                                         <Line 
                                             type="monotone" 
-                                            dataKey={(data) => currentVariant.cumulativeTargets.find(t => t.hour === data.hour)?.target} 
+                                            dataKey="target" 
                                             name="Cumulative Target" 
                                             stroke="#10B981" 
-                                            strokeWidth={3}
+                                            strokeWidth={2}
+                                            dot={{ r: 5 }}
+                                            activeDot={{ r: 8 }}
                                         />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
 
-                            <div>
-                                <h4 className="text-lg font-semibold mb-2">Hourly Production Progress</h4>
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h3 className="text-xl font-semibold mb-2">Hourly Production Progress</h3>
                                 <ResponsiveContainer width="100%" height={300}>
-                                    <BarChart data={[
-                                        { name: '18:30', Production: 0, Target: 127 }
-                                    ]}>
+                                    <BarChart data={barData}>
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <XAxis dataKey="name" />
                                         <YAxis />
                                         <Tooltip />
+                                        <Legend />
                                         <Bar 
                                             dataKey="Production" 
                                             fill="#3B82F6"
@@ -166,37 +287,56 @@
                             </div>
                         </div>
 
-                        <div className="mt-6 bg-gray-50 p-4 rounded">
-                            <h4 className="text-lg font-semibold mb-4">Key Metrics</h4>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="flex justify-between">
-                                    <span>Current Total:</span>
-                                    <span className="font-bold">{currentVariant.currentTotal}</span>
+                        {/* Key Metrics */}
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <h3 className="text-xl font-semibold mb-4">Key Metrics</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="flex justify-between p-3 bg-white rounded shadow">
+                                    <span className="font-medium">Current Total:</span>
+                                    <span className="font-bold text-2xl">{currentVariant.currentTotal}</span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span>Daily Target:</span>
-                                    <span className="font-bold">{currentVariant.dailyTarget}</span>
+                                <div className="flex justify-between p-3 bg-white rounded shadow">
+                                    <span className="font-medium">Daily Target:</span>
+                                    <span className="font-bold text-2xl">{currentVariant.dailyTarget}</span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span>Hourly Target:</span>
-                                    <span className="font-bold">{currentVariant.hourlyTarget}</span>
+                                <div className="flex justify-between p-3 bg-white rounded shadow">
+                                    <span className="font-medium">Hourly Target:</span>
+                                    <span className="font-bold text-2xl">{currentVariant.hourlyTarget}</span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span>Progress:</span>
-                                    <span className="text-blue-600 font-bold">
+                                <div className="flex justify-between p-3 bg-white rounded shadow">
+                                    <span className="font-medium">Progress:</span>
+                                    <span className={`font-bold text-2xl ${
+                                        currentVariant.progressPercentage >= 90 ? 'text-green-600' : 
+                                        currentVariant.progressPercentage >= 70 ? 'text-blue-600' : 'text-red-600'
+                                    }`}>
                                         {currentVariant.progressPercentage}%
                                     </span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span>Latest Cumulative Production:</span>
-                                    <span className="font-bold">{latestDataPoint.production}</span>
+                                <div className="flex justify-between p-3 bg-white rounded shadow">
+                                    <span className="font-medium">Latest Cumulative:</span>
+                                    <span className="font-bold text-2xl">{getLatestCumulativeProduction()}</span>
                                 </div>
+                                {currentVariant.cycleTime && (
+                                    <div className="flex justify-between p-3 bg-white rounded shadow">
+                                        <span className="font-medium">Cycle Time:</span>
+                                        <span className="font-bold text-2xl">{currentVariant.cycleTime} sec</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
 
-                    <div className="text-center mt-4 text-gray-500">
-                        Last Updated: {new Date(productionData.timestamp).toLocaleString()}
+                    {/* Footer */}
+                    <div className="flex justify-between items-center text-gray-500">
+                        <div>
+                            Variant: {currentVariantIndex + 1}/{productionData.variants.length}
+                        </div>
+                        <div>
+                            {currentTime.toLocaleDateString()} {currentTime.toLocaleTimeString()}
+                        </div>
+                        <div>
+                            Last Updated: {lastUpdated}
+                        </div>
                     </div>
                 </div>
             );
