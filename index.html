@@ -1,719 +1,204 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Dashboard</title>
-    <style>
-        :root {
-            --primary-color: #1e3a5f;
-            --secondary-color: #3b82f6;
-            --success-color: #22c55e;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --light-color: #f3f4f6;
-            --dark-color: #1f2937;
-            --break-color: #e5e7eb;
-            --highlight-color: #a5b4fc;
-            --shadow-color: rgba(0, 0, 0, 0.05);
-            --text-color: #374151;
-            --font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-        @font-face {
-            font-family: 'Inter';
-            src: url('https://rsms.me/inter/inter.css') format('woff2');
-            font-weight: 400 700;
-            font-display: swap;
-        }
+const ProductionDashboard = () => {
+  const [productionData, setProductionData] = useState(null);
+  const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
+  const [isAutocycling, setIsAutocycling] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-        body {
-            font-family: var(--font-family);
-            margin: 0;
-            padding: 0;
-            background-color: var(--light-color);
-            color: var(--text-color);
-            overflow: hidden;
-        }
+  // Fetch production data
+  useEffect(() => {
+    const fetchProductionData = async () => {
+      try {
+        const response = await fetch('data.json');
+        const data = await response.json();
+        setProductionData(data);
+      } catch (error) {
+        console.error('Error fetching production data:', error);
+      }
+    };
 
-        .dashboard-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            padding: 20px 40px;
-            box-sizing: border-box;
-            gap: 25px;
-        }
+    fetchProductionData();
+  }, []);
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 4px solid var(--secondary-color);
-            box-shadow: 0 4px 6px var(--shadow-color);
-        }
+  // Time and cycling logic
+  useEffect(() => {
+    if (!productionData) return;
 
-        .title {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            letter-spacing: -0.5px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
-        }
+    // Update current time every minute
+    const timeInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
 
-        .subtitle {
-            font-size: 1.8rem;
-            color: var(--secondary-color);
-            font-weight: 500;
-            margin-top: 5px;
-        }
+    if (!isAutocycling) return;
 
-        .date-time {
-            text-align: right;
-            font-size: 1.3rem;
-        }
+    const cycleInterval = setInterval(() => {
+      // Move to next variant 
+      setCurrentVariantIndex((prev) => (prev + 1) % productionData.variants.length);
+    }, 10000); // Change every 10 seconds
 
-        .date {
-            font-weight: 600;
-            color: var(--dark-color);
-        }
+    return () => {
+      clearInterval(timeInterval);
+      clearInterval(cycleInterval);
+    };
+  }, [productionData, currentVariantIndex, isAutocycling]);
 
-        .time {
-            font-size: 1.8rem;
-            margin-top: 5px;
-            color: var(--text-color);
-            font-weight: 500;
-        }
+  // If data is not loaded yet
+  if (!productionData) {
+    return <div>Loading production data...</div>;
+  }
 
-        .content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+  // Extract current variant
+  const currentVariant = productionData.variants[currentVariantIndex];
 
-        .variant-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
-            color: white;
-            padding: 20px 30px;
-            border-radius: 12px;
-            box-shadow: 0 6px 12px var(--shadow-color);
-        }
+  // Prepare hourly data for chart
+  const prepareHourlyChartData = () => {
+    const now = currentTime;
+    const currentHour = now.getHours();
+    
+    // Find the most recent hour block
+    const hourlyData = currentVariant.hourlyProduction;
+    const hourlyTargets = currentVariant.hourlyTargets;
+    
+    // If it's before first hour block or after last, show the last block
+    if (currentHour < 8 || currentHour > 18) {
+      const lastIndex = hourlyData.length - 1;
+      return [{
+        hour: hourlyTargets[lastIndex]?.hour || 'N/A',
+        Production: hourlyData[lastIndex] || 0,
+        Target: hourlyTargets[lastIndex]?.target || 0
+      }];
+    }
+    
+    // Find the appropriate hour block
+    const blockIndex = hourlyTargets.findIndex(item => {
+      const blockHour = parseInt(item.hour.split(':')[0]);
+      return blockHour === currentHour;
+    });
+    
+    // If no exact match, use the most recent past block
+    const useIndex = blockIndex !== -1 ? blockIndex : 
+      hourlyTargets.filter(item => 
+        parseInt(item.hour.split(':')[0]) <= currentHour
+      ).length - 1;
+    
+    return [{
+      hour: hourlyTargets[useIndex]?.hour || 'N/A',
+      Production: hourlyData[useIndex] || 0,
+      Target: hourlyTargets[useIndex]?.target || 0
+    }];
+  };
 
-        .variant-name, .cycle-time {
-            font-size: 2rem;
-            font-weight: 600;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-        }
+  return (
+    <div className="p-4 bg-gray-100 min-h-screen flex flex-col">
+      <div className="text-center mb-4">
+        <h1 className="text-3xl font-bold text-gray-800">Production Dashboard</h1>
+        <p className="text-xl text-gray-600">Medical Device Assembly Plant</p>
+      </div>
 
-        .chart-container {
-            flex: 1;
-            background-color: white;
-            border-radius: 14px;
-            padding: 30px;
-            box-shadow: 0 8px 16px var(--shadow-color);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .hourly-data {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            height: 100%;
-            gap: 15px;
-            padding-bottom: 25px;
-            align-items: flex-end;
-        }
-
-        .hour-column {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            position: relative;
-            min-width: 80px;
-            padding: 0 8px;
-        }
-
-        .hour-column.break-hour {
-            background-color: var(--break-color);
-            border-radius: 8px;
-            border: 2px dashed var(--highlight-color);
-        }
-
-        .hour-label {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-top: 12px;
-            color: var(--text-color);
-            text-align: center;
-            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
-        }
-
-        .bar-container {
-            width: 100%;
-            height: 85%;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        .target-line {
-            position: absolute;
-            width: 100%;
-            border-top: 2px dashed var(--danger-color);
-            font-weight: 500;
-            color: var(--danger-color);
-            text-align: center;
-        }
-
-        .target-label {
-            position: absolute;
-            top: -24px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: var(--danger-color);
-            font-size: 1rem;
-            font-weight: 500;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 5px 10px;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px var(--shadow-color);
-            z-index: 10;
-        }
-
-        .bar {
-            width: 100%;
-            height: 0; /* Start at 0 for animation */
-            background-color: var(--danger-color);
-            border-radius: 8px 8px 0 0;
-            position: relative;
-            transition: height 1s ease-out, background-color 0.3s ease;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .bar.above-target {
-            background-color: var(--success-color);
-        }
-
-        .bar.below-target {
-            background-color: var(--danger-color);
-        }
-
-        .bar-value {
-            position: absolute;
-            top: -22px;
-            width: 100%;
-            text-align: center;
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: var(--text-color);
-            background: rgba(255, 255, 255, 0.95);
-            padding: 5px 8px;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px var(--shadow-color);
-            opacity: 0.9;
-            z-index: 10;
-        }
-
-        .schedule-marker {
-            position: absolute;
-            height: 100%;
-            width: 6px;
-            top: 0;
-            z-index: 20;
-            border-radius: 3px;
-        }
-
-        .start-marker {
-            background: linear-gradient(0deg, var(--success-color), #4ade80);
-            box-shadow: 0 0 10px var(--success-color);
-        }
-
-        .end-marker {
-            background: linear-gradient(0deg, var(--danger-color), #f43f5e);
-            box-shadow: 0 0 10px var(--danger-color);
-        }
-
-        .break-marker {
-            position: absolute;
-            height: 100%;
-            width: 3px;
-            top: 0;
-            z-index: 15;
-            background: linear-gradient(0deg, var(--highlight-color), rgba(165, 180, 252, 0.5));
-            border-radius: 2px;
-        }
-
-        .footer {
-            margin-top: 15px;
-            text-align: center;
-            font-size: 1.2rem;
-            color: var(--dark-color);
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            box-shadow: 0 4px 8px var(--shadow-color);
-        }
-
-        .progress-bar {
-            height: 10px;
-            background-color: var(--light-color);
-            border-radius: 6px;
-            margin-top: 10px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 4px var(--shadow-color);
-        }
-
-        .progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--secondary-color), #93c5fd);
-            transition: width 0.5s ease-out;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .update-info {
-            font-size: 1rem;
-            color: var(--dark-color);
-            text-align: right;
-            margin-top: 5px;
-            opacity: 0.8;
-        }
-
-        .totals-display {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-        }
-
-        .total-item {
-            text-align: center;
-            padding: 15px;
-            background-color: var(--light-color);
-            border-radius: 10px;
-            box-shadow: 0 4px 8px var(--shadow-color);
-        }
-
-        .total-label {
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--dark-color);
-        }
-
-        .total-value {
-            font-size: 1.8rem;
-        }
-
-        .total-target {
-            color: var(--danger-color);
-        }
-
-        .total-actual {
-            color: var(--secondary-color);
-        }
-
-        .total-progress {
-            color: var(--success-color);
-        }
-
-        .supervisor-filter {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 15px;
-        }
-
-        .supervisor-filter select {
-            padding: 12px 18px;
-            border-radius: 10px;
-            border: 2px solid var(--secondary-color);
-            font-size: 1.1rem;
-            font-family: var(--font-family);
-            background-color: white;
-            box-shadow: 0 4px 8px var(--shadow-color);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .supervisor-filter select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 8px var(--secondary-color);
-        }
-    </style>
-</head>
-<body>
-    <div class="dashboard-container">
-        <div class="header">
-            <div>
-                <div class="title">Production Dashboard</div>
-                <div class="subtitle">Medical Device Assembly</div>
-            </div>
-            <div class="date-time">
-                <div class="date" id="current-date">Loading...</div>
-                <div class="time" id="current-time">Loading...</div>
-                <div class="update-info" id="last-update">Last updated: Never</div>
-            </div>
+      <div className="bg-white shadow-lg rounded-lg p-6 flex-grow">
+        <div className="mb-4 flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-700">
+              Variant: {currentVariant.variant}
+            </h2>
+          </div>
+          <div className="flex space-x-2">
+            <button 
+              onClick={() => setIsAutocycling(!isAutocycling)}
+              className={`px-4 py-2 rounded ${isAutocycling ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}
+            >
+              {isAutocycling ? 'Stop Auto-Cycle' : 'Start Auto-Cycle'}
+            </button>
+          </div>
         </div>
 
-        <div class="supervisor-filter">
-            <select id="supervisor-select">
-                <option value="all">All Supervisors</option>
-            </select>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="text-lg font-semibold mb-2">Cumulative Daily Production Progress</h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={currentVariant.cumulativeProduction}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="hour" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="production" 
+                  name="Cumulative Production" 
+                  stroke="#3B82F6" 
+                  strokeWidth={3}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey={(data) => 
+                    currentVariant.cumulativeTargets.find(t => t.hour === data.hour)?.target
+                  } 
+                  name="Cumulative Target" 
+                  stroke="#10B981" 
+                  strokeWidth={3}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="text-lg font-semibold mb-2">Hourly Production Progress</h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={prepareHourlyChartData()}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="hour" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar 
+                  dataKey="Production" 
+                  fill="#3B82F6"
+                  label={{ position: 'top' }}
+                />
+                <Bar 
+                  dataKey="Target" 
+                  fill="#10B981"
+                  label={{ position: 'top' }}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        <div class="content">
-            <div class="variant-info">
-                <div class="variant-name" id="variant-name">Product Variant: Loading...</div>
-                <div class="cycle-time" id="cycle-time">Target Cycle Time: Loading...</div>
+        <div className="bg-gray-50 p-4 rounded-lg mt-4">
+          <h4 className="text-lg font-semibold mb-2">Key Metrics</h4>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="flex justify-between">
+              <span>Current Total:</span>
+              <span className="font-bold">{currentVariant.currentTotal}</span>
             </div>
-
-            <div class="totals-display" id="totals-display"></div>
-
-            <div class="chart-container">
-                <div class="hourly-data" id="hourly-data"></div>
+            <div className="flex justify-between">
+              <span>Daily Target:</span>
+              <span className="font-bold">{currentVariant.dailyTarget}</span>
             </div>
+            <div className="flex justify-between">
+              <span>Hourly Target:</span>
+              <span className="font-bold">{currentVariant.hourlyTarget}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Progress:</span>
+              <span className={`font-bold ${currentVariant.progressPercentage >= 100 ? 'text-green-600' : 'text-blue-600'}`}>
+                {currentVariant.progressPercentage}%
+              </span>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="footer">
-            <div>Cycling through variants: <span id="current-variant-index">0</span>/<span id="total-variants">0</span></div>
-            <div class="progress-bar">
-                <div class="progress" id="cycle-progress"></div>
-            </div>
-        </div>
+      <div className="text-center mt-4 text-gray-500">
+        Current Time: {currentTime.toLocaleString()} | 
+        Last Data Update: {new Date(productionData.timestamp).toLocaleString()}
+      </div>
     </div>
+  );
+};
 
-    <script>
-        // Configuration
-        const DATA_URL = 'https://raw.githubusercontent.com/OPSSinapi/production-dashboard/main/data.json';
-        const UPDATE_INTERVAL = 2 * 60 * 1000; // Check updates every 2 minutes
-        const CYCLE_INTERVAL = 10000; // Display each variant for 10 seconds
-
-        // State variables
-        let productionData = { variants: [], supervisors: [] };
-        let filteredVariants = [];
-        let currentVariantIndex = 0;
-        let lastUpdateTime = null;
-        let selectedSupervisor = 'all';
-
-        // Initialize the dashboard
-        function initDashboard() {
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
-
-            document.getElementById('supervisor-select').addEventListener('change', function() {
-                selectedSupervisor = this.value;
-                filterVariantsBySupervisor();
-                currentVariantIndex = 0;
-                if (filteredVariants.length > 0) {
-                    displayVariant(currentVariantIndex);
-                }
-            });
-
-            fetchProductionData();
-            setInterval(fetchProductionData, UPDATE_INTERVAL);
-            setInterval(cycleVariants, CYCLE_INTERVAL);
-            animateProgress();
-
-            setTimeout(() => {
-                if (filteredVariants.length === 0) {
-                    addFallbackData();
-                }
-            }, 10000);
-        }
-
-        // Add fallback data (dynamic, no hardcoded times)
-        function addFallbackData() {
-            productionData.variants = [
-                {
-                    "variant": "SUM SUM500V2",
-                    "Start Time": "07:30",
-                    "End Time": "18:30",
-                    "Break Start (Lunch)": "13:40",
-                    "Break End (Lunch)": "14:10",
-                    "Break Start (Tea)": "10:25",
-                    "Break End (Tea)": "10:40",
-                    "OT Break Start (Tea)": "17:45",
-                    "OT Break End (Tea)": "18:00",
-                    "totalavailableWorkHours": 10,
-                    "cycleTime": 28.24,
-                    "hourlyTarget": 127,
-                    "dailyTarget": 1274,
-                    "dailyBoxTarget": 63,
-                    "currentTotal": 740,
-                    "currentBoxTotal": 37,
-                    "progressPercentage": 58,
-                    "batches": { "25022669": { "total": 740, "boxes": 37 } },
-                    "cumulativeTargets": [0, 0, 0, 0, 0, 0, 0, 127, 254, 381, 508, 635, 762, 889, 1016, 1143, 1270, 1274, 1274, 1274, 1274, 1274, 1274, 1274],
-                    "cumulativeProduction": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 141, 282, 423, 564, 705, 740, 740, 740, 740, 740, 740, 740, 740, 740]
-                }
-                // Add more variants here if needed, keeping all times dynamic from data.json
-            ];
-            filterVariantsBySupervisor();
-            if (filteredVariants.length > 0) {
-                displayVariant(0);
-            }
-        }
-
-        // Fetch production data
-        async function fetchProductionData() {
-            try {
-                const response = await fetch(DATA_URL + '?_=' + new Date().getTime());
-                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                const data = await response.json();
-
-                if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
-                    productionData = data;
-                    lastUpdateTime = data.timestamp;
-                    document.getElementById('last-update').textContent = 
-                        'Last updated: ' + new Date(data.timestamp).toLocaleTimeString();
-
-                    updateSupervisorDropdown();
-                    filterVariantsBySupervisor();
-                    document.getElementById('total-variants').textContent = filteredVariants.length;
-
-                    if (currentVariantIndex >= filteredVariants.length) currentVariantIndex = 0;
-                    if (filteredVariants.length > 0) displayVariant(currentVariantIndex);
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
-
-        // Update supervisor dropdown
-        function updateSupervisorDropdown() {
-            const select = document.getElementById('supervisor-select');
-            const currentValue = select.value;
-            while (select.options.length > 1) select.remove(1);
-
-            if (productionData.supervisors?.length) {
-                productionData.supervisors.forEach(supervisor => {
-                    const option = document.createElement('option');
-                    option.value = supervisor.name;
-                    option.textContent = supervisor.name;
-                    select.appendChild(option);
-                });
-            }
-            select.value = Array.from(select.options).some(opt => opt.value === currentValue) ? currentValue : 'all';
-        }
-
-        // Filter variants by supervisor
-        function filterVariantsBySupervisor() {
-            if (selectedSupervisor === 'all') {
-                filteredVariants = productionData.variants || [];
-            } else {
-                const supervisor = productionData.supervisors.find(s => s.name === selectedSupervisor);
-                filteredVariants = supervisor?.variants ? 
-                    productionData.variants.filter(v => Object.keys(supervisor.variants).includes(v.variant)) : [];
-            }
-            document.getElementById('total-variants').textContent = filteredVariants.length;
-        }
-
-        // Update date and time
-        function updateDateTime() {
-            const now = new Date('March 1, 2025'); // Set to current date as specified
-            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        }
-
-        // Display variant data
-        function displayVariant(index) {
-            if (!filteredVariants?.length) return;
-            const variant = filteredVariants[index];
-            document.getElementById('variant-name').textContent = `Product Variant: ${variant.variant}`;
-            document.getElementById('cycle-time').textContent = `Target Cycle Time: ${variant.cycleTime} sec/unit`;
-            document.getElementById('current-variant-index').textContent = (index + 1);
-            updateTotalsDisplay(variant);
-            createHourlyChart(variant);
-        }
-
-        // Update totals display
-        function updateTotalsDisplay(variant) {
-            const totalsDisplay = document.getElementById('totals-display');
-            totalsDisplay.innerHTML = `
-                <div class="total-item">
-                    <div class="total-label">Current Total</div>
-                    <div class="total-value total-actual">${variant.currentTotal || 0}</div>
-                </div>
-                <div class="total-item">
-                    <div class="total-label">Daily Target</div>
-                    <div class="total-value total-target">${variant.dailyTarget || 0}</div>
-                </div>
-                <div class="total-item">
-                    <div class="total-label">Progress</div>
-                    <div class="total-value total-progress">${variant.progressPercentage || 0}%</div>
-                </div>
-                ${variant.dailyBoxTarget ? `
-                <div class="total-item">
-                    <div class="total-label">Boxes</div>
-                    <div class="total-value">${variant.currentBoxTotal || 0} / ${variant.dailyBoxTarget}</div>
-                </div>` : ''}
-            `;
-        }
-
-        // Enhanced time parsing
-        function parseTimeToHour(timeStr) {
-            if (!timeStr) return null;
-            const cleanTime = timeStr.replace(/\s/g, '');
-            const timeMatch = cleanTime.match(/^(?:(\d{1,2}):?(\d{2}))|(\d{3,4})$/);
-            if (timeMatch) {
-                let hour;
-                if (timeMatch[1] && timeMatch[2]) {
-                    hour = parseInt(timeMatch[1], 10);
-                } else if (timeMatch[3]) {
-                    hour = parseInt(timeMatch[3].substring(0, 2), 10);
-                }
-                if (hour >= 0 && hour <= 23) return hour;
-            }
-            return null;
-        }
-
-        // Create hourly chart with clear, visible bars
-        function createHourlyChart(variant) {
-            const chartContainer = document.getElementById('hourly-data');
-            chartContainer.innerHTML = '';
-
-            // Parse start and end times dynamically from data.json
-            const startHour = parseTimeToHour(variant["Start Time"]) || 0; // Default to 0 if not provided
-            const endHour = parseTimeToHour(variant["End Time"]) || 23;   // Default to 23 if not provided
-
-            // Get break hours dynamically from data.json
-            const breakHours = [];
-            const breakPairs = [
-                ["Break Start (Lunch)", "Break End (Lunch)"],
-                ["Break Start (Tea)", "Break End (Tea)"],
-                ["OT Break Start (Tea)", "OT Break End (Tea)"]
-            ];
-            breakPairs.forEach(([startKey, endKey]) => {
-                const start = parseTimeToHour(variant[startKey]);
-                const end = parseTimeToHour(variant[endKey]);
-                if (start !== null && end !== null) {
-                    for (let h = start; h < end; h++) breakHours.push(h);
-                }
-            });
-
-            // Calculate max value for scaling
-            let maxCumulative = 0;
-            for (let i = startHour; i <= endHour; i++) {
-                maxCumulative = Math.max(maxCumulative, 
-                    variant.cumulativeTargets?.[i] || 0, 
-                    variant.cumulativeProduction?.[i] || 0);
-            }
-            const maxValue = maxCumulative * 1.2 || 10; // Increased headroom for better visibility
-
-            // Create bars with enhanced visibility
-            for (let i = startHour; i <= endHour; i++) {
-                const hourDiv = document.createElement('div');
-                hourDiv.className = 'hour-column';
-                if (breakHours.includes(i)) hourDiv.classList.add('break-hour');
-
-                const barContainer = document.createElement('div');
-                barContainer.className = 'bar-container';
-
-                const cumulativeTarget = variant.cumulativeTargets?.[i] || 0;
-                if (cumulativeTarget > 0) {
-                    const targetLine = document.createElement('div');
-                    targetLine.className = 'target-line';
-                    targetLine.style.bottom = `${(cumulativeTarget / maxValue) * 100}%`;
-                    const targetLabel = document.createElement('div');
-                    targetLabel.className = 'target-label';
-                    targetLabel.textContent = cumulativeTarget;
-                    targetLine.appendChild(targetLabel);
-                    barContainer.appendChild(targetLine);
-                }
-
-                const cumulativeProduction = variant.cumulativeProduction?.[i] || 0;
-                const bar = document.createElement('div');
-                bar.className = 'bar';
-                if (cumulativeProduction >= cumulativeTarget && cumulativeTarget > 0) {
-                    bar.classList.add('above-target');
-                } else if (cumulativeProduction > 0) {
-                    bar.classList.add('below-target');
-                }
-                // Set initial height to 0 for animation
-                bar.style.height = '0';
-                setTimeout(() => {
-                    bar.style.height = `${(cumulativeProduction / maxValue) * 100}%`;
-                }, 100 * (i - startHour));
-                const barValue = document.createElement('div');
-                barValue.className = 'bar-value';
-                barValue.textContent = cumulativeProduction > 0 ? cumulativeProduction : '';
-                bar.appendChild(barValue);
-                barContainer.appendChild(bar);
-
-                const hourLabelDiv = document.createElement('div');
-                hourLabelDiv.className = 'hour-label';
-                hourLabelDiv.textContent = i < 10 ? `0${i}:00` : `${i}:00`;
-                hourDiv.appendChild(barContainer);
-                hourDiv.appendChild(hourLabelDiv);
-                chartContainer.appendChild(hourDiv);
-            }
-
-            // Add schedule markers dynamically from data.json
-            const chartWidth = chartContainer.parentElement.offsetWidth - 60; // Account for padding
-            const hourWidth = chartWidth / (endHour - startHour + 1); // Include all hours
-            const parentContainer = chartContainer.parentElement;
-
-            const startMarker = document.createElement('div');
-            startMarker.className = 'schedule-marker start-marker';
-            startMarker.style.left = '30px';
-            startMarker.title = `Start: ${variant["Start Time"]}`;
-            parentContainer.appendChild(startMarker);
-
-            const endMarker = document.createElement('div');
-            endMarker.className = 'schedule-marker end-marker';
-            endMarker.style.left = `${30 + (endHour - startHour) * hourWidth}px`;
-            endMarker.title = `End: ${variant["End Time"]}`;
-            parentContainer.appendChild(endMarker);
-
-            // Add break window indicators as subtle overlays
-            breakHours.forEach(hour => {
-                const breakMarker = document.createElement('div');
-                breakMarker.className = 'break-marker';
-                breakMarker.style.left = `${30 + (hour - startHour) * hourWidth}px`;
-                breakMarker.title = `Break: ${variant[`Break Start (Tea)`] || variant[`Break Start (Lunch)`] || variant[`OT Break Start (Tea)`]} - ${variant[`Break End (Tea)`] || variant[`Break End (Lunch)`] || variant[`OT Break End (Tea)`]}`;
-                parentContainer.appendChild(breakMarker);
-            });
-        }
-
-        // Cycle variants
-        function cycleVariants() {
-            if (!filteredVariants?.length) return;
-            updateCycleProgress(0);
-            currentVariantIndex = (currentVariantIndex + 1) % filteredVariants.length;
-            displayVariant(currentVariantIndex);
-            animateProgress();
-        }
-
-        // Animate progress bar
-        function animateProgress() {
-            let progress = 0;
-            const interval = 100;
-            const steps = CYCLE_INTERVAL / interval;
-            const progressInterval = setInterval(() => {
-                progress += (100 / steps);
-                if (progress > 100) {
-                    progress = 100;
-                    clearInterval(progressInterval);
-                }
-                updateCycleProgress(progress);
-            }, interval);
-        }
-
-        // Update cycle progress
-        function updateCycleProgress(percent) {
-            document.getElementById('cycle-progress').style.width = `${percent}%`;
-        }
-
-        window.onload = initDashboard;
-    </script>
-</body>
-</html>
+export default ProductionDashboard;
