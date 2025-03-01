@@ -123,9 +123,9 @@
 
         .hourly-data {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             height: 100%;
-            gap: 12px;
+            gap: 15px;
             padding-bottom: 25px;
             align-items: flex-end;
         }
@@ -136,27 +136,28 @@
             justify-content: flex-end;
             align-items: center;
             position: relative;
-            min-width: 70px;
-            padding: 0 6px;
+            min-width: 80px;
+            padding: 0 8px;
         }
 
         .hour-column.break-hour {
             background-color: var(--break-color);
-            border-radius: 6px;
+            border-radius: 8px;
             border: 2px dashed var(--highlight-color);
         }
 
         .hour-label {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 500;
-            margin-top: 10px;
+            margin-top: 12px;
             color: var(--text-color);
             text-align: center;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
         }
 
         .bar-container {
             width: 100%;
-            height: 80%;
+            height: 85%;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -175,26 +176,27 @@
 
         .target-label {
             position: absolute;
-            top: -22px;
+            top: -24px;
             left: 50%;
             transform: translateX(-50%);
             color: var(--danger-color);
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 500;
             background: rgba(255, 255, 255, 0.95);
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 5px 10px;
+            border-radius: 6px;
             box-shadow: 0 2px 4px var(--shadow-color);
+            z-index: 10;
         }
 
         .bar {
             width: 100%;
             height: 0; /* Start at 0 for animation */
             background-color: var(--danger-color);
-            border-radius: 6px 6px 0 0;
+            border-radius: 8px 8px 0 0;
             position: relative;
-            transition: height 0.8s ease-out, background-color 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: height 1s ease-out, background-color 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .bar.above-target {
@@ -207,46 +209,47 @@
 
         .bar-value {
             position: absolute;
-            top: -20px;
+            top: -22px;
             width: 100%;
             text-align: center;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 500;
             color: var(--text-color);
             background: rgba(255, 255, 255, 0.95);
-            padding: 4px 6px;
-            border-radius: 4px;
+            padding: 5px 8px;
+            border-radius: 6px;
             box-shadow: 0 2px 4px var(--shadow-color);
             opacity: 0.9;
+            z-index: 10;
         }
 
         .schedule-marker {
             position: absolute;
             height: 100%;
-            width: 4px;
+            width: 6px;
             top: 0;
-            z-index: 10;
-            border-radius: 2px;
+            z-index: 20;
+            border-radius: 3px;
         }
 
         .start-marker {
             background: linear-gradient(0deg, var(--success-color), #4ade80);
-            box-shadow: 0 0 8px var(--success-color);
+            box-shadow: 0 0 10px var(--success-color);
         }
 
         .end-marker {
             background: linear-gradient(0deg, var(--danger-color), #f43f5e);
-            box-shadow: 0 0 8px var(--danger-color);
+            box-shadow: 0 0 10px var(--danger-color);
         }
 
         .break-marker {
             position: absolute;
             height: 100%;
-            width: 2px;
+            width: 3px;
             top: 0;
-            z-index: 5;
-            background: linear-gradient(0deg, var(--highlight-color), rgba(165, 180, 252, 0.3));
-            border-radius: 1px;
+            z-index: 15;
+            background: linear-gradient(0deg, var(--highlight-color), rgba(165, 180, 252, 0.5));
+            border-radius: 2px;
         }
 
         .footer {
@@ -604,9 +607,9 @@
                     variant.cumulativeTargets?.[i] || 0, 
                     variant.cumulativeProduction?.[i] || 0);
             }
-            const maxValue = maxCumulative * 1.1 || 10;
+            const maxValue = maxCumulative * 1.2 || 10; // Increased headroom for better visibility
 
-            // Create bars with visibility and clarity
+            // Create bars with enhanced visibility
             for (let i = startHour; i <= endHour; i++) {
                 const hourDiv = document.createElement('div');
                 hourDiv.className = 'hour-column';
