@@ -609,7 +609,7 @@
 
     <script>
         // Configuration
-        const DATA_URL = 'https://raw.githubusercontent.com/OPSSinapi/production-dashboard/main/data.json';
+        const DATA_URL = 'https://opssinapi.github.io/production-dashboard/data.json';
         const UPDATE_INTERVAL = 60 * 1000; // Check for updates every minute
         const CYCLE_INTERVAL = 10000; // Time to display each variant (10 seconds)
 
@@ -658,19 +658,14 @@
             animateProgress();
         }
 
-        // Fetch production data from GitHub with retries
+        // Fetch production data from GitHub Pages with retries
         async function fetchProductionData(retryCount = 3, delay = 1000) {
             for (let i = 0; i < retryCount; i++) {
                 try {
                     console.log(`Attempting to fetch data from: ${DATA_URL} (Attempt ${i + 1}/${retryCount})`);
                     const cacheBuster = '?_=' + new Date().getTime();
                     const fullUrl = DATA_URL + cacheBuster;
-                    const response = await fetch(fullUrl, {
-                        mode: 'cors', // Ensure CORS is handled
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
+                    const response = await fetch(fullUrl);
 
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
