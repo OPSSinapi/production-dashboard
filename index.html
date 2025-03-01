@@ -434,7 +434,7 @@
 
         <div class="content">
             <div class="variant-info">
-                <div class="variant-name" id="variant-name">Loading...</div>
+                <div class="variant-name" id="variant-name">Product Variant: Loading...</div>
                 <div class="cycle-time" id="cycle-time">Target Cycle Time: Loading...</div>
             </div>
 
@@ -551,6 +551,7 @@
         // Fetch production data from GitHub
         async function fetchProductionData() {
             try {
+                console.log('Attempting to fetch data from:', DATA_URL);
                 const cacheBuster = '?_=' + new Date().getTime();
                 const fullUrl = DATA_URL + cacheBuster;
                 const response = await fetch(fullUrl, {
@@ -565,7 +566,8 @@
                 }
 
                 const data = await response.json();
-                
+                console.log('Fetched data:', data);
+
                 if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
                     productionData = data;
                     lastUpdateTime = data.timestamp;
@@ -601,6 +603,7 @@
                 isLoading = false;
                 showLoadingOrError(`Failed to load data: ${error.message}`);
                 addFallbackData(); // Use fallback data if fetch fails
+                displayVariant(0); // Force display fallback data
             }
         }
 
