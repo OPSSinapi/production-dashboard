@@ -1,517 +1,679 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Production Dashboard</title>
-  <style>
-    /* (CSS remains the same as before) */
-    :root {
-      --primary-color: #2c3e50;
-      --secondary-color: #3498db;
-      --success-color: #2ecc71;
-      --warning-color: #f39c12;
-      --danger-color: #e74c3c;
-      --light-color: #ecf0f1;
-      --dark-color: #34495e;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: var(--light-color);
-      color: var(--primary-color);
-      overflow: hidden;
-    }
-    .dashboard-container {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--secondary-color);
-    }
-    .title {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: var(--primary-color);
-    }
-    .subtitle {
-      font-size: 1.8rem;
-      color: var(--secondary-color);
-      font-weight: 500;
-    }
-    .date-time {
-      text-align: right;
-      font-size: 1.4rem;
-    }
-    .date {
-      font-weight: bold;
-    }
-    .time {
-      font-size: 1.8rem;
-      margin-top: 5px;
-    }
-    .content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .variant-info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      background-color: var(--dark-color);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-    }
-    .variant-name {
-      font-size: 1.8rem;
-      font-weight: bold;
-    }
-    .cycle-time {
-      font-size: 1.8rem;
-    }
-    .chart-container {
-      flex: 1;
-      background-color: white;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
-    .hourly-data {
-      display: flex;
-      height: 100%;
-    }
-    .hour-column {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      padding: 0 10px;
-      position: relative;
-    }
-    .hour-label {
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    .bar-container {
-      width: 80%;
-      height: 85%;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-    }
-    .target-line {
-      position: absolute;
-      width: 120%;
-      border-top: 3px dashed var(--danger-color);
-      font-weight: bold;
-      color: var(--danger-color);
-      text-align: right;
-    }
-    .target-label {
-      position: absolute;
-      top: -25px;
-      right: -40px;
-      color: var(--danger-color);
-      font-weight: bold;
-    }
-    .bar {
-      width: 100%;
-      background-color: var(--secondary-color);
-      border-radius: 5px 5px 0 0;
-      position: relative;
-      transition: height 1s ease;
-    }
-    .bar.above-target {
-      background-color: var(--success-color);
-    }
-    .bar.below-target {
-      background-color: var(--danger-color);
-    }
-    .bar-value {
-      position: absolute;
-      top: -25px;
-      width: 100%;
-      text-align: center;
-      font-weight: bold;
-      font-size: 1.1rem;
-    }
-    .footer {
-      margin-top: 20px;
-      text-align: center;
-      font-size: 1.2rem;
-      color: var(--dark-color);
-    }
-    .progress-bar {
-      height: 10px;
-      background-color: var(--light-color);
-      border-radius: 5px;
-      margin-top: 10px;
-      overflow: hidden;
-    }
-    .progress {
-      height: 100%;
-      background-color: var(--secondary-color);
-      transition: width 0.5s linear;
-      width: 0%;
-    }
-    .update-info {
-      font-size: 0.8rem;
-      color: var(--dark-color);
-      text-align: right;
-      margin-top: 5px;
-    }
-    .totals-display {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
-      font-size: 1.4rem;
-    }
-    .total-item {
-      text-align: center;
-      padding: 10px;
-      background-color: var(--light-color);
-      border-radius: 5px;
-      min-width: 150px;
-    }
-    .total-label {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    .total-value {
-      font-size: 1.8rem;
-    }
-    .total-target {
-      color: var(--danger-color);
-    }
-    .total-actual {
-      color: var(--secondary-color);
-    }
-    .total-progress {
-      color: var(--success-color);
-    }
-    .supervisor-filter {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 10px;
-    }
-    .supervisor-filter select {
-      padding: 8px 12px;
-      border-radius: 5px;
-      border: 1px solid var(--secondary-color);
-      font-size: 1rem;
-      font-family: inherit;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-color);
+            color: var(--primary-color);
+            overflow: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .date-time {
+            text-align: right;
+            font-size: 1.4rem;
+        }
+
+        .date {
+            font-weight: bold;
+        }
+
+        .time {
+            font-size: 1.8rem;
+            margin-top: 5px;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .variant-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            background-color: var(--dark-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        .variant-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .cycle-time {
+            font-size: 1.8rem;
+        }
+
+        .chart-container {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .hourly-data {
+            display: flex;
+            height: 100%;
+        }
+
+        .hour-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 10px;
+            position: relative;
+        }
+
+        .hour-label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .bar-container {
+            width: 80%;
+            height: 85%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .target-line {
+            position: absolute;
+            width: 120%;
+            border-top: 3px dashed var(--danger-color);
+            font-weight: bold;
+            color: var(--danger-color);
+            text-align: right;
+        }
+
+        .target-label {
+            position: absolute;
+            top: -25px;
+            right: -40px;
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        .bar {
+            width: 100%;
+            background-color: var(--secondary-color);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            transition: height 1s ease;
+        }
+
+        .bar.above-target {
+            background-color: var(--success-color);
+        }
+
+        .bar.below-target {
+            background-color: var(--danger-color);
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--dark-color);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: var(--light-color);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--secondary-color);
+            transition: width 0.5s linear;
+            width: 0%;
+        }
+
+        .update-info {
+            font-size: 0.8rem;
+            color: var(--dark-color);
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .totals-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .total-item {
+            text-align: center;
+            padding: 10px;
+            background-color: var(--light-color);
+            border-radius: 5px;
+            min-width: 150px;
+        }
+
+        .total-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .total-value {
+            font-size: 1.8rem;
+        }
+
+        .total-target {
+            color: var(--danger-color);
+        }
+
+        .total-actual {
+            color: var(--secondary-color);
+        }
+
+        .total-progress {
+            color: var(--success-color);
+        }
+
+        .supervisor-filter {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .supervisor-filter select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid var(--secondary-color);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+    </style>
 </head>
 <body>
-  <div class="dashboard-container">
-    <div class="header">
-      <div>
-        <div class="title">Production Dashboard</div>
-        <div class="subtitle">Medical Device Assembly</div>
-      </div>
-      <div class="date-time">
-        <div class="date" id="current-date">Loading...</div>
-        <div class="time" id="current-time">Loading...</div>
-        <div class="update-info" id="last-update">Last updated: Never</div>
-      </div>
-    </div>
-    <div class="supervisor-filter">
-      <select id="supervisor-select">
-        <option value="all">All Supervisors</option>
-        <!-- Options added dynamically -->
-      </select>
-    </div>
-    <div class="content">
-      <div class="variant-info">
-        <div class="variant-name" id="variant-name">Product Variant: Loading...</div>
-        <div class="cycle-time" id="cycle-time">Target Cycle Time: Loading...</div>
-      </div>
-      <div class="totals-display" id="totals-display">
-        <!-- Total information displayed here -->
-      </div>
-      <div class="chart-container">
-        <div class="hourly-data" id="hourly-data">
-          <!-- Hour columns generated dynamically -->
+    <div class="dashboard-container">
+        <div class="header">
+            <div>
+                <div class="title">Production Dashboard</div>
+                <div class="subtitle">Medical Device Assembly</div>
+            </div>
+            <div class="date-time">
+                <div class="date" id="current-date">Loading...</div>
+                <div class="time" id="current-time">Loading...</div>
+                <div class="update-info" id="last-update">Last updated: Never</div>
+            </div>
         </div>
-      </div>
-    </div>
-    <div class="footer">
-      <div>Cycling through variants: <span id="current-variant-index">0</span>/<span id="total-variants">0</span></div>
-      <div class="progress-bar">
-        <div class="progress" id="cycle-progress"></div>
-      </div>
-    </div>
-  </div>
-  <script>
-    // Configuration: URL to the pre-calculated data.json
-    const DATA_URL = 'https://raw.githubusercontent.com/OPSSinapi/production-dashboard/main/data.json';
-    const UPDATE_INTERVAL = 2 * 60 * 1000; // 2 minutes
-    const CYCLE_INTERVAL = 10000; // 10 seconds per variant
 
-    let productionData = { variants: [], supervisors: [] };
-    let filteredVariants = [];
-    let currentVariantIndex = 0;
-    let lastUpdateTime = null;
-    let selectedSupervisor = 'all';
+        <div class="supervisor-filter">
+            <select id="supervisor-select">
+                <option value="all">All Supervisors</option>
+                <!-- Supervisor options will be added dynamically -->
+            </select>
+        </div>
 
-    // Initialize dashboard: update clock, load data, and start variant cycling
-    function initDashboard() {
-      updateDateTime();
-      setInterval(updateDateTime, 1000);
-      document.getElementById('supervisor-select').addEventListener('change', function() {
-        selectedSupervisor = this.value;
-        filterVariantsBySupervisor();
-        currentVariantIndex = 0;
-        if (filteredVariants.length > 0) {
-          displayVariant(currentVariantIndex);
+        <div class="content">
+            <div class="variant-info">
+                <div class="variant-name" id="variant-name">Product Variant: Loading...</div>
+                <div class="cycle-time" id="cycle-time">Target Cycle Time: Loading...</div>
+            </div>
+
+            <div class="totals-display" id="totals-display">
+                <!-- Will be populated with total information -->
+            </div>
+
+            <div class="chart-container">
+                <div class="hourly-data" id="hourly-data">
+                    <!-- Hour columns will be dynamically generated -->
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div>Cycling through variants: <span id="current-variant-index">0</span>/<span id="total-variants">0</span></div>
+            <div class="progress-bar">
+                <div class="progress" id="cycle-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const DATA_URL = 'https://raw.githubusercontent.com/OPSSinapi/production-dashboard/main/data.json';
+        const UPDATE_INTERVAL = 2 * 60 * 1000; // Check for updates every 2 minutes
+        const CYCLE_INTERVAL = 10000; // Time to display each variant (10 seconds)
+
+        // State variables
+        let productionData = {
+            variants: [],
+            supervisors: []
+        };
+        let filteredVariants = [];
+        let currentVariantIndex = 0;
+        let lastUpdateTime = null;
+        let selectedSupervisor = 'all';
+
+        // Initialize the dashboard
+        function initDashboard() {
+            // Update clock
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+
+            // Set up supervisor filter change event
+            document.getElementById('supervisor-select').addEventListener('change', function() {
+                selectedSupervisor = this.value;
+                filterVariantsBySupervisor();
+
+                // Reset variant index
+                currentVariantIndex = 0;
+                if (filteredVariants.length > 0) {
+                    displayVariant(currentVariantIndex);
+                }
+            });
+
+            // Load initial data
+            fetchProductionData();
+
+            // Set up refresh interval
+            setInterval(fetchProductionData, UPDATE_INTERVAL);
+
+            // Start cycling through variants
+            setInterval(cycleVariants, CYCLE_INTERVAL);
+
+            // Start progress bar animation
+            animateProgress();
+
+            // Fallback if no data after 10 seconds
+            setTimeout(() => {
+                if (filteredVariants.length === 0) {
+                    addFallbackData();
+                }
+            }, 10000);
         }
-      });
-      fetchProductionData();
-      setInterval(fetchProductionData, UPDATE_INTERVAL);
-      setInterval(cycleVariants, CYCLE_INTERVAL);
-      animateProgress();
-      setTimeout(() => { if (filteredVariants.length === 0) addFallbackData(); }, 10000);
-    }
 
-    // Fallback data if no data is loaded
-    function addFallbackData() {
-      productionData = {
-        timestamp: new Date().toISOString(),
-        variants: [{
-          variant: "TEST Product XYZ",
-          cycleTime: 45,
-          devicesPerBox: 18,
-          hourlyTarget: 80,
-          hourlyTargetArray: [0,0,0,0,0,0,0,80,80,80,80,80,80,80,80,0,0,0,0,0,0,0,0,0],
-          hourlyProduction: [0,0,0,0,0,0,0,65,78,92,83,0,0,0,0,0,0,0,0,0,0,0,0,0],
-          dailyTarget: 320,
-          dailyBoxTarget: 17,
-          currentTotal: 318,
-          currentBoxTotal: 17,
-          progress: 99
-        }],
-        supervisors: [{
-          name: "TEST Supervisor",
-          variants: {
-            "TEST Product XYZ": {
-              variant: "TEST Product XYZ",
-              hourlyProduction: [0,0,0,0,0,0,0,65,78,92,83,0,0,0,0,0,0,0,0,0,0,0,0,0],
-              currentTotal: 318,
-              dailyTarget: 320
+        // Add fallback data if no data is loaded
+        function addFallbackData() {
+            productionData = {
+                timestamp: new Date().toISOString(),
+                variants: [{
+                    variant: "TEST Product XYZ",
+                    cycleTime: 45,
+                    devicesPerBox: 18,
+                    hourlyTarget: 80,
+                    hourlyTargetArray: [0,0,0,0,0,0,0,80,80,80,80,80,80,80,80,0,0,0,0,0,0,0,0,0],
+                    hourlyProduction: [0,0,0,0,0,0,0,65,78,92,83,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    dailyTarget: 320,
+                    currentTotal: 318,
+                    currentBoxTotal: 17
+                }],
+                supervisors: [{
+                    name: "TEST Supervisor",
+                    variants: {
+                        "TEST Product XYZ": {
+                            variant: "TEST Product XYZ",
+                            hourlyProduction: [0,0,0,0,0,0,0,65,78,92,83,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                            currentTotal: 318,
+                            dailyTarget: 320
+                        }
+                    },
+                    totalProduction: 318,
+                    totalTarget: 320
+                }]
+            };
+
+            filterVariantsBySupervisor();
+            if (filteredVariants.length > 0) {
+                displayVariant(0);
             }
-          },
-          totalProduction: 318,
-          totalTarget: 320
-        }]
-      };
-      filterVariantsBySupervisor();
-      if (filteredVariants.length > 0) displayVariant(0);
-    }
-
-    // Fetch production data from GitHub
-    async function fetchProductionData() {
-      try {
-        const cacheBuster = '?_=' + new Date().getTime();
-        const fullUrl = DATA_URL + cacheBuster;
-        const response = await fetch(fullUrl);
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        const text = await response.text();
-        let data = JSON.parse(text);
-        if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
-          productionData = data;
-          lastUpdateTime = data.timestamp;
-          const updateTime = new Date(data.timestamp);
-          document.getElementById('last-update').textContent = 'Last updated: ' + updateTime.toLocaleTimeString();
-          updateSupervisorDropdown();
-          filterVariantsBySupervisor();
-          document.getElementById('total-variants').textContent = filteredVariants.length;
-          if (currentVariantIndex >= filteredVariants.length) currentVariantIndex = 0;
-          if (filteredVariants.length > 0) displayVariant(currentVariantIndex);
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    }
 
-    // Update supervisor dropdown list
-    function updateSupervisorDropdown() {
-      const selectElement = document.getElementById('supervisor-select');
-      const currentValue = selectElement.value;
-      while (selectElement.options.length > 1) selectElement.remove(1);
-      if (productionData.supervisors && productionData.supervisors.length > 0) {
-        productionData.supervisors.forEach(supervisor => {
-          const option = document.createElement('option');
-          option.value = supervisor.name;
-          option.textContent = supervisor.name;
-          selectElement.appendChild(option);
-        });
-      }
-      selectElement.value = Array.from(selectElement.options).some(opt => opt.value === currentValue) ? currentValue : 'all';
-      selectedSupervisor = selectElement.value;
-    }
+        // Fetch production data from GitHub
+        async function fetchProductionData() {
+            try {
+                const cacheBuster = '?_=' + new Date().getTime();
+                const fullUrl = DATA_URL + cacheBuster;
+                const response = await fetch(fullUrl);
 
-    // Filter variants by selected supervisor
-    function filterVariantsBySupervisor() {
-      if (selectedSupervisor === 'all') {
-        filteredVariants = productionData.variants || [];
-      } else {
-        const supervisor = productionData.supervisors.find(s => s.name === selectedSupervisor);
-        if (supervisor && supervisor.variants) {
-          const supVariantKeys = Object.keys(supervisor.variants);
-          filteredVariants = productionData.variants.filter(variant => supVariantKeys.includes(variant.variant));
-        } else {
-          filteredVariants = [];
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (parseError) {
+                    throw parseError;
+                }
+
+                if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
+                    productionData = data;
+                    lastUpdateTime = data.timestamp;
+
+                    const updateTime = new Date(data.timestamp);
+                    document.getElementById('last-update').textContent = 
+                        'Last updated: ' + updateTime.toLocaleTimeString();
+
+                    updateSupervisorDropdown();
+                    filterVariantsBySupervisor();
+
+                    document.getElementById('total-variants').textContent = filteredVariants.length;
+
+                    if (currentVariantIndex >= filteredVariants.length) {
+                        currentVariantIndex = 0;
+                    }
+
+                    if (filteredVariants.length > 0) {
+                        displayVariant(currentVariantIndex);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         }
-      }
-      document.getElementById('total-variants').textContent = filteredVariants.length;
-    }
 
-    // Update date and time on the dashboard
-    function updateDateTime() {
-      const now = new Date();
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
-      document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    }
+        // Update supervisor dropdown
+        function updateSupervisorDropdown() {
+            const selectElement = document.getElementById('supervisor-select');
+            const currentValue = selectElement.value;
 
-    // Display the variant data on the dashboard
-    function displayVariant(index) {
-      if (!filteredVariants || filteredVariants.length === 0) return;
-      const variant = filteredVariants[index];
-      document.getElementById('variant-name').textContent = `Product Variant: ${variant.variant}`;
-      document.getElementById('cycle-time').textContent = `Target Cycle Time: ${variant.cycleTime} sec/unit`;
-      document.getElementById('current-variant-index').textContent = (index + 1);
-      updateTotalsDisplay(variant);
-      createHourlyChart(variant);
-    }
+            while (selectElement.options.length > 1) {
+                selectElement.remove(1);
+            }
 
-    // Update totals display using pre-calculated values from the JSON
-    function updateTotalsDisplay(variant) {
-      const totalsDisplay = document.getElementById('totals-display');
-      totalsDisplay.innerHTML = '';
-      const totalActual = document.createElement('div');
-      totalActual.className = 'total-item';
-      totalActual.innerHTML = `<div class="total-label">Current Total</div><div class="total-value total-actual">${variant.currentTotal || 0}</div>`;
-      totalsDisplay.appendChild(totalActual);
-      const totalTarget = document.createElement('div');
-      totalTarget.className = 'total-item';
-      totalTarget.innerHTML = `<div class="total-label">Daily Target</div><div class="total-value total-target">${variant.dailyTarget || 0}</div>`;
-      totalsDisplay.appendChild(totalTarget);
-      const totalProgress = document.createElement('div');
-      totalProgress.className = 'total-item';
-      totalProgress.innerHTML = `<div class="total-label">Progress</div><div class="total-value total-progress">${variant.progress || 0}%</div>`;
-      totalsDisplay.appendChild(totalProgress);
-      if (variant.devicesPerBox) {
-        const boxesCompleted = variant.currentBoxTotal || Math.floor(variant.currentTotal / variant.devicesPerBox);
-        const totalBoxes = variant.dailyBoxTarget || Math.ceil(variant.dailyTarget / variant.devicesPerBox);
-        const boxInfo = document.createElement('div');
-        boxInfo.className = 'total-item';
-        boxInfo.innerHTML = `<div class="total-label">Boxes</div><div class="total-value">${boxesCompleted} / ${totalBoxes}</div>`;
-        totalsDisplay.appendChild(boxInfo);
-      }
-    }
+            if (productionData.supervisors && productionData.supervisors.length > 0) {
+                productionData.supervisors.forEach(supervisor => {
+                    const option = document.createElement('option');
+                    option.value = supervisor.name;
+                    option.textContent = supervisor.name;
+                    selectElement.appendChild(option);
+                });
+            }
 
-    // Create hourly production chart using pre-calculated arrays
-    function createHourlyChart(variant) {
-      const chartContainer = document.getElementById('hourly-data');
-      chartContainer.innerHTML = '';
-      const now = new Date();
-      const currentHour = now.getHours();
-      const startHour = 7;
-      const endHour = Math.min(currentHour + 1, 19);
-      let maxTarget = 0;
-      let maxProduction = 0;
-      for (let i = startHour; i < endHour; i++) {
-        if (variant.hourlyTargetArray && variant.hourlyTargetArray[i]) {
-          maxTarget = Math.max(maxTarget, variant.hourlyTargetArray[i]);
+            if (Array.from(selectElement.options).some(opt => opt.value === currentValue)) {
+                selectElement.value = currentValue;
+            } else {
+                selectElement.value = 'all';
+                selectedSupervisor = 'all';
+            }
         }
-        if (variant.hourlyProduction && variant.hourlyProduction[i]) {
-          maxProduction = Math.max(maxProduction, variant.hourlyProduction[i]);
+
+        // Filter variants by selected supervisor
+        function filterVariantsBySupervisor() {
+            if (selectedSupervisor === 'all') {
+                filteredVariants = productionData.variants || [];
+            } else {
+                const supervisor = productionData.supervisors.find(s => s.name === selectedSupervisor);
+
+                if (supervisor && supervisor.variants) {
+                    const supervisorVariantKeys = Object.keys(supervisor.variants);
+                    filteredVariants = productionData.variants.filter(variant => 
+                        supervisorVariantKeys.includes(variant.variant));
+                } else {
+                    filteredVariants = [];
+                }
+            }
+
+            document.getElementById('total-variants').textContent = filteredVariants.length;
         }
-      }
-      const maxValue = Math.max(maxTarget * 1.5, maxProduction * 1.2, 10);
-      for (let i = startHour; i < endHour; i++) {
-        const hourLabel = i < 10 ? `0${i}:00` : `${i}:00`;
-        const hourDiv = document.createElement('div');
-        hourDiv.className = 'hour-column';
-        const barContainer = document.createElement('div');
-        barContainer.className = 'bar-container';
-        if (variant.hourlyTargetArray && variant.hourlyTargetArray[i]) {
-          const targetLine = document.createElement('div');
-          targetLine.className = 'target-line';
-          targetLine.style.bottom = `${(variant.hourlyTargetArray[i] / maxValue) * 100}%`;
-          const targetLabel = document.createElement('div');
-          targetLabel.className = 'target-label';
-          targetLabel.textContent = variant.hourlyTargetArray[i];
-          targetLine.appendChild(targetLabel);
-          barContainer.appendChild(targetLine);
+
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
         }
-        const hourValue = variant.hourlyProduction[i] || 0;
-        const hourTarget = variant.hourlyTargetArray ? (variant.hourlyTargetArray[i] || 0) : 0;
-        const bar = document.createElement('div');
-        bar.className = 'bar';
-        if (hourValue >= hourTarget && hourTarget > 0) {
-          bar.classList.add('above-target');
-        } else if (hourValue > 0) {
-          bar.classList.add('below-target');
+
+        // Display data for the specified variant
+        function displayVariant(index) {
+            if (!filteredVariants || filteredVariants.length === 0) {
+                return;
+            }
+
+            const variant = filteredVariants[index];
+
+            document.getElementById('variant-name').textContent = `Product Variant: ${variant.variant}`;
+            document.getElementById('cycle-time').textContent = `Target Cycle Time: ${variant.cycleTime} sec/unit`;
+            document.getElementById('current-variant-index').textContent = (index + 1);
+
+            updateTotalsDisplay(variant);
+            createHourlyChart(variant);
         }
-        setTimeout(() => { bar.style.height = `${(hourValue / maxValue) * 100}%`; }, 100 * (i - startHour));
-        const barValue = document.createElement('div');
-        barValue.className = 'bar-value';
-        barValue.textContent = hourValue;
-        bar.appendChild(barValue);
-        barContainer.appendChild(bar);
-        hourDiv.appendChild(barContainer);
-        const hourLabelDiv = document.createElement('div');
-        hourLabelDiv.className = 'hour-label';
-        hourLabelDiv.textContent = hourLabel;
-        hourDiv.appendChild(hourLabelDiv);
-        chartContainer.appendChild(hourDiv);
-      }
-    }
 
-    // Cycle through variants
-    function cycleVariants() {
-      if (!filteredVariants || filteredVariants.length === 0) return;
-      updateCycleProgress(0);
-      currentVariantIndex = (currentVariantIndex + 1) % filteredVariants.length;
-      displayVariant(currentVariantIndex);
-      animateProgress();
-    }
+        // Update the totals display
+        function updateTotalsDisplay(variant) {
+            const totalsDisplay = document.getElementById('totals-display');
+            totalsDisplay.innerHTML = '';
 
-    // Animate cycle progress bar (visual timing indicator)
-    function animateProgress() {
-      let progress = 0;
-      const interval = 100;
-      const steps = CYCLE_INTERVAL / interval;
-      const progressInterval = setInterval(() => {
-        progress += (100 / steps);
-        if (progress > 100) { progress = 100; clearInterval(progressInterval); }
-        updateCycleProgress(progress);
-      }, interval);
-    }
+            const totalActual = document.createElement('div');
+            totalActual.className = 'total-item';
+            totalActual.innerHTML = `
+                <div class="total-label">Current Total</div>
+                <div class="total-value total-actual">${variant.currentTotal || 0}</div>
+            `;
+            totalsDisplay.appendChild(totalActual);
 
-    function updateCycleProgress(percent) {
-      document.getElementById('cycle-progress').style.width = `${percent}%`;
-    }
+            const totalTarget = document.createElement('div');
+            totalTarget.className = 'total-item';
+            totalTarget.innerHTML = `
+                <div class="total-label">Daily Target</div>
+                <div class="total-value total-target">${variant.dailyTarget || 0}</div>
+            `;
+            totalsDisplay.appendChild(totalTarget);
 
-    window.onload = initDashboard;
-  </script>
+            const progress = variant.currentTotal && variant.dailyTarget 
+                ? Math.floor((variant.currentTotal / variant.dailyTarget) * 100) 
+                : 0;
+
+            const totalProgress = document.createElement('div');
+            totalProgress.className = 'total-item';
+            totalProgress.innerHTML = `
+                <div class="total-label">Progress</div>
+                <div class="total-value total-progress">${progress}%</div>
+            `;
+            totalsDisplay.appendChild(totalProgress);
+
+            if (variant.devicesPerBox) {
+                const boxesCompleted = variant.currentBoxTotal || Math.floor(variant.currentTotal / variant.devicesPerBox);
+                const totalBoxes = variant.dailyBoxTarget || Math.ceil(variant.dailyTarget / variant.devicesPerBox);
+
+                const boxInfo = document.createElement('div');
+                boxInfo.className = 'total-item';
+                boxInfo.innerHTML = `
+                    <div class="total-label">Boxes</div>
+                    <div class="total-value">${boxesCompleted} / ${totalBoxes}</div>
+                `;
+                totalsDisplay.appendChild(boxInfo);
+            }
+        }
+
+        // Create the hourly production chart
+        function createHourlyChart(variant) {
+            const chartContainer = document.getElementById('hourly-data');
+            chartContainer.innerHTML = '';
+
+            const now = new Date();
+            const currentHour = now.getHours();
+
+            const startHour = 7;
+            const endHour = Math.min(currentHour + 1, 19);
+
+            let maxTarget = 0;
+            let maxProduction = 0;
+
+            for (let i = startHour; i < endHour; i++) {
+                if (variant.hourlyTargetArray && variant.hourlyTargetArray[i]) {
+                    maxTarget = Math.max(maxTarget, variant.hourlyTargetArray[i]);
+                }
+                if (variant.hourlyProduction && variant.hourlyProduction[i]) {
+                    maxProduction = Math.max(maxProduction, variant.hourlyProduction[i]);
+                }
+            }
+
+            const maxValue = Math.max(maxTarget * 1.5, maxProduction * 1.2, 10);
+
+            for (let i = startHour; i < endHour; i++) {
+                const hourLabel = i < 10 ? `0${i}:00` : `${i}:00`;
+
+                const hourDiv = document.createElement('div');
+                hourDiv.className = 'hour-column';
+
+                const barContainer = document.createElement('div');
+                barContainer.className = 'bar-container';
+
+                if (variant.hourlyTargetArray && variant.hourlyTargetArray[i]) {
+                    const targetLine = document.createElement('div');
+                    targetLine.className = 'target-line';
+                    targetLine.style.bottom = `${(variant.hourlyTargetArray[i] / maxValue) * 100}%`;
+
+                    const targetLabel = document.createElement('div');
+                    targetLabel.className = 'target-label';
+                    targetLabel.textContent = variant.hourlyTargetArray[i];
+                    targetLine.appendChild(targetLabel);
+
+                    barContainer.appendChild(targetLine);
+                }
+
+                const hourValue = variant.hourlyProduction[i] || 0;
+                const hourTarget = variant.hourlyTargetArray ? (variant.hourlyTargetArray[i] || 0) : 0;
+
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+
+                if (hourValue >= hourTarget && hourTarget > 0) {
+                    bar.classList.add('above-target');
+                } else if (hourValue > 0) {
+                    bar.classList.add('below-target');
+                }
+
+                setTimeout(() => {
+                    bar.style.height = `${(hourValue / maxValue) * 100}%`;
+                }, 100 * (i - startHour));
+
+                const barValue = document.createElement('div');
+                barValue.className = 'bar-value';
+                barValue.textContent = hourValue;
+                bar.appendChild(barValue);
+
+                barContainer.appendChild(bar);
+                hourDiv.appendChild(barContainer);
+
+                const hourLabelDiv = document.createElement('div');
+                hourLabelDiv.className = 'hour-label';
+                hourLabelDiv.textContent = hourLabel;
+                hourDiv.appendChild(hourLabelDiv);
+
+                chartContainer.appendChild(hourDiv);
+            }
+        }
+
+        // Cycle to the next variant
+        function cycleVariants() {
+            if (!filteredVariants || filteredVariants.length === 0) {
+                return;
+            }
+
+            updateCycleProgress(0);
+
+            currentVariantIndex = (currentVariantIndex + 1) % filteredVariants.length;
+            displayVariant(currentVariantIndex);
+
+            animateProgress();
+        }
+
+        // Animate the progress bar for timing
+        function animateProgress() {
+            let progress = 0;
+            const interval = 100;
+            const steps = CYCLE_INTERVAL / interval;
+
+            const progressInterval = setInterval(() => {
+                progress += (100 / steps);
+                if (progress > 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                }
+                updateCycleProgress(progress);
+            }, interval);
+        }
+
+        // Update the cycle progress bar
+        function updateCycleProgress(percent) {
+            document.getElementById('cycle-progress').style.width = `${percent}%`;
+        }
+
+        // Initialize the dashboard when the page loads
+        window.onload = initDashboard;
+    </script>
 </body>
 </html>
