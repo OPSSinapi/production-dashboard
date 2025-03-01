@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Dashboard</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { 
+            LineChart, 
+            Line, 
+            BarChart, 
+            Bar, 
+            XAxis, 
+            YAxis, 
+            CartesianGrid, 
+            Tooltip, 
+            Legend, 
+            ResponsiveContainer 
+        } = Recharts;
+
+        const ProductionDashboard = () => {
+            const [productionData, setProductionData] = useState(null);
+            const [currentVariantIndex, setCurrentVariantIndex] = useState(0);
+            const [isAutocycling, setIsAutocycling] = useState(true);
+            const [currentTime, setCurrentTime] = useState(new Date());
+
+            // Fetch production data
+            useEffect(() => {
+                const fetchProductionData = async () => {
+                    try {
+                        // Replace with your actual data source path
+                        const response = await axios.get('data.json');
+                        setProductionData(response.data);
+                    } catch (error) {
+                        console.error('Error fetching production data:', error);
+                    }
+                };
+
+                fetchProductionData();
+            }, []);
+
+            // Time and cycling logic
+            useEffect(() => {
+                if (!productionData) return;
+
+                // Update current time every minute
+                const timeInterval = setInterval(() => {
+                    setCurrentTime(new Date());
+                }, 60000);
+
+                if (!isAutocycling) return;
+
+                const cycleInterval = setInterval(() => {
+                    // Move to next variant 
+                    setCurrentVariantIndex((prev) => (prev + 1) % productionData.variants.length);
+                }, 10000); // Change every 10 seconds
+
+                return () => {
+                    clearInterval(timeInterval);
+                    clearInterval(cycleInterval);
+                };
+            }, [productionData, currentVariantIndex, isAutocycling]);
+
+            // If data is not loaded yet
+            if (!productionData) {
+                return <div>Loading production data...</div>;
+            }
+
+            // Extract current variant
+            const currentVariant = productionData.variants[currentVariantIndex];
+
+            // Prepare hourly data for chart
+            const prepareHourlyChartData = () => {
+                const now = currentTime;
+                const currentHour = now.getHours();
+                
+                // Find the most recent hour block
+                const hourlyData = currentVariant.hourlyProduction;
+                const hourlyTargets = currentVariant.hourlyTargets;
+                
+                // If it's before first hour block or after last, show the last block
+                if (currentHour < 8 || currentHour > 18) {
+                    const lastIndex = hourlyData.length - 1;
+                    return [{
+                        hour: hourlyTargets[lastIndex]?.hour || 'N/A',
+                        Production: hourlyData[lastIndex] || 0,
+                        Target: hourlyTargets[lastIndex]?.target || 0
+                    }];
+                }
+                
+                // Find the appropriate hour block
+                const blockIndex = hourlyTargets.findIndex(item => {
+                    const blockHour = parseInt(item.hour.split(':')[0]);
+                    return blockHour === currentHour;
+                });
+                
+                // If no exact match, use the most recent past block
+                const useIndex = blockIndex !== -1 ? blockIndex : 
+                    hourlyTargets.filter(item => 
+                        parseInt(item.hour.split(':')[0]) <= currentHour
+                    ).length - 1;
+                
+                return [{
+                    hour: hourlyTargets[useIndex]?.hour || 'N/A',
+                    Production: hourlyData[useIndex] || 0,
+                    Target: hourlyTargets[useIndex]?.target || 0
+                }];
+            };
+
+            return (
+                <div className="p-4 bg-gray-100 min-h-screen flex flex-col">
+                    <div className="text-center mb-4">
+                        <h1 className="text-3xl font-bold text-gray-800">Production Dashboard</h1>
+                        <p className="text-xl text-gray-600">Medical Device Assembly Plant</p>
+                    </div>
+
+                    <div className="bg-white shadow-lg rounded-lg p-6 flex-grow">
+                        <div className="mb-4 flex justify-between items-center">
+                            <div>
+                                <h2 className="text-2xl font-semibold text-gray-700">
+                                    Variant: {currentVariant.variant}
+                                </h2>
+                            </div>
+                            <div className="flex space-x-2">
+                                <button 
+                                    onClick={() => setIsAutocycling(!isAutocycling)}
+                                    className={`px-4 py-2 rounded ${isAutocycling ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}
+                                >
+                                    {isAutocycling ? 'Stop Auto-Cycle' : 'Start Auto-Cycle'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h4 className="text-lg font-semibold mb-2">Cumulative Daily Production Progress</h4>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <LineChart data={currentVariant.cumulativeProduction}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="hour" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Line 
+                                            type="monotone" 
+                                            dataKey="production" 
+                                            name="Cumulative Production" 
+                                            stroke="#3B82F6" 
+                                            strokeWidth={3}
+                                        />
+                                        <Line 
+                                            type="monotone" 
+                                            dataKey={(data) => 
+                                                currentVariant.cumulativeTargets.find(t => t.hour === data.hour)?.target
+                                            } 
+                                            name="Cumulative Target" 
+                                            stroke="#10B981" 
+                                            strokeWidth={3}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h4 className="text-lg font-semibold mb-2">Hourly Production Progress</h4>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart data={prepareHourlyChartData()}>
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="hour" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Bar 
+                                            dataKey="Production" 
+                                            fill="#3B82F6"
+                                            label={{ position: 'top' }}
+                                        />
+                                        <Bar 
+                                            dataKey="Target" 
+                                            fill="#10B981"
+                                            label={{ position: 'top' }}
+                                        />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        <div className="bg-gray-50 p-4 rounded-lg mt-4">
+                            <h4 className="text-lg font-semibold mb-2">Key Metrics</h4>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="flex justify-between">
+                                    <span>Current Total:</span>
+                                    <span className="font-bold">{currentVariant.currentTotal}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Daily Target:</span>
+                                    <span className="font-bold">{currentVariant.dailyTarget}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Hourly Target:</span>
+                                    <span className="font-bold">{currentVariant.hourlyTarget}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Progress:</span>
+                                    <span className={`font-bold ${currentVariant.progressPercentage >= 100 ? 'text-green-600' : 'text-blue-600'}`}>
+                                        {currentVariant.progressPercentage}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="text-center mt-4 text-gray-500">
+                        Current Time: {currentTime.toLocaleString()} | 
+                        Last Data Update: {new Date(productionData.timestamp).toLocaleString()}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<ProductionDashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>
