@@ -897,38 +897,59 @@
             // Prepare data
             const dataMap = new Map();
             
-            // Get work start and end time
-            let startTime = "07:30"; // Default start time
-            let endTime = "18:30";   // Default end time
-            
-            if (variant["Start Time"]) {
-                startTime = variant["Start Time"];
-            }
-            
-            if (variant["End Time"]) {
-                endTime = variant["End Time"];
-            }
-            
-            // Process cumulative targets
-            if (variant.cumulativeTargets && variant.cumulativeTargets.length > 0) {
-                variant.cumulativeTargets.forEach(item => {
-                    if (!dataMap.has(item.hour)) {
-                        dataMap.set(item.hour, { hour: item.hour, target: item.target, production: 0 });
-                    } else {
-                        dataMap.get(item.hour).target = item.target;
-                    }
-                });
-            }
-            
-            // Process cumulative production
-            if (variant.cumulativeProduction && variant.cumulativeProduction.length > 0) {
-                variant.cumulativeProduction.forEach(item => {
-                    if (!dataMap.has(item.hour)) {
-                        dataMap.set(item.hour, { hour: item.hour, target: 0, production: item.production });
-                    } else {
-                        dataMap.get(item.hour).production = item.production;
-                    }
-                });
+            // Check if we have the new object format for cumulativeProduction and cumulativeTargets
+            const hasNewFormat = variant.cumulativeProduction && 
+                                Array.isArray(variant.cumulativeProduction) && 
+                                variant.cumulativeProduction.length > 0 && 
+                                variant.cumulativeProduction[0].hour !== undefined;
+                                
+            if (hasNewFormat) {
+                // Process cumulative targets first
+                if (variant.cumulativeTargets && variant.cumulativeTargets.length > 0) {
+                    variant.cumulativeTargets.forEach(item => {
+                        if (!dataMap.has(item.hour)) {
+                            dataMap.set(item.hour, { hour: item.hour, target: item.target, production: 0 });
+                        } else {
+                            dataMap.get(item.hour).target = item.target;
+                        }
+                    });
+                }
+                
+                // Process cumulative production
+                if (variant.cumulativeProduction && variant.cumulativeProduction.length > 0) {
+                    variant.cumulativeProduction.forEach(item => {
+                        if (!dataMap.has(item.hour)) {
+                            dataMap.set(item.hour, { hour: item.hour, target: 0, production: item.production });
+                        } else {
+                            dataMap.get(item.hour).production = item.production;
+                        }
+                    });
+                }
+            } else {
+                // Handle old format (array of values)
+                // This is just for backwards compatibility
+                const hours = [];
+                for (let i = 7; i <= 18; i++) {
+                    hours.push(`${String(i).padStart(2, '0')}:30`);
+                }
+                
+                if (variant.cumulativeTargets && Array.isArray(variant.cumulativeTargets)) {
+                    variant.cumulativeTargets.forEach((target, index) => {
+                        const hour = hours[index] || `${String(index + 7).padStart(2, '0')}:30`;
+                        dataMap.set(hour, { hour, target, production: 0 });
+                    });
+                }
+                
+                if (variant.cumulativeProduction && Array.isArray(variant.cumulativeProduction)) {
+                    variant.cumulativeProduction.forEach((production, index) => {
+                        const hour = hours[index] || `${String(index + 7).padStart(2, '0')}:30`;
+                        if (dataMap.has(hour)) {
+                            dataMap.get(hour).production = production;
+                        } else {
+                            dataMap.set(hour, { hour, target: 0, production });
+                        }
+                    });
+                }
             }
             
             // Convert map to array and sort by hour
@@ -1077,19 +1098,17 @@
             const chartContainer = document.getElementById('hourly-chart');
             chartContainer.innerHTML = '';
 
-            // Get current hour
-            const now = new Date();
-            const currentHour = now.getHours();
-            
-            // Get the latest hour with data
+            // Get the latest hour with data from hourlyProduction
             let latestHour = null;
             let latestProduction = 0;
             let latestTarget = 0;
             
-            // First try to find the latest hour in hourlyTargets
-            if (variant.hourlyTargets && variant.hourlyTargets.length > 0) {
-                // Sort by hour in descending order
-                const sortedHourTargets = [...variant.hourlyTargets].sort((a, b) => {
+            // Check if hourlyProduction is an array of objects with hour and production
+            if (variant.hourlyProduction && Array.isArray(variant.hourlyProduction) && 
+                variant.hourlyProduction.length > 0 && variant.hourlyProduction[0].hour) {
+                
+                // Sort hourlyProduction by hour in descending order
+                const sortedProduction = [...variant.hourlyProduction].sort((a, b) => {
                     const timeA = a.hour.split(':').map(Number);
                     const timeB = b.hour.split(':').map(Number);
                     
@@ -1099,22 +1118,37 @@
                     return timeB[1] - timeA[1];
                 });
                 
-                // Get the latest hour and its target
-                latestHour = sortedHourTargets[0].hour;
-                latestTarget = sortedHourTargets[0].target;
-            } else {
-                // Fallback to hourlyTarget
-                latestTarget = variant.hourlyTarget || 0;
-                latestHour = `${String(currentHour).padStart(2, '0')}:30`;
+                // Get the latest hour with production data
+                for (const item of sortedProduction) {
+                    if (item.production !== undefined && item.production > 0) {
+                        latestHour = item.hour;
+                        latestProduction = item.production;
+                        break;
+                    }
+                }
+                
+                // If no production data found, use the latest hour anyway
+                if (!latestHour && sortedProduction.length > 0) {
+                    latestHour = sortedProduction[0].hour;
+                    latestProduction = sortedProduction[0].production || 0;
+                }
             }
             
-            // Find production for the latest hour
-            if (variant.hourlyProduction) {
-                // Extract the hour from latestHour (format HH:MM)
-                const hour = parseInt(latestHour.split(':')[0]);
-                
-                // Get production for that hour
-                latestProduction = variant.hourlyProduction[hour] || 0;
+            // Now find the matching target for that hour
+            if (latestHour && variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+                const targetForHour = variant.hourlyTargets.find(item => item.hour === latestHour);
+                if (targetForHour) {
+                    latestTarget = targetForHour.target;
+                }
+            }
+            
+            // If still no hour found, use fallback
+            if (!latestHour) {
+                const now = new Date();
+                const currentHour = now.getHours();
+                latestHour = `${String(currentHour).padStart(2, '0')}:30`;
+                latestTarget = variant.hourlyTarget || 0;
+                latestProduction = 0;
             }
             
             // Find max value for scaling
