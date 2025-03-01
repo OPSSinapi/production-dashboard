@@ -156,9 +156,115 @@
             min-height: 300px; /* Ensure minimum height for charts */
         }
 
-        canvas {
-            width: 100%;
+        /* Line Chart Styling (Cumulative Daily Production Progress) */
+        .line-chart {
+            position: relative;
             height: 100%;
+            width: 100%;
+        }
+
+        .line-chart-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 20px; /* Space for x-axis labels */
+            border-left: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .line-chart-grid::before,
+        .line-chart-grid::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: #ddd;
+            left: 0;
+        }
+
+        .line-chart-grid::before {
+            top: 25%;
+        }
+
+        .line-chart-grid::after {
+            top: 75%;
+        }
+
+        .line-chart-labels {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--dark-color);
+        }
+
+        .line-chart-labels div {
+            text-align: center;
+            flex: 1;
+        }
+
+        .line-point {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: transparent;
+            transform-origin: bottom;
+        }
+
+        .production-line .line-point {
+            background-color: var(--secondary-color);
+        }
+
+        .target-line .line-point {
+            background-color: var(--success-color);
+        }
+
+        /* Bar Chart Styling (Hourly Production Progress) */
+        .bar-chart {
+            display: flex;
+            height: 100%;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 20px;
+            padding-top: 20px;
+        }
+
+        .bar-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px; /* Increased width for larger bars */
+        }
+
+        .bar {
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            transition: height 1s ease-in-out;
+        }
+
+        .production-bar {
+            background-color: var(--secondary-color);
+        }
+
+        .target-bar {
+            background-color: var(--success-color);
+        }
+
+        .bar-value {
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--dark-color);
+            font-size: 1.1rem;
+        }
+
+        .bar-label {
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--dark-color);
         }
 
         .legend {
@@ -403,6 +509,10 @@
                 min-height: 250px;
             }
 
+            .bar-column {
+                width: 80px; /* Adjust bar width on smaller screens */
+            }
+
             .debug-popup {
                 width: 95%;
                 max-width: 95%;
@@ -447,7 +557,7 @@
                     <div class="chart">
                         <div class="chart-title">Cumulative Daily Production Progress</div>
                         <div class="chart-area">
-                            <canvas id="cumulative-chart"></canvas>
+                            <div class="line-chart" id="cumulative-chart"></div>
                             <div class="legend">
                                 <div class="legend-item">
                                     <div class="legend-color production-color"></div>
@@ -463,7 +573,7 @@
                     <div class="chart">
                         <div class="chart-title">Hourly Production Progress</div>
                         <div class="chart-area">
-                            <canvas id="hourly-chart"></canvas>
+                            <div class="bar-chart" id="hourly-chart"></div>
                             <div class="legend">
                                 <div class="legend-item">
                                     <div class="legend-color production-color"></div>
@@ -736,14 +846,10 @@
             }
         }
 
-        // Render the cumulative chart (using cumulativeProduction and cumulativeTargets) with Canvas
+        // Render the cumulative chart (using cumulativeProduction and cumulativeTargets) with CSS
         function renderCumulativeChart(variant) {
-            const canvas = document.getElementById('cumulative-chart');
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width = canvas.parentElement.clientWidth;
-            const height = canvas.height = canvas.parentElement.clientHeight - 40; // Account for legend space
-
-            ctx.clearRect(0, 0, width, height);
+            const chartContainer = document.getElementById('cumulative-chart');
+            chartContainer.innerHTML = '';
 
             // Prepare data by mapping cumulativeProduction and cumulativeTargets into a table
             const hours = [
@@ -786,7 +892,7 @@
             });
 
             if (sortedData.length === 0) {
-                ctx.fillText('No data available', width / 2, height / 2, width);
+                chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
                 return;
             }
 
@@ -797,78 +903,64 @@
             });
             maxValue = maxValue * 1.1; // Add some headroom
 
-            // Draw grid
-            ctx.strokeStyle = '#ddd';
-            ctx.lineWidth = 1;
-            const gridHeight = height - 40; // Leave space for labels
-            const gridWidth = width - 60; // Leave space for y-axis
-            const numGridLines = 5;
-            const stepX = gridWidth / (sortedData.length - 1);
-            const stepY = gridHeight / numGridLines;
-
-            // Horizontal grid lines
-            for (let i = 0; i <= numGridLines; i++) {
-                ctx.beginPath();
-                ctx.moveTo(50, 20 + i * stepY);
-                ctx.lineTo(50 + gridWidth, 20 + i * stepY);
-                ctx.stroke();
-            }
-
-            // Vertical grid lines
-            for (let i = 0; i < sortedData.length; i++) {
-                ctx.beginPath();
-                ctx.moveTo(50 + i * stepX, 20);
-                ctx.lineTo(50 + i * stepX, 20 + gridHeight);
-                ctx.stroke();
-            }
-
-            // Draw x-axis labels
-            ctx.fillStyle = var(--dark-color);
-            ctx.font = '0.8rem sans-serif';
+            // Create grid and labels
+            chartContainer.innerHTML += '<div class="line-chart-grid"></div>';
+            const labels = document.createElement('div');
+            labels.className = 'line-chart-labels';
             sortedData.forEach((item, index) => {
-                ctx.fillText(item.hour, 50 + index * stepX - 10, height - 10);
+                const label = document.createElement('div');
+                label.textContent = item.hour;
+                label.style.width = `${100 / sortedData.length}%`;
+                labels.appendChild(label);
             });
+            chartContainer.appendChild(labels);
 
-            // Draw y-axis labels (simplified for brevity, could be more detailed)
-            for (let i = 0; i <= numGridLines; i++) {
-                const value = Math.round((numGridLines - i) * (maxValue / numGridLines));
-                ctx.fillText(value, 20, 20 + i * stepY + 5);
-            }
-
-            // Draw lines for production (blue) and target (green)
-            ctx.lineWidth = 3;
-
-            // Production line (blue)
-            ctx.strokeStyle = var(--secondary-color);
-            ctx.beginPath();
+            // Create line points for production (blue)
+            const productionContainer = document.createElement('div');
+            productionContainer.className = 'production-line';
             sortedData.forEach((item, index) => {
-                const x = 50 + index * stepX;
-                const y = 20 + gridHeight - ((item.production / maxValue) * gridHeight);
-                if (index === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+                const point = document.createElement('div');
+                point.className = 'line-point';
+                const percentage = item.production / maxValue * 80; // 80% of height for scaling
+                point.style.left = `${(index / (sortedData.length - 1)) * 100}%`;
+                point.style.bottom = `${percentage}%`;
+                point.style.transform = `translateX(-50%) scaleY(${percentage > 0 ? 1 : 0})`;
+                productionContainer.appendChild(point);
             });
-            ctx.stroke();
+            chartContainer.appendChild(productionContainer);
 
-            // Target line (green)
-            ctx.strokeStyle = var(--success-color);
-            ctx.beginPath();
+            // Create line points for target (green)
+            const targetContainer = document.createElement('div');
+            targetContainer.className = 'target-line';
             sortedData.forEach((item, index) => {
-                const x = 50 + index * stepX;
-                const y = 20 + gridHeight - ((item.target / maxValue) * gridHeight);
-                if (index === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+                const point = document.createElement('div');
+                point.className = 'line-point';
+                const percentage = item.target / maxValue * 80; // 80% of height for scaling
+                point.style.left = `${(index / (sortedData.length - 1)) * 100}%`;
+                point.style.bottom = `${percentage}%`;
+                point.style.transform = `translateX(-50%) scaleY(${percentage > 0 ? 1 : 0})`;
+                targetContainer.appendChild(point);
             });
-            ctx.stroke();
+            chartContainer.appendChild(targetContainer);
+
+            // Connect points with pseudo-elements or additional styling for smooth lines (simplified)
+            productionContainer.style.position = 'absolute';
+            productionContainer.style.top = '20px';
+            productionContainer.style.left = '0';
+            productionContainer.style.width = '100%';
+            productionContainer.style.height = '80%';
+
+            targetContainer.style.position = 'absolute';
+            targetContainer.style.top = '20px';
+            targetContainer.style.left = '0';
+            targetContainer.style.width = '100%';
+            targetContainer.style.height = '80%';
         }
 
-        // Render the hourly bar chart (using hourlyProduction and hourlyTargets) with Canvas
+        // Render the hourly bar chart (using hourlyProduction and hourlyTargets) with CSS
         function renderHourlyChart(variant) {
-            const canvas = document.getElementById('hourly-chart');
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width = canvas.parentElement.clientWidth;
-            const height = canvas.height = canvas.parentElement.clientHeight - 40; // Account for legend space
-
-            ctx.clearRect(0, 0, width, height);
+            const chartContainer = document.getElementById('hourly-chart');
+            chartContainer.innerHTML = '';
 
             // Prepare data by mapping hourlyProduction and hourlyTargets into a table
             const hours = [
@@ -946,29 +1038,47 @@
             const minValue = 50; // Higher minimum value to ensure larger bars
             const maxValue = Math.max(production, target, minValue) * 2; // Increased scaling factor for larger bars
 
-            // Draw bars
-            const barWidth = 80;
-            const gap = 20;
-            const totalWidth = barWidth * 2 + gap;
-            const xOffset = (width - totalWidth) / 2;
-
-            ctx.fillStyle = var(--secondary-color);
-            const productionHeight = (production / maxValue) * (height - 40); // Leave space for labels
-            ctx.fillRect(xOffset, height - 40 - productionHeight, barWidth, productionHeight);
-
-            ctx.fillStyle = var(--success-color);
-            const targetHeight = (target / maxValue) * (height - 40);
-            ctx.fillRect(xOffset + barWidth + gap, height - 40 - targetHeight, barWidth, targetHeight);
-
-            // Draw bar labels and values
-            ctx.fillStyle = var(--dark-color);
-            ctx.font = '1.1rem sans-serif';
-            ctx.fillText(production, xOffset + barWidth / 2 - 10, height - 50);
-            ctx.fillText(target, xOffset + barWidth + gap + barWidth / 2 - 10, height - 50);
-
-            // Draw bar labels (Production and Target)
-            ctx.fillText('Production', xOffset + barWidth / 2 - 20, height - 20);
-            ctx.fillText('Target', xOffset + barWidth + gap + barWidth / 2 - 20, height - 20);
+            // Create production bar
+            const productionColumn = document.createElement('div');
+            productionColumn.className = 'bar-column';
+            
+            const productionBar = document.createElement('div');
+            productionBar.className = 'bar production-bar';
+            productionBar.style.height = `${Math.max((production / maxValue) * 80, 20)}%`; // Minimum 20% height for visibility, 80% of chart height
+            
+            const productionValue = document.createElement('div');
+            productionValue.className = 'bar-value';
+            productionValue.textContent = production;
+            productionColumn.appendChild(productionBar);
+            productionColumn.appendChild(productionValue);
+            
+            const productionLabel = document.createElement('div');
+            productionLabel.className = 'bar-label';
+            productionLabel.textContent = 'Production';
+            productionColumn.appendChild(productionLabel);
+            
+            chartContainer.appendChild(productionColumn);
+            
+            // Create target bar
+            const targetColumn = document.createElement('div');
+            targetColumn.className = 'bar-column';
+            
+            const targetBar = document.createElement('div');
+            targetBar.className = 'bar target-bar';
+            targetBar.style.height = `${Math.max((target / maxValue) * 80, 20)}%`; // Minimum 20% height for visibility, 80% of chart height
+            
+            const targetValue = document.createElement('div');
+            targetValue.className = 'bar-value';
+            targetValue.textContent = target;
+            targetColumn.appendChild(targetBar);
+            targetColumn.appendChild(targetValue);
+            
+            const targetLabel = document.createElement('div');
+            targetLabel.className = 'bar-label';
+            targetLabel.textContent = 'Target';
+            targetColumn.appendChild(targetLabel);
+            
+            chartContainer.appendChild(targetColumn);
         }
 
         // Add fallback data if fetch fails
@@ -1044,11 +1154,9 @@
             totalsDisplay.innerHTML = `<div class="${isLoading ? 'loading' : 'error'}">${message}</div>`;
             document.getElementById('variant-name').textContent = 'Loading...';
             document.getElementById('cycle-time').textContent = 'Target Cycle Time: Loading...';
-            const charts = document.querySelectorAll('canvas');
+            const charts = document.querySelectorAll('.line-chart, .bar-chart');
             charts.forEach(chart => {
-                const ctx = chart.getContext('2d');
-                ctx.clearRect(0, 0, chart.width, chart.height);
-                ctx.fillText('No data available', chart.width / 2, chart.height / 2, chart.width);
+                chart.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
             });
         }
 
