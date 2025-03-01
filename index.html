@@ -6,17 +6,25 @@
     <title>Production Dashboard</title>
     <style>
         :root {
-            --primary-color: #1a2a3a;
-            --secondary-color: #4a90e2;
-            --success-color: #50c878;
-            --warning-color: #f4a261;
-            --danger-color: #e41e3f;
-            --light-color: #f5f7fa;
-            --dark-color: #2d3e50;
-            --break-color: #f0f5fa;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --text-color: #333;
-            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --primary-color: #1e3a5f;
+            --secondary-color: #3b82f6;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-color: #f3f4f6;
+            --dark-color: #1f2937;
+            --break-color: #e5e7eb;
+            --highlight-color: #a5b4fc;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            --text-color: #374151;
+            --font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            src: url('https://rsms.me/inter/inter.css') format('woff2');
+            font-weight: 400 700;
+            font-display: swap;
         }
 
         body {
@@ -32,9 +40,9 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            padding: 20px 30px;
+            padding: 20px 40px;
             box-sizing: border-box;
-            gap: 20px;
+            gap: 25px;
         }
 
         .header {
@@ -42,21 +50,21 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid var(--secondary-color);
-            box-shadow: 0 2px 5px var(--shadow-color);
+            padding-bottom: 20px;
+            border-bottom: 4px solid var(--secondary-color);
+            box-shadow: 0 4px 6px var(--shadow-color);
         }
 
         .title {
-            font-size: 2.8rem;
+            font-size: 3rem;
             font-weight: 700;
             color: var(--primary-color);
             letter-spacing: -0.5px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .subtitle {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             color: var(--secondary-color);
             font-weight: 500;
             margin-top: 5px;
@@ -64,7 +72,7 @@
 
         .date-time {
             text-align: right;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         .date {
@@ -73,7 +81,7 @@
         }
 
         .time {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             margin-top: 5px;
             color: var(--text-color);
             font-weight: 500;
@@ -83,69 +91,72 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
         .variant-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: var(--dark-color);
+            background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
             color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px var(--shadow-color);
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px var(--shadow-color);
         }
 
         .variant-name, .cycle-time {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .chart-container {
             flex: 1;
             background-color: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 6px 12px var(--shadow-color);
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 8px 16px var(--shadow-color);
             overflow: hidden;
             position: relative;
         }
 
         .hourly-data {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
             height: 100%;
-            gap: 10px;
-            padding-bottom: 20px;
+            gap: 12px;
+            padding-bottom: 25px;
+            align-items: flex-end;
         }
 
         .hour-column {
-            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
-            padding: 0 8px;
             position: relative;
             min-width: 60px;
+            padding: 0 6px;
         }
 
         .hour-column.break-hour {
             background-color: var(--break-color);
-            border-radius: 5px;
+            border-radius: 6px;
+            border: 2px dashed var(--highlight-color);
         }
 
         .hour-label {
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 500;
-            margin-top: 8px;
+            margin-top: 10px;
             color: var(--text-color);
             text-align: center;
         }
 
         .bar-container {
             width: 100%;
-            height: 80%;
+            height: 85%;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -164,95 +175,98 @@
 
         .target-label {
             position: absolute;
-            top: -20px;
-            right: -30px;
+            top: -22px;
+            right: -35px;
             color: var(--danger-color);
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             font-weight: 500;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2px 6px;
-            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 4px 8px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px var(--shadow-color);
         }
 
         .bar {
             width: 100%;
             background-color: var(--secondary-color);
-            border-radius: 4px 4px 0 0;
+            border-radius: 6px 6px 0 0;
             position: relative;
-            transition: height 0.8s ease;
+            transition: height 0.8s ease-out;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .bar.above-target {
-            background-color: var(--success-color);
+            background: linear-gradient(45deg, var(--success-color), #86efac);
         }
 
         .bar.below-target {
-            background-color: var(--danger-color);
+            background: linear-gradient(45deg, var(--danger-color), #f87171);
         }
 
         .bar-value {
             position: absolute;
-            top: -18px;
+            top: -20px;
             width: 100%;
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 500;
             color: var(--text-color);
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2px 4px;
-            border-radius: 3px;
-            box-shadow: 0 1px 2px var(--shadow-color);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 4px 6px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            opacity: 0.9;
         }
 
         .schedule-marker {
             position: absolute;
             height: 100%;
-            width: 2px;
+            width: 3px;
             top: 0;
             z-index: 10;
+            border-radius: 2px;
         }
 
         .start-marker {
-            background-color: var(--success-color);
-            box-shadow: 0 0 5px var(--success-color);
+            background: linear-gradient(0deg, var(--success-color), #4ade80);
+            box-shadow: 0 0 8px var(--success-color);
         }
 
         .end-marker {
-            background-color: var(--danger-color);
-            box-shadow: 0 0 5px var(--danger-color);
+            background: linear-gradient(0deg, var(--danger-color), #f43f5e);
+            box-shadow: 0 0 8px var(--danger-color);
         }
 
         .footer {
             margin-top: 15px;
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: var(--dark-color);
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
-            box-shadow: 0 2px 5px var(--shadow-color);
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px var(--shadow-color);
         }
 
         .progress-bar {
-            height: 8px;
+            height: 10px;
             background-color: var(--light-color);
-            border-radius: 5px;
-            margin-top: 8px;
+            border-radius: 6px;
+            margin-top: 10px;
             overflow: hidden;
-            box-shadow: inset 0 1px 2px var(--shadow-color);
+            box-shadow: inset 0 2px 4px var(--shadow-color);
         }
 
         .progress {
             height: 100%;
-            background-color: var(--secondary-color);
-            transition: width 0.5s linear;
-            border-radius: 5px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(90deg, var(--secondary-color), #93c5fd);
+            transition: width 0.5s ease-out;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .update-info {
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: var(--dark-color);
             text-align: right;
             margin-top: 5px;
@@ -260,21 +274,19 @@
         }
 
         .totals-display {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 15px;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
         }
 
         .total-item {
-            flex: 1;
             text-align: center;
-            padding: 12px;
+            padding: 15px;
             background-color: var(--light-color);
-            border-radius: 8px;
-            box-shadow: 0 2px 5px var(--shadow-color);
-            min-width: 120px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px var(--shadow-color);
         }
 
         .total-label {
@@ -284,7 +296,7 @@
         }
 
         .total-value {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
         }
 
         .total-target {
@@ -302,23 +314,24 @@
         .supervisor-filter {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .supervisor-filter select {
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 12px 18px;
+            border-radius: 10px;
             border: 2px solid var(--secondary-color);
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-family: var(--font-family);
             background-color: white;
-            box-shadow: 0 2px 5px var(--shadow-color);
-            transition: border-color 0.3s ease;
+            box-shadow: 0 4px 8px var(--shadow-color);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .supervisor-filter select:focus {
             outline: none;
             border-color: var(--primary-color);
+            box-shadow: 0 0 8px var(--secondary-color);
         }
     </style>
 </head>
@@ -548,7 +561,7 @@
             return null;
         }
 
-        // Create hourly chart with dynamic start/end times and breaks from data.json
+        // Create hourly chart with redesigned start/end and break visuals
         function createHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-data');
             chartContainer.innerHTML = '';
@@ -627,23 +640,37 @@
                 chartContainer.appendChild(hourDiv);
             }
 
-            // Add schedule markers dynamically from data.json
-            const chartWidth = chartContainer.parentElement.offsetWidth - 50; // Account for padding
+            // Add schedule markers dynamically from data.json with improved visuals
+            const chartWidth = chartContainer.parentElement.offsetWidth - 60; // Account for padding
             const hourWidth = chartWidth / (endHour - startHour + 1); // Include all hours
             const parentContainer = chartContainer.parentElement;
 
             const startMarker = document.createElement('div');
             startMarker.className = 'schedule-marker start-marker';
-            startMarker.style.left = '25px';
+            startMarker.style.left = '30px';
+            startMarker.style.width = '4px';
             startMarker.title = `Start: ${variant["Start Time"]}`;
             parentContainer.appendChild(startMarker);
 
             const endMarker = document.createElement('div');
             endMarker.className = 'schedule-marker end-marker';
-            endMarker.style.left = `${25 + (endHour - startHour) * hourWidth}px`;
-            endMarker.style.width = '3px'; // Slightly thicker for visibility
+            endMarker.style.left = `${30 + (endHour - startHour) * hourWidth}px`;
+            endMarker.style.width = '4px';
             endMarker.title = `End: ${variant["End Time"]}`;
             parentContainer.appendChild(endMarker);
+
+            // Add break window indicators as subtle overlays
+            breakHours.forEach(hour => {
+                const breakMarker = document.createElement('div');
+                breakMarker.style.position = 'absolute';
+                breakMarker.style.left = `${30 + (hour - startHour) * hourWidth}px`;
+                breakMarker.style.height = '100%';
+                breakMarker.style.width = '2px';
+                breakMarker.style.background = `linear-gradient(0deg, var(--highlight-color), rgba(165, 180, 252, 0.3))`;
+                breakMarker.style.zIndex = 5;
+                breakMarker.title = `Break: ${variant[`Break Start (Tea)`] || variant[`Break Start (Lunch)`] || variant[`OT Break Start (Tea)`]} - ${variant[`Break End (Tea)`] || variant[`Break End (Lunch)`] || variant[`OT Break End (Tea)`]}`;
+                parentContainer.appendChild(breakMarker);
+            });
         }
 
         // Cycle variants
