@@ -97,6 +97,21 @@
             font-size: clamp(1.2rem, 1.8vw, 1.8rem);
         }
 
+        .debug-button {
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: var(--danger-color);
+            margin-left: 10px;
+        }
+
+        .debug-button:hover {
+            background-color: #c0392b;
+        }
+
         .chart-container {
             flex: 1;
             background-color: white;
@@ -463,6 +478,82 @@
             color: #F59E0B;
         }
 
+        /* Debug Popup Styles */
+        .debug-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 80%;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 600px;
+        }
+
+        .debug-popup.show {
+            display: block;
+        }
+
+        .debug-popup-content {
+            font-size: 0.9rem;
+        }
+
+        .debug-popup table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .debug-popup th, .debug-popup td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .debug-popup th {
+            background-color: var(--light-color);
+            font-weight: bold;
+        }
+
+        .debug-popup .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--danger-color);
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .debug-popup .close-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Overlay for popup */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 900;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
         /* Media queries for responsiveness */
         @media (max-width: 1024px) {
             .charts-row {
@@ -475,6 +566,11 @@
 
             .dashboard-container {
                 padding: 10px;
+            }
+
+            .debug-popup {
+                width: 90%;
+                max-width: 90%;
             }
         }
 
@@ -500,6 +596,11 @@
             .bar-column {
                 width: 80px; /* Adjust bar width on smaller screens */
             }
+
+            .debug-popup {
+                width: 95%;
+                max-width: 95%;
+            }
         }
     </style>
 </head>
@@ -514,6 +615,7 @@
                 <div class="date" id="current-date">March 1, 2025</div>
                 <div class="time" id="current-time">Loading...</div>
                 <div class="update-info" id="last-update">Last updated: Never</div>
+                <button class="debug-button" onclick="showDebugPopup()">Show Debug Data</button>
             </div>
         </div>
 
@@ -581,6 +683,15 @@
             <div class="progress-bar">
                 <div class="progress" id="cycle-progress"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Debug Popup -->
+    <div class="overlay" id="overlay"></div>
+    <div class="debug-popup" id="debugPopup">
+        <button class="close-btn" onclick="hideDebugPopup()">Close</button>
+        <div class="debug-popup-content" id="debugPopupContent">
+            <!-- Tables will be inserted here dynamically -->
         </div>
     </div>
 
@@ -1178,6 +1289,82 @@
                     ? 'auto-cycle-button' 
                     : 'auto-cycle-button start';
             }
+        }
+
+        // Show debug popup
+        function showDebugPopup() {
+            const variant = filteredVariants[currentVariantIndex];
+            if (!variant) return;
+
+            const popupContent = document.getElementById('debugPopupContent');
+            popupContent.innerHTML = '';
+
+            // Cumulative Data Table
+            popupContent.innerHTML += '<h3>Cumulative Production & Target Data</h3>';
+            popupContent.innerHTML += '<table><thead><tr><th>Hour</th><th>Production</th><th>Target</th></tr></thead><tbody>';
+            const cumulativeHours = [
+                "08:30", "09:30", "10:30", "11:30", "12:30", "13:30", 
+                "14:30", "15:30", "16:30", "17:30", "18:30"
+            ];
+            const cumulativeDataMap = new Map();
+
+            if (variant.cumulativeTargets && Array.isArray(variant.cumulativeTargets)) {
+                variant.cumulativeTargets.forEach(item => {
+                    cumulativeDataMap.set(item.hour, { hour: item.hour, target: item.target || 0, production: 0 });
+                });
+            }
+
+            if (variant.cumulativeProduction && Array.isArray(variant.cumulativeProduction)) {
+                variant.cumulativeProduction.forEach(item => {
+                    if (cumulativeDataMap.has(item.hour)) {
+                        cumulativeDataMap.get(item.hour).production = item.production || 0;
+                    } else {
+                        cumulativeDataMap.set(item.hour, { hour: item.hour, target: 0, production: item.production || 0 });
+                    }
+                });
+            }
+
+            cumulativeHours.forEach(hour => {
+                const data = cumulativeDataMap.get(hour) || { hour, production: 0, target: 0 };
+                popupContent.innerHTML += `<tr><td>${data.hour}</td><td>${data.production}</td><td>${data.target}</td></tr>`;
+            });
+            popupContent.innerHTML += '</tbody></table>';
+
+            // Hourly Data Table
+            popupContent.innerHTML += '<h3>Hourly Production & Target Data</h3>';
+            popupContent.innerHTML += '<table><thead><tr><th>Hour</th><th>Production</th><th>Target</th></tr></thead><tbody>';
+            const hourlyDataMap = new Map();
+
+            if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+                variant.hourlyTargets.forEach(item => {
+                    hourlyDataMap.set(item.hour, { hour: item.hour, target: item.target || 0, production: 0 });
+                });
+            }
+
+            if (variant.hourlyProduction && Array.isArray(variant.hourlyProduction)) {
+                variant.hourlyProduction.forEach(item => {
+                    if (hourlyDataMap.has(item.hour)) {
+                        hourlyDataMap.get(item.hour).production = item.production || 0;
+                    } else {
+                        hourlyDataMap.set(item.hour, { hour: item.hour, target: 0, production: item.production || 0 });
+                    }
+                });
+            }
+
+            cumulativeHours.forEach(hour => {
+                const data = hourlyDataMap.get(hour) || { hour, production: 0, target: 0 };
+                popupContent.innerHTML += `<tr><td>${data.hour}</td><td>${data.production}</td><td>${data.target}</td></tr>`;
+            });
+            popupContent.innerHTML += '</tbody></table>';
+
+            document.getElementById('debugPopup').classList.add('show');
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        // Hide debug popup
+        function hideDebugPopup() {
+            document.getElementById('debugPopup').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
         }
 
         // Initialize the dashboard when the page loads
