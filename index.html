@@ -361,20 +361,25 @@
                     variant: "TEST Product XYZ",
                     cycleTime: 45,
                     devicesPerBox: 18,
-                    hourlyTarget: 80,
-                    hourlyTargetArray: [0,0,0,0,0,0,0,80,80,80,80,80,80,80,80,0,0,0,0,0,0,0,0,0],
-                    hourlyProduction: [0,0,0,0,0,0,0,65,78,92,83,0,0,0,0,0,0,0,0,0,0,0,0,0],
                     dailyTarget: 320,
+                    dailyBoxTarget: 16,
                     currentTotal: 318,
                     currentBoxTotal: 17,
-                    progressPercentage: 99
+                    progressPercentage: 99,
+                    batches: {
+                        "TEST001": {
+                            total: 318,
+                            boxes: 17
+                        }
+                    },
+                    cumulativeTargets: [0,0,0,0,0,0,0,80,160,240,320,320,320,320,320,320,320,320,320,320,320,320,320,320],
+                    cumulativeProduction: [0,0,0,0,0,0,0,65,143,235,318,318,318,318,318,318,318,318,318,318,318,318,318,318]
                 }],
                 supervisors: [{
                     name: "TEST Supervisor",
                     variants: {
                         "TEST Product XYZ": {
                             variant: "TEST Product XYZ",
-                            hourlyProduction: [0,0,0,0,0,0,0,65,78,92,83,0,0,0,0,0,0,0,0,0,0,0,0,0],
                             currentTotal: 318,
                             dailyTarget: 320,
                             progressPercentage: 99
@@ -534,7 +539,7 @@
             `;
             totalsDisplay.appendChild(totalTarget);
 
-            // Use the pre-calculated progress percentage from the server
+            // Use the pre-calculated progress percentage
             const progress = variant.progressPercentage || 0;
 
             const totalProgress = document.createElement('div');
@@ -559,10 +564,16 @@
             }
         }
 
-        // Create the hourly production chart
+        // Create the hourly production chart using cumulative data
         function createHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-data');
             chartContainer.innerHTML = '';
+
+            // Make sure we have the required data
+            if (!variant.cumulativeTargets || !variant.cumulativeProduction) {
+                console.error("Missing cumulative data for variant:", variant.variant);
+                return;
+            }
 
             const now = new Date();
             const currentHour = now.getHours();
@@ -570,20 +581,36 @@
             const startHour = 7;
             const endHour = Math.min(currentHour + 1, 19);
 
+            // Determine the max values for scaling
             let maxTarget = 0;
             let maxProduction = 0;
 
             for (let i = startHour; i < endHour; i++) {
-                if (variant.hourlyTargetArray && variant.hourlyTargetArray[i]) {
-                    maxTarget = Math.max(maxTarget, variant.hourlyTargetArray[i]);
+                if (variant.cumulativeTargets[i]) {
+                    maxTarget = Math.max(maxTarget, variant.cumulativeTargets[i]);
                 }
-                if (variant.hourlyProduction && variant.hourlyProduction[i]) {
-                    maxProduction = Math.max(maxProduction, variant.hourlyProduction[i]);
+                if (variant.cumulativeProduction[i]) {
+                    maxProduction = Math.max(maxProduction, variant.cumulativeProduction[i]);
                 }
             }
 
-            const maxValue = Math.max(maxTarget * 1.5, maxProduction * 1.2, 10);
+            const maxValue = Math.max(maxTarget * 1.2, maxProduction * 1.2, 10);
 
+            // Generate hourly production data from cumulative data
+            const hourlyProduction = [];
+            for (let i = 0; i < 24; i++) {
+                const prevHour = i > 0 ? variant.cumulativeProduction[i-1] : 0;
+                hourlyProduction[i] = variant.cumulativeProduction[i] - prevHour;
+            }
+
+            // Generate hourly target data from cumulative data
+            const hourlyTarget = [];
+            for (let i = 0; i < 24; i++) {
+                const prevHour = i > 0 ? variant.cumulativeTargets[i-1] : 0;
+                hourlyTarget[i] = variant.cumulativeTargets[i] - prevHour;
+            }
+
+            // Create the chart columns
             for (let i = startHour; i < endHour; i++) {
                 const hourLabel = i < 10 ? `0${i}:00` : `${i}:00`;
 
@@ -593,36 +620,40 @@
                 const barContainer = document.createElement('div');
                 barContainer.className = 'bar-container';
 
-                if (variant.hourlyTargetArray && variant.hourlyTargetArray[i]) {
+                // Add hourly target line if there's a target for this hour
+                if (hourlyTarget[i] > 0) {
                     const targetLine = document.createElement('div');
                     targetLine.className = 'target-line';
-                    targetLine.style.bottom = `${(variant.hourlyTargetArray[i] / maxValue) * 100}%`;
+                    targetLine.style.bottom = `${(hourlyTarget[i] / maxValue) * 100}%`;
 
                     const targetLabel = document.createElement('div');
                     targetLabel.className = 'target-label';
-                    targetLabel.textContent = variant.hourlyTargetArray[i];
+                    targetLabel.textContent = hourlyTarget[i];
                     targetLine.appendChild(targetLabel);
 
                     barContainer.appendChild(targetLine);
                 }
 
-                const hourValue = variant.hourlyProduction[i] || 0;
-                const hourTarget = variant.hourlyTargetArray ? (variant.hourlyTargetArray[i] || 0) : 0;
+                // Create production bar
+                const hourValue = hourlyProduction[i] || 0;
+                const hourTargetValue = hourlyTarget[i] || 0;
 
                 const bar = document.createElement('div');
                 bar.className = 'bar';
 
-                // Use hourly performance data if available, otherwise calculate
-                if (hourValue >= hourTarget && hourTarget > 0) {
+                // Color the bar based on whether it exceeded target
+                if (hourValue >= hourTargetValue && hourTargetValue > 0) {
                     bar.classList.add('above-target');
                 } else if (hourValue > 0) {
                     bar.classList.add('below-target');
                 }
 
+                // Animate the bar height
                 setTimeout(() => {
                     bar.style.height = `${(hourValue / maxValue) * 100}%`;
                 }, 100 * (i - startHour));
 
+                // Add value label to the bar
                 const barValue = document.createElement('div');
                 barValue.className = 'bar-value';
                 barValue.textContent = hourValue;
@@ -631,6 +662,7 @@
                 barContainer.appendChild(bar);
                 hourDiv.appendChild(barContainer);
 
+                // Add hour label at the bottom
                 const hourLabelDiv = document.createElement('div');
                 hourLabelDiv.className = 'hour-label';
                 hourLabelDiv.textContent = hourLabel;
