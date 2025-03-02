@@ -774,8 +774,44 @@
             countdownElement.textContent = calculateTimeToNextHour(hourStr);
         }
 
-        // Calculate actual cycle time based on production data
+        // Calculate actual cycle time based on production data and breaks
         function calculateActualCycleTime(variant) {
+            // Check if we have the necessary data
+            if (!variant.currentTotal || variant.currentTotal <= 0) {
+                return "N/A";
+            }
+            
+            // Get start time, current time, and break time from variant
+            // These would need to be provided in the actual data
+            const startTime = variant.startTime ? new Date(variant.startTime) : null;
+            const currentTime = new Date();
+            const allocatedBreakTime = variant.allocatedBreakTime || 0; // In minutes
+            const elapsedBreakTime = variant.elapsedBreakTime || 0; // In minutes
+            
+            // If we don't have a start time, fall back to simplified calculation
+            if (!startTime) {
+                return calculateSimplifiedCycleTime(variant);
+            }
+            
+            // Calculate elapsed time in hours
+            const elapsedTimeMs = currentTime - startTime;
+            const elapsedTimeHours = elapsedTimeMs / (1000 * 60 * 60);
+            
+            // Adjust for break time (convert minutes to hours)
+            const breakTimeHours = elapsedBreakTime / 60;
+            
+            // Calculate actual working time
+            const actualWorkingTimeHours = elapsedTimeHours - breakTimeHours;
+            
+            // Calculate cycle time in seconds per unit
+            const cycleTimeSeconds = (actualWorkingTimeHours * 3600) / variant.currentTotal;
+            
+            // Return rounded value
+            return Math.round(cycleTimeSeconds);
+        }
+
+        // Fallback calculation if we don't have start/break time data
+        function calculateSimplifiedCycleTime(variant) {
             if (!variant.hourlyProduction || variant.hourlyProduction.length === 0) {
                 return "N/A";
             }
@@ -1481,6 +1517,9 @@
                     progressPercentage: 99,
                     currentBoxTotal: 17,
                     dailyBoxTarget: 20,
+                    startTime: new Date(new Date().setHours(8, 30, 0, 0)).toISOString(), // 8:30 AM today
+                    allocatedBreakTime: 35, // 35 minutes allocated for breaks
+                    elapsedBreakTime: 20.17, // 20 minutes and 10 seconds used
                     batches: {
                         "TEST123": {
                             total: 318,
@@ -1622,6 +1661,33 @@
                 popupContent.innerHTML += `<tr><td>${data.hour}</td><td>${data.production}</td><td>${data.target}</td></tr>`;
             });
             popupContent.innerHTML += '</tbody></table>';
+
+            // Break Time Info
+            popupContent.innerHTML += '<h3>Production Timeline</h3>';
+            popupContent.innerHTML += `
+                <table>
+                    <tr>
+                        <th>Start Time</th>
+                        <td>${variant.startTime ? new Date(variant.startTime).toLocaleTimeString() : 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <th>Allocated Break Time</th>
+                        <td>${variant.allocatedBreakTime || 0} minutes</td>
+                    </tr>
+                    <tr>
+                        <th>Elapsed Break Time</th>
+                        <td>${variant.elapsedBreakTime || 0} minutes</td>
+                    </tr>
+                    <tr>
+                        <th>Current Total</th>
+                        <td>${variant.currentTotal || 0} units</td>
+                    </tr>
+                    <tr>
+                        <th>Actual Cycle Time</th>
+                        <td>${calculateActualCycleTime(variant)} sec/unit</td>
+                    </tr>
+                </table>
+            `;
 
             document.getElementById('debugPopup').classList.add('show');
             document.getElementById('overlay').classList.add('show');
