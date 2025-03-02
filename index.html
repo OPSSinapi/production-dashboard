@@ -676,7 +676,7 @@
         let isAutocycling = true;
         let isLoading = true;
         let countdownInterval = null;
-        let commonChartPadding = { top: 30, right: 30, bottom: 50, left: 60 }; // Standardized chart padding
+        let commonChartPadding = { top: 30, right: 30, bottom: 70, left: 60 }; // Standardized chart padding with increased bottom space for labels
 
         // Initialize the dashboard
         function initDashboard() {
@@ -1470,7 +1470,7 @@
 
             // Create SVG for line chart
             const svgWidth = chartContainer.clientWidth || 600;
-            const svgHeight = 300; // Fixed height for the chart
+            const svgHeight = 340; // Increased height for the chart to ensure consistent scaling
             const padding = commonChartPadding; // Use common padding for both charts
             const chartWidth = svgWidth - padding.left - padding.right;
             const chartHeight = svgHeight - padding.top - padding.bottom;
@@ -1511,15 +1511,37 @@
                 }
             }
             
+            // Add Y-axis title "Units"
+            const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            yAxisTitle.setAttribute('x', padding.left - 40);
+            yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
+            yAxisTitle.setAttribute('text-anchor', 'middle');
+            yAxisTitle.setAttribute('font-size', '14');
+            yAxisTitle.setAttribute('font-weight', 'bold');
+            yAxisTitle.setAttribute('fill', '#666');
+            yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 40}, ${padding.top + chartHeight / 2})`);
+            yAxisTitle.textContent = 'Units';
+            gridGroup.appendChild(yAxisTitle);
+            
             // Vertical grid line at the start
             const startLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             startLine.setAttribute('x1', padding.left);
             startLine.setAttribute('y1', padding.top);
             startLine.setAttribute('x2', padding.left);
             startLine.setAttribute('y2', svgHeight - padding.bottom);
-            startLine.setAttribute('stroke', '#ddd');
-            startLine.setAttribute('stroke-width', '1');
+            startLine.setAttribute('stroke', '#666'); // Darker color for axis line
+            startLine.setAttribute('stroke-width', '1.5'); // Slightly thicker for axis
             gridGroup.appendChild(startLine);
+            
+            // Horizontal axis line (x-axis)
+            const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            xAxisLine.setAttribute('x1', padding.left);
+            xAxisLine.setAttribute('y1', svgHeight - padding.bottom);
+            xAxisLine.setAttribute('x2', svgWidth - padding.right);
+            xAxisLine.setAttribute('y2', svgHeight - padding.bottom);
+            xAxisLine.setAttribute('stroke', '#666');
+            xAxisLine.setAttribute('stroke-width', '1.5');
+            gridGroup.appendChild(xAxisLine);
             
             svg.appendChild(gridGroup);
             
@@ -1699,7 +1721,7 @@
 
             // Create an SVG for the bar chart using same dimensions and padding as line chart
             const svgWidth = chartContainer.clientWidth || 600;
-            const svgHeight = 300;
+            const svgHeight = 340; // Increased height to match line chart
             const padding = commonChartPadding; // Use common padding for both charts
             const chartWidth = svgWidth - padding.left - padding.right;
             const chartHeight = svgHeight - padding.top - padding.bottom;
@@ -1739,14 +1761,26 @@
                 gridGroup.appendChild(text);
             }
             
-            // Add vertical grid line
+            // Add Y-axis title "Units"
+            const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            yAxisTitle.setAttribute('x', padding.left - 40);
+            yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
+            yAxisTitle.setAttribute('text-anchor', 'middle');
+            yAxisTitle.setAttribute('font-size', '14');
+            yAxisTitle.setAttribute('font-weight', 'bold');
+            yAxisTitle.setAttribute('fill', '#666');
+            yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 40}, ${padding.top + chartHeight / 2})`);
+            yAxisTitle.textContent = 'Units';
+            gridGroup.appendChild(yAxisTitle);
+            
+            // Add vertical grid line (y-axis)
             const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             vLine.setAttribute('x1', padding.left);
             vLine.setAttribute('y1', padding.top);
             vLine.setAttribute('x2', padding.left);
             vLine.setAttribute('y2', svgHeight - padding.bottom);
-            vLine.setAttribute('stroke', '#ddd');
-            vLine.setAttribute('stroke-width', '1');
+            vLine.setAttribute('stroke', '#666'); // Darker color for axis line
+            vLine.setAttribute('stroke-width', '1.5'); // Slightly thicker for axis
             gridGroup.appendChild(vLine);
             
             svg.appendChild(gridGroup);
@@ -1822,6 +1856,16 @@
             targetLabelText.setAttribute('fill', '#333');
             targetLabelText.textContent = 'Target';
             svg.appendChild(targetLabelText);
+            
+            // Add X-axis line at chart bottom for clarity
+            const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            xAxisLine.setAttribute('x1', padding.left);
+            xAxisLine.setAttribute('y1', padding.top + chartHeight);
+            xAxisLine.setAttribute('x2', svgWidth - padding.right);
+            xAxisLine.setAttribute('y2', padding.top + chartHeight);
+            xAxisLine.setAttribute('stroke', '#666');
+            xAxisLine.setAttribute('stroke-width', '1');
+            svg.appendChild(xAxisLine);
         }
 
         // Show loading or error message
