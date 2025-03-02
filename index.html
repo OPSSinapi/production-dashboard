@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Production Dashboard</title>
+    <title>Sinapi Secondary Production Dashboard</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -42,6 +42,13 @@
             padding-bottom: 10px;
             border-bottom: 1px solid #e2e8f0;
             width: 100%;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .title {
@@ -233,7 +240,7 @@
 
         .totals-display {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             margin-bottom: 20px;
             font-size: clamp(1rem, 1.2vw, 1.2rem);
             gap: 20px;
@@ -260,6 +267,11 @@
             font-weight: bold;
         }
 
+        .total-subvalue {
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
+            margin-top: 5px;
+        }
+
         .total-target {
             color: var(--success-color);
         }
@@ -272,19 +284,24 @@
             color: var(--warning-color);
         }
 
-        .supervisor-filter {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 10px;
-            width: 100%;
+        .total-hourly {
+            color: var(--dark-color);
         }
 
-        .supervisor-filter select {
-            padding: 8px 12px;
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 8px 15px;
             border-radius: 5px;
             border: 1px solid var(--secondary-color);
-            font-size: clamp(0.8rem, 1rem, 1rem);
+            font-size: clamp(0.9rem, 1.1vw, 1.1rem);
             font-family: inherit;
+            min-width: 180px;
+            background-color: white;
         }
 
         .loading {
@@ -377,6 +394,18 @@
         }
 
         /* Media queries for responsiveness */
+        @media (max-width: 1200px) {
+            .title-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .filter-section {
+                margin-top: 10px;
+            }
+        }
+
         @media (max-width: 1024px) {
             .charts-row {
                 flex-direction: column;
@@ -402,13 +431,24 @@
                 text-align: center;
             }
 
+            .title-section {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+
+            .filter-section {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
             .date-time {
                 text-align: center;
                 margin-top: 10px;
-            }
-
-            .supervisor-filter {
-                justify-content: center;
             }
 
             .chart {
@@ -425,9 +465,21 @@
 <body>
     <div class="dashboard-container">
         <div class="header">
-            <div>
-                <div class="title">Production Dashboard</div>
-                <div class="subtitle">Medical Device Assembly</div>
+            <div class="title-section">
+                <div>
+                    <div class="title">Sinapi Secondary Production Dashboard</div>
+                    <div class="subtitle">Medical Device Assembly</div>
+                </div>
+                <div class="filter-section">
+                    <select id="filter-type-select" class="filter-select">
+                        <option value="supervisor">Filter by Supervisor</option>
+                        <option value="variant">Filter by Variant</option>
+                    </select>
+                    <select id="filter-value-select" class="filter-select">
+                        <option value="all">All</option>
+                        <!-- Options will be added dynamically -->
+                    </select>
+                </div>
             </div>
             <div class="date-time">
                 <div class="date" id="current-date">March 1, 2025</div>
@@ -435,13 +487,6 @@
                 <div class="update-info" id="last-update">Last updated: Never</div>
                 <button class="debug-button" onclick="showDebugPopup()">Show Debug Data</button>
             </div>
-        </div>
-
-        <div class="supervisor-filter">
-            <select id="supervisor-select">
-                <option value="all">All Supervisors</option>
-                <!-- Supervisor options will be added dynamically -->
-            </select>
         </div>
 
         <div class="content">
@@ -523,7 +568,8 @@
         let filteredVariants = [];
         let currentVariantIndex = 0;
         let lastUpdateTime = null;
-        let selectedSupervisor = 'all';
+        let selectedFilterType = 'supervisor';
+        let selectedFilterValue = 'all';
         let isAutocycling = true;
         let isLoading = true;
 
@@ -533,17 +579,23 @@
             updateDateTime();
             setInterval(updateDateTime, 1000);
 
-            // Set up supervisor filter change event
-            document.getElementById('supervisor-select').addEventListener('change', function() {
-                selectedSupervisor = this.value;
-                filterVariantsBySupervisor();
+            // Set up filter type change event
+            document.getElementById('filter-type-select').addEventListener('change', function() {
+                selectedFilterType = this.value;
+                updateFilterValueDropdown();
+            });
+
+            // Set up filter value change event
+            document.getElementById('filter-value-select').addEventListener('change', function() {
+                selectedFilterValue = this.value;
+                filterVariants();
 
                 // Reset variant index
                 currentVariantIndex = 0;
                 if (filteredVariants.length > 0) {
                     displayVariant(currentVariantIndex);
                 } else {
-                    showLoadingOrError('No variants available for this supervisor.');
+                    showLoadingOrError('No variants available for this filter.');
                 }
             });
 
@@ -594,8 +646,8 @@
                                 second: '2-digit'
                             });
 
-                        updateSupervisorDropdown();
-                        filterVariantsBySupervisor();
+                        updateFilterValueDropdown();
+                        filterVariants();
 
                         document.getElementById('total-variants').textContent = filteredVariants.length;
 
@@ -626,39 +678,62 @@
             }
         }
 
-        // Update supervisor dropdown
-        function updateSupervisorDropdown() {
-            const selectElement = document.getElementById('supervisor-select');
-            const currentValue = selectElement.value;
-
-            while (selectElement.options.length > 1) {
-                selectElement.remove(1);
+        // Update filter value dropdown based on selected filter type
+        function updateFilterValueDropdown() {
+            const filterValueSelect = document.getElementById('filter-value-select');
+            const currentValue = filterValueSelect.value;
+            
+            // Clear previous options
+            while (filterValueSelect.options.length > 1) {
+                filterValueSelect.remove(1);
             }
-
-            if (productionData.supervisors && productionData.supervisors.length > 0) {
-                productionData.supervisors.forEach(supervisor => {
-                    const option = document.createElement('option');
-                    option.value = supervisor.name;
-                    option.textContent = supervisor.name;
-                    selectElement.appendChild(option);
-                });
+            
+            if (selectedFilterType === 'supervisor') {
+                // Add supervisor options
+                if (productionData.supervisors && productionData.supervisors.length > 0) {
+                    productionData.supervisors.forEach(supervisor => {
+                        const option = document.createElement('option');
+                        option.value = supervisor.name;
+                        option.textContent = supervisor.name;
+                        filterValueSelect.appendChild(option);
+                    });
+                }
+            } else if (selectedFilterType === 'variant') {
+                // Add variant options
+                if (productionData.variants && productionData.variants.length > 0) {
+                    // Create a Set to avoid duplicates
+                    const uniqueVariants = new Set();
+                    productionData.variants.forEach(variant => {
+                        uniqueVariants.add(variant.variant);
+                    });
+                    
+                    // Add each unique variant to the dropdown
+                    uniqueVariants.forEach(variantName => {
+                        const option = document.createElement('option');
+                        option.value = variantName;
+                        option.textContent = variantName;
+                        filterValueSelect.appendChild(option);
+                    });
+                }
             }
-
-            if (Array.from(selectElement.options).some(opt => opt.value === currentValue)) {
-                selectElement.value = currentValue;
+            
+            // Try to keep the previous selection if it exists in the new options
+            if (Array.from(filterValueSelect.options).some(opt => opt.value === currentValue)) {
+                filterValueSelect.value = currentValue;
+                selectedFilterValue = currentValue;
             } else {
-                selectElement.value = 'all';
-                selectedSupervisor = 'all';
+                filterValueSelect.value = 'all';
+                selectedFilterValue = 'all';
             }
         }
 
-        // Filter variants by selected supervisor
-        function filterVariantsBySupervisor() {
-            if (selectedSupervisor === 'all') {
+        // Filter variants based on selected filter type and value
+        function filterVariants() {
+            if (selectedFilterValue === 'all') {
                 filteredVariants = productionData.variants || [];
-            } else {
-                const supervisor = productionData.supervisors.find(s => s.name === selectedSupervisor);
-
+            } else if (selectedFilterType === 'supervisor') {
+                const supervisor = productionData.supervisors.find(s => s.name === selectedFilterValue);
+                
                 if (supervisor && supervisor.variants) {
                     const supervisorVariantKeys = Object.keys(supervisor.variants);
                     filteredVariants = productionData.variants.filter(variant => 
@@ -666,8 +741,11 @@
                 } else {
                     filteredVariants = [];
                 }
+            } else if (selectedFilterType === 'variant') {
+                filteredVariants = productionData.variants.filter(variant => 
+                    variant.variant === selectedFilterValue);
             }
-
+            
             document.getElementById('total-variants').textContent = filteredVariants.length;
         }
 
@@ -707,26 +785,32 @@
             updateLoadingState();
         }
 
-        // Update the totals display
+        // Update the totals display with new format
         function updateTotalsDisplay(variant) {
             const totalsDisplay = document.getElementById('totals-display');
             totalsDisplay.innerHTML = '';
 
-            // Current Total
+            // Get the box data
+            const boxesCompleted = variant.currentBoxTotal || 0;
+            const totalBoxes = variant.dailyBoxTarget || 0;
+
+            // Current Total (with units and boxes)
             const totalActual = document.createElement('div');
             totalActual.className = 'total-item';
             totalActual.innerHTML = `
                 <div class="total-label">Current Total</div>
                 <div class="total-value total-actual">${variant.currentTotal || 0}</div>
+                <div class="total-subvalue">${boxesCompleted} boxes</div>
             `;
             totalsDisplay.appendChild(totalActual);
 
-            // Daily Target
+            // Daily Target (with units and boxes)
             const totalTarget = document.createElement('div');
             totalTarget.className = 'total-item';
             totalTarget.innerHTML = `
                 <div class="total-label">Daily Target</div>
                 <div class="total-value total-target">${variant.dailyTarget || 0}</div>
+                <div class="total-subvalue">${totalBoxes} boxes</div>
             `;
             totalsDisplay.appendChild(totalTarget);
 
@@ -737,22 +821,43 @@
             totalProgress.innerHTML = `
                 <div class="total-label">Progress</div>
                 <div class="total-value total-progress">${progress}%</div>
+                <div class="total-subvalue">${boxesCompleted} of ${totalBoxes} boxes</div>
             `;
             totalsDisplay.appendChild(totalProgress);
 
-            // Boxes (if available)
-            if (variant.dailyBoxTarget) {
-                const boxesCompleted = variant.currentBoxTotal || 0;
-                const totalBoxes = variant.dailyBoxTarget || 0;
-
-                const boxInfo = document.createElement('div');
-                boxInfo.className = 'total-item';
-                boxInfo.innerHTML = `
-                    <div class="total-label">Boxes</div>
-                    <div class="total-value">${boxesCompleted} / ${totalBoxes}</div>
-                `;
-                totalsDisplay.appendChild(boxInfo);
+            // Hourly Targets Met
+            // Calculate how many hourly targets have been met
+            let hourlyTargetsMet = 0;
+            let totalHourlyTargets = 0;
+            
+            if (variant.hourlyProduction && Array.isArray(variant.hourlyProduction) && 
+                variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+                
+                // Create a map of hourly targets
+                const hourlyTargetsMap = new Map();
+                variant.hourlyTargets.forEach(item => {
+                    hourlyTargetsMap.set(item.hour, item.target || 0);
+                });
+                
+                // Count met targets
+                variant.hourlyProduction.forEach(item => {
+                    if (hourlyTargetsMap.has(item.hour)) {
+                        totalHourlyTargets++;
+                        if (item.production >= hourlyTargetsMap.get(item.hour)) {
+                            hourlyTargetsMet++;
+                        }
+                    }
+                });
             }
+            
+            const hourlyTargets = document.createElement('div');
+            hourlyTargets.className = 'total-item';
+            hourlyTargets.innerHTML = `
+                <div class="total-label">Hourly Targets</div>
+                <div class="total-value total-hourly">${hourlyTargetsMet} / ${totalHourlyTargets}</div>
+                <div class="total-subvalue">targets met</div>
+            `;
+            totalsDisplay.appendChild(hourlyTargets);
         }
 
         // Render the cumulative chart using SVG
@@ -1193,6 +1298,8 @@
                     dailyTarget: 320,
                     currentTotal: 318,
                     progressPercentage: 99,
+                    currentBoxTotal: 17,
+                    dailyBoxTarget: 20,
                     batches: {
                         "TEST123": {
                             total: 318,
@@ -1243,7 +1350,8 @@
             // Update the date display to March 1, 2025
             document.getElementById('current-date').textContent = 'March 1, 2025';
             
-            filterVariantsBySupervisor();
+            updateFilterValueDropdown();
+            filterVariants();
             if (filteredVariants.length > 0) {
                 displayVariant(0);
             }
