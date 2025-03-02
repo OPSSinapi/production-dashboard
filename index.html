@@ -177,21 +177,20 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
-            min-height: 500px; /* Further increased minimum height for better chart scaling */
+            min-height: 430px; /* Adjusted height */
         }
 
         .chart-title {
             font-size: clamp(1rem, 1.4vw, 1.4rem);
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 5px; /* Reduced margin */
             color: var(--dark-color);
         }
 
         .chart-controls {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 0; /* Remove bottom margin to bring chart closer */
         }
 
         .hour-select {
@@ -206,8 +205,8 @@
         .chart-area {
             flex: 1;
             position: relative;
-            min-height: 380px; /* Increased minimum height for charts */
-            margin-top: 20px; /* Add some space at the top */
+            min-height: 350px; /* Adjusted for better proportions */
+            margin-top: 5px; /* Minimal top margin */
         }
 
         /* Line Chart Styling (Cumulative Daily Production Progress) */
@@ -215,7 +214,7 @@
             position: relative;
             height: 100%;
             width: 100%;
-            margin-top: 10px;
+            margin: 0; /* Remove margin */
         }
 
         /* Bar Chart Styling (Hourly Production Progress) */
@@ -225,14 +224,14 @@
             align-items: flex-end;
             justify-content: center;
             gap: 20px;
-            padding-top: 20px;
-            margin-top: 10px;
+            padding-top: 10px; /* Reduced padding */
+            margin: 0; /* Remove margin */
         }
 
         .legend {
             display: flex;
             justify-content: center;
-            margin: 20px 0 10px 0;
+            margin: 5px 0 0 0; /* Reduced margin */
         }
 
         .legend-item {
@@ -370,8 +369,10 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
             font-weight: bold;
+            /* Make sure this doesn't wrap */
+            white-space: nowrap;
         }
 
         .hour-time {
@@ -382,6 +383,10 @@
         .hour-countdown {
             font-size: 14px;
             color: var(--secondary-color);
+        }
+        
+        .hour-select-container {
+            margin-left: auto; /* Push to the right side */
         }
 
         /* Special styling for supervisor Aphele (black background) */
@@ -618,6 +623,8 @@
                             <div class="hour-info" id="hour-info">
                                 <div class="hour-time">Hour: Loading...</div>
                                 <div class="hour-countdown"></div>
+                            </div>
+                            <div class="hour-select-container">
                                 <select id="hour-select" class="hour-select">
                                     <option value="current">Current Hour</option>
                                     <!-- Hour options will be added dynamically -->
@@ -679,7 +686,7 @@
         let isAutocycling = true;
         let isLoading = true;
         let countdownInterval = null;
-        let commonChartPadding = { top: 40, right: 30, bottom: 80, left: 70 }; // Further increased padding for better chart scaling and alignment
+        let commonChartPadding = { top: 30, right: 30, bottom: 50, left: 70 }; // Adjusted padding for better chart proportions
 
         // Initialize the dashboard
         function initDashboard() {
@@ -1473,7 +1480,7 @@
 
             // Create SVG for line chart
             const svgWidth = chartContainer.clientWidth || 600;
-            const svgHeight = 400; // Significantly increased height for the chart
+            const svgHeight = 370; // Adjusted height
             const padding = commonChartPadding; // Use common padding for both charts
             const chartWidth = svgWidth - padding.left - padding.right;
             const chartHeight = svgHeight - padding.top - padding.bottom;
@@ -1724,7 +1731,7 @@
 
             // Create an SVG for the bar chart using same dimensions and padding as line chart
             const svgWidth = chartContainer.clientWidth || 600;
-            const svgHeight = 400; // Significantly increased height to match line chart
+            const svgHeight = 370; // Adjusted height to match line chart
             const padding = commonChartPadding; // Use common padding for both charts
             const chartWidth = svgWidth - padding.left - padding.right;
             const chartHeight = svgHeight - padding.top - padding.bottom;
