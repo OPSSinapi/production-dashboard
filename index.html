@@ -183,16 +183,19 @@
         .chart-header {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             flex-wrap: nowrap;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 8px;
         }
         
         .chart-title {
-            font-size: clamp(1rem, 1.4vw, 1.4rem);
-            font-weight: bold;
-            margin-right: 15px;
+            font-size: clamp(1.2rem, 1.5vw, 1.5rem);
+            font-weight: 600;
+            margin-right: 20px;
             color: var(--dark-color);
             white-space: nowrap;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .hour-info {
@@ -200,18 +203,20 @@
             flex-direction: row;
             align-items: center;
             gap: 10px;
-            font-weight: bold;
+            font-weight: 500;
             white-space: nowrap;
         }
 
         .hour-time {
-            font-size: 16px;
+            font-size: 15px;
             color: var(--dark-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .hour-countdown {
-            font-size: 14px;
+            font-size: 15px;
             color: var(--secondary-color);
+            font-style: normal;
         }
         
         .hour-select-container {
@@ -225,6 +230,10 @@
             font-family: inherit;
             background-color: white;
             height: 35px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark-color);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
         .chart-area {
@@ -647,7 +656,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="chart-area">
+                        <div class="chart-area" style="margin-top: -15px;">
                             <div class="bar-chart" id="hourly-chart"></div>
                             <!-- Legend removed from hourly chart -->
                         </div>
@@ -693,7 +702,7 @@
         let isAutocycling = true;
         let isLoading = true;
         let countdownInterval = null;
-        let commonChartPadding = { top: 30, right: 30, bottom: 50, left: 70 }; // Adjusted padding for better chart proportions
+        let commonChartPadding = { top: 20, right: 30, bottom: 50, left: 70 }; // Reduced top padding to minimize white space
 
         // Initialize the dashboard
         function initDashboard() {
@@ -1277,6 +1286,18 @@
                     variant.variant === selectedFilterValue);
             }
             
+            // Sort variants by supervisor name alphabetically
+            filteredVariants.sort((a, b) => {
+                const supervisorA = getSupervisorForVariant(a);
+                const supervisorB = getSupervisorForVariant(b);
+                
+                if (supervisorA < supervisorB) return -1;
+                if (supervisorA > supervisorB) return 1;
+                
+                // If same supervisor, sort by variant name
+                return a.variant.localeCompare(b.variant);
+            });
+            
             document.getElementById('total-variants').textContent = filteredVariants.length;
         }
 
@@ -1845,10 +1866,21 @@
             productionValueText.setAttribute('x', startX + barWidth / 2);
             productionValueText.setAttribute('y', padding.top + chartHeight - productionBarHeight - 10);
             productionValueText.setAttribute('text-anchor', 'middle');
-            productionValueText.setAttribute('font-size', '16');
-            productionValueText.setAttribute('font-weight', 'bold');
+            productionValueText.setAttribute('font-size', '15');
+            productionValueText.setAttribute('font-weight', '600');
             productionValueText.setAttribute('fill', 'var(--secondary-color)');
             productionValueText.textContent = production;
+            // Add drop shadow for better readability
+            const productionShadow = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+            productionShadow.setAttribute('id', 'textShadow');
+            const feDropShadow = document.createElementNS('http://www.w3.org/2000/svg', 'feDropShadow');
+            feDropShadow.setAttribute('dx', '0');
+            feDropShadow.setAttribute('dy', '0');
+            feDropShadow.setAttribute('stdDeviation', '1');
+            feDropShadow.setAttribute('flood-opacity', '0.2');
+            productionShadow.appendChild(feDropShadow);
+            svg.appendChild(productionShadow);
+            productionValueText.setAttribute('filter', 'url(#textShadow)');
             svg.appendChild(productionValueText);
             
             // Target value
@@ -1856,31 +1888,32 @@
             targetValueText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
             targetValueText.setAttribute('y', padding.top + chartHeight - targetBarHeight - 10);
             targetValueText.setAttribute('text-anchor', 'middle');
-            targetValueText.setAttribute('font-size', '16');
-            targetValueText.setAttribute('font-weight', 'bold');
+            targetValueText.setAttribute('font-size', '15');
+            targetValueText.setAttribute('font-weight', '600');
             targetValueText.setAttribute('fill', 'var(--success-color)');
+            targetValueText.setAttribute('filter', 'url(#textShadow)');
             targetValueText.textContent = target;
             svg.appendChild(targetValueText);
             
             // Production label
             const productionLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             productionLabelText.setAttribute('x', startX + barWidth / 2);
-            productionLabelText.setAttribute('y', svgHeight - padding.bottom + 30);
+            productionLabelText.setAttribute('y', svgHeight - padding.bottom + 25);
             productionLabelText.setAttribute('text-anchor', 'middle');
-            productionLabelText.setAttribute('font-size', '14');
-            productionLabelText.setAttribute('font-weight', 'bold');
-            productionLabelText.setAttribute('fill', '#333');
+            productionLabelText.setAttribute('font-size', '13');
+            productionLabelText.setAttribute('font-weight', '500');
+            productionLabelText.setAttribute('fill', 'var(--secondary-color)');
             productionLabelText.textContent = 'Production';
             svg.appendChild(productionLabelText);
             
             // Target label
             const targetLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             targetLabelText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
-            targetLabelText.setAttribute('y', svgHeight - padding.bottom + 30);
+            targetLabelText.setAttribute('y', svgHeight - padding.bottom + 25);
             targetLabelText.setAttribute('text-anchor', 'middle');
-            targetLabelText.setAttribute('font-size', '14');
-            targetLabelText.setAttribute('font-weight', 'bold');
-            targetLabelText.setAttribute('fill', '#333');
+            targetLabelText.setAttribute('font-size', '13');
+            targetLabelText.setAttribute('font-weight', '500');
+            targetLabelText.setAttribute('fill', 'var(--success-color)');
             targetLabelText.textContent = 'Target';
             svg.appendChild(targetLabelText);
             
