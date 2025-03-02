@@ -177,20 +177,45 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
-            min-height: 430px; /* Adjusted height */
+            min-height: 430px; /* Adjusted for better proportions */
         }
 
+        .chart-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: nowrap;
+        }
+        
         .chart-title {
             font-size: clamp(1rem, 1.4vw, 1.4rem);
             font-weight: bold;
-            margin-bottom: 5px; /* Reduced margin */
+            margin-right: 15px;
+            color: var(--dark-color);
+            white-space: nowrap;
+        }
+
+        .hour-info {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .hour-time {
+            font-size: 16px;
             color: var(--dark-color);
         }
 
-        .chart-controls {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0; /* Remove bottom margin to bring chart closer */
+        .hour-countdown {
+            font-size: 14px;
+            color: var(--secondary-color);
+        }
+        
+        .hour-select-container {
+            margin-left: auto; /* Push to the right side */
         }
 
         .hour-select {
@@ -205,8 +230,8 @@
         .chart-area {
             flex: 1;
             position: relative;
-            min-height: 350px; /* Adjusted for better proportions */
-            margin-top: 5px; /* Minimal top margin */
+            min-height: 350px;
+            margin-top: 0; /* No top margin */
         }
 
         /* Line Chart Styling (Cumulative Daily Production Progress) */
@@ -231,7 +256,7 @@
         .legend {
             display: flex;
             justify-content: center;
-            margin: 5px 0 0 0; /* Reduced margin */
+            margin: -10px 0 0 0; /* Negative top margin to move legend up */
         }
 
         .legend-item {
@@ -365,30 +390,6 @@
             font-weight: bold;
         }
 
-        .hour-info {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            /* Make sure this doesn't wrap */
-            white-space: nowrap;
-        }
-
-        .hour-time {
-            font-size: 16px;
-            color: var(--dark-color);
-        }
-
-        .hour-countdown {
-            font-size: 14px;
-            color: var(--secondary-color);
-        }
-        
-        .hour-select-container {
-            margin-left: auto; /* Push to the right side */
-        }
-
         /* Special styling for supervisor Aphele (black background) */
         .supervisor-aphele {
             color: white;
@@ -506,7 +507,7 @@
             }
 
             .chart {
-                min-height: 300px; /* Reduce chart height on smaller screens */
+                min-height: 350px; /* Reduce chart height on smaller screens */
             }
 
             .dashboard-container {
@@ -552,6 +553,21 @@
             .debug-popup {
                 width: 95%;
                 max-width: 95%;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .hour-select-container {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+            }
+            
+            .hour-select {
+                width: 100%;
             }
         }
     </style>
@@ -602,24 +618,24 @@
             <div class="chart-container">
                 <div class="charts-row">
                     <div class="chart">
-                    <div class="chart-title">Cumulative Daily Production Progress</div>
-                    <div class="chart-area">
-                        <div class="line-chart" id="cumulative-chart"></div>
-                        <div class="legend" style="margin-top: -10px;">
-                            <div class="legend-item">
-                                <div class="legend-color production-color"></div>
-                                <div>Cumulative Production</div>
-                            </div>
-                            <div class="legend-item">
-                                <div class="legend-color target-color"></div>
-                                <div>Cumulative Target</div>
+                        <div class="chart-title">Cumulative Daily Production Progress</div>
+                        <div class="chart-area">
+                            <div class="line-chart" id="cumulative-chart"></div>
+                            <div class="legend">
+                                <div class="legend-item">
+                                    <div class="legend-color production-color"></div>
+                                    <div>Cumulative Production</div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color target-color"></div>
+                                    <div>Cumulative Target</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                     <div class="chart">
-                        <div class="chart-title">Hourly Production Progress</div>
-                        <div class="chart-controls">
+                        <div class="chart-header">
+                            <div class="chart-title">Hourly Production Progress</div>
                             <div class="hour-info" id="hour-info">
                                 <div class="hour-time">Hour: Loading...</div>
                                 <div class="hour-countdown"></div>
@@ -633,16 +649,7 @@
                         </div>
                         <div class="chart-area">
                             <div class="bar-chart" id="hourly-chart"></div>
-                            <div class="legend">
-                                <div class="legend-item">
-                                    <div class="legend-color production-color"></div>
-                                    <div>Production</div>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-color target-color"></div>
-                                    <div>Target</div>
-                                </div>
-                            </div>
+                            <!-- Legend removed from hourly chart -->
                         </div>
                     </div>
                 </div>
@@ -1773,13 +1780,13 @@
             
             // Add Y-axis title "Units"
             const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            yAxisTitle.setAttribute('x', padding.left - 40);
+            yAxisTitle.setAttribute('x', padding.left - 45);
             yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
             yAxisTitle.setAttribute('text-anchor', 'middle');
             yAxisTitle.setAttribute('font-size', '14');
             yAxisTitle.setAttribute('font-weight', 'bold');
             yAxisTitle.setAttribute('fill', '#666');
-            yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 40}, ${padding.top + chartHeight / 2})`);
+            yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 45}, ${padding.top + chartHeight / 2})`);
             yAxisTitle.textContent = 'Units';
             gridGroup.appendChild(yAxisTitle);
             
@@ -1792,6 +1799,16 @@
             vLine.setAttribute('stroke', '#666'); // Darker color for axis line
             vLine.setAttribute('stroke-width', '1.5'); // Slightly thicker for axis
             gridGroup.appendChild(vLine);
+            
+            // Add horizontal x-axis line
+            const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            xAxisLine.setAttribute('x1', padding.left);
+            xAxisLine.setAttribute('y1', svgHeight - padding.bottom);
+            xAxisLine.setAttribute('x2', svgWidth - padding.right);
+            xAxisLine.setAttribute('y2', svgHeight - padding.bottom);
+            xAxisLine.setAttribute('stroke', '#666');
+            xAxisLine.setAttribute('stroke-width', '1.5');
+            gridGroup.appendChild(xAxisLine);
             
             svg.appendChild(gridGroup);
             
@@ -1868,14 +1885,14 @@
             svg.appendChild(targetLabelText);
             
             // Add X-axis line at chart bottom for clarity
-            const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            xAxisLine.setAttribute('x1', padding.left);
-            xAxisLine.setAttribute('y1', padding.top + chartHeight);
-            xAxisLine.setAttribute('x2', svgWidth - padding.right);
-            xAxisLine.setAttribute('y2', padding.top + chartHeight);
-            xAxisLine.setAttribute('stroke', '#666');
-            xAxisLine.setAttribute('stroke-width', '1');
-            svg.appendChild(xAxisLine);
+            const xAxisLine2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            xAxisLine2.setAttribute('x1', padding.left);
+            xAxisLine2.setAttribute('y1', padding.top + chartHeight);
+            xAxisLine2.setAttribute('x2', svgWidth - padding.right);
+            xAxisLine2.setAttribute('y2', padding.top + chartHeight);
+            xAxisLine2.setAttribute('stroke', '#666');
+            xAxisLine2.setAttribute('stroke-width', '1.5');
+            svg.appendChild(xAxisLine2);
         }
 
         // Show loading or error message
