@@ -633,12 +633,6 @@
         let isLoading = true;
         let countdownInterval = null;
 
-        // Production hours - the regular working hours for the factory
-        const productionHours = [
-            "08:30", "09:30", "10:30", "11:30", "12:30", "13:30", 
-            "14:30", "15:30", "16:30", "17:30", "18:30"
-        ];
-
         // Initialize the dashboard
         function initDashboard() {
             // Update clock
@@ -685,9 +679,6 @@
 
             // Start progress bar animation
             animateProgress();
-
-            // Update hour dropdown
-            updateHourDropdown();
         }
 
         // Update the hour dropdown with all hours from the day
@@ -699,8 +690,30 @@
                 hourSelect.remove(1);
             }
             
+            // Get production hours from the first variant (all variants should have same hours)
+            const productionHours = [];
+            if (filteredVariants.length > 0) {
+                const variant = filteredVariants[0];
+                if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+                    variant.hourlyTargets.forEach(item => {
+                        if (item.hour) {
+                            productionHours.push(item.hour);
+                        }
+                    });
+                }
+            }
+            
+            // If no production hours found, use default hours
+            if (productionHours.length === 0) {
+                const defaultHours = [
+                    "08:30", "09:30", "10:30", "11:30", "12:30", "13:30", 
+                    "14:30", "15:30", "16:30", "17:30", "18:30"
+                ];
+                productionHours.push(...defaultHours);
+            }
+            
             // Add options for each production hour
-            productionHours.forEach(hour => {
+            productionHours.sort().forEach(hour => {
                 const option = document.createElement('option');
                 option.value = hour;
                 option.textContent = hour;
@@ -712,6 +725,26 @@
         function getNextProductionHour() {
             const now = new Date();
             const currentTime = now.getHours() * 60 + now.getMinutes(); // Convert to minutes
+            
+            // Get production hours from the first variant
+            let productionHours = [];
+            if (filteredVariants.length > 0) {
+                const variant = filteredVariants[0];
+                if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+                    productionHours = variant.hourlyTargets
+                        .map(item => item.hour)
+                        .filter(hour => hour)
+                        .sort();
+                }
+            }
+            
+            // If no production hours found, use default hours
+            if (productionHours.length === 0) {
+                productionHours = [
+                    "08:30", "09:30", "10:30", "11:30", "12:30", "13:30", 
+                    "14:30", "15:30", "16:30", "17:30", "18:30"
+                ];
+            }
             
             // Find the next production hour
             for (const hourStr of productionHours) {
@@ -780,34 +813,173 @@
             if (!variant.currentTotal || variant.currentTotal <= 0) {
                 return "N/A";
             }
-            
-            // Get start time, current time, and break time from variant
-            // These would need to be provided in the actual data
-            const startTime = variant.startTime ? new Date(variant.startTime) : null;
-            const currentTime = new Date();
-            const allocatedBreakTime = variant.allocatedBreakTime || 0; // In minutes
-            const elapsedBreakTime = variant.elapsedBreakTime || 0; // In minutes
-            
-            // If we don't have a start time, fall back to simplified calculation
-            if (!startTime) {
+
+            // Parse the start time from the data
+            const startTimeStr = variant["Start Time"];
+            if (!startTimeStr) {
                 return calculateSimplifiedCycleTime(variant);
             }
-            
-            // Calculate elapsed time in hours
-            const elapsedTimeMs = currentTime - startTime;
+
+            // Get current time and create a start time date object using today's date
+            const now = new Date();
+            const startDate = new Date(now);
+            const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
+            startDate.setHours(startHours, startMinutes, 0, 0);
+
+            // Calculate total elapsed time in hours (from start time to current time)
+            const elapsedTimeMs = now - startDate;
             const elapsedTimeHours = elapsedTimeMs / (1000 * 60 * 60);
-            
-            // Adjust for break time (convert minutes to hours)
+
+            // Calculate allocated and elapsed break times
+            const allocatedBreakTime = calculateAllocatedBreakTime(variant);
+            const elapsedBreakTime = calculateElapsedBreakTime(variant, now);
+
+            // Convert break time from minutes to hours
             const breakTimeHours = elapsedBreakTime / 60;
-            
+
             // Calculate actual working time
             const actualWorkingTimeHours = elapsedTimeHours - breakTimeHours;
-            
+
+            // Check for negative or zero working time (could happen if current time is before start time)
+            if (actualWorkingTimeHours <= 0) {
+                return "N/A";
+            }
+
             // Calculate cycle time in seconds per unit
             const cycleTimeSeconds = (actualWorkingTimeHours * 3600) / variant.currentTotal;
-            
+
             // Return rounded value
             return Math.round(cycleTimeSeconds);
+        }
+
+        // Calculate the total allocated break time in minutes
+        function calculateAllocatedBreakTime(variant) {
+            let totalBreakTime = 0;
+
+            // Add lunch break if available
+            if (variant["Break Start (Lunch)"] && variant["Break End (Lunch)"]) {
+                totalBreakTime += getTimeDifferenceInMinutes(
+                    variant["Break Start (Lunch)"], 
+                    variant["Break End (Lunch)"]
+                );
+            }
+
+            // Add tea break if available
+            if (variant["Break Start (Tea)"] && variant["Break End (Tea)"]) {
+                totalBreakTime += getTimeDifferenceInMinutes(
+                    variant["Break Start (Tea)"], 
+                    variant["Break End (Tea)"]
+                );
+            }
+
+            // Add OT tea break if available and not marked as "-"
+            if (variant["OT Break Start (Tea)"] && 
+                variant["OT Break End (Tea)"] && 
+                variant["OT Break Start (Tea)"] !== "-" && 
+                variant["OT Break End (Tea)"] !== "-") {
+                
+                totalBreakTime += getTimeDifferenceInMinutes(
+                    variant["OT Break Start (Tea)"], 
+                    variant["OT Break End (Tea)"]
+                );
+            }
+
+            return totalBreakTime;
+        }
+
+        // Calculate the elapsed break time in minutes (breaks that have already happened)
+        function calculateElapsedBreakTime(variant, currentTime) {
+            let elapsedBreakTime = 0;
+            const now = currentTime || new Date();
+
+            // Check lunch break
+            if (variant["Break Start (Lunch)"] && variant["Break End (Lunch)"]) {
+                const lunchStartDate = createTimeDate(variant["Break Start (Lunch)"]);
+                const lunchEndDate = createTimeDate(variant["Break End (Lunch)"]);
+                
+                // If lunch break has started
+                if (now >= lunchStartDate) {
+                    // If lunch break has ended, add full break time
+                    if (now >= lunchEndDate) {
+                        elapsedBreakTime += getTimeDifferenceInMinutes(
+                            variant["Break Start (Lunch)"], 
+                            variant["Break End (Lunch)"]
+                        );
+                    } 
+                    // If lunch break is in progress, add elapsed portion
+                    else {
+                        elapsedBreakTime += (now - lunchStartDate) / (1000 * 60);
+                    }
+                }
+            }
+
+            // Check tea break
+            if (variant["Break Start (Tea)"] && variant["Break End (Tea)"]) {
+                const teaStartDate = createTimeDate(variant["Break Start (Tea)"]);
+                const teaEndDate = createTimeDate(variant["Break End (Tea)"]);
+                
+                // If tea break has started
+                if (now >= teaStartDate) {
+                    // If tea break has ended, add full break time
+                    if (now >= teaEndDate) {
+                        elapsedBreakTime += getTimeDifferenceInMinutes(
+                            variant["Break Start (Tea)"], 
+                            variant["Break End (Tea)"]
+                        );
+                    } 
+                    // If tea break is in progress, add elapsed portion
+                    else {
+                        elapsedBreakTime += (now - teaStartDate) / (1000 * 60);
+                    }
+                }
+            }
+
+            // Check OT tea break
+            if (variant["OT Break Start (Tea)"] && 
+                variant["OT Break End (Tea)"] && 
+                variant["OT Break Start (Tea)"] !== "-" && 
+                variant["OT Break End (Tea)"] !== "-") {
+                
+                const otTeaStartDate = createTimeDate(variant["OT Break Start (Tea)"]);
+                const otTeaEndDate = createTimeDate(variant["OT Break End (Tea)"]);
+                
+                // If OT tea break has started
+                if (now >= otTeaStartDate) {
+                    // If OT tea break has ended, add full break time
+                    if (now >= otTeaEndDate) {
+                        elapsedBreakTime += getTimeDifferenceInMinutes(
+                            variant["OT Break Start (Tea)"], 
+                            variant["OT Break End (Tea)"]
+                        );
+                    } 
+                    // If OT tea break is in progress, add elapsed portion
+                    else {
+                        elapsedBreakTime += (now - otTeaStartDate) / (1000 * 60);
+                    }
+                }
+            }
+
+            return elapsedBreakTime;
+        }
+
+        // Helper function to create a Date object for a time string using today's date
+        function createTimeDate(timeStr) {
+            const now = new Date();
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const timeDate = new Date(now);
+            timeDate.setHours(hours, minutes, 0, 0);
+            return timeDate;
+        }
+
+        // Helper function to calculate time difference in minutes between two time strings
+        function getTimeDifferenceInMinutes(startTimeStr, endTimeStr) {
+            const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
+            const [endHours, endMinutes] = endTimeStr.split(':').map(Number);
+            
+            const startTotalMinutes = (startHours * 60) + startMinutes;
+            const endTotalMinutes = (endHours * 60) + endMinutes;
+            
+            return endTotalMinutes - startTotalMinutes;
         }
 
         // Fallback calculation if we don't have start/break time data
@@ -842,68 +1014,77 @@
             return Math.round(cycleTime);
         }
 
-        // Fetch production data from GitHub Pages with retries
-        async function fetchProductionData(retryCount = 3, delay = 1000) {
-            for (let i = 0; i < retryCount; i++) {
-                try {
-                    console.log(`Attempting to fetch data from: ${DATA_URL} (Attempt ${i + 1}/${retryCount})`);
-                    const cacheBuster = '?_=' + new Date().getTime();
-                    const fullUrl = DATA_URL + cacheBuster;
-                    const response = await fetch(fullUrl);
+        // Fetch production data
+        async function fetchProductionData() {
+            try {
+                console.log(`Attempting to fetch data from: ${DATA_URL}`);
+                const cacheBuster = '?_=' + new Date().getTime();
+                const fullUrl = DATA_URL + cacheBuster;
+                const response = await fetch(fullUrl);
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Fetched data:', data);
+
+                // Validate data structure
+                if (!data.variants || !Array.isArray(data.variants) || !data.supervisors || !Array.isArray(data.supervisors)) {
+                    throw new Error('Invalid data structure in data.json');
+                }
+
+                if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
+                    productionData = data;
+                    lastUpdateTime = data.timestamp;
+
+                    const updateTime = new Date(data.timestamp);
+                    document.getElementById('last-update').textContent = 
+                        'Last updated: ' + updateTime.toLocaleTimeString();
+
+                    updateFilterValueDropdown();
+                    filterVariants();
+                    updateHourDropdown();
+
+                    document.getElementById('total-variants').textContent = filteredVariants.length;
+
+                    if (currentVariantIndex >= filteredVariants.length) {
+                        currentVariantIndex = 0;
                     }
 
-                    const data = await response.json();
-                    console.log('Fetched data:', data);
-
-                    // Validate data structure
-                    if (!data.variants || !Array.isArray(data.variants) || !data.supervisors || !Array.isArray(data.supervisors)) {
-                        throw new Error('Invalid data structure in data.json');
+                    if (filteredVariants.length > 0) {
+                        displayVariant(currentVariantIndex);
+                    } else {
+                        showLoadingOrError('No data available.');
                     }
+                }
+                isLoading = false;
+                updateLoadingState();
+            } catch (error) {
+                console.error(`Fetch failed:`, error);
+                isLoading = false;
+                showLoadingOrError(`Failed to load data: ${error.message}`);
+                // Use local data for demo purposes
+                useLocalData();
+            }
+        }
 
-                    if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
-                        productionData = data;
-                        lastUpdateTime = data.timestamp;
-
-                        const updateTime = new Date(data.timestamp);
-                        document.getElementById('last-update').textContent = 
-                            'Last updated: ' + updateTime.toLocaleTimeString('en-US', {
-                                hour12: false,
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit'
-                            });
-
-                        updateFilterValueDropdown();
-                        filterVariants();
-
-                        document.getElementById('total-variants').textContent = filteredVariants.length;
-
-                        if (currentVariantIndex >= filteredVariants.length) {
-                            currentVariantIndex = 0;
-                        }
-
-                        if (filteredVariants.length > 0) {
-                            displayVariant(currentVariantIndex);
-                        } else {
-                            showLoadingOrError('No data available.');
-                        }
-                    }
-                    isLoading = false;
-                    updateLoadingState();
-                    return; // Exit on success
-                } catch (error) {
-                    console.error(`Fetch attempt ${i + 1} failed:`, error);
-                    if (i < retryCount - 1) {
-                        await new Promise(resolve => setTimeout(resolve, delay * (i + 1))); // Exponential backoff
-                        continue;
-                    }
-                    isLoading = false;
-                    showLoadingOrError(`Failed to load data after ${retryCount} attempts: ${error.message}`);
-                    addFallbackData(); // Use fallback only after retries fail
-                    displayVariant(0); // Force display fallback data
+        // Use local data for demo purposes when fetch fails
+        function useLocalData() {
+            // Check if we already parsed the local data
+            if (document.querySelector('#local-data')) {
+                const localData = JSON.parse(document.querySelector('#local-data').textContent);
+                productionData = localData;
+                lastUpdateTime = localData.timestamp;
+                
+                updateFilterValueDropdown();
+                filterVariants();
+                updateHourDropdown();
+                
+                document.getElementById('total-variants').textContent = filteredVariants.length;
+                
+                if (filteredVariants.length > 0) {
+                    displayVariant(0);
                 }
             }
         }
@@ -983,8 +1164,12 @@
         function updateDateTime() {
             const now = new Date();
 
-            // Format: "March 1, 2025"
-            document.getElementById('current-date').textContent = 'March 1, 2025';
+            // Format: "March 2, 2025"
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
 
             // Format: "HH:MM:SS" (24-hour)
             document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', {
@@ -1117,6 +1302,16 @@
                         dataMap.get(item.hour).production = item.production || 0;
                     } else {
                         dataMap.set(item.hour, { hour: item.hour, target: 0, production: item.production || 0 });
+                    }
+                });
+            }
+
+            // Get all production hours from hourlyTargets
+            const productionHours = [];
+            if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+                variant.hourlyTargets.forEach(item => {
+                    if (item.hour) {
+                        productionHours.push(item.hour);
                     }
                 });
             }
@@ -1336,6 +1531,16 @@
                 });
             }
 
+            // Get all production hours from hourlyTargets
+            const productionHours = [];
+            if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+                variant.hourlyTargets.forEach(item => {
+                    if (item.hour) {
+                        productionHours.push(item.hour);
+                    }
+                });
+            }
+
             // Fill in missing hours with zeros
             productionHours.forEach(hour => {
                 if (!dataMap.has(hour)) {
@@ -1503,80 +1708,6 @@
             svg.appendChild(targetLabelText);
         }
 
-        // Add fallback data if fetch fails (optional, only as a last resort)
-        function addFallbackData() {
-            console.warn('Using fallback data due to fetch failure.');
-            productionData = {
-                timestamp: new Date().toISOString(),
-                variants: [{
-                    variant: "TEST Product XYZ",
-                    cycleTime: 45,
-                    hourlyTarget: 80,
-                    dailyTarget: 320,
-                    currentTotal: 318,
-                    progressPercentage: 99,
-                    currentBoxTotal: 17,
-                    dailyBoxTarget: 20,
-                    startTime: new Date(new Date().setHours(8, 30, 0, 0)).toISOString(), // 8:30 AM today
-                    allocatedBreakTime: 35, // 35 minutes allocated for breaks
-                    elapsedBreakTime: 20.17, // 20 minutes and 10 seconds used
-                    batches: {
-                        "TEST123": {
-                            total: 318,
-                            boxes: 17
-                        }
-                    },
-                    hourlyProduction: [
-                        {"hour": "08:30", "production": 65},
-                        {"hour": "09:30", "production": 78},
-                        {"hour": "10:30", "production": 92},
-                        {"hour": "11:30", "production": 83}
-                    ],
-                    cumulativeTargets: [
-                        {"hour": "08:30", "target": 80},
-                        {"hour": "09:30", "target": 160},
-                        {"hour": "10:30", "target": 240},
-                        {"hour": "11:30", "target": 320}
-                    ],
-                    cumulativeProduction: [
-                        {"hour": "08:30", "production": 65},
-                        {"hour": "09:30", "production": 143},
-                        {"hour": "10:30", "production": 235},
-                        {"hour": "11:30", "production": 318}
-                    ],
-                    hourlyTargets: [
-                        {"hour": "08:30", "target": 80},
-                        {"hour": "09:30", "target": 80},
-                        {"hour": "10:30", "target": 80},
-                        {"hour": "11:30", "target": 80}
-                    ]
-                }],
-                supervisors: [{
-                    name: "TEST Supervisor",
-                    variants: {
-                        "TEST Product XYZ": {
-                            variant: "TEST Product XYZ",
-                            currentTotal: 318,
-                            dailyTarget: 320,
-                            progressPercentage: 99
-                        }
-                    },
-                    totalProduction: 318,
-                    totalTarget: 320,
-                    progressPercentage: 99
-                }]
-            };
-
-            // Update the date display to March 1, 2025
-            document.getElementById('current-date').textContent = 'March 1, 2025';
-            
-            updateFilterValueDropdown();
-            filterVariants();
-            if (filteredVariants.length > 0) {
-                displayVariant(0);
-            }
-        }
-
         // Show loading or error message
         function showLoadingOrError(message) {
             const totalsDisplay = document.getElementById('totals-display');
@@ -1608,9 +1739,68 @@
             const popupContent = document.getElementById('debugPopupContent');
             popupContent.innerHTML = '';
 
+            // Cycle Time Data
+            popupContent.innerHTML += '<h3>Cycle Time Information</h3>';
+            popupContent.innerHTML += `
+                <table>
+                    <tr>
+                        <th>Target Cycle Time</th>
+                        <td>${variant.cycleTime} sec/unit</td>
+                    </tr>
+                    <tr>
+                        <th>Actual Cycle Time</th>
+                        <td>${calculateActualCycleTime(variant)} sec/unit</td>
+                    </tr>
+                    <tr>
+                        <th>Start Time</th>
+                        <td>${variant["Start Time"] || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <th>End Time</th>
+                        <td>${variant["End Time"] || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <th>Lunch Break</th>
+                        <td>${variant["Break Start (Lunch)"] || 'N/A'} - ${variant["Break End (Lunch)"] || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <th>Tea Break</th>
+                        <td>${variant["Break Start (Tea)"] || 'N/A'} - ${variant["Break End (Tea)"] || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <th>OT Tea Break</th>
+                        <td>${variant["OT Break Start (Tea)"] || 'N/A'} - ${variant["OT Break End (Tea)"] || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Break Time</th>
+                        <td>${calculateAllocatedBreakTime(variant)} minutes</td>
+                    </tr>
+                    <tr>
+                        <th>Elapsed Break Time</th>
+                        <td>${calculateElapsedBreakTime(variant).toFixed(2)} minutes</td>
+                    </tr>
+                    <tr>
+                        <th>Current Total</th>
+                        <td>${variant.currentTotal || 0} units</td>
+                    </tr>
+                </table>
+            `;
+
             // Cumulative Data Table
             popupContent.innerHTML += '<h3>Cumulative Production & Target Data</h3>';
             popupContent.innerHTML += '<table><thead><tr><th>Hour</th><th>Production</th><th>Target</th></tr></thead><tbody>';
+            
+            // Get production hours from hourlyTargets
+            const productionHours = [];
+            if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+                variant.hourlyTargets.forEach(item => {
+                    if (item.hour) {
+                        productionHours.push(item.hour);
+                    }
+                });
+            }
+            
+            // Create maps for data
             const cumulativeDataMap = new Map();
 
             if (variant.cumulativeTargets && Array.isArray(variant.cumulativeTargets)) {
@@ -1629,7 +1819,15 @@
                 });
             }
 
-            productionHours.forEach(hour => {
+            // Sort hours
+            const sortedHours = [...productionHours].sort((a, b) => {
+                const timeA = a.split(':').map(Number);
+                const timeB = b.split(':').map(Number);
+                if (timeA[0] !== timeB[0]) return timeA[0] - timeB[0];
+                return timeA[1] - timeB[1];
+            });
+
+            sortedHours.forEach(hour => {
                 const data = cumulativeDataMap.get(hour) || { hour, production: 0, target: 0 };
                 popupContent.innerHTML += `<tr><td>${data.hour}</td><td>${data.production}</td><td>${data.target}</td></tr>`;
             });
@@ -1638,6 +1836,7 @@
             // Hourly Data Table
             popupContent.innerHTML += '<h3>Hourly Production & Target Data</h3>';
             popupContent.innerHTML += '<table><thead><tr><th>Hour</th><th>Production</th><th>Target</th></tr></thead><tbody>';
+            
             const hourlyDataMap = new Map();
 
             if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
@@ -1656,38 +1855,11 @@
                 });
             }
 
-            productionHours.forEach(hour => {
+            sortedHours.forEach(hour => {
                 const data = hourlyDataMap.get(hour) || { hour, production: 0, target: 0 };
                 popupContent.innerHTML += `<tr><td>${data.hour}</td><td>${data.production}</td><td>${data.target}</td></tr>`;
             });
             popupContent.innerHTML += '</tbody></table>';
-
-            // Break Time Info
-            popupContent.innerHTML += '<h3>Production Timeline</h3>';
-            popupContent.innerHTML += `
-                <table>
-                    <tr>
-                        <th>Start Time</th>
-                        <td>${variant.startTime ? new Date(variant.startTime).toLocaleTimeString() : 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <th>Allocated Break Time</th>
-                        <td>${variant.allocatedBreakTime || 0} minutes</td>
-                    </tr>
-                    <tr>
-                        <th>Elapsed Break Time</th>
-                        <td>${variant.elapsedBreakTime || 0} minutes</td>
-                    </tr>
-                    <tr>
-                        <th>Current Total</th>
-                        <td>${variant.currentTotal || 0} units</td>
-                    </tr>
-                    <tr>
-                        <th>Actual Cycle Time</th>
-                        <td>${calculateActualCycleTime(variant)} sec/unit</td>
-                    </tr>
-                </table>
-            `;
 
             document.getElementById('debugPopup').classList.add('show');
             document.getElementById('overlay').classList.add('show');
@@ -1748,6 +1920,98 @@
 
         // Initialize the dashboard when the page loads
         window.onload = initDashboard;
+    </script>
+
+    <!-- Add the sample data as a hidden element for demo purposes when fetch fails -->
+    <script id="local-data" type="application/json">
+    {
+        "timestamp": "2025-03-02T15:02:34.783Z",
+        "variants": [
+            {
+              "variant": "LEVO XL1150SCi",
+              "Start Time": "07:30",
+              "End Time": "18:30",
+              "Break Start (Lunch)": "13:40",
+              "Break End (Lunch)": "14:10",
+              "Break Start (Tea)": "10:25",
+              "Break End (Tea)": "10:40",
+              "OT Break Start (Tea)": "17:45",
+              "OT Break End (Tea)": "18:00",
+              "totalavailableWorkHours": 10,
+              "cycleTime": 99,
+              "hourlyTarget": 36,
+              "dailyTarget": 363,
+              "dailyBoxTarget": 20,
+              "currentTotal": 198,
+              "currentBoxTotal": 11,
+              "progressPercentage": 55,
+              "hourlyProduction": [
+                {"hour": "08:30", "production": 36},
+                {"hour": "09:30", "production": 0},
+                {"hour": "10:30", "production": 18},
+                {"hour": "11:30", "production": 54},
+                {"hour": "12:30", "production": 36},
+                {"hour": "13:30", "production": 18},
+                {"hour": "14:30", "production": 0},
+                {"hour": "15:30", "production": 18},
+                {"hour": "16:30", "production": 18},
+                {"hour": "17:30", "production": 0},
+                {"hour": "18:30", "production": 0}
+              ],
+              "cumulativeTargets": [
+                {"hour": "08:30", "target": 36},
+                {"hour": "09:30", "target": 72},
+                {"hour": "10:30", "target": 105},
+                {"hour": "11:30", "target": 135},
+                {"hour": "12:30", "target": 171},
+                {"hour": "13:30", "target": 207},
+                {"hour": "14:30", "target": 225},
+                {"hour": "15:30", "target": 261},
+                {"hour": "16:30", "target": 297},
+                {"hour": "17:30", "target": 333},
+                {"hour": "18:30", "target": 360}
+              ],
+              "cumulativeProduction": [
+                {"hour": "08:30", "production": 36},
+                {"hour": "10:30", "production": 54},
+                {"hour": "11:30", "production": 108},
+                {"hour": "12:30", "production": 144},
+                {"hour": "13:30", "production": 162},
+                {"hour": "15:30", "production": 180},
+                {"hour": "16:30", "production": 198}
+              ],
+              "hourlyTargets": [
+                {"hour": "08:30", "target": 36},
+                {"hour": "09:30", "target": 36},
+                {"hour": "10:30", "target": 33},
+                {"hour": "11:30", "target": 30},
+                {"hour": "12:30", "target": 36},
+                {"hour": "13:30", "target": 36},
+                {"hour": "14:30", "target": 18},
+                {"hour": "15:30", "target": 36},
+                {"hour": "16:30", "target": 36},
+                {"hour": "17:30", "target": 36},
+                {"hour": "18:30", "target": 27}
+              ]
+            }
+        ],
+        "supervisors": [
+            {
+              "name": "Siyabonga",
+              "variants": {
+                "LEVO XL1150SCi": {
+                  "variant": "LEVO XL1150SCi",
+                  "currentTotal": 198,
+                  "dailyTarget": 363,
+                  "progressPercentage": 55
+                }
+              },
+              "totalProduction": 198,
+              "totalTarget": 363,
+              "progressPercentage": 55
+            }
+        ]
+    }
     </script>
 </body>
 </html>
