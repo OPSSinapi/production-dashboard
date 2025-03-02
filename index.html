@@ -602,21 +602,21 @@
             <div class="chart-container">
                 <div class="charts-row">
                     <div class="chart">
-                        <div class="chart-title">Cumulative Daily Production Progress</div>
-                        <div class="chart-area">
-                            <div class="line-chart" id="cumulative-chart"></div>
-                            <div class="legend">
-                                <div class="legend-item">
-                                    <div class="legend-color production-color"></div>
-                                    <div>Cumulative Production</div>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-color target-color"></div>
-                                    <div>Cumulative Target</div>
-                                </div>
+                    <div class="chart-title">Cumulative Daily Production Progress</div>
+                    <div class="chart-area">
+                        <div class="line-chart" id="cumulative-chart"></div>
+                        <div class="legend" style="margin-top: -10px;">
+                            <div class="legend-item">
+                                <div class="legend-color production-color"></div>
+                                <div>Cumulative Production</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color target-color"></div>
+                                <div>Cumulative Target</div>
                             </div>
                         </div>
                     </div>
+                </div>
                     <div class="chart">
                         <div class="chart-title">Hourly Production Progress</div>
                         <div class="chart-controls">
@@ -1822,13 +1822,13 @@
             targetBar.setAttribute('rx', '4'); // Rounded corners
             svg.appendChild(targetBar);
             
-            // Add bar labels
+            // Add bar labels directly onto bars to replace legend
             // Production value
             const productionValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             productionValueText.setAttribute('x', startX + barWidth / 2);
             productionValueText.setAttribute('y', padding.top + chartHeight - productionBarHeight - 10);
             productionValueText.setAttribute('text-anchor', 'middle');
-            productionValueText.setAttribute('font-size', '14');
+            productionValueText.setAttribute('font-size', '16');
             productionValueText.setAttribute('font-weight', 'bold');
             productionValueText.setAttribute('fill', 'var(--secondary-color)');
             productionValueText.textContent = production;
@@ -1839,7 +1839,7 @@
             targetValueText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
             targetValueText.setAttribute('y', padding.top + chartHeight - targetBarHeight - 10);
             targetValueText.setAttribute('text-anchor', 'middle');
-            targetValueText.setAttribute('font-size', '14');
+            targetValueText.setAttribute('font-size', '16');
             targetValueText.setAttribute('font-weight', 'bold');
             targetValueText.setAttribute('fill', 'var(--success-color)');
             targetValueText.textContent = target;
