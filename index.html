@@ -13,6 +13,13 @@
             --danger-color: #e74c3c;
             --light-color: #f3f4f6;     /* Light gray from screenshot */
             --dark-color: #1e293b;      /* Dark blue-gray from screenshot */
+            
+            /* Supervisor colors */
+            --supervisor-luthando: #F9E79F; /* Yellow */
+            --supervisor-aphele: #121212;   /* Black */
+            --supervisor-siyabonga: #FADBD8; /* Pink */
+            --supervisor-nosi: #D6EAF8;     /* Blue */
+            --supervisor-mvokwe: #D5F5E3;   /* Green */
         }
 
         body {
@@ -22,6 +29,7 @@
             background-color: var(--light-color);
             color: var(--primary-color);
             overflow: auto; /* Allow scrolling if content overflows */
+            transition: background-color 0.5s ease;
         }
 
         .dashboard-container {
@@ -95,9 +103,20 @@
             width: 100%;
         }
 
+        .variant-details {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
         .variant-name {
             font-size: clamp(1.2rem, 1.8vw, 1.8rem);
             font-weight: bold;
+        }
+
+        .supervisor-name {
+            font-size: clamp(1rem, 1.4vw, 1.4rem);
+            font-style: italic;
         }
 
         .cycle-time-container {
@@ -362,6 +381,28 @@
             margin-top: 5px;
         }
 
+        /* Special styling for supervisor Aphele (black background) */
+        .supervisor-aphele {
+            color: white;
+        }
+        
+        .supervisor-aphele .chart-container,
+        .supervisor-aphele .chart,
+        .supervisor-aphele .filter-select,
+        .supervisor-aphele .hour-select {
+            background-color: #222;
+            color: white;
+            border-color: #555;
+        }
+        
+        .supervisor-aphele .chart-title,
+        .supervisor-aphele .hour-time,
+        .supervisor-aphele .total-label,
+        .supervisor-aphele .total-hourly,
+        .supervisor-aphele .legend {
+            color: #ddd;
+        }
+
         /* Debug Popup Styles */
         .debug-popup {
             display: none;
@@ -536,7 +577,10 @@
 
         <div class="content">
             <div class="variant-info">
-                <div class="variant-name" id="variant-name">Product Variant: Loading...</div>
+                <div class="variant-details">
+                    <div class="variant-name" id="variant-name">Product Variant: Loading...</div>
+                    <div class="supervisor-name" id="supervisor-name">Line Supervisor: Loading...</div>
+                </div>
                 <div class="cycle-time-container">
                     <div class="target-cycle-time" id="target-cycle-time">Target: Loading...</div>
                     <div class="actual-cycle-time" id="actual-cycle-time">Actual: Loading...</div>
@@ -632,6 +676,7 @@
         let isAutocycling = true;
         let isLoading = true;
         let countdownInterval = null;
+        let commonChartPadding = { top: 30, right: 30, bottom: 50, left: 60 }; // Standardized chart padding
 
         // Initialize the dashboard
         function initDashboard() {
@@ -679,6 +724,48 @@
 
             // Start progress bar animation
             animateProgress();
+        }
+
+        // Apply supervisor-specific styling
+        function applySupervisorStyling(supervisorName) {
+            // Remove any existing supervisor class
+            document.body.classList.remove(
+                'supervisor-luthando', 
+                'supervisor-aphele', 
+                'supervisor-siyabonga', 
+                'supervisor-nosi', 
+                'supervisor-mvokwe'
+            );
+            
+            // Convert supervisor name to lowercase for class name
+            if (supervisorName) {
+                const supervisorClass = 'supervisor-' + supervisorName.toLowerCase();
+                document.body.classList.add(supervisorClass);
+                
+                // Apply specific background colors
+                switch(supervisorName.toLowerCase()) {
+                    case 'luthando':
+                        document.body.style.backgroundColor = 'var(--supervisor-luthando)';
+                        break;
+                    case 'aphele':
+                        document.body.style.backgroundColor = 'var(--supervisor-aphele)';
+                        break;
+                    case 'siyabonga':
+                        document.body.style.backgroundColor = 'var(--supervisor-siyabonga)';
+                        break;
+                    case 'nosi':
+                        document.body.style.backgroundColor = 'var(--supervisor-nosi)';
+                        break;
+                    case 'mvokwe':
+                        document.body.style.backgroundColor = 'var(--supervisor-mvokwe)';
+                        break;
+                    default:
+                        document.body.style.backgroundColor = 'var(--light-color)';
+                        break;
+                }
+            } else {
+                document.body.style.backgroundColor = 'var(--light-color)';
+            }
         }
 
         // Update the hour dropdown with all hours from the day
@@ -1014,6 +1101,22 @@
             return Math.round(cycleTime);
         }
 
+        // Get supervisor name for a variant
+        function getSupervisorForVariant(variant) {
+            if (!variant || !productionData.supervisors) {
+                return "Unknown";
+            }
+            
+            // Look through supervisors to find which one is responsible for this variant
+            for (const supervisor of productionData.supervisors) {
+                if (supervisor.variants && supervisor.variants[variant.variant]) {
+                    return supervisor.name;
+                }
+            }
+            
+            return "Unknown";
+        }
+
         // Fetch production data
         async function fetchProductionData() {
             try {
@@ -1190,7 +1293,15 @@
             const variant = filteredVariants[index];
             isLoading = false;
 
+            // Get supervisor name for this variant
+            const supervisorName = getSupervisorForVariant(variant);
+            
+            // Apply supervisor-specific styling
+            applySupervisorStyling(supervisorName);
+
+            // Update the variant and supervisor display
             document.getElementById('variant-name').textContent = `Product Variant: ${variant.variant}`;
+            document.getElementById('supervisor-name').textContent = `Line Supervisor: ${supervisorName}`;
             
             // Display target and actual cycle times
             document.getElementById('target-cycle-time').textContent = `Target: ${variant.cycleTime} sec/unit`;
@@ -1280,6 +1391,27 @@
             totalsDisplay.appendChild(hourlyTargets);
         }
 
+        // Get all sorted production hours from a variant
+        function getSortedProductionHours(variant) {
+            // Get all production hours from hourlyTargets
+            const productionHours = [];
+            if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+                variant.hourlyTargets.forEach(item => {
+                    if (item.hour) {
+                        productionHours.push(item.hour);
+                    }
+                });
+            }
+            
+            // Sort hours
+            return [...productionHours].sort((a, b) => {
+                const timeA = a.split(':').map(Number);
+                const timeB = b.split(':').map(Number);
+                if (timeA[0] !== timeB[0]) return timeA[0] - timeB[0];
+                return timeA[1] - timeB[1];
+            });
+        }
+
         // Render the cumulative chart using SVG
         function renderCumulativeChart(variant) {
             const chartContainer = document.getElementById('cumulative-chart');
@@ -1306,18 +1438,11 @@
                 });
             }
 
-            // Get all production hours from hourlyTargets
-            const productionHours = [];
-            if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
-                variant.hourlyTargets.forEach(item => {
-                    if (item.hour) {
-                        productionHours.push(item.hour);
-                    }
-                });
-            }
+            // Get sorted production hours
+            const sortedHours = getSortedProductionHours(variant);
 
             // Fill in missing hours with zeros
-            productionHours.forEach(hour => {
+            sortedHours.forEach(hour => {
                 if (!dataMap.has(hour)) {
                     dataMap.set(hour, { hour, target: 0, production: 0 });
                 }
@@ -1346,7 +1471,7 @@
             // Create SVG for line chart
             const svgWidth = chartContainer.clientWidth || 600;
             const svgHeight = 300; // Fixed height for the chart
-            const padding = { top: 30, right: 30, bottom: 50, left: 40 };
+            const padding = commonChartPadding; // Use common padding for both charts
             const chartWidth = svgWidth - padding.left - padding.right;
             const chartHeight = svgHeight - padding.top - padding.bottom;
 
@@ -1361,7 +1486,7 @@
             // Create grid lines
             const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             
-            // Horizontal grid lines (3 lines)
+            // Horizontal grid lines (5 lines including 0)
             for (let i = 0; i <= 4; i++) {
                 const y = padding.top + (chartHeight * i / 4);
                 const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1374,7 +1499,7 @@
                 gridGroup.appendChild(line);
                 
                 // Add value labels for grid lines
-                if (i < 4) { // Skip the top-most label (it's usually cutoff)
+                if (i < 5) {
                     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                     text.setAttribute('x', padding.left - 10);
                     text.setAttribute('y', y + 5);
@@ -1531,18 +1656,11 @@
                 });
             }
 
-            // Get all production hours from hourlyTargets
-            const productionHours = [];
-            if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
-                variant.hourlyTargets.forEach(item => {
-                    if (item.hour) {
-                        productionHours.push(item.hour);
-                    }
-                });
-            }
+            // Get sorted production hours
+            const sortedHours = getSortedProductionHours(variant);
 
             // Fill in missing hours with zeros
-            productionHours.forEach(hour => {
+            sortedHours.forEach(hour => {
                 if (!dataMap.has(hour)) {
                     dataMap.set(hour, { hour, target: 0, production: 0 });
                 }
@@ -1579,10 +1697,10 @@
             const production = hourData.production || 0;
             const target = hourData.target || 0;
 
-            // Create an SVG for the bar chart
+            // Create an SVG for the bar chart using same dimensions and padding as line chart
             const svgWidth = chartContainer.clientWidth || 600;
             const svgHeight = 300;
-            const padding = { top: 30, right: 30, bottom: 50, left: 40 };
+            const padding = commonChartPadding; // Use common padding for both charts
             const chartWidth = svgWidth - padding.left - padding.right;
             const chartHeight = svgHeight - padding.top - padding.bottom;
             
@@ -1610,17 +1728,15 @@
                 line.setAttribute('stroke-width', '1');
                 gridGroup.appendChild(line);
                 
-                // Add value labels (skip the top-most label)
-                if (i < 4) {
-                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    text.setAttribute('x', padding.left - 10);
-                    text.setAttribute('y', y + 5);
-                    text.setAttribute('text-anchor', 'end');
-                    text.setAttribute('font-size', '12');
-                    text.setAttribute('fill', '#666');
-                    text.textContent = Math.round(maxValue * (4 - i) / 4);
-                    gridGroup.appendChild(text);
-                }
+                // Add value labels (for all 5 lines)
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', padding.left - 10);
+                text.setAttribute('y', y + 5);
+                text.setAttribute('text-anchor', 'end');
+                text.setAttribute('font-size', '12');
+                text.setAttribute('fill', '#666');
+                text.textContent = Math.round(maxValue * (4 - i) / 4);
+                gridGroup.appendChild(text);
             }
             
             // Add vertical grid line
@@ -1713,6 +1829,7 @@
             const totalsDisplay = document.getElementById('totals-display');
             totalsDisplay.innerHTML = `<div class="${isLoading ? 'loading' : 'error'}">${message}</div>`;
             document.getElementById('variant-name').textContent = 'Loading...';
+            document.getElementById('supervisor-name').textContent = 'Line Supervisor: Loading...';
             document.getElementById('target-cycle-time').textContent = 'Target: Loading...';
             document.getElementById('actual-cycle-time').textContent = 'Actual: Loading...';
             const charts = document.querySelectorAll('.line-chart, .bar-chart');
@@ -1738,6 +1855,10 @@
 
             const popupContent = document.getElementById('debugPopupContent');
             popupContent.innerHTML = '';
+
+            // Add supervisor information
+            const supervisorName = getSupervisorForVariant(variant);
+            popupContent.innerHTML += `<h3>Supervisor: ${supervisorName}</h3>`;
 
             // Cycle Time Data
             popupContent.innerHTML += '<h3>Cycle Time Information</h3>';
@@ -1790,15 +1911,8 @@
             popupContent.innerHTML += '<h3>Cumulative Production & Target Data</h3>';
             popupContent.innerHTML += '<table><thead><tr><th>Hour</th><th>Production</th><th>Target</th></tr></thead><tbody>';
             
-            // Get production hours from hourlyTargets
-            const productionHours = [];
-            if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
-                variant.hourlyTargets.forEach(item => {
-                    if (item.hour) {
-                        productionHours.push(item.hour);
-                    }
-                });
-            }
+            // Get sorted production hours
+            const sortedHours = getSortedProductionHours(variant);
             
             // Create maps for data
             const cumulativeDataMap = new Map();
@@ -1818,14 +1932,6 @@
                     }
                 });
             }
-
-            // Sort hours
-            const sortedHours = [...productionHours].sort((a, b) => {
-                const timeA = a.split(':').map(Number);
-                const timeB = b.split(':').map(Number);
-                if (timeA[0] !== timeB[0]) return timeA[0] - timeB[0];
-                return timeA[1] - timeB[1];
-            });
 
             sortedHours.forEach(hour => {
                 const data = cumulativeDataMap.get(hour) || { hour, production: 0, target: 0 };
