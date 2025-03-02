@@ -177,13 +177,13 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
-            min-height: 400px; /* Increased minimum height for better visibility */
+            min-height: 500px; /* Further increased minimum height for better chart scaling */
         }
 
         .chart-title {
             font-size: clamp(1rem, 1.4vw, 1.4rem);
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 15px;
             color: var(--dark-color);
         }
 
@@ -191,7 +191,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         .hour-select {
@@ -200,12 +200,14 @@
             border: 1px solid var(--secondary-color);
             font-family: inherit;
             background-color: white;
+            height: 35px;
         }
 
         .chart-area {
             flex: 1;
             position: relative;
-            min-height: 300px; /* Ensure minimum height for charts */
+            min-height: 380px; /* Increased minimum height for charts */
+            margin-top: 20px; /* Add some space at the top */
         }
 
         /* Line Chart Styling (Cumulative Daily Production Progress) */
@@ -213,6 +215,7 @@
             position: relative;
             height: 100%;
             width: 100%;
+            margin-top: 10px;
         }
 
         /* Bar Chart Styling (Hourly Production Progress) */
@@ -223,12 +226,13 @@
             justify-content: center;
             gap: 20px;
             padding-top: 20px;
+            margin-top: 10px;
         }
 
         .legend {
             display: flex;
             justify-content: center;
-            margin: 10px 0;
+            margin: 20px 0 10px 0;
         }
 
         .legend-item {
@@ -364,10 +368,10 @@
 
         .hour-info {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
+            gap: 15px;
             font-weight: bold;
-            margin-bottom: 10px;
         }
 
         .hour-time {
@@ -378,7 +382,6 @@
         .hour-countdown {
             font-size: 14px;
             color: var(--secondary-color);
-            margin-top: 5px;
         }
 
         /* Special styling for supervisor Aphele (black background) */
@@ -615,11 +618,11 @@
                             <div class="hour-info" id="hour-info">
                                 <div class="hour-time">Hour: Loading...</div>
                                 <div class="hour-countdown"></div>
+                                <select id="hour-select" class="hour-select">
+                                    <option value="current">Current Hour</option>
+                                    <!-- Hour options will be added dynamically -->
+                                </select>
                             </div>
-                            <select id="hour-select" class="hour-select">
-                                <option value="current">Current Hour</option>
-                                <!-- Hour options will be added dynamically -->
-                            </select>
                         </div>
                         <div class="chart-area">
                             <div class="bar-chart" id="hourly-chart"></div>
@@ -676,7 +679,7 @@
         let isAutocycling = true;
         let isLoading = true;
         let countdownInterval = null;
-        let commonChartPadding = { top: 30, right: 30, bottom: 70, left: 60 }; // Standardized chart padding with increased bottom space for labels
+        let commonChartPadding = { top: 40, right: 30, bottom: 80, left: 70 }; // Further increased padding for better chart scaling and alignment
 
         // Initialize the dashboard
         function initDashboard() {
@@ -1470,7 +1473,7 @@
 
             // Create SVG for line chart
             const svgWidth = chartContainer.clientWidth || 600;
-            const svgHeight = 340; // Increased height for the chart to ensure consistent scaling
+            const svgHeight = 400; // Significantly increased height for the chart
             const padding = commonChartPadding; // Use common padding for both charts
             const chartWidth = svgWidth - padding.left - padding.right;
             const chartHeight = svgHeight - padding.top - padding.bottom;
@@ -1513,13 +1516,13 @@
             
             // Add Y-axis title "Units"
             const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            yAxisTitle.setAttribute('x', padding.left - 40);
+            yAxisTitle.setAttribute('x', padding.left - 45);
             yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
             yAxisTitle.setAttribute('text-anchor', 'middle');
             yAxisTitle.setAttribute('font-size', '14');
             yAxisTitle.setAttribute('font-weight', 'bold');
             yAxisTitle.setAttribute('fill', '#666');
-            yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 40}, ${padding.top + chartHeight / 2})`);
+            yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 45}, ${padding.top + chartHeight / 2})`);
             yAxisTitle.textContent = 'Units';
             gridGroup.appendChild(yAxisTitle);
             
@@ -1721,7 +1724,7 @@
 
             // Create an SVG for the bar chart using same dimensions and padding as line chart
             const svgWidth = chartContainer.clientWidth || 600;
-            const svgHeight = 340; // Increased height to match line chart
+            const svgHeight = 400; // Significantly increased height to match line chart
             const padding = commonChartPadding; // Use common padding for both charts
             const chartWidth = svgWidth - padding.left - padding.right;
             const chartHeight = svgHeight - padding.top - padding.bottom;
