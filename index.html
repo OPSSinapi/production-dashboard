@@ -105,12 +105,13 @@
             width: 100%;
             overflow: hidden;
             flex: 1; /* Make sure content takes up available space */
+            gap: 2px; /* Add small gap between elements */
         }
 
         .variant-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px; /* Reduced margin */
+            margin-bottom: 2px; /* Reduced margin */
             background-color: var(--dark-color);
             color: white;
             padding: 10px 15px; /* Reduced padding */
@@ -191,7 +192,7 @@
             flex: 1; /* Takes all available space */
             background-color: white;
             border-radius: 8px;
-            padding: 8px; /* Reduced padding */
+            padding: 4px 8px; /* Reduced padding to decrease deadspace */
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             overflow: hidden;
             width: 100%;
@@ -199,7 +200,7 @@
             display: flex;
             flex-direction: column;
             min-height: 0; /* Important for flex container */
-            margin-top: 5px; /* Added small margin */
+            margin-top: 0; /* Removed top margin to reduce deadspace */
         }
 
         .charts-row {
@@ -208,13 +209,14 @@
             flex: 1;
             min-height: 0; /* Important for flex container */
             height: calc(70vh - 200px); /* Set a minimum height based on viewport */
+            margin-top: 0; /* Remove top margin to reduce deadspace */
         }
 
         .chart {
             flex: 1;
             background-color: white;
             border-radius: 8px;
-            padding: 6px; /* Reduced padding */
+            padding: 4px 6px; /* Reduced padding further */
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
@@ -225,10 +227,10 @@
         .chart-header {
             display: flex;
             align-items: center;
-            margin-bottom: 6px; /* Reduced margin */
+            margin-bottom: 0; /* Removed margin */
             flex-wrap: nowrap;
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 6px; /* Reduced padding */
+            padding-bottom: 2px; /* Reduced padding */
         }
 
         .chart-title {
@@ -238,6 +240,9 @@
             color: var(--dark-color);
             white-space: nowrap;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin-top: 0; /* Remove top margin */
+            margin-bottom: 0; /* Remove bottom margin */
+            padding-top: 0; /* Remove top padding */
         }
 
         .chart-title-select {
@@ -266,6 +271,8 @@
             color: var(--dark-color);
             white-space: nowrap;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; /* Remove all margins */
+            padding: 0; /* Remove all padding */
         }
 
         .hour-info {
@@ -276,6 +283,8 @@
             font-weight: 500;
             white-space: nowrap;
             margin-left: 10px;
+            margin: 0; /* Remove all margins */
+            padding: 0; /* Remove all padding */
         }
 
         .hour-countdown {
@@ -373,11 +382,10 @@
             margin-top: 3px; /* Reduced margin */
         }
 
-        /* MODIFIED: Make sure vertical alignment matches across all sections */
         .totals-display {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            margin-bottom: 5px; /* Reduced margin */
+            margin-bottom: 2px; /* Further reduced margin */
             font-size: clamp(0.9rem, 1.1vw, 1.1rem); /* Reduced size */
             gap: 8px; /* Reduced gap */
             width: 100%;
@@ -459,13 +467,13 @@
             r: 80; /* Further increased to ensure they match */
         }
 
-        /* MODIFIED: Make time labels match boxes/sec/unit size */
+        /* MODIFIED: Match time labels to sec/unit size */
         .time-label {
-            font-size: clamp(1.3rem, 2.2vw, 2.2rem); /* Increased to match total-value font size */
+            font-size: clamp(0.9rem, 1.1vw, 1.1rem); /* Matched to sec/unit size */
             text-anchor: middle;
             dominant-baseline: hanging;
             fill: #333;
-            font-weight: 600; /* Increased weight for visibility */
+            font-weight: 500; /* Adjusted weight to match */
         }
         
         /* MODIFIED: Larger current arrow */
@@ -1589,6 +1597,8 @@
             chartContainer.innerHTML = '';
             const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
             chartTitle.textContent = `${currentDay}'s Production Progress`;
+            chartTitle.style.margin = '0'; /* Remove margins */
+            chartTitle.style.padding = '0'; /* Remove padding */
 
             const dataMap = new Map();
             if (variant.cumulativeTargets?.length) {
@@ -1862,6 +1872,12 @@
                 if (countdownInterval) clearInterval(countdownInterval);
                 document.querySelector('.hour-countdown').textContent = '';
                 document.querySelector('.hour-countdown').style.color = 'var(--secondary-color)';
+            }
+            
+            // Add direct style to chart area to reduce space
+            const chartArea = document.querySelector('.chart-area');
+            if (chartArea) {
+                chartArea.style.marginTop = '0';
             }
             
             const hourData = dataMap.get(displayHour) || { hour: displayHour, production: 0, target: 0 };
