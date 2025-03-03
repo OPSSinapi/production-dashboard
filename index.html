@@ -820,7 +820,7 @@
             }
         }
 
-        // MODIFIED: Limit dropdown hours to end time if passed
+        // Limit dropdown hours to end time if passed
         function updateHourDropdown() {
             const hourSelect = document.getElementById('hour-select');
             const currentVariant = filteredVariants[currentVariantIndex];
@@ -1123,7 +1123,7 @@
             });
         }
 
-        // MODIFIED: Add visual indicator for variants with passed end time
+        // Add visual indicator for variants with passed end time
         function displayVariant(index) {
             if (!filteredVariants || filteredVariants.length === 0) {
                 showLoadingOrError('No variants available.');
@@ -1143,8 +1143,14 @@
             }
             
             document.getElementById('supervisor-name').textContent = `Line Supervisor: ${supervisorName}`;
-            document.getElementById('target-cycle-time').textContent = `Target: ${variant.cycleTime} sec/unit`;
-            document.getElementById('actual-cycle-time').textContent = `Actual: ${calculateActualCycleTime(variant)} sec/unit`;
+            
+            // Remove this - will be shown in totals display
+            // document.getElementById('target-cycle-time').textContent = `Target: ${variant.cycleTime} sec/unit`;
+            // document.getElementById('actual-cycle-time').textContent = `Actual: ${calculateActualCycleTime(variant)} sec/unit`;
+            
+            document.getElementById('target-cycle-time').textContent = '';
+            document.getElementById('actual-cycle-time').textContent = '';
+            
             document.getElementById('current-variant-index').textContent = (index + 1);
             updateTotalsDisplay(variant);
             renderCumulativeChart(variant);
@@ -1155,28 +1161,44 @@
             if (isAutocycling) animateProgress();
         }
 
+        // MODIFIED: Redesigned totals display to show combined progress and cycle time
         function updateTotalsDisplay(variant) {
             const totalsDisplay = document.getElementById('totals-display');
             totalsDisplay.innerHTML = '';
+            
+            const currentTotal = variant.currentTotal || 0;
+            const dailyTarget = variant.dailyTarget || 0;
             const boxesCompleted = variant.currentBoxTotal || 0;
             const totalBoxes = variant.dailyBoxTarget || 0;
+            const progressPercentage = variant.progressPercentage || 0;
+            
+            // Progress display
             totalsDisplay.innerHTML += `
                 <div class="total-item">
-                    <div class="total-label">Current Total</div>
-                    <div class="total-value total-actual">${variant.currentTotal || 0}</div>
-                    <div class="total-subvalue">${boxesCompleted} boxes</div>
-                </div>
-                <div class="total-item">
-                    <div class="total-label">Daily Target</div>
-                    <div class="total-value total-target">${variant.dailyTarget || 0}</div>
-                    <div class="total-subvalue">${totalBoxes} boxes</div>
-                </div>
-                <div class="total-item">
                     <div class="total-label">Progress</div>
-                    <div class="total-value total-progress">${variant.progressPercentage || 0}%</div>
-                    <div class="total-subvalue">${boxesCompleted} of ${totalBoxes} boxes</div>
+                    <div class="total-value total-actual">${currentTotal}/${dailyTarget}</div>
+                    <div class="total-subvalue">${boxesCompleted}/${totalBoxes} boxes</div>
+                </div>
+                <div class="total-item">
+                    <div class="total-label">Completion</div>
+                    <div class="total-value total-progress">${progressPercentage}%</div>
+                    <div class="total-subvalue">of daily target</div>
                 </div>
             `;
+            
+            // Cycle Time display
+            const actualCycleTime = calculateActualCycleTime(variant);
+            const targetCycleTime = variant.cycleTime || 0;
+            
+            totalsDisplay.innerHTML += `
+                <div class="total-item">
+                    <div class="total-label">Cycle Time</div>
+                    <div class="total-value total-target">${actualCycleTime}/${targetCycleTime}</div>
+                    <div class="total-subvalue">sec/unit</div>
+                </div>
+            `;
+            
+            // Hourly targets display
             let hourlyTargetsMet = 0, totalHourlyTargets = 0;
             if (variant.hourlyProduction?.length && variant.hourlyTargets?.length) {
                 const hourlyTargetsMap = new Map(variant.hourlyTargets.map(item => [item.hour, item.target || 0]));
@@ -1190,7 +1212,7 @@
             totalsDisplay.innerHTML += `
                 <div class="total-item">
                     <div class="total-label">Hourly Targets</div>
-                    <div class="total-value total-hourly">${hourlyTargetsMet} / ${totalHourlyTargets}</div>
+                    <div class="total-value total-hourly">${hourlyTargetsMet}/${totalHourlyTargets}</div>
                     <div class="total-subvalue">targets met</div>
                 </div>
             `;
@@ -1208,7 +1230,7 @@
             });
         }
 
-        // MODIFIED: Limit chart data to end time if passed
+        // Limit chart data to end time if passed
         function renderCumulativeChart(variant) {
             const chartContainer = document.getElementById('cumulative-chart');
             const chartTitle = document.getElementById('cumulative-chart-title');
@@ -1423,7 +1445,7 @@
             svg.appendChild(targetLineGroup);
         }
 
-        // MODIFIED: Use appropriate hour display for variants with passed end time
+        // Use appropriate hour display for variants with passed end time and remove time data comment
         function renderHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-chart');
             const chartTitle = document.getElementById('hourly-chart-title');
@@ -1637,15 +1659,7 @@
             xAxisLine2.setAttribute('stroke-width', '1.5');
             svg.appendChild(xAxisLine2);
             
-            // Display the time slot being shown
-            const timeSlotText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            timeSlotText.setAttribute('x', svgWidth / 2);
-            timeSlotText.setAttribute('y', svgHeight - 5);
-            timeSlotText.setAttribute('text-anchor', 'middle');
-            timeSlotText.setAttribute('font-size', '12');
-            timeSlotText.setAttribute('fill', '#666');
-            timeSlotText.textContent = `Showing data for ${displayHour}`;
-            svg.appendChild(timeSlotText);
+            // REMOVED: Comment showing which time slot is displayed
         }
 
         function showLoadingOrError(message) {
@@ -1653,8 +1667,8 @@
             totalsDisplay.innerHTML = `<div class="${isLoading ? 'loading' : 'error'}">${message}</div>`;
             document.getElementById('variant-name').textContent = 'Loading...';
             document.getElementById('supervisor-name').textContent = 'Line Supervisor: Loading...';
-            document.getElementById('target-cycle-time').textContent = 'Target: Loading...';
-            document.getElementById('actual-cycle-time').textContent = 'Actual: Loading...';
+            document.getElementById('target-cycle-time').textContent = '';
+            document.getElementById('actual-cycle-time').textContent = '';
             document.querySelectorAll('.line-chart, .bar-chart').forEach(chart => {
                 chart.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
             });
@@ -1820,7 +1834,9 @@
                 {"hour": "11:30", "production": 234},
                 {"hour": "12:30", "production": 378},
                 {"hour": "13:30", "production": 540},
-                {"hour": "14:30", "production": 540}
+                {"hour": "14:30", "production": 702},
+                {"hour": "15:30", "production": 882},
+                {"hour": "16:30", "production": 1080}
               ],
               "cumulativeTargets": [
                 {"hour": "08:30", "target": 36},
