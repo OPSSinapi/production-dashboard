@@ -126,6 +126,13 @@
             font-weight: bold;
         }
 
+        .shift-ended {
+            color: var(--warning-color);
+            font-style: italic;
+            margin-left: 10px;
+            font-size: 0.9em;
+        }
+
         .supervisor-name {
             font-size: clamp(1rem, 1.4vw, 1.4rem);
             font-style: italic;
@@ -232,12 +239,6 @@
             gap: 15px;
             font-weight: 500;
             white-space: nowrap;
-        }
-
-        .hour-time {
-            font-size: 15px;
-            color: var(--dark-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .hour-countdown {
@@ -663,7 +664,7 @@
                         <div class="chart-header">
                             <div class="chart-title" id="hourly-chart-title">Loading...</div>
                             <div class="hour-info" id="hour-info">
-                                <div class="hour-time">Hour: Loading...</div>
+                                <!-- Removed the hour-time div -->
                                 <div class="hour-countdown"></div>
                             </div>
                             <div class="hour-select-container">
@@ -744,6 +745,24 @@
             document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
             document.addEventListener('mozfullscreenchange', handleFullscreenChange);
             document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+        }
+
+        // Function to check if a variant's end time has passed
+        function isEndTimePassed(variant) {
+            if (!variant || !variant["End Time"]) return false;
+            
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
+            const [endHour, endMinute] = variant["End Time"].split(':').map(Number);
+            
+            // Compare times
+            if (currentHour > endHour || (currentHour === endHour && currentMinute > endMinute)) {
+                return true; // End time has passed
+            }
+            
+            return false; // End time hasn't passed yet
         }
 
         function toggleFullscreen() {
@@ -875,9 +894,20 @@
             const startDate = new Date(now);
             const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
             startDate.setHours(startHours, startMinutes, 0, 0);
-            const elapsedTimeMs = now - startDate;
+            
+            // If end time has passed, use end time instead of current time
+            let endDate;
+            if (isEndTimePassed(variant)) {
+                endDate = new Date(now);
+                const [endHours, endMinutes] = variant["End Time"].split(':').map(Number);
+                endDate.setHours(endHours, endMinutes, 0, 0);
+            } else {
+                endDate = now;
+            }
+            
+            const elapsedTimeMs = endDate - startDate;
             const elapsedTimeHours = elapsedTimeMs / (1000 * 60 * 60);
-            const breakTimeHours = calculateElapsedBreakTime(variant, now) / 60;
+            const breakTimeHours = calculateElapsedBreakTime(variant, endDate) / 60;
             const actualWorkingTimeHours = elapsedTimeHours - breakTimeHours;
             if (actualWorkingTimeHours <= 0) return "N/A";
             return Math.round((actualWorkingTimeHours * 3600) / variant.currentTotal);
@@ -1038,6 +1068,7 @@
             selectedFilterValue = filterValueSelect.value;
         }
 
+        // MODIFIED: Don't filter out variants with passed end times
         function filterVariants() {
             if (selectedFilterValue === 'all') {
                 filteredVariants = productionData.variants || [];
@@ -1048,6 +1079,7 @@
             } else {
                 filteredVariants = productionData.variants.filter(v => v.variant === selectedFilterValue);
             }
+            
             filteredVariants.sort((a, b) => {
                 const supervisorA = getSupervisorForVariant(a);
                 const supervisorB = getSupervisorForVariant(b);
@@ -1066,6 +1098,7 @@
             });
         }
 
+        // MODIFIED: Add visual indicator for variants with passed end time
         function displayVariant(index) {
             if (!filteredVariants || filteredVariants.length === 0) {
                 showLoadingOrError('No variants available.');
@@ -1075,7 +1108,15 @@
             isLoading = false;
             const supervisorName = getSupervisorForVariant(variant);
             applySupervisorStyling(supervisorName);
-            document.getElementById('variant-name').textContent = `Product Variant: ${variant.variant}`;
+            
+            // Add visual indicator for variants with passed end time
+            const variantName = document.getElementById('variant-name');
+            if (isEndTimePassed(variant)) {
+                variantName.innerHTML = `Product Variant: ${variant.variant} <span class="shift-ended">(Shift Ended)</span>`;
+            } else {
+                variantName.textContent = `Product Variant: ${variant.variant}`;
+            }
+            
             document.getElementById('supervisor-name').textContent = `Line Supervisor: ${supervisorName}`;
             document.getElementById('target-cycle-time').textContent = `Target: ${variant.cycleTime} sec/unit`;
             document.getElementById('actual-cycle-time').textContent = `Actual: ${calculateActualCycleTime(variant)} sec/unit`;
@@ -1141,6 +1182,7 @@
             });
         }
 
+        // MODIFIED: Limit chart data to end time if passed
         function renderCumulativeChart(variant) {
             const chartContainer = document.getElementById('cumulative-chart');
             const chartTitle = document.getElementById('cumulative-chart-title');
@@ -1169,18 +1211,33 @@
                 chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
                 return;
             }
-            const now = new Date();
-            const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
+            
+            // Determine the threshold time for filtering data points
+            let thresholdTime;
+            if (isEndTimePassed(variant)) {
+                // If end time has passed, use the variant's end time as threshold
+                const [endHour, endMinute] = variant["End Time"].split(':').map(Number);
+                thresholdTime = endHour * 60 + endMinute;
+            } else {
+                // Otherwise use current time + buffer for future hours
+                const now = new Date();
+                const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
+                thresholdTime = currentMinuteOfDay >= (now.getHours() * 60 + 30) ? 
+                    currentMinuteOfDay + 60 : currentMinuteOfDay + 30;
+            }
+            
+            // Filter data based on the threshold
             const filteredData = sortedData.filter(item => {
                 const [hour, minute] = item.hour.split(':').map(Number);
                 const hourInMinutes = hour * 60 + minute;
-                const threshold = currentMinuteOfDay >= (now.getHours() * 60 + 30) ? currentMinuteOfDay + 60 : currentMinuteOfDay + 30;
-                return hourInMinutes <= threshold;
+                return hourInMinutes <= thresholdTime;
             });
+            
             if (filteredData.length === 0) {
                 chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available for current time period</div>';
                 return;
             }
+            
             let maxValue = Math.max(...filteredData.map(item => Math.max(item.target || 0, item.production || 0))) * 1.1;
             const svgWidth = chartContainer.clientWidth || 600;
             const svgHeight = chartContainer.clientHeight || 370;
@@ -1338,8 +1395,22 @@
                 targetLineGroup.appendChild(text);
             });
             svg.appendChild(targetLineGroup);
+            
+            // If end time has passed, add an indication text
+            if (isEndTimePassed(variant)) {
+                const freezeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                freezeText.setAttribute('x', svgWidth - padding.right);
+                freezeText.setAttribute('y', padding.top + 20);
+                freezeText.setAttribute('text-anchor', 'end');
+                freezeText.setAttribute('font-size', '12');
+                freezeText.setAttribute('fill', 'var(--warning-color)');
+                freezeText.setAttribute('font-style', 'italic');
+                freezeText.textContent = 'Data frozen at end time';
+                svg.appendChild(freezeText);
+            }
         }
 
+        // MODIFIED: Use appropriate hour display for variants with passed end time
         function renderHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-chart');
             const chartTitle = document.getElementById('hourly-chart-title');
@@ -1356,19 +1427,59 @@
             }
             const sortedHours = getSortedProductionHours(variant);
             sortedHours.forEach(hour => { if (!dataMap.has(hour)) dataMap.set(hour, { hour, target: 0, production: 0 }); });
-            const displayHour = selectedHour === 'current' ? getNextProductionHour() : selectedHour;
+            
+            // Determine which hour to display based on whether end time has passed
+            let displayHour;
+            if (isEndTimePassed(variant)) {
+                // If end time has passed, find the latest hour before end time
+                const [endHour, endMinute] = variant["End Time"].split(':').map(Number);
+                const endTimeMinutes = endHour * 60 + endMinute;
+                
+                // Find the latest hour before or at end time
+                const sortedTimeSlots = [...dataMap.keys()].sort((a, b) => {
+                    const [ha, ma] = a.split(':').map(Number);
+                    const [hb, mb] = b.split(':').map(Number);
+                    return (ha * 60 + ma) - (hb * 60 + mb);
+                });
+                
+                for (let i = sortedTimeSlots.length - 1; i >= 0; i--) {
+                    const [hour, minute] = sortedTimeSlots[i].split(':').map(Number);
+                    if (hour * 60 + minute <= endTimeMinutes) {
+                        displayHour = sortedTimeSlots[i];
+                        break;
+                    }
+                }
+                
+                // If no suitable hour found, use the first hour
+                if (!displayHour && sortedTimeSlots.length > 0) {
+                    displayHour = sortedTimeSlots[0];
+                }
+            } else {
+                // If end time hasn't passed, use normal logic
+                displayHour = selectedHour === 'current' ? getNextProductionHour() : selectedHour;
+            }
+            
             const now = new Date();
             const currentHour = now.getHours();
             const startHour = `${String(currentHour).padStart(2, '0')}:30`;
             const endHour = `${String(currentHour + 1).padStart(2, '0')}:30`;
             chartTitle.textContent = `${startHour}-${endHour} Production Progress`;
             
-            document.querySelector('.hour-time').textContent = `Hour: ${displayHour}`;
-            if (selectedHour === 'current') startCountdown(displayHour);
-            else {
+            if (selectedHour === 'current' && !isEndTimePassed(variant)) {
+                startCountdown(displayHour);
+            } else {
                 if (countdownInterval) clearInterval(countdownInterval);
                 document.querySelector('.hour-countdown').textContent = '';
+                
+                // Add frozen indicator if shift ended
+                if (isEndTimePassed(variant)) {
+                    document.querySelector('.hour-countdown').textContent = 'Data frozen at end time';
+                    document.querySelector('.hour-countdown').style.color = 'var(--warning-color)';
+                } else {
+                    document.querySelector('.hour-countdown').style.color = 'var(--secondary-color)';
+                }
             }
+            
             const hourData = dataMap.get(displayHour) || { hour: displayHour, production: 0, target: 0 };
             const production = hourData.production || 0;
             const target = hourData.target || 0;
@@ -1519,6 +1630,16 @@
             xAxisLine2.setAttribute('stroke', '#666');
             xAxisLine2.setAttribute('stroke-width', '1.5');
             svg.appendChild(xAxisLine2);
+            
+            // Display the time slot being shown
+            const timeSlotText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            timeSlotText.setAttribute('x', svgWidth / 2);
+            timeSlotText.setAttribute('y', svgHeight - 5);
+            timeSlotText.setAttribute('text-anchor', 'middle');
+            timeSlotText.setAttribute('font-size', '12');
+            timeSlotText.setAttribute('fill', '#666');
+            timeSlotText.textContent = `Showing data for ${displayHour}`;
+            svg.appendChild(timeSlotText);
         }
 
         function showLoadingOrError(message) {
@@ -1550,6 +1671,7 @@
                     <tr><th>Actual Cycle Time</th><td>${calculateActualCycleTime(variant)} sec/unit</td></tr>
                     <tr><th>Start Time</th><td>${variant["Start Time"] || 'N/A'}</td></tr>
                     <tr><th>End Time</th><td>${variant["End Time"] || 'N/A'}</td></tr>
+                    <tr><th>End Time Passed</th><td>${isEndTimePassed(variant) ? 'Yes' : 'No'}</td></tr>
                     <tr><th>Lunch Break</th><td>${variant["Break Start (Lunch)"] || 'N/A'} - ${variant["Break End (Lunch)"] || 'N/A'}</td></tr>
                     <tr><th>Tea Break</th><td>${variant["Break Start (Tea)"] || 'N/A'} - ${variant["Break End (Tea)"] || 'N/A'}</td></tr>
                     <tr><th>OT Tea Break</th><td>${variant["OT Break Start (Tea)"] || 'N/A'} - ${variant["OT Break End (Tea)"] || 'N/A'}</td></tr>
