@@ -1169,7 +1169,12 @@
 
                     const updateTime = new Date(data.timestamp);
                     document.getElementById('last-update').textContent = 
-                        'Last updated: ' + updateTime.toLocaleTimeString();
+                        'Last updated: ' + updateTime.toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: true
+                        });
 
                     updateFilterValueDropdown();
                     filterVariants();
@@ -1203,8 +1208,20 @@
             // Check if we already parsed the local data
             if (document.querySelector('#local-data')) {
                 const localData = JSON.parse(document.querySelector('#local-data').textContent);
+                // Update timestamp to current time for local data
+                localData.timestamp = new Date().toISOString();
                 productionData = localData;
                 lastUpdateTime = localData.timestamp;
+                
+                // Update the last update display with current time
+                const updateTime = new Date();
+                document.getElementById('last-update').textContent = 
+                    'Last updated: ' + updateTime.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                    });
                 
                 updateFilterValueDropdown();
                 filterVariants();
@@ -2135,7 +2152,7 @@
     <!-- Add the sample data as a hidden element for demo purposes when fetch fails -->
     <script id="local-data" type="application/json">
     {
-        "timestamp": "2025-03-02T15:02:34.783Z",
+        "timestamp": "2025-03-03T00:00:00.000Z",
         "variants": [
             {
               "variant": "LEVO XL1150SCi",
@@ -2183,10 +2200,12 @@
               ],
               "cumulativeProduction": [
                 {"hour": "08:30", "production": 36},
+                {"hour": "09:30", "production": 36},
                 {"hour": "10:30", "production": 54},
                 {"hour": "11:30", "production": 108},
                 {"hour": "12:30", "production": 144},
                 {"hour": "13:30", "production": 162},
+                {"hour": "14:30", "production": 162},
                 {"hour": "15:30", "production": 180},
                 {"hour": "16:30", "production": 198}
               ],
