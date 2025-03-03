@@ -2085,7 +2085,97 @@
         }
 
         window.onload = initDashboard;
-        window.adforEach(item => {
+        window.addEventListener('resize', function() {
+            if (filteredVariants && filteredVariants.length > 0) {
+                const variant = filteredVariants[currentVariantIndex];
+                renderCumulativeChart(variant);
+                renderHourlyChart(variant);
+            }
+        });
+    </script>
+
+    <script id="local-data" type="application/json">
+    {
+        "timestamp": "2025-03-03T10:03:03.795Z",
+        "variants": [
+            {
+              "variant": "LEVO XL1150SCi",
+              "Start Time": "07:30",
+              "End Time": "18:30",
+              "Break Start (Lunch)": "13:40",
+              "Break End (Lunch)": "14:10",
+              "Break Start (Tea)": "10:25",
+              "Break End (Tea)": "10:40",
+              "OT Break Start (Tea)": "17:45",
+              "OT Break End (Tea)": "18:00",
+              "totalavailableWorkHours": 10,
+              "cycleTime": 99,
+              "hourlyTarget": 36,
+              "dailyTarget": 363,
+              "dailyBoxTarget": 20,
+              "currentTotal": 198,
+              "currentBoxTotal": 11,
+              "progressPercentage": 55,
+              "hourlyProduction": [
+                {"hour": "08:30", "production": 36},
+                {"hour": "09:30", "production": 36},
+                {"hour": "10:30", "production": 54},
+                {"hour": "11:30", "production": 108},
+                {"hour": "12:30", "production": 144},
+                {"hour": "13:30", "production": 162},
+                {"hour": "14:30", "production": 162},
+                {"hour": "15:30", "production": 180},
+                {"hour": "16:30", "production": 198}
+              ],
+              "hourlyTargets": [
+                {"hour": "08:30", "target": 36},
+                {"hour": "09:30", "target": 36},
+                {"hour": "10:30", "target": 33},
+                {"hour": "11:30", "target": 30},
+                {"hour": "12:30", "target": 36},
+                {"hour": "13:30", "target": 36},
+                {"hour": "14:30", "target": 18},
+                {"hour": "15:30", "target": 36},
+                {"hour": "16:30", "target": 36},
+                {"hour": "17:30", "target": 36},
+                {"hour": "18:30", "target": 27}
+              ],
+              "cumulativeProduction": [
+                {"hour": "08:30", "production": 36},
+                {"hour": "09:30", "production": 72},
+                {"hour": "10:30", "production": 126},
+                {"hour": "11:30", "production": 234},
+                {"hour": "12:30", "production": 378},
+                {"hour": "13:30", "production": 540},
+                {"hour": "14:30", "production": 702},
+                {"hour": "15:30", "production": 882},
+                {"hour": "16:30", "production": 1080}
+              ],
+              "cumulativeTargets": [
+                {"hour": "08:30", "target": 36},
+                {"hour": "09:30", "target": 72},
+                {"hour": "10:30", "target": 105},
+                {"hour": "11:30", "target": 135},
+                {"hour": "12:30", "target": 171},
+                {"hour": "13:30", "target": 207},
+                {"hour": "14:30", "target": 225},
+                {"hour": "15:30", "target": 261},
+                {"hour": "16:30", "target": 297},
+                {"hour": "17:30", "target": 333},
+                {"hour": "18:30", "target": 363}
+              ]
+            }
+        ],
+        "supervisors": [
+            {
+                "name": "Luthando",
+                "variants": {"LEVO XL1150SCi": true}
+            }
+        ]
+    }
+    </script>
+</body>
+</html>forEach(item => {
                     if (cumulativeDataMap.has(item.hour)) cumulativeDataMap.get(item.hour).production = item.production || 0;
                     else cumulativeDataMap.set(item.hour, { hour: item.hour, target: 0, production: item.production || 0 });
                 });
