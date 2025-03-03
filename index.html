@@ -773,6 +773,7 @@
                     case 'luthando':
                         document.body.style.backgroundColor = 'var(--supervisor-luthando)';
                         break;
+                    case 'apelele':
                     case 'aphele':
                         document.body.style.backgroundColor = 'var(--supervisor-aphele)';
                         break;
@@ -1167,14 +1168,10 @@
                     productionData = data;
                     lastUpdateTime = data.timestamp;
 
+                    // Display the timestamp as-is from the data
                     const updateTime = new Date(data.timestamp);
                     document.getElementById('last-update').textContent = 
-                        'Last updated: ' + updateTime.toLocaleTimeString('en-US', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit',
-                            hour12: true
-                        });
+                        'Last updated: ' + updateTime.toLocaleTimeString();
 
                     updateFilterValueDropdown();
                     filterVariants();
@@ -1208,20 +1205,13 @@
             // Check if we already parsed the local data
             if (document.querySelector('#local-data')) {
                 const localData = JSON.parse(document.querySelector('#local-data').textContent);
-                // Update timestamp to current time for local data
-                localData.timestamp = new Date().toISOString();
                 productionData = localData;
                 lastUpdateTime = localData.timestamp;
                 
-                // Update the last update display with current time
-                const updateTime = new Date();
+                // Display the timestamp from the local data without modification
+                const updateTime = new Date(localData.timestamp);
                 document.getElementById('last-update').textContent = 
-                    'Last updated: ' + updateTime.toLocaleTimeString('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: true
-                    });
+                    'Last updated: ' + updateTime.toLocaleTimeString();
                 
                 updateFilterValueDropdown();
                 filterVariants();
@@ -2152,7 +2142,7 @@
     <!-- Add the sample data as a hidden element for demo purposes when fetch fails -->
     <script id="local-data" type="application/json">
     {
-        "timestamp": "2025-03-03T00:00:00.000Z",
+        "timestamp": "2025-03-03T07:13:01.643Z",
         "variants": [
             {
               "variant": "LEVO XL1150SCi",
