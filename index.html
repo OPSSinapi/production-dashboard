@@ -820,21 +820,46 @@
             }
         }
 
+        // MODIFIED: Limit dropdown hours to end time if passed
         function updateHourDropdown() {
             const hourSelect = document.getElementById('hour-select');
+            const currentVariant = filteredVariants[currentVariantIndex];
+            
+            // Clear existing options except first
             while (hourSelect.options.length > 1) hourSelect.remove(1);
+            
+            // Get production hours
             const productionHours = [];
             if (filteredVariants.length > 0) {
                 const variant = filteredVariants[0];
                 if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
-                    variant.hourlyTargets.forEach(item => { if (item.hour) productionHours.push(item.hour); });
+                    variant.hourlyTargets.forEach(item => { 
+                        if (item.hour) productionHours.push(item.hour); 
+                    });
                 }
             }
+            
+            // Use default hours if no production hours available
             if (productionHours.length === 0) {
                 const defaultHours = ["08:30", "09:30", "10:30", "11:30", "12:30", "13:30", "14:30", "15:30", "16:30", "17:30", "18:30"];
                 productionHours.push(...defaultHours);
             }
-            productionHours.sort().forEach(hour => {
+            
+            // Filter hours based on end time if applicable
+            let filteredHours = [...productionHours];
+            if (currentVariant && currentVariant["End Time"] && isEndTimePassed(currentVariant)) {
+                const [endHour, endMinute] = currentVariant["End Time"].split(':').map(Number);
+                const endTimeMinutes = endHour * 60 + endMinute;
+                
+                filteredHours = productionHours.filter(hour => {
+                    const [hourVal, minuteVal] = hour.split(':').map(Number);
+                    const hourMinutes = hourVal * 60 + minuteVal;
+                    return hourMinutes <= endTimeMinutes;
+                });
+            }
+            
+            // Add filtered hours to dropdown
+            filteredHours.sort().forEach(hour => {
                 const option = document.createElement('option');
                 option.value = hour;
                 option.textContent = hour;
@@ -1068,7 +1093,7 @@
             selectedFilterValue = filterValueSelect.value;
         }
 
-        // MODIFIED: Don't filter out variants with passed end times
+        // Don't filter out variants with passed end times
         function filterVariants() {
             if (selectedFilterValue === 'all') {
                 filteredVariants = productionData.variants || [];
@@ -1124,6 +1149,7 @@
             updateTotalsDisplay(variant);
             renderCumulativeChart(variant);
             renderHourlyChart(variant);
+            updateHourDropdown();
             updateLoadingState();
             updateCycleProgress(0);
             if (isAutocycling) animateProgress();
@@ -1395,19 +1421,6 @@
                 targetLineGroup.appendChild(text);
             });
             svg.appendChild(targetLineGroup);
-            
-            // If end time has passed, add an indication text
-            if (isEndTimePassed(variant)) {
-                const freezeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                freezeText.setAttribute('x', svgWidth - padding.right);
-                freezeText.setAttribute('y', padding.top + 20);
-                freezeText.setAttribute('text-anchor', 'end');
-                freezeText.setAttribute('font-size', '12');
-                freezeText.setAttribute('fill', 'var(--warning-color)');
-                freezeText.setAttribute('font-style', 'italic');
-                freezeText.textContent = 'Data frozen at end time';
-                svg.appendChild(freezeText);
-            }
         }
 
         // MODIFIED: Use appropriate hour display for variants with passed end time
@@ -1470,14 +1483,7 @@
             } else {
                 if (countdownInterval) clearInterval(countdownInterval);
                 document.querySelector('.hour-countdown').textContent = '';
-                
-                // Add frozen indicator if shift ended
-                if (isEndTimePassed(variant)) {
-                    document.querySelector('.hour-countdown').textContent = 'Data frozen at end time';
-                    document.querySelector('.hour-countdown').style.color = 'var(--warning-color)';
-                } else {
-                    document.querySelector('.hour-countdown').style.color = 'var(--secondary-color)';
-                }
+                document.querySelector('.hour-countdown').style.color = 'var(--secondary-color)';
             }
             
             const hourData = dataMap.get(displayHour) || { hour: displayHour, production: 0, target: 0 };
