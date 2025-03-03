@@ -232,6 +232,7 @@
             flex-wrap: nowrap;
             border-bottom: 1px solid #e2e8f0;
             padding-bottom: 2px; /* Reduced padding */
+            margin-top: 5px !important; /* Added some top margin to prevent cutoff */
         }
 
         .chart-title {
@@ -241,7 +242,7 @@
             color: var(--dark-color);
             white-space: nowrap;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin-top: 0; /* Remove top margin */
+            margin-top: 5px !important; /* Added some top margin to prevent cutoff */
             margin-bottom: 0; /* Remove bottom margin */
             padding-top: 0; /* Remove top padding */
         }
@@ -468,13 +469,13 @@
             r: 80; /* Further increased to ensure they match */
         }
 
-        /* MODIFIED: Match time labels to sec/unit size */
         .time-label {
-            font-size: clamp(0.9rem, 1.1vw, 1.1rem); /* Matched to sec/unit size */
             text-anchor: middle;
             dominant-baseline: hanging;
-            fill: #333;
-            font-weight: 500; /* Adjusted weight to match */
+            font-size: 14px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-weight: 500 !important;
+            fill: #333 !important;
         }
         
         /* MODIFIED: Larger current arrow */
@@ -1332,7 +1333,7 @@
         }
 
         // Add visual indicator for variants with passed end time
-        function displayVariant(index) {
+                function displayVariant(index) {
             if (!filteredVariants || filteredVariants.length === 0) {
                 showLoadingOrError('No variants available.');
                 return;
@@ -1363,24 +1364,28 @@
             updateCycleProgress(0);
             if (isAutocycling) animateProgress();
             
-            // Force minimal space between elements
-            document.querySelectorAll('.total-subvalue').forEach(el => {
-                el.style.marginBottom = '0';
-                el.style.paddingBottom = '0';
-            });
-            
-            // Add negative margin to charts to reduce deadspace
-            const chartContainer = document.querySelector('.chart-container');
-            if (chartContainer) {
-                chartContainer.style.marginTop = '-30px';
-            }
+            // Copy the exact sec/unit style to all time-label elements
+            // Wait a moment for the DOM to update
+            setTimeout(() => {
+                const secUnitElement = document.querySelector('.total-subvalue');
+                if (secUnitElement) {
+                    const style = window.getComputedStyle(secUnitElement);
+                    const timeLabels = document.querySelectorAll('.time-label');
+                    timeLabels.forEach(label => {
+                        label.style.fontSize = style.fontSize;
+                        label.style.fontFamily = style.fontFamily;
+                        label.style.fontWeight = style.fontWeight;
+                        label.style.fill = style.color;
+                    });
+                }
+            }, 100);
         }
 
         // Updated to show simplified time labels and larger indicators
         function updateTotalsDisplay(variant) {
             const totalsDisplay = document.getElementById('totals-display');
             totalsDisplay.innerHTML = '';
-            totalsDisplay.style.marginBottom = '0'; // Force zero margin
+            totalsDisplay.style.marginBottom = '5px'; // Small margin between sections
             
             const currentTotal = variant.currentTotal || 0;
             const dailyTarget = variant.dailyTarget || 0;
@@ -1400,7 +1405,7 @@
                 <div class="total-value">
                     <span class="current-value">${currentTotal}</span>/<span class="target-value">${dailyTarget}</span>
                 </div>
-                <div class="total-subvalue" style="margin-bottom: 0; padding-bottom: 0;">
+                <div class="total-subvalue sec-unit-style" style="margin-bottom: 0; padding-bottom: 0;">
                     <span class="current-value">${boxesCompleted}</span>/<span class="target-value">${totalBoxes}</span> boxes
                 </div>
             `;
@@ -1419,7 +1424,7 @@
                 <div class="total-value">
                     <span class="current-value">${actualCycleTime}</span>/<span class="target-value">${targetCycleTime}</span>
                 </div>
-                <div class="total-subvalue" style="margin-bottom: 0; padding-bottom: 0;">sec/unit</div>
+                <div class="total-subvalue sec-unit-style" id="sec-unit-reference" style="margin-bottom: 0; padding-bottom: 0;">sec/unit</div>
             `;
             totalsDisplay.appendChild(cycleTimeItem);
             
@@ -1438,10 +1443,10 @@
             
             totalsDisplay.appendChild(hourlyTargetsContainer);
             
-            // Set chart container to negative margin
+            // Set chart container with small margin
             const chartContainer = document.querySelector('.chart-container');
             if (chartContainer) {
-                chartContainer.style.marginTop = '-40px'; // Add significant negative margin
+                chartContainer.style.marginTop = '5px';
             }
         }
 
@@ -1451,6 +1456,26 @@
             const container = document.createElement('div');
             container.className = 'hourly-targets-container';
             container.style.marginTop = '-25px'; /* Force negative margin to reduce deadspace */
+            
+            // Get the computed style of "sec/unit" text to match exactly
+            let secUnitStyle = { 
+                fontSize: '0.9rem', 
+                fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+                fontWeight: '500',
+                color: '#333'
+            };
+            
+            // Try to get the actual computed style if element exists
+            const secUnitElement = document.getElementById('sec-unit-reference');
+            if (secUnitElement) {
+                const computedStyle = window.getComputedStyle(secUnitElement);
+                secUnitStyle = {
+                    fontSize: computedStyle.fontSize,
+                    fontFamily: computedStyle.fontFamily,
+                    fontWeight: computedStyle.fontWeight,
+                    color: computedStyle.color
+                };
+            }
             
             // Hours and targets
             const startTime = variant["Start Time"] || "07:30";
@@ -1535,6 +1560,7 @@
             svg.setAttribute('class', 'hourly-targets-svg');
             svg.setAttribute('height', '180'); // Reduced height to decrease deadspace
             svg.setAttribute('viewBox', `0 0 ${Math.max(hours.length * 180, 400)} 180`); // Adjusted viewBox
+            svg.style.marginBottom = '20px'; // Add margin at bottom to ensure time labels aren't cut off
             
             // Calculate spacing with much larger circles
             const circleRadius = 80; // MODIFIED: Dramatically larger circles to match big numbers
@@ -1625,9 +1651,9 @@
             chartContainer.innerHTML = '';
             const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
             chartTitle.textContent = `${currentDay}'s Production Progress`;
-            chartTitle.style.margin = '0'; /* Remove margins */
-            chartTitle.style.padding = '0'; /* Remove padding */
-            chartTitle.style.marginTop = '-40px'; /* Move title up significantly to reduce deadspace */
+            chartTitle.style.margin = '0';
+            chartTitle.style.padding = '2px 0 8px 0'; /* Added padding to prevent cutoff */
+        }
 
             const dataMap = new Map();
             if (variant.cumulativeTargets?.length) {
@@ -1841,7 +1867,8 @@
             const chartContainer = document.getElementById('hourly-chart');
             const chartHeader = document.querySelector('.chart-header');
             if (chartHeader) {
-                chartHeader.style.marginTop = '-40px'; /* Move header up significantly to reduce deadspace */
+                chartHeader.style.margin = '0';
+                chartHeader.style.padding = '2px 0 8px 0'; /* Added padding to prevent cutoff */
             }
             chartContainer.innerHTML = '';
             const dataMap = new Map();
@@ -1907,12 +1934,26 @@
                 document.querySelector('.hour-countdown').style.color = 'var(--secondary-color)';
             }
             
-            // Add direct style to elements to reduce space
-            document.querySelectorAll('.chart-title, .chart-title-text, .chart-header').forEach(el => {
-                el.style.margin = '0';
-                el.style.padding = '0';
-                el.style.marginTop = '-10px';
-            });
+            // Function to ensure time labels match sec/unit exactly
+            setTimeout(() => {
+                // Get all time labels and sec/unit elements
+                const timeLabels = document.querySelectorAll('.time-label');
+                const secUnitElement = document.getElementById('sec-unit-reference');
+                
+                if (secUnitElement) {
+                    // Get the computed style of the sec/unit element
+                    const computedStyle = window.getComputedStyle(secUnitElement);
+                    const fontSize = computedStyle.fontSize;
+                    
+                    // Apply to all time labels
+                    timeLabels.forEach(label => {
+                        label.style.fontSize = fontSize;
+                        label.style.fontFamily = computedStyle.fontFamily;
+                        label.style.fontWeight = computedStyle.fontWeight;
+                        label.style.fill = computedStyle.color;
+                    });
+                }
+            }, 100);
             
             const hourData = dataMap.get(displayHour) || { hour: displayHour, production: 0, target: 0 };
             const production = hourData.production || 0;
