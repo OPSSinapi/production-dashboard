@@ -229,7 +229,7 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
             font-weight: 500;
             white-space: nowrap;
         }
@@ -644,7 +644,7 @@
             <div class="chart-container">
                 <div class="charts-row">
                     <div class="chart">
-                        <div class="chart-title">Cumulative Daily Production Progress</div>
+                        <div class="chart-title" id="cumulative-chart-title">Loading...</div>
                         <div class="chart-area">
                             <div class="line-chart" id="cumulative-chart"></div>
                             <div class="legend">
@@ -661,7 +661,7 @@
                     </div>
                     <div class="chart">
                         <div class="chart-header">
-                            <div class="chart-title">Hourly Production Progress</div>
+                            <div class="chart-title" id="hourly-chart-title">Loading...</div>
                             <div class="hour-info" id="hour-info">
                                 <div class="hour-time">Hour: Loading...</div>
                                 <div class="hour-countdown"></div>
@@ -838,7 +838,8 @@
             }
             for (const hourStr of productionHours) {
                 const [hours, minutes] = hourStr.split(':').map(Number);
-                if ((hours * 60 + minutes) > currentTime) return hourStr;
+                const hourInMinutes = hours * 60 + minutes;
+                if (hourInMinutes > currentTime) return hourStr;
             }
             return productionHours[0];
         }
@@ -853,7 +854,7 @@
             const diffMinutes = Math.floor(diffMs / 60000);
             const diffHours = Math.floor(diffMinutes / 60);
             const remainingMinutes = diffMinutes % 60;
-            return diffHours > 0 ? `in ${diffHours}h ${remainingMinutes}m` : `in ${remainingMinutes}m`;
+            return diffHours > 0 ? `Countdown Timer: ${diffHours}h ${remainingMinutes}m` : `Countdown Timer: ${remainingMinutes}m`;
         }
 
         function startCountdown(hourStr) {
@@ -1142,7 +1143,11 @@
 
         function renderCumulativeChart(variant) {
             const chartContainer = document.getElementById('cumulative-chart');
+            const chartTitle = document.getElementById('cumulative-chart-title');
             chartContainer.innerHTML = '';
+            const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+            chartTitle.textContent = `${currentDay}'s Production Progress`;
+
             const dataMap = new Map();
             if (variant.cumulativeTargets?.length) {
                 variant.cumulativeTargets.forEach(item => dataMap.set(item.hour, { hour: item.hour, target: item.target || 0, production: 0 }));
@@ -1165,10 +1170,12 @@
                 return;
             }
             const now = new Date();
-            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+            const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
             const filteredData = sortedData.filter(item => {
                 const [hour, minute] = item.hour.split(':').map(Number);
-                return (hour * 60 + minute) <= currentTimeMinutes + 30;
+                const hourInMinutes = hour * 60 + minute;
+                const threshold = currentMinuteOfDay >= (now.getHours() * 60 + 30) ? currentMinuteOfDay + 60 : currentMinuteOfDay + 30;
+                return hourInMinutes <= threshold;
             });
             if (filteredData.length === 0) {
                 chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available for current time period</div>';
@@ -1279,13 +1286,22 @@
             productionPath.setAttribute('stroke-width', '3');
             productionPath.setAttribute('fill', 'none');
             productionLineGroup.appendChild(productionPath);
-            productionPoints.forEach(point => {
+            productionPoints.forEach((point, index) => {
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 circle.setAttribute('cx', point.x);
                 circle.setAttribute('cy', point.y);
                 circle.setAttribute('r', '4');
                 circle.setAttribute('fill', 'var(--secondary-color)');
                 productionLineGroup.appendChild(circle);
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', point.x);
+                text.setAttribute('y', point.y - 10);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('font-size', '12');
+                text.setAttribute('fill', 'var(--secondary-color)');
+                text.textContent = filteredData[index].production;
+                productionLineGroup.appendChild(text);
             });
             svg.appendChild(productionLineGroup);
 
@@ -1304,19 +1320,29 @@
             targetPath.setAttribute('stroke-width', '3');
             targetPath.setAttribute('fill', 'none');
             targetLineGroup.appendChild(targetPath);
-            targetPoints.forEach(point => {
+            targetPoints.forEach((point, index) => {
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 circle.setAttribute('cx', point.x);
                 circle.setAttribute('cy', point.y);
                 circle.setAttribute('r', '4');
                 circle.setAttribute('fill', 'var(--success-color)');
                 targetLineGroup.appendChild(circle);
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', point.x);
+                text.setAttribute('y', point.y - 10);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('font-size', '12');
+                text.setAttribute('fill', 'var(--success-color)');
+                text.textContent = filteredData[index].target;
+                targetLineGroup.appendChild(text);
             });
             svg.appendChild(targetLineGroup);
         }
 
         function renderHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-chart');
+            const chartTitle = document.getElementById('hourly-chart-title');
             chartContainer.innerHTML = '';
             const dataMap = new Map();
             if (variant.hourlyTargets?.length) {
@@ -1331,6 +1357,12 @@
             const sortedHours = getSortedProductionHours(variant);
             sortedHours.forEach(hour => { if (!dataMap.has(hour)) dataMap.set(hour, { hour, target: 0, production: 0 }); });
             const displayHour = selectedHour === 'current' ? getNextProductionHour() : selectedHour;
+            const now = new Date();
+            const currentHour = now.getHours();
+            const startHour = `${String(currentHour).padStart(2, '0')}:30`;
+            const endHour = `${String(currentHour + 1).padStart(2, '0')}:30`;
+            chartTitle.textContent = `${startHour}-${endHour} Production Progress`;
+            
             document.querySelector('.hour-time').textContent = `Hour: ${displayHour}`;
             if (selectedHour === 'current') startCountdown(displayHour);
             else {
@@ -1652,23 +1684,35 @@
                 {"hour": "16:30", "target": 36},
                 {"hour": "17:30", "target": 36},
                 {"hour": "18:30", "target": 27}
+              ],
+              "cumulativeProduction": [
+                {"hour": "08:30", "production": 36},
+                {"hour": "09:30", "production": 72},
+                {"hour": "10:30", "production": 126},
+                {"hour": "11:30", "production": 234},
+                {"hour": "12:30", "production": 378},
+                {"hour": "13:30", "production": 540},
+                {"hour": "14:30", "production": 540}
+              ],
+              "cumulativeTargets": [
+                {"hour": "08:30", "target": 36},
+                {"hour": "09:30", "target": 72},
+                {"hour": "10:30", "target": 105},
+                {"hour": "11:30", "target": 135},
+                {"hour": "12:30", "target": 171},
+                {"hour": "13:30", "target": 207},
+                {"hour": "14:30", "target": 225},
+                {"hour": "15:30", "target": 261},
+                {"hour": "16:30", "target": 297},
+                {"hour": "17:30", "target": 333},
+                {"hour": "18:30", "target": 363}
               ]
             }
         ],
         "supervisors": [
             {
-              "name": "Siyabonga",
-              "variants": {
-                "LEVO XL1150SCi": {
-                  "variant": "LEVO XL1150SCi",
-                  "currentTotal": 198,
-                  "dailyTarget": 363,
-                  "progressPercentage": 55
-                }
-              },
-              "totalProduction": 198,
-              "totalTarget": 363,
-              "progressPercentage": 55
+                "name": "Luthando",
+                "variants": {"LEVO XL1150SCi": true}
             }
         ]
     }
