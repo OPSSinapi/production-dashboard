@@ -886,12 +886,6 @@
             // Clear existing options
             while (hourSelect.options.length > 0) hourSelect.remove(0);
             
-            // Add "Current" option
-            const currentOption = document.createElement('option');
-            currentOption.value = "current";
-            currentOption.textContent = "Current Hour";
-            hourSelect.appendChild(currentOption);
-            
             // Get production hours
             const productionHours = [];
             if (filteredVariants.length > 0) {
@@ -928,6 +922,24 @@
                 const [hb, mb] = b.split(':').map(Number);
                 return (ha * 60 + ma) - (hb * 60 + mb);
             });
+            
+            // Add current hour option with actual time range
+            const nextHour = getNextProductionHour();
+            if (nextHour) {
+                const [hourVal, minuteVal] = nextHour.split(':').map(Number);
+                
+                // Calculate previous hour (for start of range)
+                let prevHour = hourVal - 1;
+                let prevMinute = minuteVal;
+                
+                // Format time range for current option
+                const currentTimeRange = `${prevHour.toString().padStart(2, '0')}:${prevMinute.toString().padStart(2, '0')}-${hourVal.toString().padStart(2, '0')}:${minuteVal.toString().padStart(2, '0')}`;
+                
+                const currentOption = document.createElement('option');
+                currentOption.value = "current";
+                currentOption.textContent = currentTimeRange;
+                hourSelect.appendChild(currentOption);
+            }
             
             // Add time ranges as options
             filteredHours.forEach(hour => {
