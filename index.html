@@ -445,32 +445,32 @@
             overflow: visible;
         }
 
-        /* MODIFIED: Larger circles to match progress numbers */
+        /* MODIFIED: Much larger circles to match progress/cycle time values (198/262) */
         .hourly-circle {
             fill: white;
             stroke: #999;
-            stroke-width: 2;
-            r: 25; /* Increased size to match progress numbers */
+            stroke-width: 3;
+            r: 50; /* Dramatically increased to match large value numbers */
         }
 
-        /* MODIFIED: Make time labels match sec/unit size */
+        /* MODIFIED: Make time labels match boxes/sec/unit size */
         .time-label {
-            font-size: clamp(0.9rem, 1.1vw, 1.1rem); /* Same as total-subvalue */
+            font-size: clamp(1.1rem, 1.4vw, 1.4rem); /* Increased to match total-subvalue */
             text-anchor: middle;
             dominant-baseline: hanging;
-            fill: #666;
-            font-weight: 500; /* Added to match */
+            fill: #333;
+            font-weight: 600; /* Increased weight for visibility */
         }
         
         /* MODIFIED: Larger current arrow */
         .current-arrow {
             fill: var(--warning-color);
-            transform: scale(2.5); /* Increased scale to match larger circles */
+            transform: scale(4.5); /* Greatly increased scale to match larger circles */
         }
 
         /* MODIFIED: Bigger status icons */
         .status-icon {
-            stroke-width: 6; /* Increased from 4 to make more prominent */
+            stroke-width: 9; /* Significantly increased for prominence */
         }
 
         .status-success {
@@ -518,10 +518,13 @@
             background-color: var(--supervisor-luthando);
         }
 
-        /* MODIFIED: Ensure Aphele's background is consistent in all modes */
-        .dashboard-container.supervisor-aphele,
-        .dashboard-container.supervisor-aphele.fullscreen-mode {
+        /* MODIFIED: Use light charcoal for Aphele in fullscreen mode to address black background issue */
+        .dashboard-container.supervisor-aphele {
             background-color: var(--supervisor-aphele) !important;
+        }
+        
+        .dashboard-container.supervisor-aphele.fullscreen-mode {
+            background-color: #444444 !important; /* Light charcoal instead of light gray */
         }
 
         .dashboard-container.supervisor-siyabonga {
@@ -646,15 +649,15 @@
         /* MODIFIED: Make hourly circles consistent on all screen sizes */
         @media (min-width: 768px) {
             .hourly-circle {
-                r: 25; /* Same size as in base style */
+                r: 50; /* Same size as in base style */
             }
             
             .status-icon {
-                stroke-width: 6; /* Same as in base style */
+                stroke-width: 9; /* Same as in base style */
             }
             
             .current-arrow {
-                transform: scale(2.5); /* Same as in base style */
+                transform: scale(4.5); /* Same as in base style */
             }
         }
 
@@ -686,9 +689,9 @@
                 max-width: 90%;
             }
             
-            /* MODIFIED: Maintain circle size on smaller screens */
+            /* MODIFIED: Maintain large circle size on smaller screens */
             .hourly-circle {
-                r: 25;
+                r: 45; /* Slightly smaller on medium screens but still large */
             }
         }
 
@@ -736,12 +739,12 @@
             
             /* MODIFIED: Keep circles large on mobile */
             .hourly-circle {
-                r: 20; /* Slightly smaller on mobile but still large */
+                r: 35; /* Smaller on mobile but still large enough to be prominent */
             }
             
             /* MODIFIED: Keep status icons visible on mobile */
             .status-icon {
-                stroke-width: 5; /* Slightly thinner on mobile */
+                stroke-width: 8; /* Still thick enough to be visible on mobile */
             }
         }
     </style>
@@ -1482,21 +1485,21 @@
                 }
             }
             
-            // Create SVG for visualization
+            // Create SVG for visualization with much more height/space for larger circles
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('class', 'hourly-targets-svg');
-            svg.setAttribute('height', '120'); // Increased height to accommodate larger circles
-            svg.setAttribute('viewBox', `0 0 ${Math.max(hours.length * 80, 300)} 120`); // Wider viewBox for larger circles
+            svg.setAttribute('height', '170'); // Significantly increased height for larger circles
+            svg.setAttribute('viewBox', `0 0 ${Math.max(hours.length * 120, 350)} 170`); // Much wider viewBox
             
-            // Calculate spacing - larger circles
-            const circleRadius = 25; // MODIFIED: Much larger circles
-            const spacing = 80; // Increased spacing for larger circles
-            const yPosition = 35; // Adjusted to center vertically
+            // Calculate spacing with much larger circles
+            const circleRadius = 50; // MODIFIED: Dramatically larger circles to match big numbers
+            const spacing = 120; // Increased spacing for larger circles
+            const yPosition = 60; // Adjusted to center vertically with larger elements
             
             // Draw each hour circle
             hours.forEach((hour, index) => {
                 const hourData = hourlyTargetsMap.get(hour);
-                const xPosition = index * spacing + 40; // Adjusted for larger spacing
+                const xPosition = index * spacing + 60; // Adjusted for larger spacing
                 
                 // Circle
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -1506,50 +1509,50 @@
                 circle.setAttribute('r', circleRadius);
                 svg.appendChild(circle);
                 
-                // Time label - Show only end time (e.g., "8:30")
+                // Time label - Show only end time (e.g., "8:30") with larger text
                 const timeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 timeLabel.setAttribute('class', 'time-label');
                 timeLabel.setAttribute('x', xPosition);
-                timeLabel.setAttribute('y', yPosition + circleRadius + 20); // Adjusted for larger circles
+                timeLabel.setAttribute('y', yPosition + circleRadius + 25); // Adjusted for much larger circles
                 timeLabel.textContent = hour; // Just the end time
                 svg.appendChild(timeLabel);
                 
-                // Status indicator (checked or X) - Larger
+                // Status indicator (checked or X) - Much larger
                 if (hourData) {
                     if (hourData.metTarget) {
-                        // Check mark - larger
+                        // Check mark - much larger
                         const checkmark = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                         checkmark.setAttribute('class', 'status-icon status-success');
-                        checkmark.setAttribute('d', `M${xPosition - 12},${yPosition} L${xPosition - 3},${yPosition + 9} L${xPosition + 12},${yPosition - 9}`);
+                        checkmark.setAttribute('d', `M${xPosition - 25},${yPosition} L${xPosition - 5},${yPosition + 20} L${xPosition + 25},${yPosition - 20}`);
                         checkmark.setAttribute('fill', 'none');
                         svg.appendChild(checkmark);
                     } else {
-                        // X mark - larger
+                        // X mark - much larger
                         const xMark1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                         xMark1.setAttribute('class', 'status-icon status-fail');
-                        xMark1.setAttribute('x1', xPosition - 12);
-                        xMark1.setAttribute('y1', yPosition - 12);
-                        xMark1.setAttribute('x2', xPosition + 12);
-                        xMark1.setAttribute('y2', yPosition + 12);
+                        xMark1.setAttribute('x1', xPosition - 25);
+                        xMark1.setAttribute('y1', yPosition - 25);
+                        xMark1.setAttribute('x2', xPosition + 25);
+                        xMark1.setAttribute('y2', yPosition + 25);
                         xMark1.setAttribute('stroke-linecap', 'round');
                         svg.appendChild(xMark1);
                         
                         const xMark2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                         xMark2.setAttribute('class', 'status-icon status-fail');
-                        xMark2.setAttribute('x1', xPosition - 12);
-                        xMark2.setAttribute('y1', yPosition + 12);
-                        xMark2.setAttribute('x2', xPosition + 12);
-                        xMark2.setAttribute('y2', yPosition - 12);
+                        xMark2.setAttribute('x1', xPosition - 25);
+                        xMark2.setAttribute('y1', yPosition + 25);
+                        xMark2.setAttribute('x2', xPosition + 25);
+                        xMark2.setAttribute('y2', yPosition - 25);
                         xMark2.setAttribute('stroke-linecap', 'round');
                         svg.appendChild(xMark2);
                     }
                 }
                 
-                // Current hour indicator (yellow arrow) - larger
+                // Current hour indicator (yellow arrow) - much larger
                 if (index === currentHourIndex && !isEndTimePassed(variant)) {
                     const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                     arrow.setAttribute('class', 'current-arrow');
-                    arrow.setAttribute('d', `M${xPosition - 15},${yPosition - 40} L${xPosition},${yPosition - 25} L${xPosition + 15},${yPosition - 40} Z`);
+                    arrow.setAttribute('d', `M${xPosition - 25},${yPosition - 70} L${xPosition},${yPosition - 45} L${xPosition + 25},${yPosition - 70} Z`);
                     svg.appendChild(arrow);
                 }
             });
