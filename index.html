@@ -232,6 +232,34 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        .chart-title-select {
+            background: none;
+            border: none;
+            color: var(--dark-color);
+            font-weight: 600;
+            font-size: clamp(1.2rem, 1.5vw, 1.5rem);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            display: inline-block;
+        }
+
+        .chart-title-select:focus {
+            outline: none;
+        }
+
+        .chart-title-text {
+            font-size: clamp(1.2rem, 1.5vw, 1.5rem);
+            font-weight: 600;
+            color: var(--dark-color);
+            white-space: nowrap;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .hour-info {
             display: flex;
             flex-direction: row;
@@ -239,6 +267,7 @@
             gap: 15px;
             font-weight: 500;
             white-space: nowrap;
+            margin-left: 10px;
         }
 
         .hour-countdown {
@@ -357,6 +386,14 @@
             margin-bottom: 8px;
             font-size: clamp(1rem, 1.4vw, 1.4rem);
             color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .total-percentage {
+            color: var(--warning-color);
+            font-size: 0.9em;
         }
 
         .total-value {
@@ -369,16 +406,12 @@
             margin-top: 5px;
         }
 
-        .total-target {
-            color: var(--success-color);
-        }
-
-        .total-actual {
+        .current-value {
             color: var(--secondary-color);
         }
 
-        .total-progress {
-            color: var(--warning-color);
+        .target-value {
+            color: var(--success-color);
         }
 
         .total-hourly {
@@ -662,15 +695,14 @@
                     </div>
                     <div class="chart">
                         <div class="chart-header">
-                            <div class="chart-title" id="hourly-chart-title">Loading...</div>
-                            <div class="hour-info" id="hour-info">
-                                <!-- Removed the hour-time div -->
-                                <div class="hour-countdown"></div>
-                            </div>
-                            <div class="hour-select-container">
-                                <select id="hour-select" class="hour-select">
-                                    <option value="current">Current Hour</option>
+                            <div class="chart-title-text">
+                                <select id="hour-range-select" class="chart-title-select">
+                                    <!-- Time slots will be added dynamically -->
                                 </select>
+                                <span> Production Progress</span>
+                            </div>
+                            <div class="hour-info" id="hour-info">
+                                <div class="hour-countdown"></div>
                             </div>
                         </div>
                         <div class="chart-area" style="margin-top: -15px;">
@@ -730,7 +762,7 @@
                 else showLoadingOrError('No variants available for this filter.');
             });
 
-            document.getElementById('hour-select').addEventListener('change', function() {
+            document.getElementById('hour-range-select').addEventListener('change', function() {
                 selectedHour = this.value;
                 const variant = filteredVariants[currentVariantIndex];
                 if (variant) renderHourlyChart(variant);
@@ -820,13 +852,19 @@
             }
         }
 
-        // Limit dropdown hours to end time if passed
+        // MODIFIED: Update to create time range options instead of individual hours
         function updateHourDropdown() {
-            const hourSelect = document.getElementById('hour-select');
+            const hourSelect = document.getElementById('hour-range-select');
             const currentVariant = filteredVariants[currentVariantIndex];
             
-            // Clear existing options except first
-            while (hourSelect.options.length > 1) hourSelect.remove(1);
+            // Clear existing options
+            while (hourSelect.options.length > 0) hourSelect.remove(0);
+            
+            // Add "Current" option
+            const currentOption = document.createElement('option');
+            currentOption.value = "current";
+            currentOption.textContent = "Current Hour";
+            hourSelect.appendChild(currentOption);
             
             // Get production hours
             const productionHours = [];
@@ -858,11 +896,27 @@
                 });
             }
             
-            // Add filtered hours to dropdown
-            filteredHours.sort().forEach(hour => {
+            // Sort the hours
+            filteredHours.sort((a, b) => {
+                const [ha, ma] = a.split(':').map(Number);
+                const [hb, mb] = b.split(':').map(Number);
+                return (ha * 60 + ma) - (hb * 60 + mb);
+            });
+            
+            // Add time ranges as options
+            filteredHours.forEach(hour => {
+                const [hourVal, minuteVal] = hour.split(':').map(Number);
+                
+                // Calculate previous hour (for start of range)
+                let prevHour = hourVal - 1;
+                let prevMinute = minuteVal;
+                
+                // Format for option text
+                const timeRange = `${prevHour.toString().padStart(2, '0')}:${prevMinute.toString().padStart(2, '0')}-${hourVal.toString().padStart(2, '0')}:${minuteVal.toString().padStart(2, '0')}`;
+                
                 const option = document.createElement('option');
-                option.value = hour;
-                option.textContent = hour;
+                option.value = hour; // Still store the end hour as value
+                option.textContent = timeRange;
                 hourSelect.appendChild(option);
             });
         }
@@ -1143,11 +1197,6 @@
             }
             
             document.getElementById('supervisor-name').textContent = `Line Supervisor: ${supervisorName}`;
-            
-            // Remove this - will be shown in totals display
-            // document.getElementById('target-cycle-time').textContent = `Target: ${variant.cycleTime} sec/unit`;
-            // document.getElementById('actual-cycle-time').textContent = `Actual: ${calculateActualCycleTime(variant)} sec/unit`;
-            
             document.getElementById('target-cycle-time').textContent = '';
             document.getElementById('actual-cycle-time').textContent = '';
             
@@ -1161,7 +1210,7 @@
             if (isAutocycling) animateProgress();
         }
 
-        // MODIFIED: Redesigned totals display to show combined progress and cycle time
+        // MODIFIED: Combined progress and percentage, colored production and target values differently
         function updateTotalsDisplay(variant) {
             const totalsDisplay = document.getElementById('totals-display');
             totalsDisplay.innerHTML = '';
@@ -1172,17 +1221,18 @@
             const totalBoxes = variant.dailyBoxTarget || 0;
             const progressPercentage = variant.progressPercentage || 0;
             
-            // Progress display
+            // Progress display with percentage
             totalsDisplay.innerHTML += `
                 <div class="total-item">
-                    <div class="total-label">Progress</div>
-                    <div class="total-value total-actual">${currentTotal}/${dailyTarget}</div>
-                    <div class="total-subvalue">${boxesCompleted}/${totalBoxes} boxes</div>
-                </div>
-                <div class="total-item">
-                    <div class="total-label">Completion</div>
-                    <div class="total-value total-progress">${progressPercentage}%</div>
-                    <div class="total-subvalue">of daily target</div>
+                    <div class="total-label">
+                        Progress <span class="total-percentage">${progressPercentage}%</span>
+                    </div>
+                    <div class="total-value">
+                        <span class="current-value">${currentTotal}</span>/<span class="target-value">${dailyTarget}</span>
+                    </div>
+                    <div class="total-subvalue">
+                        <span class="current-value">${boxesCompleted}</span>/<span class="target-value">${totalBoxes}</span> boxes
+                    </div>
                 </div>
             `;
             
@@ -1193,7 +1243,9 @@
             totalsDisplay.innerHTML += `
                 <div class="total-item">
                     <div class="total-label">Cycle Time</div>
-                    <div class="total-value total-target">${actualCycleTime}/${targetCycleTime}</div>
+                    <div class="total-value">
+                        <span class="current-value">${actualCycleTime}</span>/<span class="target-value">${targetCycleTime}</span>
+                    </div>
                     <div class="total-subvalue">sec/unit</div>
                 </div>
             `;
@@ -1212,7 +1264,9 @@
             totalsDisplay.innerHTML += `
                 <div class="total-item">
                     <div class="total-label">Hourly Targets</div>
-                    <div class="total-value total-hourly">${hourlyTargetsMet}/${totalHourlyTargets}</div>
+                    <div class="total-value total-hourly">
+                        <span class="current-value">${hourlyTargetsMet}</span>/<span class="target-value">${totalHourlyTargets}</span>
+                    </div>
                     <div class="total-subvalue">targets met</div>
                 </div>
             `;
@@ -1445,10 +1499,9 @@
             svg.appendChild(targetLineGroup);
         }
 
-        // Use appropriate hour display for variants with passed end time and remove time data comment
+        // Removed time data comment and integrated title with dropdown
         function renderHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-chart');
-            const chartTitle = document.getElementById('hourly-chart-title');
             chartContainer.innerHTML = '';
             const dataMap = new Map();
             if (variant.hourlyTargets?.length) {
@@ -1493,12 +1546,6 @@
                 // If end time hasn't passed, use normal logic
                 displayHour = selectedHour === 'current' ? getNextProductionHour() : selectedHour;
             }
-            
-            const now = new Date();
-            const currentHour = now.getHours();
-            const startHour = `${String(currentHour).padStart(2, '0')}:30`;
-            const endHour = `${String(currentHour + 1).padStart(2, '0')}:30`;
-            chartTitle.textContent = `${startHour}-${endHour} Production Progress`;
             
             if (selectedHour === 'current' && !isEndTimePassed(variant)) {
                 startCountdown(displayHour);
@@ -1659,7 +1706,9 @@
             xAxisLine2.setAttribute('stroke-width', '1.5');
             svg.appendChild(xAxisLine2);
             
-            // REMOVED: Comment showing which time slot is displayed
+            // Get hour select value to update dropdown display
+            const select = document.getElementById('hour-range-select');
+            select.value = displayHour;
         }
 
         function showLoadingOrError(message) {
