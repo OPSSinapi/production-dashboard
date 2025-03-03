@@ -72,6 +72,28 @@
             height: calc(100% - 60px);
         }
 
+        .fullscreen-mode .footer {
+            position: relative;
+            width: 100%;
+        }
+
+        .fullscreen-mode .progress-bar {
+            height: 10px;
+            background-color: var(--light-color);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+        }
+
+        .fullscreen-mode .progress {
+            height: 100%;
+            background-color: var(--secondary-color);
+            transition: width 0.5s linear;
+            width: 0%;
+        }
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -349,6 +371,7 @@
             margin-top: 10px;
             overflow: hidden;
             width: 100%;
+            position: relative;
         }
 
         .progress {
@@ -752,7 +775,7 @@
             setInterval(fetchProductionData, UPDATE_INTERVAL);
             setInterval(cycleVariants, CYCLE_INTERVAL);
             animateProgress();
-
+            
             document.addEventListener('fullscreenchange', handleFullscreenChange);
             document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
             document.addEventListener('mozfullscreenchange', handleFullscreenChange);
@@ -765,14 +788,23 @@
 
             if (!document.fullscreenElement && !document.mozFullScreenElement && 
                 !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                // Entering fullscreen
                 dashboard.classList.add('fullscreen-mode');
                 isFullscreen = true;
                 fullscreenButton.textContent = 'Exit Fullscreen';
+                
+                // Preserve current supervisor styling
+                if (currentSupervisorStyle) {
+                    document.body.className = currentSupervisorStyle.className;
+                    document.body.style.backgroundColor = currentSupervisorStyle.backgroundColor;
+                }
+
                 if (dashboard.requestFullscreen) dashboard.requestFullscreen();
                 else if (dashboard.msRequestFullscreen) dashboard.msRequestFullscreen();
                 else if (dashboard.mozRequestFullScreen) dashboard.mozRequestFullScreen();
                 else if (dashboard.webkitRequestFullscreen) dashboard.webkitRequestFullscreen();
             } else {
+                // Exiting fullscreen
                 if (document.exitFullscreen) document.exitFullscreen();
                 else if (document.msExitFullscreen) document.msExitFullscreen();
                 else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
@@ -784,6 +816,8 @@
                     const variant = filteredVariants[currentVariantIndex];
                     renderCumulativeChart(variant);
                     renderHourlyChart(variant);
+                    updateCycleProgress(0); // Reset progress bar
+                    if (isAutocycling) animateProgress(); // Restart animation
                 }
             }, 100);
         }
@@ -794,19 +828,24 @@
 
             if (!document.fullscreenElement && !document.webkitFullscreenElement && 
                 !document.mozFullScreenElement && !document.msFullscreenElement) {
+                // Exiting fullscreen
                 dashboard.classList.remove('fullscreen-mode');
                 isFullscreen = false;
                 fullscreenButton.textContent = 'Fullscreen';
             }
 
+            // Restore supervisor styling
+            if (currentSupervisorStyle) {
+                document.body.className = currentSupervisorStyle.className;
+                document.body.style.backgroundColor = currentSupervisorStyle.backgroundColor;
+            }
+
             if (filteredVariants && filteredVariants.length > 0) {
                 const variant = filteredVariants[currentVariantIndex];
-                if (currentSupervisorStyle) {
-                    document.body.className = currentSupervisorStyle.className;
-                    document.body.style.backgroundColor = currentSupervisorStyle.backgroundColor;
-                }
                 renderCumulativeChart(variant);
                 renderHourlyChart(variant);
+                updateCycleProgress(0); // Reset progress bar
+                if (isAutocycling) animateProgress(); // Restart animation
             }
         }
 
@@ -1606,9 +1645,9 @@
             let progress = 0;
             const interval = 100;
             const steps = CYCLE_INTERVAL / interval;
-            const progressInterval = setInterval(() => {
+            let progressInterval = setInterval(() => {
                 progress += (100 / steps);
-                if (progress > 100) {
+                if (progress >= 100) {
                     progress = 100;
                     clearInterval(progressInterval);
                 }
@@ -1617,7 +1656,10 @@
         }
 
         function updateCycleProgress(percent) {
-            document.getElementById('cycle-progress').style.width = `${percent}%`;
+            const progressBar = document.getElementById('cycle-progress');
+            if (progressBar) {
+                progressBar.style.width = `${percent}%`;
+            }
         }
 
         function toggleAutoCycle() {
