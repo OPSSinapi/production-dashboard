@@ -52,7 +52,7 @@
 
         .fullscreen-mode .content {
             flex: 1 1 auto;
-            height: calc(100% - 180px); /* Adjust based on header and footer height */
+            height: calc(100% - 180px);
         }
 
         .fullscreen-mode .chart-container {
@@ -69,7 +69,7 @@
         }
 
         .fullscreen-mode .chart-area {
-            height: calc(100% - 60px); /* Adjust based on chart header height */
+            height: calc(100% - 60px);
         }
 
         .header {
@@ -235,7 +235,7 @@
             border-bottom: 1px solid #e2e8f0;
             padding-bottom: 8px;
         }
-        
+
         .chart-title {
             font-size: clamp(1.2rem, 1.5vw, 1.5rem);
             font-weight: 600;
@@ -265,7 +265,7 @@
             color: var(--secondary-color);
             font-style: normal;
         }
-        
+
         .hour-select-container {
             margin-left: auto;
         }
@@ -448,7 +448,7 @@
         .supervisor-aphele {
             color: white;
         }
-        
+
         .supervisor-aphele .chart-container,
         .supervisor-aphele .chart,
         .supervisor-aphele .filter-select,
@@ -457,7 +457,7 @@
             color: white;
             border-color: #555;
         }
-        
+
         .supervisor-aphele .chart-title,
         .supervisor-aphele .hour-time,
         .supervisor-aphele .total-label,
@@ -738,19 +738,14 @@
                 selectedFilterValue = this.value;
                 filterVariants();
                 currentVariantIndex = 0;
-                if (filteredVariants.length > 0) {
-                    displayVariant(currentVariantIndex);
-                } else {
-                    showLoadingOrError('No variants available for this filter.');
-                }
+                if (filteredVariants.length > 0) displayVariant(currentVariantIndex);
+                else showLoadingOrError('No variants available for this filter.');
             });
 
             document.getElementById('hour-select').addEventListener('change', function() {
                 selectedHour = this.value;
                 const variant = filteredVariants[currentVariantIndex];
-                if (variant) {
-                    renderHourlyChart(variant);
-                }
+                if (variant) renderHourlyChart(variant);
             });
 
             fetchProductionData();
@@ -767,32 +762,21 @@
         function toggleFullscreen() {
             const dashboard = document.querySelector('.dashboard-container');
             const fullscreenButton = document.querySelector('.fullscreen-button');
-            
+
             if (!document.fullscreenElement && !document.mozFullScreenElement && 
                 !document.webkitFullscreenElement && !document.msFullscreenElement) {
                 dashboard.classList.add('fullscreen-mode');
                 isFullscreen = true;
                 fullscreenButton.textContent = 'Exit Fullscreen';
-                
-                if (dashboard.requestFullscreen) {
-                    dashboard.requestFullscreen();
-                } else if (dashboard.msRequestFullscreen) {
-                    dashboard.msRequestFullscreen();
-                } else if (dashboard.mozRequestFullScreen) {
-                    dashboard.mozRequestFullScreen();
-                } else if (dashboard.webkitRequestFullscreen) {
-                    dashboard.webkitRequestFullscreen();
-                }
+                if (dashboard.requestFullscreen) dashboard.requestFullscreen();
+                else if (dashboard.msRequestFullscreen) dashboard.msRequestFullscreen();
+                else if (dashboard.mozRequestFullScreen) dashboard.mozRequestFullScreen();
+                else if (dashboard.webkitRequestFullscreen) dashboard.webkitRequestFullscreen();
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                }
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.msExitFullscreen) document.msExitFullscreen();
+                else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
             }
 
             setTimeout(() => {
@@ -807,17 +791,16 @@
         function handleFullscreenChange() {
             const dashboard = document.querySelector('.dashboard-container');
             const fullscreenButton = document.querySelector('.fullscreen-button');
-            
+
             if (!document.fullscreenElement && !document.webkitFullscreenElement && 
                 !document.mozFullScreenElement && !document.msFullscreenElement) {
                 dashboard.classList.remove('fullscreen-mode');
                 isFullscreen = false;
                 fullscreenButton.textContent = 'Fullscreen';
             }
-            
+
             if (filteredVariants && filteredVariants.length > 0) {
                 const variant = filteredVariants[currentVariantIndex];
-                // Preserve current supervisor styling instead of reapplying
                 if (currentSupervisorStyle) {
                     document.body.className = currentSupervisorStyle.className;
                     document.body.style.backgroundColor = currentSupervisorStyle.backgroundColor;
@@ -828,19 +811,11 @@
         }
 
         function applySupervisorStyling(supervisorName) {
-            document.body.classList.remove(
-                'supervisor-luthando', 
-                'supervisor-aphele', 
-                'supervisor-siyabonga', 
-                'supervisor-nosi', 
-                'supervisor-mvokwe'
-            );
-            
+            document.body.classList.remove('supervisor-luthando', 'supervisor-aphele', 'supervisor-siyabonga', 'supervisor-nosi', 'supervisor-mvokwe');
             let backgroundColor = 'var(--light-color)';
             if (supervisorName) {
                 const supervisorClass = 'supervisor-' + supervisorName.toLowerCase();
                 document.body.classList.add(supervisorClass);
-                
                 switch(supervisorName.toLowerCase()) {
                     case 'luthando': backgroundColor = 'var(--supervisor-luthando)'; break;
                     case 'aphele': backgroundColor = 'var(--supervisor-aphele)'; break;
@@ -848,35 +823,23 @@
                     case 'nosi': backgroundColor = 'var(--supervisor-nosi)'; break;
                     case 'mvokwe': backgroundColor = 'var(--supervisor-mvokwe)'; break;
                 }
-                
                 document.body.style.backgroundColor = backgroundColor;
-                
-                // Store current styling
-                currentSupervisorStyle = {
-                    className: document.body.className,
-                    backgroundColor: backgroundColor
-                };
+                currentSupervisorStyle = { className: document.body.className, backgroundColor: backgroundColor };
             }
         }
 
-        // Rest of the functions remain unchanged
         function updateHourDropdown() {
             const hourSelect = document.getElementById('hour-select');
-            while (hourSelect.options.length > 1) {
-                hourSelect.remove(1);
-            }
+            while (hourSelect.options.length > 1) hourSelect.remove(1);
             const productionHours = [];
             if (filteredVariants.length > 0) {
                 const variant = filteredVariants[0];
                 if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
-                    variant.hourlyTargets.forEach(item => {
-                        if (item.hour) productionHours.push(item.hour);
-                    });
+                    variant.hourlyTargets.forEach(item => { if (item.hour) productionHours.push(item.hour); });
                 }
             }
             if (productionHours.length === 0) {
-                const defaultHours = ["08:30", "09:30", "10:30", "11:30", "12:30", "13:30", 
-                                   "14:30", "15:30", "16:30", "17:30", "18:30"];
+                const defaultHours = ["08:30", "09:30", "10:30", "11:30", "12:30", "13:30", "14:30", "15:30", "16:30", "17:30", "18:30"];
                 productionHours.push(...defaultHours);
             }
             productionHours.sort().forEach(hour => {
@@ -898,13 +861,11 @@
                 }
             }
             if (productionHours.length === 0) {
-                productionHours = ["08:30", "09:30", "10:30", "11:30", "12:30", "13:30", 
-                                 "14:30", "15:30", "16:30", "17:30", "18:30"];
+                productionHours = ["08:30", "09:30", "10:30", "11:30", "12:30", "13:30", "14:30", "15:30", "16:30", "17:30", "18:30"];
             }
             for (const hourStr of productionHours) {
                 const [hours, minutes] = hourStr.split(':').map(Number);
-                const hourInMinutes = hours * 60 + minutes;
-                if (hourInMinutes > currentTime) return hourStr;
+                if ((hours * 60 + minutes) > currentTime) return hourStr;
             }
             return productionHours[0];
         }
@@ -945,8 +906,7 @@
             const breakTimeHours = calculateElapsedBreakTime(variant, now) / 60;
             const actualWorkingTimeHours = elapsedTimeHours - breakTimeHours;
             if (actualWorkingTimeHours <= 0) return "N/A";
-            const cycleTimeSeconds = (actualWorkingTimeHours * 3600) / variant.currentTotal;
-            return Math.round(cycleTimeSeconds);
+            return Math.round((actualWorkingTimeHours * 3600) / variant.currentTotal);
         }
 
         function calculateAllocatedBreakTime(variant) {
@@ -1035,10 +995,12 @@
 
         async function fetchProductionData() {
             try {
+                console.log(`Attempting to fetch data from: ${DATA_URL}`);
                 const cacheBuster = '?_=' + new Date().getTime();
                 const response = await fetch(DATA_URL + cacheBuster);
                 if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 const data = await response.json();
+                console.log('Fetched data:', data);
                 if (!data.variants || !Array.isArray(data.variants) || !data.supervisors || !Array.isArray(data.supervisors)) {
                     throw new Error('Invalid data structure in data.json');
                 }
@@ -1194,9 +1156,7 @@
         function getSortedProductionHours(variant) {
             const productionHours = [];
             if (variant.hourlyTargets?.length) {
-                variant.hourlyTargets.forEach(item => {
-                    if (item.hour) productionHours.push(item.hour);
-                });
+                variant.hourlyTargets.forEach(item => { if (item.hour) productionHours.push(item.hour); });
             }
             return [...productionHours].sort((a, b) => {
                 const [ha, ma] = a.split(':').map(Number);
@@ -1219,9 +1179,7 @@
                 });
             }
             const sortedHours = getSortedProductionHours(variant);
-            sortedHours.forEach(hour => {
-                if (!dataMap.has(hour)) dataMap.set(hour, { hour, target: 0, production: 0 });
-            });
+            sortedHours.forEach(hour => { if (!dataMap.has(hour)) dataMap.set(hour, { hour, target: 0, production: 0 }); });
             const sortedData = Array.from(dataMap.values()).sort((a, b) => {
                 const [ha, ma] = a.hour.split(':').map(Number);
                 const [hb, mb] = b.hour.split(':').map(Number);
@@ -1243,7 +1201,7 @@
             }
             let maxValue = Math.max(...filteredData.map(item => Math.max(item.target || 0, item.production || 0))) * 1.1;
             const svgWidth = chartContainer.clientWidth || 600;
-            const svgHeight = isFullscreen ? chartContainer.clientHeight - 60 : 370; // Adjust based on header height
+            const svgHeight = isFullscreen ? chartContainer.clientHeight - 60 : 370;
             const padding = commonChartPadding;
             const chartWidth = svgWidth - padding.left - padding.right;
             const chartHeight = svgHeight - padding.top - padding.bottom;
@@ -1266,17 +1224,18 @@
                 line.setAttribute('stroke', '#ddd');
                 line.setAttribute('stroke-width', '1');
                 gridGroup.appendChild(line);
-                
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', padding.left - 10);
-                text.setAttribute('y', y + 5);
-                text.setAttribute('text-anchor', 'end');
-                text.setAttribute('font-size', '12');
-                text.setAttribute('fill', '#666');
-                text.textContent = Math.round(maxValue * (4 - i) / 4);
-                gridGroup.appendChild(text);
+                if (i < 5) {
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', padding.left - 10);
+                    text.setAttribute('y', y + 5);
+                    text.setAttribute('text-anchor', 'end');
+                    text.setAttribute('font-size', '12');
+                    text.setAttribute('fill', '#666');
+                    text.textContent = Math.round(maxValue * (4 - i) / 4);
+                    gridGroup.appendChild(text);
+                }
             }
-            
+
             const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             yAxisTitle.setAttribute('x', padding.left - 45);
             yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
@@ -1287,7 +1246,7 @@
             yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 45}, ${padding.top + chartHeight / 2})`);
             yAxisTitle.textContent = 'Units';
             gridGroup.appendChild(yAxisTitle);
-            
+
             const startLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             startLine.setAttribute('x1', padding.left);
             startLine.setAttribute('y1', padding.top);
@@ -1296,7 +1255,7 @@
             startLine.setAttribute('stroke', '#666');
             startLine.setAttribute('stroke-width', '1.5');
             gridGroup.appendChild(startLine);
-            
+
             const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             xAxisLine.setAttribute('x1', padding.left);
             xAxisLine.setAttribute('y1', svgHeight - padding.bottom);
@@ -1305,14 +1264,12 @@
             xAxisLine.setAttribute('stroke', '#666');
             xAxisLine.setAttribute('stroke-width', '1.5');
             gridGroup.appendChild(xAxisLine);
-            
             svg.appendChild(gridGroup);
-            
+
             const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             filteredData.forEach((item, index) => {
                 const x = padding.left + (chartWidth * index / (filteredData.length - 1));
                 const y = svgHeight - padding.bottom + 20;
-                
                 const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 tick.setAttribute('x1', x);
                 tick.setAttribute('y1', svgHeight - padding.bottom);
@@ -1321,7 +1278,6 @@
                 tick.setAttribute('stroke', '#666');
                 tick.setAttribute('stroke-width', '1');
                 xLabelsGroup.appendChild(tick);
-                
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 text.setAttribute('x', x);
                 text.setAttribute('y', y);
@@ -1357,7 +1313,7 @@
                 productionLineGroup.appendChild(circle);
             });
             svg.appendChild(productionLineGroup);
-            
+
             const targetLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             const targetPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             let targetPathD = '';
@@ -1398,9 +1354,7 @@
                 });
             }
             const sortedHours = getSortedProductionHours(variant);
-            sortedHours.forEach(hour => {
-                if (!dataMap.has(hour)) dataMap.set(hour, { hour, target: 0, production: 0 });
-            });
+            sortedHours.forEach(hour => { if (!dataMap.has(hour)) dataMap.set(hour, { hour, target: 0, production: 0 }); });
             const displayHour = selectedHour === 'current' ? getNextProductionHour() : selectedHour;
             document.querySelector('.hour-time').textContent = `Hour: ${displayHour}`;
             if (selectedHour === 'current') startCountdown(displayHour);
@@ -1416,14 +1370,14 @@
             const padding = commonChartPadding;
             const chartWidth = svgWidth - padding.left - padding.right;
             const chartHeight = svgHeight - padding.top - padding.bottom;
-            
+
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('width', svgWidth);
             svg.setAttribute('height', svgHeight);
             svg.style.display = 'block';
             svg.style.margin = '0 auto';
             chartContainer.appendChild(svg);
-            
+
             const maxValue = Math.max(production, target, 1) * 1.2;
             const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             for (let i = 0; i <= 4; i++) {
@@ -1436,7 +1390,6 @@
                 line.setAttribute('stroke', '#ddd');
                 line.setAttribute('stroke-width', '1');
                 gridGroup.appendChild(line);
-                
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 text.setAttribute('x', padding.left - 10);
                 text.setAttribute('y', y + 5);
@@ -1446,7 +1399,7 @@
                 text.textContent = Math.round(maxValue * (4 - i) / 4);
                 gridGroup.appendChild(text);
             }
-            
+
             const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             yAxisTitle.setAttribute('x', padding.left - 45);
             yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
@@ -1457,7 +1410,7 @@
             yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 45}, ${padding.top + chartHeight / 2})`);
             yAxisTitle.textContent = 'Units';
             gridGroup.appendChild(yAxisTitle);
-            
+
             const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             vLine.setAttribute('x1', padding.left);
             vLine.setAttribute('y1', padding.top);
@@ -1466,7 +1419,7 @@
             vLine.setAttribute('stroke', '#666');
             vLine.setAttribute('stroke-width', '1.5');
             gridGroup.appendChild(vLine);
-            
+
             const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             xAxisLine.setAttribute('x1', padding.left);
             xAxisLine.setAttribute('y1', svgHeight - padding.bottom);
@@ -1476,7 +1429,7 @@
             xAxisLine.setAttribute('stroke-width', '1.5');
             gridGroup.appendChild(xAxisLine);
             svg.appendChild(gridGroup);
-            
+
             const barWidth = 60;
             const barSpacing = 40;
             const startX = svgWidth / 2 - barWidth - barSpacing / 2;
@@ -1489,7 +1442,7 @@
             productionBar.setAttribute('fill', 'var(--secondary-color)');
             productionBar.setAttribute('rx', '4');
             svg.appendChild(productionBar);
-            
+
             const targetBarHeight = (target / maxValue) * chartHeight;
             const targetBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             targetBar.setAttribute('x', startX + barWidth + barSpacing);
@@ -1499,7 +1452,7 @@
             targetBar.setAttribute('fill', 'var(--success-color)');
             targetBar.setAttribute('rx', '4');
             svg.appendChild(targetBar);
-            
+
             const productionValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             productionValueText.setAttribute('x', startX + barWidth / 2);
             productionValueText.setAttribute('y', padding.top + chartHeight - productionBarHeight - 10);
@@ -1519,7 +1472,7 @@
             svg.appendChild(productionShadow);
             productionValueText.setAttribute('filter', 'url(#textShadow)');
             svg.appendChild(productionValueText);
-            
+
             const targetValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             targetValueText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
             targetValueText.setAttribute('y', padding.top + chartHeight - targetBarHeight - 10);
@@ -1530,7 +1483,7 @@
             targetValueText.setAttribute('filter', 'url(#textShadow)');
             targetValueText.textContent = target;
             svg.appendChild(targetValueText);
-            
+
             const productionLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             productionLabelText.setAttribute('x', startX + barWidth / 2);
             productionLabelText.setAttribute('y', svgHeight - padding.bottom + 25);
@@ -1540,7 +1493,7 @@
             productionLabelText.setAttribute('fill', 'var(--secondary-color)');
             productionLabelText.textContent = 'Production';
             svg.appendChild(productionLabelText);
-            
+
             const targetLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             targetLabelText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
             targetLabelText.setAttribute('y', svgHeight - padding.bottom + 25);
@@ -1550,7 +1503,7 @@
             targetLabelText.setAttribute('fill', 'var(--success-color)');
             targetLabelText.textContent = 'Target';
             svg.appendChild(targetLabelText);
-            
+
             const xAxisLine2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             xAxisLine2.setAttribute('x1', padding.left);
             xAxisLine2.setAttribute('y1', padding.top + chartHeight);
@@ -1665,6 +1618,15 @@
 
         function updateCycleProgress(percent) {
             document.getElementById('cycle-progress').style.width = `${percent}%`;
+        }
+
+        function toggleAutoCycle() {
+            isAutocycling = !isAutocycling;
+            const button = document.getElementById('auto-cycle-button');
+            if (button) {
+                button.textContent = isAutocycling ? 'Stop Auto-Cycle' : 'Start Auto-Cycle';
+                button.className = isAutocycling ? 'auto-cycle-button' : 'auto-cycle-button start';
+            }
         }
 
         window.onload = initDashboard;
