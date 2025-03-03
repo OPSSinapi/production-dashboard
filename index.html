@@ -42,16 +42,14 @@
             margin: 0 auto; /* Center the dashboard */
         }
 
-        /* Add fullscreen styles */
-        :fullscreen .dashboard-container,
-        :-webkit-full-screen .dashboard-container,
-        :-moz-full-screen .dashboard-container,
-        :-ms-fullscreen .dashboard-container {
-            max-width: 100%;
-            width: 100%;
-            height: 100vh;
-            margin: 0;
-            padding: 10px;
+        /* Fullscreen styles */
+        .fullscreen-mode {
+            padding: 10px !important;
+            height: 100vh !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            overflow: auto !important;
         }
 
         .header {
@@ -113,6 +111,7 @@
             padding: 15px 20px;
             border-radius: 8px;
             width: 100%;
+            box-sizing: border-box;
         }
 
         .variant-details {
@@ -185,6 +184,7 @@
             overflow: hidden;
             width: 100%;
             max-width: 100%;
+            box-sizing: border-box;
         }
 
         .charts-row {
@@ -354,6 +354,7 @@
             font-size: clamp(1rem, 1.2vw, 1.2rem);
             gap: 20px;
             width: 100%;
+            box-sizing: border-box;
         }
 
         .total-item {
@@ -731,6 +732,7 @@
         let isLoading = true;
         let countdownInterval = null;
         let commonChartPadding = { top: 20, right: 30, bottom: 50, left: 70 }; // Reduced top padding to minimize white space
+        let isFullscreen = false;
 
         // Initialize the dashboard
         function initDashboard() {
@@ -778,6 +780,12 @@
 
             // Start progress bar animation
             animateProgress();
+
+            // Add fullscreen change event listeners
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
         }
 
         // Toggle fullscreen mode
@@ -788,6 +796,11 @@
                 !document.msFullscreenElement) {
                 // Enter fullscreen
                 const dashboard = document.querySelector('.dashboard-container');
+                
+                // Add fullscreen class before entering fullscreen
+                dashboard.classList.add('fullscreen-mode');
+                isFullscreen = true;
+                
                 if (dashboard.requestFullscreen) {
                     dashboard.requestFullscreen();
                 } else if (dashboard.msRequestFullscreen) {
@@ -809,41 +822,35 @@
                     document.webkitExitFullscreen();
                 }
             }
+
+            // Redraw charts
+            setTimeout(() => {
+                if (filteredVariants && filteredVariants.length > 0) {
+                    const variant = filteredVariants[currentVariantIndex];
+                    renderCumulativeChart(variant);
+                    renderHourlyChart(variant);
+                }
+            }, 100);
         }
 
         // Handle fullscreen change
-        document.addEventListener('fullscreenchange', adjustFullscreenLayout);
-        document.addEventListener('webkitfullscreenchange', adjustFullscreenLayout);
-        document.addEventListener('mozfullscreenchange', adjustFullscreenLayout);
-        document.addEventListener('MSFullscreenChange', adjustFullscreenLayout);
-
-        // Adjust layout when fullscreen changes
-        function adjustFullscreenLayout() {
-            if (document.fullscreenElement ||
-                document.webkitFullscreenElement ||
-                document.mozFullScreenElement ||
-                document.msFullscreenElement) {
-                // Fullscreen mode is active, adjust layout if needed
-                const dashboardContainer = document.querySelector('.dashboard-container');
-                dashboardContainer.style.height = '100vh';
-                dashboardContainer.style.maxWidth = '100%';
-                dashboardContainer.style.width = '100%';
-                dashboardContainer.style.padding = '10px';
-                dashboardContainer.style.margin = '0';
-                
-                // Trigger resize event to redraw charts
-                window.dispatchEvent(new Event('resize'));
-            } else {
-                // Fullscreen mode is exited
-                const dashboardContainer = document.querySelector('.dashboard-container');
-                dashboardContainer.style.height = '';
-                dashboardContainer.style.maxWidth = '1400px';
-                dashboardContainer.style.width = '';
-                dashboardContainer.style.padding = '20px';
-                dashboardContainer.style.margin = '0 auto';
-                
-                // Trigger resize event to redraw charts
-                window.dispatchEvent(new Event('resize'));
+        function handleFullscreenChange() {
+            const dashboard = document.querySelector('.dashboard-container');
+            
+            if (!document.fullscreenElement &&
+                !document.webkitFullscreenElement &&
+                !document.mozFullScreenElement &&
+                !document.msFullscreenElement) {
+                // Exited fullscreen
+                dashboard.classList.remove('fullscreen-mode');
+                isFullscreen = false;
+            }
+            
+            // Redraw charts
+            if (filteredVariants && filteredVariants.length > 0) {
+                const variant = filteredVariants[currentVariantIndex];
+                renderCumulativeChart(variant);
+                renderHourlyChart(variant);
             }
         }
 
