@@ -105,7 +105,7 @@
             width: 100%;
             overflow: hidden;
             flex: 1; /* Make sure content takes up available space */
-            gap: 2px; /* Add small gap between elements */
+            gap: 0; /* No gap between elements */
         }
 
         .variant-info {
@@ -192,7 +192,7 @@
             flex: 1; /* Takes all available space */
             background-color: white;
             border-radius: 8px;
-            padding: 4px 8px; /* Reduced padding to decrease deadspace */
+            padding: 0; /* Removed all padding */
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             overflow: hidden;
             width: 100%;
@@ -209,14 +209,15 @@
             flex: 1;
             min-height: 0; /* Important for flex container */
             height: calc(70vh - 200px); /* Set a minimum height based on viewport */
-            margin-top: 0; /* Remove top margin to reduce deadspace */
+            margin-top: -30px; /* Negative top margin to reduce deadspace */
         }
 
         .chart {
             flex: 1;
             background-color: white;
             border-radius: 8px;
-            padding: 4px 6px; /* Reduced padding further */
+            padding: 0; /* Removed all padding */
+            margin: 0; /* Removed all margin */
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
@@ -385,7 +386,7 @@
         .totals-display {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            margin-bottom: 2px; /* Further reduced margin */
+            margin-bottom: 0; /* Remove margin completely */
             font-size: clamp(0.9rem, 1.1vw, 1.1rem); /* Reduced size */
             gap: 8px; /* Reduced gap */
             width: 100%;
@@ -397,9 +398,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 6px 10px; /* Reduced padding */
+            padding: 0 10px 0 10px; /* Removed top and bottom padding */
             width: 100%;
-            margin-bottom: 10px; /* Added margin between total-items for better spacing */
+            margin-bottom: 0; /* Removed bottom margin */
         }
 
         .total-label {
@@ -1361,12 +1362,25 @@
             updateLoadingState();
             updateCycleProgress(0);
             if (isAutocycling) animateProgress();
+            
+            // Force minimal space between elements
+            document.querySelectorAll('.total-subvalue').forEach(el => {
+                el.style.marginBottom = '0';
+                el.style.paddingBottom = '0';
+            });
+            
+            // Add negative margin to charts to reduce deadspace
+            const chartContainer = document.querySelector('.chart-container');
+            if (chartContainer) {
+                chartContainer.style.marginTop = '-30px';
+            }
         }
 
         // Updated to show simplified time labels and larger indicators
         function updateTotalsDisplay(variant) {
             const totalsDisplay = document.getElementById('totals-display');
             totalsDisplay.innerHTML = '';
+            totalsDisplay.style.marginBottom = '0'; // Force zero margin
             
             const currentTotal = variant.currentTotal || 0;
             const dailyTarget = variant.dailyTarget || 0;
@@ -1375,39 +1389,47 @@
             const progressPercentage = variant.progressPercentage || 0;
             
             // Progress display with percentage
-            totalsDisplay.innerHTML += `
-                <div class="total-item">
-                    <div class="total-label">
-                        Progress <span class="total-percentage">${progressPercentage}%</span>
-                    </div>
-                    <div class="total-value">
-                        <span class="current-value">${currentTotal}</span>/<span class="target-value">${dailyTarget}</span>
-                    </div>
-                    <div class="total-subvalue">
-                        <span class="current-value">${boxesCompleted}</span>/<span class="target-value">${totalBoxes}</span> boxes
-                    </div>
+            const progressItem = document.createElement('div');
+            progressItem.className = 'total-item';
+            progressItem.style.marginBottom = '0';
+            progressItem.style.paddingBottom = '0';
+            progressItem.innerHTML = `
+                <div class="total-label">
+                    Progress <span class="total-percentage">${progressPercentage}%</span>
+                </div>
+                <div class="total-value">
+                    <span class="current-value">${currentTotal}</span>/<span class="target-value">${dailyTarget}</span>
+                </div>
+                <div class="total-subvalue" style="margin-bottom: 0; padding-bottom: 0;">
+                    <span class="current-value">${boxesCompleted}</span>/<span class="target-value">${totalBoxes}</span> boxes
                 </div>
             `;
+            totalsDisplay.appendChild(progressItem);
             
             // Cycle Time display
             const actualCycleTime = calculateActualCycleTime(variant);
             const targetCycleTime = variant.cycleTime || 0;
             
-            totalsDisplay.innerHTML += `
-                <div class="total-item">
-                    <div class="total-label">Cycle Time</div>
-                    <div class="total-value">
-                        <span class="current-value">${actualCycleTime}</span>/<span class="target-value">${targetCycleTime}</span>
-                    </div>
-                    <div class="total-subvalue">sec/unit</div>
+            const cycleTimeItem = document.createElement('div');
+            cycleTimeItem.className = 'total-item';
+            cycleTimeItem.style.marginBottom = '0';
+            cycleTimeItem.style.paddingBottom = '0';
+            cycleTimeItem.innerHTML = `
+                <div class="total-label">Cycle Time</div>
+                <div class="total-value">
+                    <span class="current-value">${actualCycleTime}</span>/<span class="target-value">${targetCycleTime}</span>
                 </div>
+                <div class="total-subvalue" style="margin-bottom: 0; padding-bottom: 0;">sec/unit</div>
             `;
+            totalsDisplay.appendChild(cycleTimeItem);
             
             // Hourly targets visual display with updated circle sizes and labels
             const hourlyTargetsContainer = document.createElement('div');
             hourlyTargetsContainer.className = 'total-item';
             hourlyTargetsContainer.style.height = 'auto'; /* Allow container to expand for larger circles */
             hourlyTargetsContainer.style.paddingTop = '0'; /* Reduce top padding */
+            hourlyTargetsContainer.style.paddingBottom = '0'; /* Remove bottom padding */
+            hourlyTargetsContainer.style.marginBottom = '0'; /* Remove bottom margin */
             hourlyTargetsContainer.innerHTML = `<div class="total-label">Hourly Targets</div>`;
             
             // Create SVG for hourly targets
@@ -1415,6 +1437,12 @@
             hourlyTargetsContainer.appendChild(hourlyTargetsContent);
             
             totalsDisplay.appendChild(hourlyTargetsContainer);
+            
+            // Set chart container to negative margin
+            const chartContainer = document.querySelector('.chart-container');
+            if (chartContainer) {
+                chartContainer.style.marginTop = '-40px'; // Add significant negative margin
+            }
         }
 
         // MODIFIED: Updated to show larger circles and visuals to match progress numbers
@@ -1599,6 +1627,7 @@
             chartTitle.textContent = `${currentDay}'s Production Progress`;
             chartTitle.style.margin = '0'; /* Remove margins */
             chartTitle.style.padding = '0'; /* Remove padding */
+            chartTitle.style.marginTop = '-40px'; /* Move title up significantly to reduce deadspace */
 
             const dataMap = new Map();
             if (variant.cumulativeTargets?.length) {
@@ -1810,6 +1839,10 @@
         // Fixed bar graph to update with dropdown selection and updated colors
         function renderHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-chart');
+            const chartHeader = document.querySelector('.chart-header');
+            if (chartHeader) {
+                chartHeader.style.marginTop = '-40px'; /* Move header up significantly to reduce deadspace */
+            }
             chartContainer.innerHTML = '';
             const dataMap = new Map();
             if (variant.hourlyTargets?.length) {
@@ -1874,11 +1907,12 @@
                 document.querySelector('.hour-countdown').style.color = 'var(--secondary-color)';
             }
             
-            // Add direct style to chart area to reduce space
-            const chartArea = document.querySelector('.chart-area');
-            if (chartArea) {
-                chartArea.style.marginTop = '0';
-            }
+            // Add direct style to elements to reduce space
+            document.querySelectorAll('.chart-title, .chart-title-text, .chart-header').forEach(el => {
+                el.style.margin = '0';
+                el.style.padding = '0';
+                el.style.marginTop = '-10px';
+            });
             
             const hourData = dataMap.get(displayHour) || { hour: displayHour, production: 0, target: 0 };
             const production = hourData.production || 0;
