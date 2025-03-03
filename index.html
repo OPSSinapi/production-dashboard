@@ -14,10 +14,12 @@
             --light-color: #f3f4f6;
             --dark-color: #1e293b;
             --supervisor-luthando: #F9E79F;
-            --supervisor-aphele: #3A3A3A;
+            --supervisor-aphele: #e6e6e6; /* Changed to light grey */
             --supervisor-siyabonga: #FADBD8;
             --supervisor-nosi: #D6EAF8;
             --supervisor-mvokwe: #D5F5E3;
+            --production-color: #e74c3c; /* Changed production to red */
+            --target-color: #10B981; /* Target stays green */
         }
 
         body {
@@ -147,11 +149,11 @@
         }
 
         .target-cycle-time {
-            color: var(--success-color);
+            color: var(--target-color);
         }
 
         .actual-cycle-time {
-            color: var(--secondary-color);
+            color: var(--production-color);
         }
 
         .debug-button {
@@ -332,11 +334,11 @@
         }
 
         .production-color {
-            background-color: var(--secondary-color);
+            background-color: var(--production-color); /* Changed to red */
         }
 
         .target-color {
-            background-color: var(--success-color);
+            background-color: var(--target-color); /* Remains green */
         }
 
         .footer {
@@ -414,11 +416,11 @@
         }
 
         .current-value {
-            color: var(--secondary-color);
+            color: var(--production-color); /* Changed to red */
         }
 
         .target-value {
-            color: var(--success-color);
+            color: var(--target-color); /* Remains green */
         }
 
         .total-hourly {
@@ -455,7 +457,7 @@
         }
 
         .supervisor-aphele {
-            color: white;
+            color: #333; /* Dark text for Aphele's light background */
         }
 
         .dashboard-container.supervisor-luthando {
@@ -482,9 +484,9 @@
         .supervisor-aphele .chart,
         .supervisor-aphele .filter-select,
         .supervisor-aphele .hour-select {
-            background-color: #444;
-            color: white;
-            border-color: #555;
+            background-color: #f2f2f2; /* Lighter background for Aphele */
+            color: #333;
+            border-color: #ddd;
         }
 
         .supervisor-aphele .chart-title,
@@ -492,7 +494,7 @@
         .supervisor-aphele .total-label,
         .supervisor-aphele .total-hourly,
         .supervisor-aphele .legend {
-            color: #ddd;
+            color: #333; /* Darker text for readability */
         }
 
         .debug-popup {
@@ -878,7 +880,7 @@
             }
         }
 
-        // MODIFIED: Update to create time range options instead of individual hours
+        // MODIFIED: Fixed duplicate entries in the hour dropdown
         function updateHourDropdown() {
             const hourSelect = document.getElementById('hour-range-select');
             const currentVariant = filteredVariants[currentVariantIndex];
@@ -923,23 +925,9 @@
                 return (ha * 60 + ma) - (hb * 60 + mb);
             });
             
-            // Add current hour option with actual time range
+            // Get current hour for "current" option
             const nextHour = getNextProductionHour();
-            if (nextHour) {
-                const [hourVal, minuteVal] = nextHour.split(':').map(Number);
-                
-                // Calculate previous hour (for start of range)
-                let prevHour = hourVal - 1;
-                let prevMinute = minuteVal;
-                
-                // Format time range for current option
-                const currentTimeRange = `${prevHour.toString().padStart(2, '0')}:${prevMinute.toString().padStart(2, '0')}-${hourVal.toString().padStart(2, '0')}:${minuteVal.toString().padStart(2, '0')}`;
-                
-                const currentOption = document.createElement('option');
-                currentOption.value = "current";
-                currentOption.textContent = currentTimeRange;
-                hourSelect.appendChild(currentOption);
-            }
+            let currentHourOption = null;
             
             // Add time ranges as options
             filteredHours.forEach(hour => {
@@ -953,10 +941,34 @@
                 const timeRange = `${prevHour.toString().padStart(2, '0')}:${prevMinute.toString().padStart(2, '0')}-${hourVal.toString().padStart(2, '0')}:${minuteVal.toString().padStart(2, '0')}`;
                 
                 const option = document.createElement('option');
-                option.value = hour; // Still store the end hour as value
+                option.value = hour; // Store the end hour as value
                 option.textContent = timeRange;
+                
+                // If this is the current hour range, save it for "current" option
+                if (hour === nextHour) {
+                    currentHourOption = { value: "current", text: timeRange };
+                }
+                
                 hourSelect.appendChild(option);
             });
+            
+            // Add the "current" hour option at the top if it exists
+            if (currentHourOption) {
+                const currentOption = document.createElement('option');
+                currentOption.value = currentHourOption.value;
+                currentOption.textContent = currentHourOption.text + " (Current)";
+                hourSelect.insertBefore(currentOption, hourSelect.firstChild);
+            }
+            
+            // Set the selected hour in the dropdown
+            if (selectedHour === "current" && currentHourOption) {
+                hourSelect.value = "current";
+            } else if (Array.from(hourSelect.options).some(opt => opt.value === selectedHour)) {
+                hourSelect.value = selectedHour;
+            } else if (hourSelect.options.length > 0) {
+                selectedHour = hourSelect.options[0].value; // Default to first option
+                hourSelect.value = selectedHour;
+            }
         }
 
         function getNextProductionHour() {
@@ -1322,7 +1334,7 @@
             });
         }
 
-        // Limit chart data to end time if passed
+        // Limit chart data to end time if passed, updated colors
         function renderCumulativeChart(variant) {
             const chartContainer = document.getElementById('cumulative-chart');
             const chartTitle = document.getElementById('cumulative-chart-title');
@@ -1479,7 +1491,7 @@
                 productionPathD += index === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
             });
             productionPath.setAttribute('d', productionPathD);
-            productionPath.setAttribute('stroke', 'var(--secondary-color)');
+            productionPath.setAttribute('stroke', 'var(--production-color)'); // Changed to red
             productionPath.setAttribute('stroke-width', '3');
             productionPath.setAttribute('fill', 'none');
             productionLineGroup.appendChild(productionPath);
@@ -1488,7 +1500,7 @@
                 circle.setAttribute('cx', point.x);
                 circle.setAttribute('cy', point.y);
                 circle.setAttribute('r', '4');
-                circle.setAttribute('fill', 'var(--secondary-color)');
+                circle.setAttribute('fill', 'var(--production-color)'); // Changed to red
                 productionLineGroup.appendChild(circle);
 
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -1496,7 +1508,7 @@
                 text.setAttribute('y', point.y - 10);
                 text.setAttribute('text-anchor', 'middle');
                 text.setAttribute('font-size', '12');
-                text.setAttribute('fill', 'var(--secondary-color)');
+                text.setAttribute('fill', 'var(--production-color)'); // Changed to red
                 text.textContent = filteredData[index].production;
                 productionLineGroup.appendChild(text);
             });
@@ -1513,7 +1525,7 @@
                 targetPathD += index === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
             });
             targetPath.setAttribute('d', targetPathD);
-            targetPath.setAttribute('stroke', 'var(--success-color)');
+            targetPath.setAttribute('stroke', 'var(--target-color)'); // Remains green
             targetPath.setAttribute('stroke-width', '3');
             targetPath.setAttribute('fill', 'none');
             targetLineGroup.appendChild(targetPath);
@@ -1522,7 +1534,7 @@
                 circle.setAttribute('cx', point.x);
                 circle.setAttribute('cy', point.y);
                 circle.setAttribute('r', '4');
-                circle.setAttribute('fill', 'var(--success-color)');
+                circle.setAttribute('fill', 'var(--target-color)'); // Remains green
                 targetLineGroup.appendChild(circle);
 
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -1530,14 +1542,14 @@
                 text.setAttribute('y', point.y - 10);
                 text.setAttribute('text-anchor', 'middle');
                 text.setAttribute('font-size', '12');
-                text.setAttribute('fill', 'var(--success-color)');
+                text.setAttribute('fill', 'var(--target-color)'); // Remains green
                 text.textContent = filteredData[index].target;
                 targetLineGroup.appendChild(text);
             });
             svg.appendChild(targetLineGroup);
         }
 
-        // Removed time data comment and integrated title with dropdown
+        // Fixed bar graph to update with dropdown selection and updated colors
         function renderHourlyChart(variant) {
             const chartContainer = document.getElementById('hourly-chart');
             chartContainer.innerHTML = '';
@@ -1554,37 +1566,48 @@
             const sortedHours = getSortedProductionHours(variant);
             sortedHours.forEach(hour => { if (!dataMap.has(hour)) dataMap.set(hour, { hour, target: 0, production: 0 }); });
             
-            // Determine which hour to display based on whether end time has passed
+            // Determine which hour to display based on selection or end time
             let displayHour;
-            if (isEndTimePassed(variant)) {
-                // If end time has passed, find the latest hour before end time
-                const [endHour, endMinute] = variant["End Time"].split(':').map(Number);
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                // Find the latest hour before or at end time
-                const sortedTimeSlots = [...dataMap.keys()].sort((a, b) => {
-                    const [ha, ma] = a.split(':').map(Number);
-                    const [hb, mb] = b.split(':').map(Number);
-                    return (ha * 60 + ma) - (hb * 60 + mb);
-                });
-                
-                for (let i = sortedTimeSlots.length - 1; i >= 0; i--) {
-                    const [hour, minute] = sortedTimeSlots[i].split(':').map(Number);
-                    if (hour * 60 + minute <= endTimeMinutes) {
-                        displayHour = sortedTimeSlots[i];
-                        break;
-                    }
-                }
-                
-                // If no suitable hour found, use the first hour
-                if (!displayHour && sortedTimeSlots.length > 0) {
-                    displayHour = sortedTimeSlots[0];
-                }
+            if (selectedHour === 'current') {
+                // For current hour option
+                displayHour = getNextProductionHour();
             } else {
-                // If end time hasn't passed, use normal logic
-                displayHour = selectedHour === 'current' ? getNextProductionHour() : selectedHour;
+                // For specific hour selection
+                displayHour = selectedHour;
             }
             
+            // If end time has passed and selected hour is after end time
+            if (isEndTimePassed(variant)) {
+                const [endHour, endMinute] = variant["End Time"].split(':').map(Number);
+                const endTimeMinutes = endHour * 60 + endMinute;
+                const [dispHour, dispMinute] = displayHour.split(':').map(Number);
+                const displayTimeMinutes = dispHour * 60 + dispMinute;
+                
+                // If selected hour is after end time, find the latest hour before end time
+                if (displayTimeMinutes > endTimeMinutes) {
+                    // Find the latest hour before or at end time
+                    const sortedTimeSlots = [...dataMap.keys()].sort((a, b) => {
+                        const [ha, ma] = a.split(':').map(Number);
+                        const [hb, mb] = b.split(':').map(Number);
+                        return (ha * 60 + ma) - (hb * 60 + mb);
+                    });
+                    
+                    for (let i = sortedTimeSlots.length - 1; i >= 0; i--) {
+                        const [hour, minute] = sortedTimeSlots[i].split(':').map(Number);
+                        if (hour * 60 + minute <= endTimeMinutes) {
+                            displayHour = sortedTimeSlots[i];
+                            break;
+                        }
+                    }
+                    
+                    // If no suitable hour found, use the first hour
+                    if (!displayHour && sortedTimeSlots.length > 0) {
+                        displayHour = sortedTimeSlots[0];
+                    }
+                }
+            }
+            
+            // Show countdown for current hour if appropriate
             if (selectedHour === 'current' && !isEndTimePassed(variant)) {
                 startCountdown(displayHour);
             } else {
@@ -1670,7 +1693,7 @@
             productionBar.setAttribute('y', padding.top + chartHeight - productionBarHeight);
             productionBar.setAttribute('width', barWidth);
             productionBar.setAttribute('height', productionBarHeight);
-            productionBar.setAttribute('fill', 'var(--secondary-color)');
+            productionBar.setAttribute('fill', 'var(--production-color)'); // Changed to red
             productionBar.setAttribute('rx', '4');
             svg.appendChild(productionBar);
 
@@ -1680,7 +1703,7 @@
             targetBar.setAttribute('y', padding.top + chartHeight - targetBarHeight);
             targetBar.setAttribute('width', barWidth);
             targetBar.setAttribute('height', targetBarHeight);
-            targetBar.setAttribute('fill', 'var(--success-color)');
+            targetBar.setAttribute('fill', 'var(--target-color)'); // Remains green
             targetBar.setAttribute('rx', '4');
             svg.appendChild(targetBar);
 
@@ -1690,7 +1713,7 @@
             productionValueText.setAttribute('text-anchor', 'middle');
             productionValueText.setAttribute('font-size', '15');
             productionValueText.setAttribute('font-weight', '600');
-            productionValueText.setAttribute('fill', 'var(--secondary-color)');
+            productionValueText.setAttribute('fill', 'var(--production-color)'); // Changed to red
             productionValueText.textContent = production;
             const productionShadow = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
             productionShadow.setAttribute('id', 'textShadow');
@@ -1710,7 +1733,7 @@
             targetValueText.setAttribute('text-anchor', 'middle');
             targetValueText.setAttribute('font-size', '15');
             targetValueText.setAttribute('font-weight', '600');
-            targetValueText.setAttribute('fill', 'var(--success-color)');
+            targetValueText.setAttribute('fill', 'var(--target-color)'); // Remains green
             targetValueText.setAttribute('filter', 'url(#textShadow)');
             targetValueText.textContent = target;
             svg.appendChild(targetValueText);
@@ -1721,7 +1744,7 @@
             productionLabelText.setAttribute('text-anchor', 'middle');
             productionLabelText.setAttribute('font-size', '13');
             productionLabelText.setAttribute('font-weight', '500');
-            productionLabelText.setAttribute('fill', 'var(--secondary-color)');
+            productionLabelText.setAttribute('fill', 'var(--production-color)'); // Changed to red
             productionLabelText.textContent = 'Production';
             svg.appendChild(productionLabelText);
 
@@ -1731,7 +1754,7 @@
             targetLabelText.setAttribute('text-anchor', 'middle');
             targetLabelText.setAttribute('font-size', '13');
             targetLabelText.setAttribute('font-weight', '500');
-            targetLabelText.setAttribute('fill', 'var(--success-color)');
+            targetLabelText.setAttribute('fill', 'var(--target-color)'); // Remains green
             targetLabelText.textContent = 'Target';
             svg.appendChild(targetLabelText);
 
@@ -1744,9 +1767,13 @@
             xAxisLine2.setAttribute('stroke-width', '1.5');
             svg.appendChild(xAxisLine2);
             
-            // Get hour select value to update dropdown display
+            // Update the hour select dropdown to reflect the selected hour
             const select = document.getElementById('hour-range-select');
-            select.value = displayHour;
+            if (selectedHour === 'current') {
+                select.value = 'current';
+            } else {
+                select.value = displayHour;
+            }
         }
 
         function showLoadingOrError(message) {
