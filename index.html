@@ -38,60 +38,19 @@
             box-sizing: border-box;
             max-width: 1400px;
             margin: 0 auto;
+            transition: background-color 0.5s ease;
         }
 
         .fullscreen-mode {
-            padding: 10px !important;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            padding: 20px !important;
             height: 100vh !important;
             width: 100vw !important;
             max-width: 100% !important;
             margin: 0 !important;
-            overflow: hidden !important;
+            overflow: auto !important;
             box-sizing: border-box;
-        }
-
-        .fullscreen-mode .content {
-            flex: 1 1 auto;
-            height: calc(100% - 180px);
-        }
-
-        .fullscreen-mode .chart-container {
-            height: 100%;
-        }
-
-        .fullscreen-mode .charts-row {
-            height: 100%;
-        }
-
-        .fullscreen-mode .chart {
-            height: 100%;
-            min-height: 0;
-        }
-
-        .fullscreen-mode .chart-area {
-            height: calc(100% - 60px);
-        }
-
-        .fullscreen-mode .footer {
-            position: relative;
-            width: 100%;
-        }
-
-        .fullscreen-mode .progress-bar {
-            height: 10px;
-            background-color: var(--light-color);
-            border-radius: 5px;
-            margin-top: 10px;
-            overflow: hidden;
-            width: 100%;
-            position: relative;
-        }
-
-        .fullscreen-mode .progress {
-            height: 100%;
-            background-color: var(--secondary-color);
-            transition: width 0.5s linear;
-            width: 0%;
         }
 
         .header {
@@ -371,7 +330,6 @@
             margin-top: 10px;
             overflow: hidden;
             width: 100%;
-            position: relative;
         }
 
         .progress {
@@ -470,6 +428,26 @@
 
         .supervisor-aphele {
             color: white;
+        }
+
+        .dashboard-container.supervisor-luthando {
+            background-color: var(--supervisor-luthando);
+        }
+
+        .dashboard-container.supervisor-aphele {
+            background-color: var(--supervisor-aphele);
+        }
+
+        .dashboard-container.supervisor-siyabonga {
+            background-color: var(--supervisor-siyabonga);
+        }
+
+        .dashboard-container.supervisor-nosi {
+            background-color: var(--supervisor-nosi);
+        }
+
+        .dashboard-container.supervisor-mvokwe {
+            background-color: var(--supervisor-mvokwe);
         }
 
         .supervisor-aphele .chart-container,
@@ -746,7 +724,6 @@
         let countdownInterval = null;
         let commonChartPadding = { top: 20, right: 30, bottom: 50, left: 70 };
         let isFullscreen = false;
-        let currentSupervisorStyle = null;
 
         function initDashboard() {
             updateDateTime();
@@ -775,7 +752,7 @@
             setInterval(fetchProductionData, UPDATE_INTERVAL);
             setInterval(cycleVariants, CYCLE_INTERVAL);
             animateProgress();
-            
+
             document.addEventListener('fullscreenchange', handleFullscreenChange);
             document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
             document.addEventListener('mozfullscreenchange', handleFullscreenChange);
@@ -792,12 +769,6 @@
                 dashboard.classList.add('fullscreen-mode');
                 isFullscreen = true;
                 fullscreenButton.textContent = 'Exit Fullscreen';
-                
-                // Preserve current supervisor styling
-                if (currentSupervisorStyle) {
-                    document.body.className = currentSupervisorStyle.className;
-                    document.body.style.backgroundColor = currentSupervisorStyle.backgroundColor;
-                }
 
                 if (dashboard.requestFullscreen) dashboard.requestFullscreen();
                 else if (dashboard.msRequestFullscreen) dashboard.msRequestFullscreen();
@@ -813,11 +784,7 @@
 
             setTimeout(() => {
                 if (filteredVariants && filteredVariants.length > 0) {
-                    const variant = filteredVariants[currentVariantIndex];
-                    renderCumulativeChart(variant);
-                    renderHourlyChart(variant);
-                    updateCycleProgress(0); // Reset progress bar
-                    if (isAutocycling) animateProgress(); // Restart animation
+                    displayVariant(currentVariantIndex);
                 }
             }, 100);
         }
@@ -834,36 +801,19 @@
                 fullscreenButton.textContent = 'Fullscreen';
             }
 
-            // Restore supervisor styling
-            if (currentSupervisorStyle) {
-                document.body.className = currentSupervisorStyle.className;
-                document.body.style.backgroundColor = currentSupervisorStyle.backgroundColor;
-            }
-
-            if (filteredVariants && filteredVariants.length > 0) {
-                const variant = filteredVariants[currentVariantIndex];
-                renderCumulativeChart(variant);
-                renderHourlyChart(variant);
-                updateCycleProgress(0); // Reset progress bar
-                if (isAutocycling) animateProgress(); // Restart animation
-            }
+            setTimeout(() => {
+                if (filteredVariants && filteredVariants.length > 0) {
+                    displayVariant(currentVariantIndex);
+                }
+            }, 100);
         }
 
         function applySupervisorStyling(supervisorName) {
-            document.body.classList.remove('supervisor-luthando', 'supervisor-aphele', 'supervisor-siyabonga', 'supervisor-nosi', 'supervisor-mvokwe');
-            let backgroundColor = 'var(--light-color)';
+            const dashboardContainer = document.querySelector('.dashboard-container');
+            dashboardContainer.classList.remove('supervisor-luthando', 'supervisor-aphele', 'supervisor-siyabonga', 'supervisor-nosi', 'supervisor-mvokwe');
             if (supervisorName) {
                 const supervisorClass = 'supervisor-' + supervisorName.toLowerCase();
-                document.body.classList.add(supervisorClass);
-                switch(supervisorName.toLowerCase()) {
-                    case 'luthando': backgroundColor = 'var(--supervisor-luthando)'; break;
-                    case 'aphele': backgroundColor = 'var(--supervisor-aphele)'; break;
-                    case 'siyabonga': backgroundColor = 'var(--supervisor-siyabonga)'; break;
-                    case 'nosi': backgroundColor = 'var(--supervisor-nosi)'; break;
-                    case 'mvokwe': backgroundColor = 'var(--supervisor-mvokwe)'; break;
-                }
-                document.body.style.backgroundColor = backgroundColor;
-                currentSupervisorStyle = { className: document.body.className, backgroundColor: backgroundColor };
+                dashboardContainer.classList.add(supervisorClass);
             }
         }
 
@@ -1149,6 +1099,8 @@
             renderCumulativeChart(variant);
             renderHourlyChart(variant);
             updateLoadingState();
+            updateCycleProgress(0);
+            if (isAutocycling) animateProgress();
         }
 
         function updateTotalsDisplay(variant) {
@@ -1638,7 +1590,6 @@
             updateCycleProgress(0);
             currentVariantIndex = (currentVariantIndex + 1) % filteredVariants.length;
             displayVariant(currentVariantIndex);
-            animateProgress();
         }
 
         function animateProgress() {
@@ -1659,15 +1610,6 @@
             const progressBar = document.getElementById('cycle-progress');
             if (progressBar) {
                 progressBar.style.width = `${percent}%`;
-            }
-        }
-
-        function toggleAutoCycle() {
-            isAutocycling = !isAutocycling;
-            const button = document.getElementById('auto-cycle-button');
-            if (button) {
-                button.textContent = isAutocycling ? 'Stop Auto-Cycle' : 'Start Auto-Cycle';
-                button.className = isAutocycling ? 'auto-cycle-button' : 'auto-cycle-button start';
             }
         }
 
