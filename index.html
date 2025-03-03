@@ -14,7 +14,7 @@
             --light-color: #f3f4f6;
             --dark-color: #1e293b;
             --supervisor-luthando: #F9E79F;
-            --supervisor-aphele: #e6e6e6; /* Light grey for Aphele */
+            --supervisor-apelele: #e6e6e6; /* Light grey for Apelele */
             --supervisor-siyabonga: #FADBD8;
             --supervisor-nosi: #D6EAF8;
             --supervisor-mvokwe: #D5F5E3;
@@ -402,6 +402,7 @@
             display: flex;
             align-items: center;
             gap: 8px; /* Reduced gap */
+            padding-bottom: 2px; /* Reduced bottom padding */
         }
 
         .total-percentage {
@@ -431,7 +432,7 @@
             color: var(--dark-color);
         }
 
-        /* Updated styles for hourly targets visualization */
+        /* Updated styles for hourly targets visualization - Reduced deadspace */
         .hourly-targets-container {
             display: flex;
             flex-direction: column;
@@ -439,22 +440,23 @@
             justify-content: center;
             width: 100%;
             overflow: hidden;
-            margin-top: 10px; /* Added margin to align vertically with other sections */
+            margin-top: 0; /* Removed margin to reduce deadspace */
         }
 
         .hourly-targets-svg {
             width: 100%;
-            max-width: 300px;
+            max-width: 800px; /* Further increased max-width */
             margin: 0 auto;
             overflow: visible;
+            margin-top: -30px; /* Move SVG up more to reduce deadspace */
         }
 
-        /* MODIFIED: Much larger circles to match progress/cycle time values (198/262) */
+        /* MODIFIED: Much larger circles to truly match progress/cycle time values */
         .hourly-circle {
             fill: white;
             stroke: #999;
             stroke-width: 4;
-            r: 70; /* Dramatically increased to match large value numbers */
+            r: 80; /* Further increased to ensure they match */
         }
 
         /* MODIFIED: Make time labels match boxes/sec/unit size */
@@ -543,20 +545,20 @@
             background-color: var(--supervisor-mvokwe);
         }
 
-        .supervisor-aphele .chart-container,
-        .supervisor-aphele .chart,
-        .supervisor-aphele .filter-select,
-        .supervisor-aphele .hour-select {
-            background-color: #f2f2f2; /* Lighter background for Aphele */
+        .dashboard-container.supervisor-apelele .chart-container,
+        .dashboard-container.supervisor-apelele .chart,
+        .dashboard-container.supervisor-apelele .filter-select,
+        .dashboard-container.supervisor-apelele .hour-select {
+            background-color: #f2f2f2; /* Lighter background for Apelele */
             color: #333;
             border-color: #ddd;
         }
 
-        .supervisor-aphele .chart-title,
-        .supervisor-aphele .hour-time,
-        .supervisor-aphele .total-label,
-        .supervisor-aphele .total-hourly,
-        .supervisor-aphele .legend {
+        .dashboard-container.supervisor-apelele .chart-title,
+        .dashboard-container.supervisor-apelele .hour-time,
+        .dashboard-container.supervisor-apelele .total-label,
+        .dashboard-container.supervisor-apelele .total-hourly,
+        .dashboard-container.supervisor-apelele .legend {
             color: #333; /* Darker text for readability */
         }
 
@@ -653,7 +655,7 @@
         /* MODIFIED: Make hourly circles consistent on all screen sizes */
         @media (min-width: 768px) {
             .hourly-circle {
-                r: 70; /* Same size as in base style */
+                r: 80; /* Same size as in base style */
             }
             
             .status-icon {
@@ -966,7 +968,7 @@
 
         function applySupervisorStyling(supervisorName) {
             const dashboardContainer = document.querySelector('.dashboard-container');
-            dashboardContainer.classList.remove('supervisor-luthando', 'supervisor-aphele', 'supervisor-siyabonga', 'supervisor-nosi', 'supervisor-mvokwe');
+            dashboardContainer.classList.remove('supervisor-luthando', 'supervisor-apelele', 'supervisor-siyabonga', 'supervisor-nosi', 'supervisor-mvokwe');
             if (supervisorName) {
                 const supervisorClass = 'supervisor-' + supervisorName.toLowerCase();
                 dashboardContainer.classList.add(supervisorClass);
@@ -1397,6 +1399,7 @@
             const hourlyTargetsContainer = document.createElement('div');
             hourlyTargetsContainer.className = 'total-item';
             hourlyTargetsContainer.style.height = 'auto'; /* Allow container to expand for larger circles */
+            hourlyTargetsContainer.style.paddingTop = '0'; /* Reduce top padding */
             hourlyTargetsContainer.innerHTML = `<div class="total-label">Hourly Targets</div>`;
             
             // Create SVG for hourly targets
@@ -1411,6 +1414,7 @@
             // Create container
             const container = document.createElement('div');
             container.className = 'hourly-targets-container';
+            container.style.marginTop = '-25px'; /* Force negative margin to reduce deadspace */
             
             // Hours and targets
             const startTime = variant["Start Time"] || "07:30";
@@ -1490,16 +1494,16 @@
                 }
             }
             
-            // Create SVG for visualization with much more height/space for larger circles
+            // Create SVG for visualization with reduced vertical space
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('class', 'hourly-targets-svg');
-            svg.setAttribute('height', '220'); // Significantly increased height for larger circles
-            svg.setAttribute('viewBox', `0 0 ${Math.max(hours.length * 160, 400)} 220`); // Much wider viewBox
+            svg.setAttribute('height', '180'); // Reduced height to decrease deadspace
+            svg.setAttribute('viewBox', `0 0 ${Math.max(hours.length * 180, 400)} 180`); // Adjusted viewBox
             
             // Calculate spacing with much larger circles
-            const circleRadius = 70; // MODIFIED: Dramatically larger circles to match big numbers
+            const circleRadius = 80; // MODIFIED: Dramatically larger circles to match big numbers
             const spacing = 160; // Increased spacing for larger circles
-            const yPosition = 80; // Adjusted to center vertically with larger elements
+            const yPosition = 60; // Moved up to reduce deadspace
             
             // Draw each hour circle
             hours.forEach((hour, index) => {
@@ -1518,7 +1522,7 @@
                 const timeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 timeLabel.setAttribute('class', 'time-label');
                 timeLabel.setAttribute('x', xPosition);
-                timeLabel.setAttribute('y', yPosition + circleRadius + 30); // Adjusted for much larger circles
+                timeLabel.setAttribute('y', yPosition + circleRadius + 25); // Adjusted for much larger circles
                 timeLabel.textContent = hour; // Just the end time
                 svg.appendChild(timeLabel);
                 
@@ -1557,7 +1561,7 @@
                 if (index === currentHourIndex && !isEndTimePassed(variant)) {
                     const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                     arrow.setAttribute('class', 'current-arrow');
-                    arrow.setAttribute('d', `M${xPosition - 35},${yPosition - 100} L${xPosition},${yPosition - 65} L${xPosition + 35},${yPosition - 100} Z`);
+                    arrow.setAttribute('d', `M${xPosition - 35},${yPosition - 85} L${xPosition},${yPosition - 50} L${xPosition + 35},${yPosition - 85} Z`);
                     svg.appendChild(arrow);
                 }
             });
