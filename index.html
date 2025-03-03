@@ -34,7 +34,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            padding: 20px;
+            padding: 12px; /* Reduced padding */
             box-sizing: border-box;
             max-width: 1400px;
             margin: 0 auto;
@@ -43,8 +43,8 @@
 
         .fullscreen-mode {
             display: grid;
-            grid-template-rows: auto 1fr auto;
-            padding: 10px !important;
+            grid-template-rows: auto auto auto 1fr auto; /* Adjusted to give charts more space */
+            padding: 8px !important; /* Further reduced padding */
             height: 100vh !important;
             width: 100vw !important;
             max-width: 100% !important;
@@ -57,8 +57,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
+            margin-bottom: 5px; /* Reduced margin */
+            padding-bottom: 5px; /* Reduced padding */
             border-bottom: 1px solid #e2e8f0;
             width: 100%;
         }
@@ -66,25 +66,25 @@
         .title-section {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px; /* Reduced gap */
             flex-wrap: wrap;
         }
 
         .title {
-            font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+            font-size: clamp(1.3rem, 2.2vw, 2.2rem); /* Slightly reduced */
             font-weight: bold;
             color: var(--primary-color);
         }
 
         .subtitle {
-            font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+            font-size: clamp(1rem, 1.5vw, 1.5rem); /* Slightly reduced */
             color: var(--secondary-color);
             font-weight: 500;
         }
 
         .date-time {
             text-align: right;
-            font-size: clamp(1rem, 1.4vw, 1.4rem);
+            font-size: clamp(0.9rem, 1.2vw, 1.2rem); /* Slightly reduced */
         }
 
         .date {
@@ -92,8 +92,8 @@
         }
 
         .time {
-            font-size: clamp(1.2rem, 1.8vw, 1.8rem);
-            margin-top: 5px;
+            font-size: clamp(1.1rem, 1.6vw, 1.6rem); /* Slightly reduced */
+            margin-top: 3px; /* Reduced margin */
         }
 
         .content {
@@ -101,15 +101,16 @@
             flex-direction: column;
             width: 100%;
             overflow: hidden;
+            flex: 1; /* Make sure content takes up available space */
         }
 
         .variant-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 5px; /* Reduced margin */
             background-color: var(--dark-color);
             color: white;
-            padding: 15px 20px;
+            padding: 10px 15px; /* Reduced padding */
             border-radius: 8px;
             width: 100%;
             box-sizing: border-box;
@@ -118,11 +119,11 @@
         .variant-details {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 3px; /* Reduced gap */
         }
 
         .variant-name {
-            font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+            font-size: clamp(1.1rem, 1.6vw, 1.6rem); /* Slightly reduced */
             font-weight: bold;
         }
 
@@ -134,15 +135,15 @@
         }
 
         .supervisor-name {
-            font-size: clamp(1rem, 1.4vw, 1.4rem);
+            font-size: clamp(0.9rem, 1.3vw, 1.3rem); /* Slightly reduced */
             font-style: italic;
         }
 
         .cycle-time-container {
             display: flex;
-            gap: 20px;
+            gap: 15px; /* Reduced gap */
             align-items: center;
-            font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+            font-size: clamp(1.1rem, 1.6vw, 1.6rem); /* Slightly reduced */
         }
 
         .target-cycle-time {
@@ -154,14 +155,14 @@
         }
 
         .debug-button {
-            padding: 8px 16px;
+            padding: 6px 12px; /* Reduced padding */
             border-radius: 5px;
             border: none;
             color: white;
             font-weight: bold;
             cursor: pointer;
             background-color: var(--danger-color);
-            margin-left: 10px;
+            margin-left: 8px; /* Reduced margin */
         }
 
         .debug-button:hover {
@@ -169,14 +170,14 @@
         }
 
         .fullscreen-button {
-            padding: 8px 16px;
+            padding: 6px 12px; /* Reduced padding */
             border-radius: 5px;
             border: none;
             color: white;
             font-weight: bold;
             cursor: pointer;
             background-color: var(--secondary-color);
-            margin-left: 10px;
+            margin-left: 8px; /* Reduced margin */
         }
 
         .fullscreen-button:hover {
@@ -184,49 +185,53 @@
         }
 
         .chart-container {
-            flex: 1;
+            flex: 1; /* Takes all available space */
             background-color: white;
             border-radius: 8px;
-            padding: 10px;
+            padding: 8px; /* Reduced padding */
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             overflow: hidden;
             width: 100%;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
+            min-height: 0; /* Important for flex container */
+            margin-top: 5px; /* Added small margin */
         }
 
         .charts-row {
             display: flex;
-            gap: 10px;
+            gap: 8px; /* Reduced gap */
             flex: 1;
-            min-height: 0;
+            min-height: 0; /* Important for flex container */
+            height: calc(70vh - 200px); /* Set a minimum height based on viewport */
         }
 
         .chart {
             flex: 1;
             background-color: white;
             border-radius: 8px;
-            padding: 10px;
+            padding: 6px; /* Reduced padding */
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
             height: 100%;
+            min-height: 0; /* Important for flex container */
         }
 
         .chart-header {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 6px; /* Reduced margin */
             flex-wrap: nowrap;
             border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 8px;
+            padding-bottom: 6px; /* Reduced padding */
         }
 
         .chart-title {
-            font-size: clamp(1.2rem, 1.5vw, 1.5rem);
+            font-size: clamp(1.1rem, 1.4vw, 1.4rem); /* Reduced size */
             font-weight: 600;
-            margin-right: 20px;
+            margin-right: 15px; /* Reduced margin */
             color: var(--dark-color);
             white-space: nowrap;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -237,7 +242,7 @@
             border: none;
             color: var(--dark-color);
             font-weight: 600;
-            font-size: clamp(1.2rem, 1.5vw, 1.5rem);
+            font-size: clamp(1.1rem, 1.4vw, 1.4rem); /* Reduced size */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             cursor: pointer;
             padding: 0;
@@ -253,7 +258,7 @@
         }
 
         .chart-title-text {
-            font-size: clamp(1.2rem, 1.5vw, 1.5rem);
+            font-size: clamp(1.1rem, 1.4vw, 1.4rem); /* Reduced size */
             font-weight: 600;
             color: var(--dark-color);
             white-space: nowrap;
@@ -264,14 +269,14 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 15px;
+            gap: 10px; /* Reduced gap */
             font-weight: 500;
             white-space: nowrap;
             margin-left: 10px;
         }
 
         .hour-countdown {
-            font-size: 15px;
+            font-size: 14px; /* Reduced size */
             color: var(--secondary-color);
             font-style: normal;
         }
@@ -281,13 +286,13 @@
         }
 
         .hour-select {
-            padding: 6px 12px;
+            padding: 4px 10px; /* Reduced padding */
             border-radius: 5px;
             border: 1px solid var(--secondary-color);
             font-family: inherit;
             background-color: white;
-            height: 35px;
-            font-size: 14px;
+            height: 30px; /* Reduced height */
+            font-size: 13px; /* Reduced size */
             font-weight: 500;
             color: var(--dark-color);
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -303,24 +308,26 @@
         .line-chart, .bar-chart {
             height: 100%;
             width: 100%;
+            min-height: 0; /* Important for SVG content */
         }
 
         .legend {
             display: flex;
             justify-content: center;
-            margin-top: 10px;
+            margin-top: 5px; /* Reduced margin */
+            font-size: 0.9rem; /* Reduced size */
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            margin: 0 10px;
+            margin: 0 8px; /* Reduced margin */
         }
 
         .legend-color {
-            width: 12px;
-            height: 12px;
-            margin-right: 5px;
+            width: 10px; /* Reduced size */
+            height: 10px; /* Reduced size */
+            margin-right: 4px; /* Reduced margin */
             border-radius: 2px;
         }
 
@@ -333,18 +340,18 @@
         }
 
         .footer {
-            margin-top: 10px;
+            margin-top: 5px; /* Reduced margin */
             text-align: center;
-            font-size: clamp(1rem, 1.2vw, 1.2rem);
+            font-size: clamp(0.9rem, 1.1vw, 1.1rem); /* Reduced size */
             color: var(--dark-color);
             width: 100%;
         }
 
         .progress-bar {
-            height: 10px;
+            height: 8px; /* Reduced height */
             background-color: var(--light-color);
-            border-radius: 5px;
-            margin-top: 5px;
+            border-radius: 4px;
+            margin-top: 3px; /* Reduced margin */
             overflow: hidden;
             width: 100%;
         }
@@ -357,18 +364,18 @@
         }
 
         .update-info {
-            font-size: 0.8rem;
+            font-size: 0.75rem; /* Reduced size */
             color: var(--dark-color);
             text-align: right;
-            margin-top: 5px;
+            margin-top: 3px; /* Reduced margin */
         }
 
         .totals-display {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            margin-bottom: 10px;
-            font-size: clamp(1rem, 1.2vw, 1.2rem);
-            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            margin-bottom: 5px; /* Reduced margin */
+            font-size: clamp(0.9rem, 1.1vw, 1.1rem); /* Reduced size */
+            gap: 8px; /* Reduced gap */
             width: 100%;
             box-sizing: border-box;
         }
@@ -377,18 +384,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
+            padding: 6px 10px; /* Reduced padding */
             width: 100%;
         }
 
         .total-label {
             font-weight: bold;
-            margin-bottom: 8px;
-            font-size: clamp(1rem, 1.4vw, 1.4rem);
+            margin-bottom: 4px; /* Reduced margin */
+            font-size: clamp(0.9rem, 1.3vw, 1.3rem); /* Reduced size */
             color: var(--dark-color);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px; /* Reduced gap */
         }
 
         .total-percentage {
@@ -397,13 +404,13 @@
         }
 
         .total-value {
-            font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+            font-size: clamp(1.3rem, 2.2vw, 2.2rem); /* Reduced size */
             font-weight: bold;
         }
 
         .total-subvalue {
-            font-size: clamp(1rem, 1.2vw, 1.2rem);
-            margin-top: 5px;
+            font-size: clamp(0.9rem, 1.1vw, 1.1rem); /* Reduced size */
+            margin-top: 3px; /* Reduced margin */
         }
 
         .current-value {
@@ -420,29 +427,29 @@
 
         .filter-section {
             display: flex;
-            gap: 15px;
+            gap: 10px; /* Reduced gap */
             align-items: center;
         }
 
         .filter-select {
-            padding: 8px 15px;
+            padding: 6px 12px; /* Reduced padding */
             border-radius: 5px;
             border: 1px solid var(--secondary-color);
-            font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+            font-size: clamp(0.85rem, 1vw, 1rem); /* Reduced size */
             font-family: inherit;
-            min-width: 180px;
+            min-width: 160px; /* Reduced width */
             background-color: white;
         }
 
         .loading {
             text-align: center;
-            padding: 20px;
+            padding: 15px; /* Reduced padding */
             color: var(--dark-color);
         }
 
         .error {
             text-align: center;
-            padding: 20px;
+            padding: 15px; /* Reduced padding */
             color: var(--danger-color);
             font-weight: bold;
         }
@@ -495,7 +502,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: white;
-            padding: 20px;
+            padding: 15px; /* Reduced padding */
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             z-index: 1000;
@@ -510,18 +517,18 @@
         }
 
         .debug-popup-content {
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* Reduced size */
         }
 
         .debug-popup table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Reduced margin */
         }
 
         .debug-popup th, .debug-popup td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 6px; /* Reduced padding */
             text-align: left;
         }
 
@@ -532,15 +539,15 @@
 
         .debug-popup .close-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 5px 10px;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px; /* Reduced padding */
             border: none;
             border-radius: 4px;
             background-color: var(--danger-color);
             color: white;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem; /* Reduced size */
         }
 
         .debug-popup .close-btn:hover {
@@ -562,26 +569,44 @@
             display: block;
         }
 
+        /* Fullscreen mode adjustments to maximize chart space */
+        .fullscreen-mode .chart-container {
+            flex: 1;
+            padding: 5px;
+        }
+
+        .fullscreen-mode .charts-row {
+            height: calc(85vh - 180px); /* Even taller in fullscreen */
+        }
+
+        .fullscreen-mode .header,
+        .fullscreen-mode .variant-info,
+        .fullscreen-mode .totals-display {
+            margin-bottom: 3px;
+        }
+
         @media (max-width: 1200px) {
             .title-section {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 10px;
+                gap: 8px;
             }
             .filter-section {
-                margin-top: 10px;
+                margin-top: 8px;
             }
         }
 
         @media (max-width: 1024px) {
             .charts-row {
                 flex-direction: column;
-            }
-            .chart {
                 height: auto;
             }
+            .chart {
+                height: 40vh; /* Fixed height on smaller screens */
+                min-height: 300px;
+            }
             .dashboard-container {
-                padding: 10px;
+                padding: 8px;
             }
             .debug-popup {
                 width: 90%;
@@ -608,10 +633,11 @@
             }
             .date-time {
                 text-align: center;
-                margin-top: 10px;
+                margin-top: 8px;
             }
             .chart {
-                height: auto;
+                height: 35vh;
+                min-height: 250px;
             }
             .debug-popup {
                 width: 95%;
@@ -623,7 +649,7 @@
             }
             .hour-select-container {
                 margin-left: 0;
-                margin-top: 10px;
+                margin-top: 8px;
                 width: 100%;
             }
             .hour-select {
