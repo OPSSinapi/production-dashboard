@@ -1647,10 +1647,10 @@ function updateHourDropdown() {
                 
                 // Time label - Show only end time (e.g., "8:30") with larger text
                 const timeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                timeLabel.setAttribute('font-size', '1.9')
                 timeLabel.setAttribute('class', 'time-label');
                 timeLabel.setAttribute('x', xPosition);
                 timeLabel.setAttribute('y', yPosition + circleRadius + 25); // Adjusted for much larger circles
+                 timeLabel.setAttribute('font-size', '1.9')
                 timeLabel.textContent = hour; // Just the end time
                 svg.appendChild(timeLabel);
                 
