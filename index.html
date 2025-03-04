@@ -1066,26 +1066,153 @@
             }
         }
 
-        function getNextProductionHour() {
-            const now = new Date();
-            const currentTime = now.getHours() * 60 + now.getMinutes();
-            let productionHours = [];
-            if (filteredVariants.length > 0) {
-                const variant = filteredVariants[0];
-                if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
-                    productionHours = variant.hourlyTargets.map(item => item.hour).filter(hour => hour).sort();
-                }
-            }
-            if (productionHours.length === 0) {
-                productionHours = ["08:30", "09:30", "10:30", "11:30", "12:30", "13:30", "14:30", "15:30", "16:30", "17:30", "18:30"];
-            }
-            for (const hourStr of productionHours) {
-                const [hours, minutes] = hourStr.split(':').map(Number);
-                const hourInMinutes = hours * 60 + minutes;
-                if (hourInMinutes > currentTime) return hourStr;
-            }
+// Replace the getNextProductionHour() function with this improved version:
+function getNextProductionHour() {
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    let productionHours = [];
+    if (filteredVariants.length > 0) {
+        const variant = filteredVariants[0];
+        if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+            productionHours = variant.hourlyTargets.map(item => item.hour).filter(hour => hour).sort();
+        }
+    }
+    if (productionHours.length === 0) {
+        productionHours = ["08:30", "09:30", "10:30", "11:30", "12:30", "13:30", "14:30", "15:30", "16:30", "17:30", "18:30"];
+    }
+    
+    // Sort the production hours
+    productionHours.sort((a, b) => {
+        const [ha, ma] = a.split(':').map(Number);
+        const [hb, mb] = b.split(':').map(Number);
+        return (ha * 60 + ma) - (hb * 60 + mb);
+    });
+    
+    // If current time is before the first production hour, return the first hour
+    if (productionHours.length > 0) {
+        const [firstHour, firstMinute] = productionHours[0].split(':').map(Number);
+        const firstHourInMinutes = firstHour * 60 + firstMinute;
+        
+        if (currentTime < firstHourInMinutes) {
             return productionHours[0];
         }
+    }
+    
+    // Original logic for when we're within production hours
+    for (const hourStr of productionHours) {
+        const [hours, minutes] = hourStr.split(':').map(Number);
+        const hourInMinutes = hours * 60 + minutes;
+        if (hourInMinutes > currentTime) return hourStr;
+    }
+    
+    // If current time is after all production hours, return the first hour
+    return productionHours[0];
+}
+
+// Modify the updateHourDropdown() function to fix the time range calculation:
+function updateHourDropdown() {
+    const hourSelect = document.getElementById('hour-range-select');
+    const currentVariant = filteredVariants[currentVariantIndex];
+    
+    // Clear existing options
+    while (hourSelect.options.length > 0) hourSelect.remove(0);
+    
+    // Get production hours
+    const productionHours = [];
+    if (filteredVariants.length > 0) {
+        const variant = filteredVariants[0];
+        if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+            variant.hourlyTargets.forEach(item => { 
+                if (item.hour) productionHours.push(item.hour); 
+            });
+        }
+    }
+    
+    // Use default hours if no production hours available
+    if (productionHours.length === 0) {
+        const defaultHours = ["08:30", "09:30", "10:30", "11:30", "12:30", "13:30", "14:30", "15:30", "16:30", "17:30", "18:30"];
+        productionHours.push(...defaultHours);
+    }
+    
+    // Filter hours based on end time if applicable
+    let filteredHours = [...productionHours];
+    if (currentVariant && currentVariant["End Time"] && isEndTimePassed(currentVariant)) {
+        const [endHour, endMinute] = currentVariant["End Time"].split(':').map(Number);
+        const endTimeMinutes = endHour * 60 + endMinute;
+        
+        filteredHours = productionHours.filter(hour => {
+            const [hourVal, minuteVal] = hour.split(':').map(Number);
+            const hourMinutes = hourVal * 60 + minuteVal;
+            return hourMinutes <= endTimeMinutes;
+        });
+    }
+    
+    // Sort the hours
+    filteredHours.sort((a, b) => {
+        const [ha, ma] = a.split(':').map(Number);
+        const [hb, mb] = b.split(':').map(Number);
+        return (ha * 60 + ma) - (hb * 60 + mb);
+    });
+    
+    // Get current hour for "current" option
+    const nextHour = getNextProductionHour();
+    let currentHourOption = null;
+    
+    // Add time ranges as options
+    filteredHours.forEach((hour, index) => {
+        const [hourVal, minuteVal] = hour.split(':').map(Number);
+        
+        // Calculate previous hour (for start of range)
+        let prevHour, prevMinute;
+        
+        if (index > 0) {
+            // If not the first hour, use the previous hour from our sorted list
+            const prevTimeStr = filteredHours[index - 1];
+            [prevHour, prevMinute] = prevTimeStr.split(':').map(Number);
+        } else {
+            // For the first hour, calculate 1 hour before
+            prevHour = hourVal - 1;
+            prevMinute = minuteVal;
+            
+            // Handle the case when the first hour is before 1:00
+            if (prevHour < 0) {
+                prevHour = 23; // Wrap to previous day
+            }
+        }
+        
+        // Format for option text
+        const timeRange = `${prevHour.toString().padStart(2, '0')}:${prevMinute.toString().padStart(2, '0')}-${hourVal.toString().padStart(2, '0')}:${minuteVal.toString().padStart(2, '0')}`;
+        
+        const option = document.createElement('option');
+        option.value = hour; // Store the end hour as value
+        option.textContent = timeRange;
+        
+        // If this is the current hour range, save it for "current" option
+        if (hour === nextHour) {
+            currentHourOption = { value: "current", text: timeRange };
+        }
+        
+        hourSelect.appendChild(option);
+    });
+    
+    // Add the "current" hour option at the top if it exists
+    if (currentHourOption) {
+        const currentOption = document.createElement('option');
+        currentOption.value = currentHourOption.value;
+        currentOption.textContent = currentHourOption.text;
+        hourSelect.insertBefore(currentOption, hourSelect.firstChild);
+    }
+    
+    // Set the selected hour in the dropdown
+    if (selectedHour === "current" && currentHourOption) {
+        hourSelect.value = "current";
+    } else if (Array.from(hourSelect.options).some(opt => opt.value === selectedHour)) {
+        hourSelect.value = selectedHour;
+    } else if (hourSelect.options.length > 0) {
+        selectedHour = hourSelect.options[0].value; // Default to first option
+        hourSelect.value = selectedHour;
+    }
+}
 
         function calculateTimeToNextHour(hourStr) {
             const now = new Date();
