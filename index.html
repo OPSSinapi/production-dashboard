@@ -1231,50 +1231,6 @@
                     // If historical data not found, show specific message
                     if (!isCurrentDay) {
                         showLoadingOrError(`No production data available for ${new Date(date).toLocaleDateString()}`);
-                        return;
-                    }
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (!data.variants || !Array.isArray(data.variants) || !data.supervisors || !Array.isArray(data.supervisors)) {
-                    throw new Error('Invalid data structure in data file');
-                }
-                
-                // Only update if it's new data or a different date
-                const dataSignature = data.timestamp + date;
-                if (!lastUpdateTime || lastUpdateTime !== dataSignature) {
-                    productionData = data;
-                    lastUpdateTime = dataSignature;
-                    
-                    // Update both last update displays with date context
-                    const updateText = isCurrentDay 
-                        ? 'Last updated: ' + data.timestamp 
-                        : `Historical data from: ${new Date(date).toLocaleDateString()}`;
-                        
-                    document.getElementById('last-update').textContent = updateText;
-                    document.getElementById('last-update2').textContent = updateText;
-                    
-                    // Process data and update dashboard
-                    processProductSupervisorGroups();
-                    updateFilterValueDropdown();
-                    updateDashboard();
-                    updateHourDropdown();
-                }
-                
-                isLoading = false;
-            } catch (error) {
-                console.error(`Fetch failed:`, error);
-                isLoading = false;
-                
-                // Show user-friendly error
-                const today = new Date().toISOString().split('T')[0];
-                if (date !== today) {
-                    showLoadingOrError(`Unable to load historical data for ${new Date(date).toLocaleDateString()}`);
-                } else {
-                    showLoadingOrError(`Failed to load data: ${error.message}`);
-                }
             }
         }
 
@@ -1408,16 +1364,10 @@
 
         function updateDateTime() {
             const now = new Date();
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', {
+                month: 'long', day: 'numeric', year: 'numeric'
+            });
             
-            // Only update the date display if we're showing current data
-            const today = new Date().toISOString().split('T')[0];
-            if (selectedDate === today) {
-                document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', {
-                    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
-                });
-            }
-            
-            // Always update the time
             const timeString = now.toLocaleTimeString('en-US', {
                 hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
             });
@@ -1425,8 +1375,7 @@
             document.getElementById('current-time').textContent = timeString;
             
             // Check if we need to update dashboard based on time changes (variant transitions)
-            // Only do this for current day data
-            if (selectedDate === today && currentProductVariants && currentProductVariants.length > 1) {
+            if (currentProductVariants && currentProductVariants.length > 1) {
                 const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
                 let needsUpdate = false;
                 
@@ -1937,10 +1886,8 @@
             const chartTitle = document.getElementById('cumulative-chart-title');
             chartContainer.innerHTML = '';
             
-            // Show selected date in chart title
-            const selectedDateObj = new Date(selectedDate);
-            const displayDate = selectedDateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-            chartTitle.textContent = `${displayDate} Production Progress`;
+            const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+            chartTitle.textContent = `${currentDay}'s Production Progress`;
             
             // Collect all hours across all variants
             const allHoursSet = new Set();
@@ -2035,19 +1982,12 @@
                 return;
             }
             
-            // Determine buffer for data display - if historical data, show all data
-            let filteredData;
-            const today = new Date().toISOString().split('T')[0];
-            if (selectedDate === today) {
-                // For current day, only show data up to current time plus buffer
-                const now = new Date();
-                const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
-                const currentTimePlusBuffer = currentMinuteOfDay + 30;
-                filteredData = processedData.filter(item => item.timeMinutes <= currentTimePlusBuffer);
-            } else {
-                // For historical data, show all data
-                filteredData = processedData;
-            }
+            // Filter data to only show up to current time plus buffer
+            const now = new Date();
+            const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
+            const currentTimePlusBuffer = currentMinuteOfDay + 30;
+            
+            const filteredData = processedData.filter(item => item.timeMinutes <= currentTimePlusBuffer);
             
             if (filteredData.length === 0) {
                 chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available for current time period</div>';
@@ -2254,7 +2194,6 @@
             });
             svg.appendChild(targetLineGroup);
         }
-        
         function updateHourlyChart() {
             const chartContainer = document.getElementById('hourly-chart');
             chartContainer.innerHTML = '';
