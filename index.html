@@ -1219,49 +1219,49 @@
         }
 
         function calculateActualCycleTime(variants) {
-            // For multiple variants, calculate a weighted average based on production
-            let totalProduction = 0;
-            let totalProductionTime = 0;
+    // For multiple variants, calculate a weighted average based on production
+    let totalProduction = 0;
+    let totalProductionTime = 0;
+    
+    variants.forEach(variant => {
+        const supervisor = productionData.supervisors.find(s => s.name === currentSupervisor);
+        if (supervisor && supervisor.variants[variant.variant]) {
+            const supervisorVariant = supervisor.variants[variant.variant];
             
-            variants.forEach(variant => {
-                const supervisor = productionData.supervisors.find(s => s.name === currentSupervisor);
-                if (supervisor && supervisor.variants[variant.variant]) {
-                    const supervisorVariant = supervisor.variants[variant.variant];
+            if (supervisorVariant.currentTotal && supervisorVariant.currentTotal > 0) {
+                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+                
+                if (startTimeStr && endTimeStr) {
+                    const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
+                    const [endHours, endMinutes] = endTimeStr.split(':').map(Number);
                     
-                    if (supervisorVariant.currentTotal && supervisorVariant.currentTotal > 0) {
-                        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-                        
-                        if (startTimeStr && endTimeStr) {
-                            const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
-                            const [endHours, endMinutes] = endTimeStr.split(':').map(Number);
-                            
-                            // Calculate time in minutes
-                            let startMinutes = startHours * 60 + startMinutes;
-                            let endMinutes = endHours * 60 + endMinutes;
-                            
-                            // Adjust if end is next day
-                            if (endMinutes < startMinutes) {
-                                endMinutes += 24 * 60;
-                            }
-                            
-                            // Subtract breaks
-                            const breakMinutes = calculateBreakMinutes(variant, startTimeStr, endTimeStr);
-                            const workingMinutes = endMinutes - startMinutes - breakMinutes;
-                            
-                            // Add to totals
-                            totalProduction += supervisorVariant.currentTotal;
-                            totalProductionTime += workingMinutes * 60; // Convert to seconds
-                        }
+                    // Calculate time in minutes
+                    let startTotalMinutes = startHours * 60 + startMinutes;
+                    let endTotalMinutes = endHours * 60 + endMinutes;
+                    
+                    // Adjust if end is next day
+                    if (endTotalMinutes < startTotalMinutes) {
+                        endTotalMinutes += 24 * 60;
                     }
+                    
+                    // Subtract breaks
+                    const breakMinutes = calculateBreakMinutes(variant, startTimeStr, endTimeStr);
+                    const workingMinutes = endTotalMinutes - startTotalMinutes - breakMinutes;
+                    
+                    // Add to totals
+                    totalProduction += supervisorVariant.currentTotal;
+                    totalProductionTime += workingMinutes * 60; // Convert to seconds
                 }
-            });
-            
-            if (totalProduction <= 0 || totalProductionTime <= 0) return "N/A";
-            
-            // Calculate overall cycle time
-            return Math.round(totalProductionTime / totalProduction);
+            }
         }
+    });
+    
+    if (totalProduction <= 0 || totalProductionTime <= 0) return "N/A";
+    
+    // Calculate overall cycle time
+    return Math.round(totalProductionTime / totalProduction);
+}
 
         function calculateBreakMinutes(variant, startTimeStr, endTimeStr) {
             let totalBreakMinutes = 0;
