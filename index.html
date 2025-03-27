@@ -1233,12 +1233,13 @@
                 const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
                 
                 if (startTimeStr && endTimeStr) {
-                    const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
-                    const [endHours, endMinutes] = endTimeStr.split(':').map(Number);
+                    // FIXED CODE:
+const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
+const [endHours, endMinutes] = endTimeStr.split(':').map(Number);
                     
-                    // Calculate time in minutes
-                    let startTotalMinutes = startHours * 60 + startMinutes;
-                    let endTotalMinutes = endHours * 60 + endMinutes;
+// Calculate time in minutes
+let startTotalMinutes = startHours * 60 + startMinutes;  // FIXED
+let endTotalMinutes = endHours * 60 + endMinutes;        // FIXED
                     
                     // Adjust if end is next day
                     if (endTotalMinutes < startTotalMinutes) {
@@ -2255,11 +2256,6 @@
                     variantLabel.setAttribute('font-size', '10');
                     variantLabel.setAttribute('fill', '#666');
                     
-                    // Extract variant name from full string
-                    let displayName = variantItem.variant;
-                    if (variantItem.variant.startsWith(currentProduct + ' ')) {
-                        displayName = variantItem.variant.substring(currentProduct.length + 1);
-                    }
                     // Extract variant name from full string
                     let displayName = variantItem.variant;
                     if (variantItem.variant.startsWith(currentProduct + ' ')) {
