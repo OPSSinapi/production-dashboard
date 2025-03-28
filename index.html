@@ -48,16 +48,17 @@
         }
 
         .fullscreen-mode {
-            display: grid;
-            grid-template-rows: auto auto auto 1fr auto; /* Adjusted to give charts more space */
-            padding: 8px !important; /* Further reduced padding */
-            height: 100vh !important;
-            width: 100vw !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-            overflow: hidden !important;
-            box-sizing: border-box;
-        }
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    padding: 8px !important;
+    height: 100vh !important;
+    width: 100vw !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box;
+    background-color: var(--light-color) !important; /* Add this line */
+}
 
         .header {
             display: flex;
@@ -1977,38 +1978,83 @@
             gridGroup.appendChild(xAxisLine);
             svg.appendChild(gridGroup);
             
-            // Add x-axis labels
-            const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            const uniqueHours = [...new Set(filteredData.map(item => item.hour))].sort((a, b) => {
-                const [hourA, minuteA] = a.split(':').map(Number);
-                const [hourB, minuteB] = b.split(':').map(Number);
-                return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-            });
             
-            uniqueHours.forEach((hour, index) => {
-                const x = padding.left + (chartWidth * index / (uniqueHours.length - 1 || 1));
-                const y = svgHeight - padding.bottom + 20;
-                
-                // Add tick mark
-                const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                tick.setAttribute('x1', x);
-                tick.setAttribute('y1', svgHeight - padding.bottom);
-                tick.setAttribute('x2', x);
-                tick.setAttribute('y2', svgHeight - padding.bottom + 5);
-                tick.setAttribute('stroke', '#666');
-                tick.setAttribute('stroke-width', '1');
-                xLabelsGroup.appendChild(tick);
-                
-                // Add hour label
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', x);
-                text.setAttribute('y', y);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('font-size', '14');
-                text.setAttribute('fill', '#666');
-                text.textContent = hour;
-                xLabelsGroup.appendChild(text);
-            });
+// Replace with this:
+const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+// Find earliest start time and latest end time across all variants
+let earliestStartMinutes = 24 * 60; // Initialize to end of day
+let latestEndMinutes = 0;
+
+group.variants.forEach(variant => {
+    const supervisorVariant = group.supervisorData.variants[variant.variant];
+    if (supervisorVariant) {
+        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+        
+        if (startTimeStr && endTimeStr) {
+            const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+            const startTimeMinutes = startHour * 60 + startMinute;
+            
+            if (startTimeMinutes < earliestStartMinutes) {
+                earliestStartMinutes = startTimeMinutes;
+            }
+            
+            const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+            const endTimeMinutes = endHour * 60 + endMinute;
+            
+            if (endTimeMinutes > latestEndMinutes) {
+                latestEndMinutes = endTimeMinutes;
+            }
+        }
+    }
+});
+
+// Generate hourly intervals from earliest start to current time
+const now = new Date();
+const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+const endTimeMinutes = Math.min(latestEndMinutes, currentTimeMinutes + 60); // Show up to 1 hour ahead
+
+// Create hourly ticks (standard production hours)
+const allHours = [];
+for (let minutes = earliestStartMinutes; minutes <= endTimeMinutes; minutes += 60) {
+    // Round to nearest hour
+    const hourMinutes = Math.floor(minutes / 60) * 60;
+    const hour = Math.floor(hourMinutes / 60);
+    const minute = '30'; // Use standard 30-minute mark for hour labels
+    allHours.push(`${hour.toString().padStart(2, '0')}:${minute}`);
+}
+
+// Make sure we have some hours to display
+if (allHours.length === 0 && filteredData.length > 0) {
+    allHours.push(...uniqueHours); // Fall back to original method if needed
+}
+
+// Draw the x-axis ticks
+allHours.forEach((hour, index) => {
+    const x = padding.left + (chartWidth * index / (allHours.length - 1 || 1));
+    const y = svgHeight - padding.bottom + 20;
+    
+    // Add tick mark
+    const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    tick.setAttribute('x1', x);
+    tick.setAttribute('y1', svgHeight - padding.bottom);
+    tick.setAttribute('x2', x);
+    tick.setAttribute('y2', svgHeight - padding.bottom + 5);
+    tick.setAttribute('stroke', '#666');
+    tick.setAttribute('stroke-width', '1');
+    xLabelsGroup.appendChild(tick);
+    
+    // Add hour label
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', x);
+    text.setAttribute('y', y);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('font-size', '14');
+    text.setAttribute('fill', '#666');
+    text.textContent = hour;
+    xLabelsGroup.appendChild(text);
+});
             svg.appendChild(xLabelsGroup);
             
             // Draw production line
