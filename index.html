@@ -2394,10 +2394,10 @@ function updateDashboard() {
     
     // Process each variant and collect unique hours
     group.variants.forEach(variant => {
+        // Get variant time window
         const supervisorVariant = group.supervisorData.variants[variant.variant];
         if (!supervisorVariant) return;
         
-        // Get variant time window
         const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
         const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
         
@@ -2408,21 +2408,6 @@ function updateDashboard() {
         
         const startTimeMinutes = startHour * 60 + startMinute;
         const endTimeMinutes = endHour * 60 + endMinute;
-        
-        // Collect all unique hours and their respective data
-        if (variant.hourlyTargets) {
-            variant.hourlyTargets.forEach(item => {
-                if (!item.hour) return;
-                
-                // Check if this hour is within this variant's time window
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    allHoursSet.add(item.hour);
-                }
-            });
-        }
         
         // Collect hourly production data
         if (variant.hourlyProduction) {
@@ -2477,17 +2462,17 @@ function updateDashboard() {
         return;
     }
     
-    // Build cumulative data arrays
+    // Build cumulative data arrays - modified to maintain continuity across variants
     const cumulativeData = [];
     let runningProductionTotal = 0;
     let runningTargetTotal = 0;
     
-    // Generate time-based data points
+    // Generate time-based data points - this is where the continuity between variants is maintained
     sortedHours.forEach(hour => {
         const hourProduction = hourlyProductionMap.get(hour) || 0;
         const hourTarget = hourlyTargetMap.get(hour) || 0;
         
-        // Add to running totals
+        // Add to running totals - this ensures continuity across variant changes
         runningProductionTotal += hourProduction;
         runningTargetTotal += hourTarget;
         
@@ -2548,10 +2533,10 @@ function updateDashboard() {
         gridGroup.appendChild(line);
         
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', padding.left - 15); // Increased offset
-        text.setAttribute('y', y + 6); // Adjusted for larger font
+        text.setAttribute('x', padding.left - 15);
+        text.setAttribute('y', y + 6);
         text.setAttribute('text-anchor', 'end');
-        text.setAttribute('font-size', '16'); // Increased from 14
+        text.setAttribute('font-size', '16');
         text.setAttribute('class', 'chart-tick-label');
         text.setAttribute('fill', '#666');
         text.textContent = Math.round(maxValue * (4 - i) / 4);
@@ -2560,10 +2545,10 @@ function updateDashboard() {
     
     // Add y-axis title with enlarged font
     const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    yAxisTitle.setAttribute('x', padding.left - 50); // Increased offset
+    yAxisTitle.setAttribute('x', padding.left - 50);
     yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
     yAxisTitle.setAttribute('text-anchor', 'middle');
-    yAxisTitle.setAttribute('font-size', '18'); // Increased from 16
+    yAxisTitle.setAttribute('font-size', '18');
     yAxisTitle.setAttribute('class', 'chart-axis-label');
     yAxisTitle.setAttribute('font-weight', 'bold');
     yAxisTitle.setAttribute('fill', '#666');
@@ -2651,16 +2636,16 @@ function updateDashboard() {
     // Draw X-axis ticks and labels with larger fonts
     allHours.forEach((hour, index) => {
         const x = padding.left + (chartWidth * index / (allHours.length - 1 || 1));
-        const y = svgHeight - padding.bottom + 25; // Increased space for larger font
+        const y = svgHeight - padding.bottom + 25;
         
         // Add tick mark
         const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         tick.setAttribute('x1', x);
         tick.setAttribute('y1', svgHeight - padding.bottom);
         tick.setAttribute('x2', x);
-        tick.setAttribute('y2', svgHeight - padding.bottom + 8); // Longer tick
+        tick.setAttribute('y2', svgHeight - padding.bottom + 8);
         tick.setAttribute('stroke', '#666');
-        tick.setAttribute('stroke-width', '1.5'); // Thicker tick
+        tick.setAttribute('stroke-width', '1.5');
         xLabelsGroup.appendChild(tick);
         
         // Add hour label
@@ -2668,7 +2653,7 @@ function updateDashboard() {
         text.setAttribute('x', x);
         text.setAttribute('y', y);
         text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', '16'); // Increased from 14
+        text.setAttribute('font-size', '16');
         text.setAttribute('class', 'chart-tick-label');
         text.setAttribute('fill', '#666');
         text.textContent = hour;
@@ -2727,15 +2712,15 @@ function updateDashboard() {
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', point.x);
         circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', '6'); // Increased from 5
+        circle.setAttribute('r', '6');
         circle.setAttribute('fill', 'var(--production-color)');
         productionLineGroup.appendChild(circle);
         
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 12); // Increased offset
+        text.setAttribute('y', point.y - 12);
         text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', '18'); // Increased from 14
+        text.setAttribute('font-size', '18');
         text.setAttribute('class', 'chart-data-label');
         text.setAttribute('fill', 'var(--production-color)');
         text.textContent = point.production;
@@ -2793,15 +2778,15 @@ function updateDashboard() {
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', point.x);
         circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', '6'); // Increased from 5
+        circle.setAttribute('r', '6');
         circle.setAttribute('fill', 'var(--target-color)');
         targetLineGroup.appendChild(circle);
         
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 12); // Increased offset
+        text.setAttribute('y', point.y - 12);
         text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', '18'); // Increased from 14
+        text.setAttribute('font-size', '18');
         text.setAttribute('class', 'chart-data-label');
         text.setAttribute('fill', 'var(--target-color)');
         text.textContent = point.target;
@@ -2809,8 +2794,8 @@ function updateDashboard() {
     });
     svg.appendChild(targetLineGroup);
 }
-        
-        function updateHourlyChart() {
+
+function updateHourlyChart() {
     const chartContainer = document.getElementById('hourly-chart');
     chartContainer.innerHTML = '';
     
@@ -2929,10 +2914,10 @@ function updateDashboard() {
         gridGroup.appendChild(line);
         
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', padding.left - 15); // Increased offset
-        text.setAttribute('y', y + 6); // Adjusted for larger font
+        text.setAttribute('x', padding.left - 15);
+        text.setAttribute('y', y + 6);
         text.setAttribute('text-anchor', 'end');
-        text.setAttribute('font-size', '16'); // Increased from 14
+        text.setAttribute('font-size', '16');
         text.setAttribute('class', 'chart-tick-label');
         text.setAttribute('fill', '#666');
         text.textContent = Math.round(maxValue * (4 - i) / 4);
@@ -2941,10 +2926,10 @@ function updateDashboard() {
     
     // Add y-axis title with larger font
     const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    yAxisTitle.setAttribute('x', padding.left - 50); // Increased offset
+    yAxisTitle.setAttribute('x', padding.left - 50);
     yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
     yAxisTitle.setAttribute('text-anchor', 'middle');
-    yAxisTitle.setAttribute('font-size', '18'); // Increased from 16
+    yAxisTitle.setAttribute('font-size', '18');
     yAxisTitle.setAttribute('class', 'chart-axis-label');
     yAxisTitle.setAttribute('font-weight', 'bold');
     yAxisTitle.setAttribute('fill', '#666');
@@ -3002,9 +2987,9 @@ function updateDashboard() {
     // Add production value text with larger font
     const productionValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     productionValueText.setAttribute('x', startX + barWidth / 2);
-    productionValueText.setAttribute('y', padding.top + chartHeight - productionBarHeight - 20); // Increased offset
+    productionValueText.setAttribute('y', padding.top + chartHeight - productionBarHeight - 20);
     productionValueText.setAttribute('text-anchor', 'middle');
-    productionValueText.setAttribute('font-size', '22'); // Increased from 18
+    productionValueText.setAttribute('font-size', '22');
     productionValueText.setAttribute('class', 'chart-data-label');
     productionValueText.setAttribute('font-weight', '600');
     productionValueText.setAttribute('fill', 'var(--production-color)');
@@ -3014,9 +2999,9 @@ function updateDashboard() {
     // Add target value text with larger font
     const targetValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     targetValueText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
-    targetValueText.setAttribute('y', padding.top + chartHeight - targetBarHeight - 20); // Increased offset
+    targetValueText.setAttribute('y', padding.top + chartHeight - targetBarHeight - 20);
     targetValueText.setAttribute('text-anchor', 'middle');
-    targetValueText.setAttribute('font-size', '22'); // Increased from 18
+    targetValueText.setAttribute('font-size', '22');
     targetValueText.setAttribute('class', 'chart-data-label');
     targetValueText.setAttribute('font-weight', '600');
     targetValueText.setAttribute('fill', 'var(--target-color)');
@@ -3026,9 +3011,9 @@ function updateDashboard() {
     // Add labels with larger font
     const productionLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     productionLabelText.setAttribute('x', startX + barWidth / 2);
-    productionLabelText.setAttribute('y', svgHeight - padding.bottom + 35); // Increased offset
+    productionLabelText.setAttribute('y', svgHeight - padding.bottom + 35);
     productionLabelText.setAttribute('text-anchor', 'middle');
-    productionLabelText.setAttribute('font-size', '18'); // Increased from 16
+    productionLabelText.setAttribute('font-size', '18');
     productionLabelText.setAttribute('font-weight', '500');
     productionLabelText.setAttribute('fill', 'var(--production-color)');
     productionLabelText.textContent = 'Production';
@@ -3036,9 +3021,9 @@ function updateDashboard() {
     
     const targetLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     targetLabelText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
-    targetLabelText.setAttribute('y', svgHeight - padding.bottom + 35); // Increased offset
+    targetLabelText.setAttribute('y', svgHeight - padding.bottom + 35);
     targetLabelText.setAttribute('text-anchor', 'middle');
-    targetLabelText.setAttribute('font-size', '18'); // Increased from 16
+    targetLabelText.setAttribute('font-size', '18');
     targetLabelText.setAttribute('font-weight', '500');
     targetLabelText.setAttribute('fill', 'var(--target-color)');
     targetLabelText.textContent = 'Target';
@@ -3062,9 +3047,9 @@ function updateDashboard() {
     if (activeVariants.length > 1) {
         const activeVariantsText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         activeVariantsText.setAttribute('x', svgWidth / 2);
-        activeVariantsText.setAttribute('y', padding.top + chartHeight + 50); // Increased offset
+        activeVariantsText.setAttribute('y', padding.top + chartHeight + 50);
         activeVariantsText.setAttribute('text-anchor', 'middle');
-        activeVariantsText.setAttribute('font-size', '16'); // Increased from 14
+        activeVariantsText.setAttribute('font-size', '16');
         activeVariantsText.setAttribute('fill', '#666');
         
         const variantNames = activeVariants.map(v => {
