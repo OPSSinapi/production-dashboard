@@ -1982,6 +1982,13 @@
 // Add x-axis labels
 const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
+// First define uniqueHours from the data (original method)
+const uniqueHours = [...new Set(filteredData.map(item => item.hour))].sort((a, b) => {
+    const [hourA, minuteA] = a.split(':').map(Number);
+    const [hourB, minuteB] = b.split(':').map(Number);
+    return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
+});
+
 // Find earliest start time and latest end time across all variants
 let earliestStartMinutes = 24 * 60; // Initialize to end of day
 let latestEndMinutes = 0;
@@ -2011,7 +2018,6 @@ group.variants.forEach(variant => {
 });
 
 // Generate hourly intervals from earliest start to current time
-// Use the existing 'now' variable that was already defined in the function
 const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
 const endTimeMinutes = Math.min(latestEndMinutes, currentTimeMinutes + 60); // Show up to 1 hour ahead
 
@@ -2025,20 +2031,10 @@ for (let minutes = earliestStartMinutes; minutes <= endTimeMinutes; minutes += 6
     allHours.push(`${hour.toString().padStart(2, '0')}:${minute}`);
 }
 
-// Make sure we have some hours to display
-if (allHours.length === 0 && filteredData.length > 0) {
-    // Use the original uniqueHours array that's created earlier
-    const uniqueHours = [...new Set(filteredData.map(item => item.hour))].sort((a, b) => {
-        const [hourA, minuteA] = a.split(':').map(Number);
-        const [hourB, minuteB] = b.split(':').map(Number);
-        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-    });
-    allHours.push(...uniqueHours); // Fall back to original method if needed
-}
-
-// Draw the x-axis ticks
-allHours.forEach((hour, index) => {
-    const x = padding.left + (chartWidth * index / (allHours.length - 1 || 1));
+// Use allHours instead of uniqueHours for drawing the ticks
+(allHours.length > 0 ? allHours : uniqueHours).forEach((hour, index) => {
+    const hourArray = allHours.length > 0 ? allHours : uniqueHours;
+    const x = padding.left + (chartWidth * index / (hourArray.length - 1 || 1));
     const y = svgHeight - padding.bottom + 20;
     
     // Add tick mark
