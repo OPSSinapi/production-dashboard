@@ -118,16 +118,29 @@
             flex: 1; /* Make sure content takes up available space */
         }
 
-        /* Supervisor Bar with Product and Sequence */
-        .supervisor-bar {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            border-radius: 8px;
-            padding: 15px 20px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
+        /* Updated Supervisor Bar CSS */
+.supervisor-bar {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border-radius: 8px;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    margin-bottom: 5px; /* Reduced from 10px to save vertical space */
+}
+
+        .supervisor-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 5px;
+}
+
+.supervisor-title {
+    font-size: clamp(1.4rem, 2.4vw, 2.4rem);
+    font-weight: bold;
+    color: var(--dark-color);
+}
 
         .supervisor-name {
             font-size: clamp(1.6rem, 2.8vw, 2.8rem);
@@ -143,10 +156,11 @@
             margin-top: 5px;
         }
 
-        .product-name {
-            font-size: clamp(1.2rem, 2.2vw, 2.2rem);
-            color: var(--dark-color);
-        }
+        
+.product-name {
+    font-size: clamp(1.2rem, 2vw, 2rem);
+    text-align: right;
+}
 
         .variant-sequence-container {
             display: flex;
@@ -161,19 +175,20 @@
         }
 
         .variant-sequence {
-            display: flex;
-            align-items: center;
-            font-size: clamp(0.9rem, 1.3vw, 1.3rem);
-            flex-wrap: wrap;
-            gap: 6px;
-        }
+    display: flex;
+    align-items: center;
+    font-size: clamp(1rem, 1.5vw, 1.5rem); /* Increased font size */
+    flex-wrap: wrap;
+    gap: 8px; /* Increased gap for better visibility */
+}
 
         .variant-item {
-            padding: 6px 12px;
-            border-radius: 4px;
-            white-space: nowrap;
-            position: relative;
-        }
+    padding: 8px 14px; /* Increased padding for better visibility */
+    border-radius: 4px;
+    white-space: nowrap;
+    position: relative;
+    font-weight: 500; /* Added for better readability */
+}
         
         .variant-time {
             font-size: clamp(0.8rem, 1.2vw, 1.2rem);
@@ -289,7 +304,7 @@
             gap: 10px;
             flex: 1;
             min-height: 0; /* Important for flex container */
-            height: calc(70vh - 250px); /* Set a minimum height based on viewport */
+    height: calc(75vh - 200px); /* Increased from 70vh - 250px */
         }
 
         .chart {
@@ -560,11 +575,13 @@
             }
         }
 
-        @media (max-width: 1024px) {
-            .charts-row {
-                flex-direction: column;
-                height: auto;
-            }
+        /* Update responsive behavior for smaller screens */
+@media (max-width: 1024px) {
+    .chart {
+        height: 50vh; /* Increased from 45vh */
+        min-height: 350px;
+    }
+}
             
             .chart {
                 height: 45vh;
@@ -667,19 +684,19 @@
         </div>
 
         <div class="content">
-            <!-- Supervisor bar with product and variant sequence -->
-            <div class="supervisor-bar">
-                <div class="supervisor-name" id="supervisor-name">SUPERVISOR: Loading...</div>
-                <div class="supervisor-details">
-                    <div class="product-name" id="product-name">Product: Loading...</div>
-                    <div class="variant-sequence-container">
-                        <div class="variant-sequence-label">VARIANT SEQUENCE:</div>
-                        <div class="variant-sequence" id="variant-sequence">
-                            <div class="loading">Loading variants...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
+<!-- Modified Consolidated Supervisor Bar -->
+<div class="supervisor-bar">
+    <div class="supervisor-info">
+        <span class="supervisor-title" id="supervisor-name">SUPERVISOR: Loading...</span>
+        <span class="supervisor-title product-name" id="product-name">Product: Loading...</span>
+    </div>
+    <div class="variant-sequence-container">
+        <div class="variant-sequence" id="variant-sequence">
+            <div class="loading">Loading variants...</div>
+        </div>
+    </div>
+</div>
 
             <div class="totals-display" id="totals-display">
                 <div class="loading">Loading data...</div>
@@ -1489,77 +1506,76 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
         }
 
         function updateSupervisorInfo(group) {
-            document.getElementById('supervisor-name').textContent = `SUPERVISOR: ${group.supervisor}`;
-            document.getElementById('product-name').textContent = `Product: ${group.product}`;
-            
-            // Update variant sequence
-            const sequenceContainer = document.getElementById('variant-sequence');
-            sequenceContainer.innerHTML = '';
-            
-            if (group.variants.length === 0) {
-                sequenceContainer.innerHTML = '<div>No variants available</div>';
-                return;
-            }
-            
-            // Get current time to determine variant status
-            const now = new Date();
-            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-            
-            // Add each variant to the sequence
-            group.variants.forEach((variant, index) => {
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                
-                if (!supervisorVariant) return;
-                
-                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-                
-                if (!startTimeStr || !endTimeStr) return;
-                
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                
-                const startTimeMinutes = startHour * 60 + startMinute;
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                // Determine variant status
-                let status = '';
-                if (currentTimeMinutes < startTimeMinutes) {
-                    status = 'upcoming';
-                } else if (currentTimeMinutes > endTimeMinutes) {
-                    status = 'completed';
-                } else {
-                    status = 'current';
-                }
-                
-                // Extract variant name from full variant string
-                let displayName = variant.variant;
-                
-                // Try to extract just the variant part
-                if (variant.variant.startsWith(group.product + ' ')) {
-                    displayName = variant.variant.substring(group.product.length + 1);
-                }
-                
-                // Create variant element
-                const variantElement = document.createElement('div');
-                variantElement.className = `variant-item ${status}`;
-                variantElement.innerHTML = `
-                    <span>${displayName}</span>
-                    <span class="variant-time">${startTimeStr}-${endTimeStr}</span>
-                    <span class="variant-status">${status.toUpperCase()}</span>
-                `;
-                
-                sequenceContainer.appendChild(variantElement);
-                
-                // Add arrow if not the last variant
-                if (index < group.variants.length - 1) {
-                    const arrow = document.createElement('div');
-                    arrow.className = 'arrow-right';
-                    arrow.textContent = '→';
-                    sequenceContainer.appendChild(arrow);
-                }
-            });
+    document.getElementById('supervisor-name').textContent = `SUPERVISOR: ${group.supervisor}`;
+    document.getElementById('product-name').textContent = `${group.product}`;
+    
+    // Update variant sequence
+    const sequenceContainer = document.getElementById('variant-sequence');
+    sequenceContainer.innerHTML = '';
+    
+    if (group.variants.length === 0) {
+        sequenceContainer.innerHTML = '<div>No variants available</div>';
+        return;
+    }
+    
+    // Get current time to determine variant status
+    const now = new Date();
+    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+    
+    // Add each variant to the sequence with simplified display
+    group.variants.forEach((variant, index) => {
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        
+        if (!supervisorVariant) return;
+        
+        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+        
+        if (!startTimeStr || !endTimeStr) return;
+        
+        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+        
+        const startTimeMinutes = startHour * 60 + startMinute;
+        const endTimeMinutes = endHour * 60 + endMinute;
+        
+        // Determine variant status
+        let status = '';
+        if (currentTimeMinutes < startTimeMinutes) {
+            status = 'upcoming';
+        } else if (currentTimeMinutes > endTimeMinutes) {
+            status = 'completed';
+        } else {
+            status = 'current';
         }
+        
+        // Extract variant name from full variant string
+        let displayName = variant.variant;
+        
+        // Try to extract just the variant part
+        if (variant.variant.startsWith(group.product + ' ')) {
+            displayName = variant.variant.substring(group.product.length + 1);
+        }
+        
+        // Create simplified variant element
+        const variantElement = document.createElement('div');
+        variantElement.className = `variant-item ${status}`;
+        variantElement.innerHTML = `
+            <span>${displayName}</span>
+            <span class="variant-time">${startTimeStr}-${endTimeStr}</span>
+        `;
+        
+        sequenceContainer.appendChild(variantElement);
+        
+        // Add arrow if not the last variant
+        if (index < group.variants.length - 1) {
+            const arrow = document.createElement('div');
+            arrow.className = 'arrow-right';
+            arrow.textContent = '→';
+            sequenceContainer.appendChild(arrow);
+        }
+    });
+}
 
         function updateTotalsDisplay(group) {
             // Initialize aggregated values
