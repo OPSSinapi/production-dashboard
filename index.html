@@ -2021,14 +2021,18 @@ group.variants.forEach(variant => {
 const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
 const endTimeMinutes = Math.min(latestEndMinutes, currentTimeMinutes + 60); // Show up to 1 hour ahead
 
-// Create hourly ticks (standard production hours)
+// Create hourly ticks with proper start time
 const allHours = [];
-// Start from the hour AFTER the earliest start time
-const firstHourAfterStart = Math.ceil(earliestStartMinutes / 60) * 60;
-for (let minutes = firstHourAfterStart; minutes <= endTimeMinutes; minutes += 60) {
-    const hour = Math.floor(minutes / 60);
-    const minute = '30'; // Use standard 30-minute mark for hour labels
-    allHours.push(`${hour.toString().padStart(2, '0')}:${minute}`);
+
+// First add the exact start time 
+const startHour = Math.floor(earliestStartMinutes / 60);
+const startMinute = earliestStartMinutes % 60;
+allHours.push(`${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`);
+
+// Then add standard hour markers (8:30, 9:30, etc.)
+const firstFullHour = Math.ceil(earliestStartMinutes / 60);
+for (let hour = firstFullHour; hour * 60 + 30 <= endTimeMinutes; hour++) {
+    allHours.push(`${hour.toString().padStart(2, '0')}:30`);
 }
 // Use allHours instead of uniqueHours for drawing the ticks
 (allHours.length > 0 ? allHours : uniqueHours).forEach((hour, index) => {
