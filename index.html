@@ -2115,10 +2115,6 @@ function updateDashboard() {
 }
 
         function updateTotalsDisplay(group) {
-    // Get current time
-    const now = new Date();
-    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-
     // Initialize aggregated values
     let totalTarget = 0;
     let totalProduction = 0;
@@ -2126,60 +2122,22 @@ function updateDashboard() {
     let totalBoxProduction = 0;
     let weightedCycleTime = 0;
     let totalCycleTimeWeight = 0;
-
+    
     // Calculate aggregated values
     group.variants.forEach(variant => {
         const supervisorVariant = group.supervisorData.variants[variant.variant];
         
         if (supervisorVariant) {
-            // Get variant time window
-            const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-            const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-            
-            if (!startTimeStr || !endTimeStr) return;
-            
-            const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-            const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-            
-            const startTimeMinutes = startHour * 60 + startMinute;
-            const endTimeMinutes = endHour * 60 + endMinute;
-            
-            // Calculate time proportion
-            let activeTimeMinutes = endTimeMinutes - startTimeMinutes;
-            
-            // Handle time window crossing midnight
-            if (endTimeMinutes < startTimeMinutes) {
-                activeTimeMinutes += 24 * 60;
-            }
-            
-            // Limit to current time if variant is still active
-            if (currentTimeMinutes > startTimeMinutes && currentTimeMinutes < endTimeMinutes) {
-                activeTimeMinutes = currentTimeMinutes - startTimeMinutes;
-            }
-            
-            // Ensure non-negative time
-            activeTimeMinutes = Math.max(0, activeTimeMinutes);
-            
-            // Total production time (full day is 8.5 hours or 510 minutes)
-            const fullDayMinutes = 510; // Typical work day
-            
-            // Proportional target calculation
-            const timeProportionFactor = activeTimeMinutes / fullDayMinutes;
-            
-            // Calculate proportional targets
-            const proportionalDailyTarget = (supervisorVariant.dailyTarget || 0) * timeProportionFactor;
-            const proportionalBoxTarget = (variant.dailyBoxTarget || 0) * timeProportionFactor;
-            
-            // Accumulate totals
-            totalTarget += proportionalDailyTarget;
+            totalTarget += (supervisorVariant.dailyTarget || 0);
             totalProduction += (supervisorVariant.currentTotal || 0);
             
-            totalBoxTarget += proportionalBoxTarget;
+            // Add box totals consistently for all variants
+            totalBoxTarget += (variant.dailyBoxTarget || 0);
             totalBoxProduction += (variant.currentBoxTotal || 0);
             
-            // Cycle time calculation (weighted by target)
+            // Add cycle time weighted by target
             const cycleTime = variant.cycleTime || 0;
-            const target = proportionalDailyTarget;
+            const target = supervisorVariant.dailyTarget || 0;
             
             if (cycleTime > 0 && target > 0) {
                 weightedCycleTime += cycleTime * target;
@@ -2208,10 +2166,10 @@ function updateDashboard() {
                 Progress <span class="total-percentage">${progressPercentage}%</span>
             </div>
             <div class="total-value">
-                <span class="current-value">${Math.round(totalProduction)}</span>/<span class="target-value">${Math.round(totalTarget)}</span>
+                <span class="current-value">${totalProduction}</span>/<span class="target-value">${totalTarget}</span>
             </div>
             <div class="total-subvalue">
-                <span class="current-value">${Math.round(totalBoxProduction)}</span>/<span class="target-value">${Math.round(totalBoxTarget)}</span> boxes
+                <span class="current-value">${totalBoxProduction}</span>/<span class="target-value">${totalBoxTarget}</span> boxes
             </div>
         </div>
     `;
