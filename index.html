@@ -118,30 +118,30 @@ body {
     flex: 1; /* Make sure content takes up available space */
 }
 
-/* Supervisor Container - New consolidated layout */
+/* Supervisor Container - Reduced Height */
 .supervisor-container {
     display: flex;
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 5px; /* Reduced from 10px */
+    max-height: 120px; /* Add maximum height constraint */
 }
 
-/* Supervisor Bar with Product and Sequence */
 .supervisor-bar {
-    flex: 0 0 40%; /* Take 40% of the width */
+    flex: 0 0 40%;
     border-radius: 8px;
-    padding: 10px 15px;
+    padding: 6px 10px; /* Reduced padding */
     box-sizing: border-box;
     margin-right: 10px;
-    margin-bottom: 0; /* Remove bottom margin as we're using flex layout */
+    margin-bottom: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
 .supervisor-name {
-    font-size: clamp(1.6rem, 2.8vw, 2.8rem);
+    font-size: clamp(1.4rem, 2.4vw, 2.4rem);
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 2px; /* Reduced margin */
     color: var(--dark-color);
 }
 
@@ -152,40 +152,40 @@ body {
 }
 
 .supervisor-title {
-    font-size: clamp(1.4rem, 2.4vw, 2.4rem);
+    font-size: clamp(1.2rem, 2vw, 2rem); /* Slightly reduced */
     font-weight: bold;
     color: var(--dark-color);
-    margin-bottom: 5px;
+    margin-bottom: 2px; /* Reduced margin */
 }
 
 .product-name {
-    font-size: clamp(1.2rem, 2vw, 2rem);
+    font-size: clamp(1.1rem, 1.8vw, 1.8rem); /* Slightly reduced */
     color: var(--dark-color);
 }
 
 .variant-sequence-container {
-    margin-top: 10px;
+    margin-top: 5px; /* Reduced from 10px */
     width: 100%;
 }
 
 .variant-sequence {
     display: flex;
     align-items: center;
-    font-size: clamp(1rem, 1.5vw, 1.5rem); /* Increased font size */
+    font-size: clamp(0.9rem, 1.4vw, 1.4rem); /* Slightly reduced */
     flex-wrap: wrap;
-    gap: 8px; /* Increased gap for better visibility */
+    gap: 6px; /* Reduced from 8px */
 }
 
 .variant-item {
-    padding: 8px 14px; /* Increased padding for better visibility */
+    padding: 4px 10px; /* Reduced padding */
     border-radius: 4px;
     white-space: nowrap;
     position: relative;
-    font-weight: 500; /* Added for better readability */
+    font-weight: 500;
 }
 
 .variant-time {
-    font-size: clamp(0.8rem, 1.2vw, 1.2rem);
+    font-size: clamp(0.7rem, 1.1vw, 1.1rem); /* Slightly reduced */
     display: block;
     text-align: center;
 }
@@ -219,15 +219,16 @@ body {
     color: var(--dark-color);
 }
 
-/* Hourly targets wrapper - New for consolidated layout */
+/* Hourly targets wrapper - Reduced Height */
 .hourly-targets-wrapper {
-    flex: 0 0 58%; /* Take 58% of the width */
+    flex: 0 0 58%;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    padding: 10px;
+    padding: 6px; /* Reduced from 10px */
     height: 100%;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .totals-display {
@@ -289,6 +290,7 @@ body {
 .total-hourly {
     color: var(--dark-color);
 }
+
 .chart-container {
     flex: 1; /* Takes all available space */
     background-color: white;
@@ -309,7 +311,7 @@ body {
     gap: 10px;
     flex: 1;
     min-height: 0; /* Important for flex container */
-    height: calc(75vh - 200px); /* Increased from 70vh - 250px for more visual space */
+    height: calc(80vh - 180px); /* Increased to use space gained from reduced supervisor section */
 }
 
 .chart {
@@ -333,8 +335,9 @@ body {
     padding-bottom: 10px;
 }
 
+/* Chart title and labels - Enlarged fonts */
 .chart-title {
-    font-size: clamp(1.3rem, 2vw, 2rem);
+    font-size: clamp(1.5rem, 2.4vw, 2.4rem); /* Increased from 1.3rem */
     font-weight: 600;
     margin-right: 15px;
     color: var(--dark-color);
@@ -347,7 +350,7 @@ body {
     border: none;
     color: var(--dark-color);
     font-weight: 600;
-    font-size: clamp(1.3rem, 2vw, 2rem);
+    font-size: clamp(1.5rem, 2.4vw, 2.4rem); /* Increased from 1.3rem */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     cursor: pointer;
     padding: 0;
@@ -363,7 +366,7 @@ body {
 }
 
 .chart-title-text {
-    font-size: clamp(1.3rem, 2vw, 2rem);
+    font-size: clamp(1.5rem, 2.4vw, 2.4rem); /* Increased from 1.3rem */
     font-weight: 600;
     color: var(--dark-color);
     white-space: nowrap;
@@ -381,7 +384,7 @@ body {
 }
 
 .hour-countdown {
-    font-size: clamp(1rem, 1.6vw, 1.6rem);
+    font-size: clamp(1.2rem, 1.8vw, 1.8rem); /* Increased from 1rem */
     color: var(--secondary-color);
     font-style: normal;
 }
@@ -396,8 +399,8 @@ body {
     border: 1px solid var(--secondary-color);
     font-family: inherit;
     background-color: white;
-    height: 36px;
-    font-size: clamp(0.9rem, 1.4vw, 1.4rem);
+    height: 38px; /* Slightly increased */
+    font-size: clamp(1.1rem, 1.6vw, 1.6rem); /* Increased from 0.9rem */
     font-weight: 500;
     color: var(--dark-color);
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -420,7 +423,7 @@ body {
     display: flex;
     justify-content: center;
     margin-top: 8px;
-    font-size: clamp(1rem, 1.6vw, 1.6rem);
+    font-size: clamp(1.2rem, 1.8vw, 1.8rem); /* Increased from 1rem */
 }
 
 .legend-item {
@@ -430,10 +433,10 @@ body {
 }
 
 .legend-color {
-    width: 15px;
-    height: 15px;
-    margin-right: 6px;
-    border-radius: 2px;
+    width: 18px; /* Increased from 15px */
+    height: 18px; /* Increased from 15px */
+    margin-right: 8px;
+    border-radius: 3px;
 }
 
 .production-color {
@@ -478,17 +481,18 @@ body {
     max-width: 800px;
     margin: 0 auto;
     overflow: visible;
+    height: 90px; /* Reduced fixed height */
 }
 
 .hourly-circle {
     fill: white;
     stroke: #999;
     stroke-width: 4;
-    r: 40; /* Reduced from 80 to fit better in the consolidated layout */
+    r: 25; /* Reduced from 40 */
 }
 
 .time-label {
-    font-size: clamp(0.9rem, 1.2vw, 1.2rem);
+    font-size: clamp(0.7rem, 1vw, 1rem); /* Smaller font */
     text-anchor: middle;
     dominant-baseline: hanging;
     fill: #333;
@@ -497,11 +501,11 @@ body {
 
 .current-arrow {
     fill: var(--warning-color);
-    transform: scale(6.0);
+    transform: scale(4.0); /* Reduced from 6.0 */
 }
 
 .status-icon {
-    stroke-width: 8; /* Reduced from 12 to fit smaller circles */
+    stroke-width: 4; /* Thinner lines for smaller circles */
 }
 
 .status-success {
@@ -541,6 +545,207 @@ body {
     color: var(--danger-color);
     font-weight: bold;
     font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+}
+
+/* Chart axes labels applied via JS */
+.chart-axis-label {
+    font-size: 16px; /* Larger font for axis labels */
+    font-weight: 500;
+    fill: var(--dark-color);
+}
+
+.chart-data-label {
+    font-size: 18px; /* Larger font for data point values */
+    font-weight: 600;
+}
+
+/* Chart axis tick labels (the numbers on the axes) */
+.chart-tick-label {
+    font-size: 14px; /* Larger font for tick labels */
+    fill: var(--dark-color);
+}
+
+/* Supervisor Selection Button and Modal */
+.supervisor-selection-container {
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+}
+
+.supervisor-select-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 8px 12px;
+    font-size: clamp(0.9rem, 1.4vw, 1.4rem);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: inherit;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.supervisor-select-btn:hover {
+    background-color: #2563eb;
+}
+
+.supervisor-select-btn.secondary {
+    background-color: #e2e8f0;
+    color: var(--dark-color);
+    margin-right: 10px;
+}
+
+.supervisor-select-btn.secondary:hover {
+    background-color: #cbd5e1;
+}
+
+.supervisor-select-btn.primary {
+    background-color: var(--success-color);
+}
+
+.supervisor-select-btn.primary:hover {
+    background-color: #059669;
+}
+
+.supervisor-select-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    animation-name: fadeIn;
+    animation-duration: 0.3s;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0}
+    to {opacity: 1}
+}
+
+.supervisor-select-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    animation-name: slideIn;
+    animation-duration: 0.3s;
+}
+
+@keyframes slideIn {
+    from {top: -300px; opacity: 0}
+    to {top: 0; opacity: 1}
+}
+
+.supervisor-select-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.supervisor-select-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--dark-color);
+}
+
+.supervisor-select-close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.supervisor-select-close:hover {
+    color: var(--dark-color);
+}
+
+.supervisor-select-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.supervisor-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.supervisor-checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.supervisor-checkbox-item:hover {
+    background-color: #f8fafc;
+}
+
+.supervisor-checkbox-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+.supervisor-checkbox-item label {
+    font-size: 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    flex: 1;
+}
+
+.supervisor-select-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Color indicators for supervisors */
+.supervisor-color-indicator {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    border-radius: 4px;
+    margin-right: 15px;
+}
+
+.supervisor-active-badge {
+    margin-left: auto;
+    background-color: var(--success-color);
+    color: white;
+    font-size: 0.8rem;
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+/* Make button more visible when supervisors are filtered */
+.supervisor-select-btn.filtered {
+    background-color: var(--warning-color);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+    70% { box-shadow: 0 0 0 5px rgba(245, 158, 11, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
 }
 
 /* Dynamic supervisor color classes */
@@ -589,6 +794,10 @@ body {
     
     .hourly-circle {
         r: 35;
+    }
+    
+    .supervisor-selection-container {
+        margin-left: 10px;
     }
 }
 
@@ -662,6 +871,21 @@ body {
     .status-icon {
         stroke-width: 6;
     }
+    
+    .supervisor-selection-container {
+        margin-top: 10px;
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .supervisor-select-btn {
+        width: 100%;
+    }
+    
+    .supervisor-select-content {
+        width: 95%;
+        margin: 5% auto;
+    }
 }
     </style>
     </head>
@@ -708,6 +932,32 @@ body {
         </div>
     </div>
 </div>
+
+
+            <div class="supervisor-selection-container">
+    <button id="supervisor-select-btn" class="supervisor-select-btn">
+        Select Supervisors
+    </button>
+    <div id="supervisor-select-modal" class="supervisor-select-modal">
+        <div class="supervisor-select-content">
+            <div class="supervisor-select-header">
+                <h3>Select Supervisors to Display</h3>
+                <span class="supervisor-select-close">&times;</span>
+            </div>
+            <div class="supervisor-select-body">
+                <div id="supervisor-checkboxes" class="supervisor-checkboxes">
+                    <!-- Checkboxes will be added dynamically -->
+                </div>
+            </div>
+            <div class="supervisor-select-footer">
+                <button id="select-all-supervisors" class="supervisor-select-btn secondary">Select All</button>
+                <button id="deselect-all-supervisors" class="supervisor-select-btn secondary">Deselect All</button>
+                <button id="apply-supervisor-selection" class="supervisor-select-btn primary">Apply Selection</button>
+            </div>
+        </div>
+    </div>
+</div>
+            
 
             <div class="totals-display" id="totals-display">
                 <div class="loading">Loading data...</div>
@@ -777,38 +1027,44 @@ body {
         let currentSupervisor = null;
         let currentProductVariants = [];
         let currentVariantKey = null;
+        let selectedSupervisors = []; // Array to hold selected supervisors    
+        let supervisorFilterActive = false; // Track if supervisor filter is active
         
         // Cycling variables
         let cycleInterval = null;
         let cycleIndex = 0;
 
-        function initDashboard() {
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
+        // Add to initDashboard function
+function initDashboard() {
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
 
-            document.getElementById('filter-type-select').addEventListener('change', function() {
-                selectedFilterType = this.value;
-                updateFilterValueDropdown();
-            });
+    document.getElementById('filter-type-select').addEventListener('change', function() {
+        selectedFilterType = this.value;
+        updateFilterValueDropdown();
+    });
 
-            document.getElementById('filter-value-select').addEventListener('change', function() {
-                selectedFilterValue = this.value;
-                updateDashboard();
-            });
+    document.getElementById('filter-value-select').addEventListener('change', function() {
+        selectedFilterValue = this.value;
+        updateDashboard();
+    });
 
-            document.getElementById('hour-range-select').addEventListener('change', function() {
-                selectedHour = this.value;
-                updateHourlyChart();
-            });
+    document.getElementById('hour-range-select').addEventListener('change', function() {
+        selectedHour = this.value;
+        updateHourlyChart();
+    });
 
-            fetchProductionData();
-            setInterval(fetchProductionData, UPDATE_INTERVAL);
+    // Initialize supervisor selection
+    initSupervisorSelection();
+    
+    fetchProductionData();
+    setInterval(fetchProductionData, UPDATE_INTERVAL);
 
-            document.addEventListener('fullscreenchange', handleFullscreenChange);
-            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-        }
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+}
 
         function toggleFullscreen() {
             const dashboard = document.querySelector('.dashboard-container');
@@ -846,6 +1102,188 @@ body {
             // Redraw as needed
             setTimeout(updateDashboard, 100);
         }
+
+        // Add this function to initialize the supervisor selection UI
+function initSupervisorSelection() {
+    const selectBtn = document.getElementById('supervisor-select-btn');
+    const modal = document.getElementById('supervisor-select-modal');
+    const closeBtn = document.querySelector('.supervisor-select-close');
+    const applyBtn = document.getElementById('apply-supervisor-selection');
+    const selectAllBtn = document.getElementById('select-all-supervisors');
+    const deselectAllBtn = document.getElementById('deselect-all-supervisors');
+    
+    // Open modal when button is clicked
+    selectBtn.addEventListener('click', function() {
+        updateSupervisorCheckboxes();
+        modal.style.display = 'block';
+    });
+    
+    // Close modal when X is clicked
+    closeBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+    
+    // Close modal when clicking outside of it
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    // Apply selection and close modal
+    applyBtn.addEventListener('click', function() {
+        applySupervisorSelection();
+        modal.style.display = 'none';
+    });
+    
+    // Select all supervisors
+    selectAllBtn.addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('.supervisor-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = true;
+        });
+    });
+    
+    // Deselect all supervisors
+    deselectAllBtn.addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('.supervisor-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    });
+    
+    // Initialize with all supervisors selected
+    if (productionData && productionData.supervisors) {
+        selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
+    }
+}
+
+        / Add this function to update the supervisor checkboxes
+function updateSupervisorCheckboxes() {
+    const checkboxContainer = document.getElementById('supervisor-checkboxes');
+    checkboxContainer.innerHTML = '';
+    
+    if (!productionData || !productionData.supervisors || productionData.supervisors.length === 0) {
+        checkboxContainer.innerHTML = '<p>No supervisors available</p>';
+        return;
+    }
+    
+    // Create a checkbox for each supervisor
+    productionData.supervisors.forEach(supervisor => {
+        const item = document.createElement('div');
+        item.className = 'supervisor-checkbox-item';
+        
+        // Add supervisor color indicator
+        const colorDiv = document.createElement('div');
+        colorDiv.className = 'supervisor-color-indicator';
+        colorDiv.style.backgroundColor = getSupervisorColor(supervisor.name);
+        item.appendChild(colorDiv);
+        
+        // Create checkbox
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'supervisor-checkbox';
+        checkbox.id = `supervisor-${supervisor.name.toLowerCase().replace(/\s+/g, '-')}`;
+        checkbox.value = supervisor.name;
+        checkbox.checked = selectedSupervisors.includes(supervisor.name);
+        
+        // Create label
+        const label = document.createElement('label');
+        label.htmlFor = checkbox.id;
+        label.textContent = supervisor.name;
+        
+        // Add badge for active supervisor (currently displayed)
+        if (currentSupervisor === supervisor.name) {
+            const badge = document.createElement('span');
+            badge.className = 'supervisor-active-badge';
+            badge.textContent = 'Current';
+            item.appendChild(badge);
+        }
+        
+        item.appendChild(checkbox);
+        item.appendChild(label);
+        checkboxContainer.appendChild(item);
+    });
+}
+
+// Add this function to apply supervisor selection
+function applySupervisorSelection() {
+    const checkboxes = document.querySelectorAll('.supervisor-checkbox');
+    selectedSupervisors = [];
+    
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            selectedSupervisors.push(checkbox.value);
+        }
+    });
+    
+    // Store selection in localStorage for persistence
+    localStorage.setItem('selectedSupervisors', JSON.stringify(selectedSupervisors));
+    
+    // Update the selection button style based on whether filtering is active
+    supervisorFilterActive = selectedSupervisors.length < productionData.supervisors.length;
+    const selectBtn = document.getElementById('supervisor-select-btn');
+    
+    if (supervisorFilterActive) {
+        selectBtn.textContent = `Supervisors (${selectedSupervisors.length}/${productionData.supervisors.length})`;
+        selectBtn.classList.add('filtered');
+    } else {
+        selectBtn.textContent = 'Select Supervisors';
+        selectBtn.classList.remove('filtered');
+    }
+    
+    // Update the dashboard with the new selection
+    updateDashboard();
+}
+
+// Add this function to get the supervisor color
+function getSupervisorColor(supervisorName) {
+    const colorMap = {
+        'Luthando': 'var(--supervisor-luthando)',
+        'Apelele': 'var(--supervisor-apelele)',
+        'Siyabonga': 'var(--supervisor-siyabonga)',
+        'Nosi': 'var(--supervisor-nosi)',
+        'Mvokwe': 'var(--supervisor-mvokwe)',
+        'Ayanda': 'var(--supervisor-luthando)' // Reusing Luthando's color for Ayanda or add a new one
+    };
+    
+    return colorMap[supervisorName] || '#e2e8f0'; // Default color if not found
+}
+
+// Add this to load selected supervisors from localStorage
+function loadSelectedSupervisors() {
+    const stored = localStorage.getItem('selectedSupervisors');
+    if (stored) {
+        try {
+            selectedSupervisors = JSON.parse(stored);
+            
+            // Validate against current supervisors
+            if (productionData && productionData.supervisors) {
+                const validSupervisors = productionData.supervisors.map(s => s.name);
+                selectedSupervisors = selectedSupervisors.filter(s => validSupervisors.includes(s));
+                
+                // If none valid, select all
+                if (selectedSupervisors.length === 0) {
+                    selectedSupervisors = validSupervisors;
+                }
+            }
+            
+            // Update UI
+            supervisorFilterActive = selectedSupervisors.length < productionData.supervisors.length;
+            const selectBtn = document.getElementById('supervisor-select-btn');
+            
+            if (supervisorFilterActive) {
+                selectBtn.textContent = `Supervisors (${selectedSupervisors.length}/${productionData.supervisors.length})`;
+                selectBtn.classList.add('filtered');
+            }
+        } catch (e) {
+            console.error('Error parsing stored supervisors:', e);
+            if (productionData && productionData.supervisors) {
+                selectedSupervisors = productionData.supervisors.map(s => s.name);
+            }
+        }
+    }
+}
 
         function setupConsolidatedLayout() {
     // Check if the structure is already created
@@ -1249,7 +1687,8 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
             // Fallback: use first word
             return parts[0];
         }
-        async function fetchProductionData() {
+        // Add to fetchProductionData function after data is loaded
+async function fetchProductionData() {
     try {
         console.log(`Attempting to fetch data from: ${DATA_URL}`);
         const cacheBuster = '?_=' + new Date().getTime();
@@ -1270,6 +1709,12 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
             
             // Process product-supervisor groups from the new data
             processProductSupervisorGroups();
+            
+            // Load saved supervisor selections or initialize all selected
+            if (selectedSupervisors.length === 0) {
+                selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
+                loadSelectedSupervisors(); // Load any saved preferences
+            }
             
             updateFilterValueDropdown();
             updateDashboard();
@@ -1458,31 +1903,41 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
                 }
             }
         }
-        function updateDashboard() {
-    // Filter groups based on selection
+        // Modify the updateDashboard function to filter by selected supervisors
+function updateDashboard() {
+    // Filter groups based on selection and selected supervisors
     let filteredGroups = {};
     
+    // Start with selected filter type/value
     if (selectedFilterValue === 'all') {
-        filteredGroups = productSupervisorGroups;
-    } else if (selectedFilterType === 'supervisor') {
-        // Filter by supervisor
+        // When "all" is selected, still respect supervisor selection
         Object.keys(productSupervisorGroups).forEach(key => {
-            if (productSupervisorGroups[key].supervisor === selectedFilterValue) {
+            if (selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
+                filteredGroups[key] = productSupervisorGroups[key];
+            }
+        });
+    } else if (selectedFilterType === 'supervisor') {
+        // When filtering by specific supervisor, also check if it's in selected supervisors
+        Object.keys(productSupervisorGroups).forEach(key => {
+            if (productSupervisorGroups[key].supervisor === selectedFilterValue &&
+                selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
                 filteredGroups[key] = productSupervisorGroups[key];
             }
         });
     } else if (selectedFilterType === 'product') {
-        // Filter by product
+        // Filter by product but only for selected supervisors
         Object.keys(productSupervisorGroups).forEach(key => {
-            if (productSupervisorGroups[key].product === selectedFilterValue) {
+            if (productSupervisorGroups[key].product === selectedFilterValue &&
+                selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
                 filteredGroups[key] = productSupervisorGroups[key];
             }
         });
     } else if (selectedFilterType === 'variant') {
-        // Filter by variant
+        // Filter by variant but only for selected supervisors
         Object.keys(productSupervisorGroups).forEach(key => {
             const group = productSupervisorGroups[key];
-            if (group.variants.some(v => v.variant === selectedFilterValue)) {
+            if (group.variants.some(v => v.variant === selectedFilterValue) &&
+                selectedSupervisors.includes(group.supervisor)) {
                 filteredGroups[key] = group;
             }
         });
@@ -1490,7 +1945,7 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
     
     // If no groups after filtering, show error and return
     if (Object.keys(filteredGroups).length === 0) {
-        showLoadingOrError('No data available for this filter.');
+        showLoadingOrError('No data available for this filter or selected supervisors.');
         if (cycleInterval) clearInterval(cycleInterval);
         cycleInterval = null;
         return;
@@ -1849,21 +2304,21 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
         }
     }
     
-    // Create SVG for visualization
+    // Create SVG for visualization - REDUCED HEIGHT
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('class', 'hourly-targets-svg');
-    svg.setAttribute('height', '150');
-    svg.setAttribute('viewBox', `0 0 ${Math.max(hours.length * 100, 400)} 150`);
+    svg.setAttribute('height', '90'); // Reduced height
+    svg.setAttribute('viewBox', `0 0 ${Math.max(hours.length * 80, 400)} 90`); // Adjusted viewBox
     
-    // Calculate spacing - adjusted for consolidated layout
-    const circleRadius = 40; // Smaller radius for consolidated layout
-    const spacing = 100; // Reduced spacing
-    const yPosition = 60;
+    // Calculate spacing - MORE COMPACT
+    const circleRadius = 25; // Smaller radius
+    const spacing = 80;     // Reduced spacing
+    const yPosition = 40;   // Reduced vertical center
     
     // Draw each hour circle
     hours.forEach((hour, index) => {
         const hourData = hourlyTargetsMap.get(hour);
-        const xPosition = index * spacing + 80;
+        const xPosition = index * spacing + 60; // Adjusted position
         
         // Circle
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -1877,47 +2332,47 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
         const timeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         timeLabel.setAttribute('class', 'time-label');
         timeLabel.setAttribute('x', xPosition);
-        timeLabel.setAttribute('y', yPosition + circleRadius + 15);
-        timeLabel.setAttribute('font-size', '1.9');
+        timeLabel.setAttribute('y', yPosition + circleRadius + 10); // Adjusted position
+        timeLabel.setAttribute('font-size', '1.5'); // Smaller font
         timeLabel.textContent = hour;
         svg.appendChild(timeLabel);
         
-        // Status indicator
+        // Status indicator - SMALLER
         if (hourData) {
             if (hourData.metTarget) {
-                // Check mark
+                // Check mark - scaled down
                 const checkmark = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 checkmark.setAttribute('class', 'status-icon status-success');
-                checkmark.setAttribute('d', `M${xPosition - 25},${yPosition} L${xPosition - 5},${yPosition + 20} L${xPosition + 25},${yPosition - 20}`);
+                checkmark.setAttribute('d', `M${xPosition - 15},${yPosition} L${xPosition - 3},${yPosition + 12} L${xPosition + 15},${yPosition - 12}`);
                 checkmark.setAttribute('fill', 'none');
                 svg.appendChild(checkmark);
             } else {
-                // X mark
+                // X mark - scaled down
                 const xMark1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 xMark1.setAttribute('class', 'status-icon status-fail');
-                xMark1.setAttribute('x1', xPosition - 25);
-                xMark1.setAttribute('y1', yPosition - 25);
-                xMark1.setAttribute('x2', xPosition + 25);
-                xMark1.setAttribute('y2', yPosition + 25);
+                xMark1.setAttribute('x1', xPosition - 15);
+                xMark1.setAttribute('y1', yPosition - 15);
+                xMark1.setAttribute('x2', xPosition + 15);
+                xMark1.setAttribute('y2', yPosition + 15);
                 xMark1.setAttribute('stroke-linecap', 'round');
                 svg.appendChild(xMark1);
                 
                 const xMark2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 xMark2.setAttribute('class', 'status-icon status-fail');
-                xMark2.setAttribute('x1', xPosition - 25);
-                xMark2.setAttribute('y1', yPosition + 25);
-                xMark2.setAttribute('x2', xPosition + 25);
-                xMark2.setAttribute('y2', yPosition - 25);
+                xMark2.setAttribute('x1', xPosition - 15);
+                xMark2.setAttribute('y1', yPosition + 15);
+                xMark2.setAttribute('x2', xPosition + 15);
+                xMark2.setAttribute('y2', yPosition - 15);
                 xMark2.setAttribute('stroke-linecap', 'round');
                 svg.appendChild(xMark2);
             }
         }
         
-        // Current hour indicator
+        // Current hour indicator - scaled down
         if (index === currentHourIndex) {
             const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             arrow.setAttribute('class', 'current-arrow');
-            arrow.setAttribute('d', `M${xPosition - 25},${yPosition - 65} L${xPosition},${yPosition - 40} L${xPosition + 25},${yPosition - 65} Z`);
+            arrow.setAttribute('d', `M${xPosition - 15},${yPosition - 45} L${xPosition},${yPosition - 30} L${xPosition + 15},${yPosition - 45} Z`);
             svg.appendChild(arrow);
         }
     });
@@ -1936,9 +2391,10 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
     
     // Collect all hours across all variants
     const allHoursSet = new Set();
-    const allData = [];
+    const hourlyProductionMap = new Map(); // Map to store production by hour
+    const hourlyTargetMap = new Map();     // Map to store targets by hour
     
-    // Process each variant
+    // Process each variant and collect unique hours
     group.variants.forEach(variant => {
         const supervisorVariant = group.supervisorData.variants[variant.variant];
         if (!supervisorVariant) return;
@@ -1955,9 +2411,9 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
         const startTimeMinutes = startHour * 60 + startMinute;
         const endTimeMinutes = endHour * 60 + endMinute;
         
-        // Collect hours and data
-        if (variant.cumulativeTargets) {
-            variant.cumulativeTargets.forEach(item => {
+        // Collect all unique hours and their respective data
+        if (variant.hourlyTargets) {
+            variant.hourlyTargets.forEach(item => {
                 if (!item.hour) return;
                 
                 // Check if this hour is within this variant's time window
@@ -1966,73 +2422,94 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
                 
                 if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
                     allHoursSet.add(item.hour);
-                    allData.push({
-                        hour: item.hour,
-                        target: item.target || 0,
-                        production: 0,
-                        timeMinutes: itemTimeMinutes
-                    });
                 }
             });
         }
         
-        if (variant.cumulativeProduction) {
-            variant.cumulativeProduction.forEach(item => {
+        // Collect hourly production data
+        if (variant.hourlyProduction) {
+            variant.hourlyProduction.forEach(item => {
                 if (!item.hour) return;
                 
-                // Check if this hour is within this variant's time window
                 const [itemHour, itemMinute] = item.hour.split(':').map(Number);
                 const itemTimeMinutes = itemHour * 60 + itemMinute;
                 
                 if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    allHoursSet.add(item.hour);
-                    
-                    // Find existing data point or add new one
-                    const existingDataPoint = allData.find(d => d.hour === item.hour);
-                    if (existingDataPoint) {
-                        existingDataPoint.production += (item.production || 0);
-                    } else {
-                        allData.push({
-                            hour: item.hour,
-                            target: 0,
-                            production: item.production || 0,
-                            timeMinutes: itemTimeMinutes
-                        });
+                    // Add to hourly production map
+                    if (!hourlyProductionMap.has(item.hour)) {
+                        hourlyProductionMap.set(item.hour, 0);
                     }
+                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
+                    
+                    allHoursSet.add(item.hour);
+                }
+            });
+        }
+        
+        // Collect hourly target data
+        if (variant.hourlyTargets) {
+            variant.hourlyTargets.forEach(item => {
+                if (!item.hour) return;
+                
+                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
+                
+                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    // Add to hourly target map
+                    if (!hourlyTargetMap.has(item.hour)) {
+                        hourlyTargetMap.set(item.hour, 0);
+                    }
+                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
+                    
+                    allHoursSet.add(item.hour);
                 }
             });
         }
     });
     
-    // Aggregate data by hour
-    const aggregatedData = {};
-    allData.forEach(item => {
-        if (!aggregatedData[item.hour]) {
-            aggregatedData[item.hour] = {
-                hour: item.hour,
-                target: 0,
-                production: 0,
-                timeMinutes: item.timeMinutes
-            };
-        }
-        aggregatedData[item.hour].target += item.target;
-        aggregatedData[item.hour].production += item.production;
+    // Convert to sorted array of hours
+    const sortedHours = Array.from(allHoursSet).sort((a, b) => {
+        const [hourA, minuteA] = a.split(':').map(Number);
+        const [hourB, minuteB] = b.split(':').map(Number);
+        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
     });
     
-    // Convert to array and sort
-    const processedData = Object.values(aggregatedData).sort((a, b) => a.timeMinutes - b.timeMinutes);
-    
-    if (processedData.length === 0) {
+    if (sortedHours.length === 0) {
         chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
         return;
     }
+    
+    // Build cumulative data arrays
+    const cumulativeData = [];
+    let runningProductionTotal = 0;
+    let runningTargetTotal = 0;
+    
+    // Generate time-based data points
+    sortedHours.forEach(hour => {
+        const hourProduction = hourlyProductionMap.get(hour) || 0;
+        const hourTarget = hourlyTargetMap.get(hour) || 0;
+        
+        // Add to running totals
+        runningProductionTotal += hourProduction;
+        runningTargetTotal += hourTarget;
+        
+        const [hourVal, minuteVal] = hour.split(':').map(Number);
+        const timeMinutes = hourVal * 60 + minuteVal;
+        
+        cumulativeData.push({
+            hour: hour,
+            production: runningProductionTotal,
+            target: runningTargetTotal,
+            timeMinutes: timeMinutes
+        });
+    });
     
     // Filter data to only show up to current time plus buffer
     const now = new Date();
     const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
     const currentTimePlusBuffer = currentMinuteOfDay + 30;
     
-    const filteredData = processedData.filter(item => item.timeMinutes <= currentTimePlusBuffer);
+    const filteredData = cumulativeData.filter(item => item.timeMinutes <= currentTimePlusBuffer);
     
     if (filteredData.length === 0) {
         chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available for current time period</div>';
@@ -2059,7 +2536,7 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
     svg.style.margin = '0 auto';
     chartContainer.appendChild(svg);
     
-    // Add grid lines
+    // Add grid lines with enlarged fonts
     const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     for (let i = 0; i <= 4; i++) {
         const y = padding.top + (chartHeight * i / 4);
@@ -2073,24 +2550,26 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
         gridGroup.appendChild(line);
         
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', padding.left - 10);
-        text.setAttribute('y', y + 5);
+        text.setAttribute('x', padding.left - 15); // Increased offset
+        text.setAttribute('y', y + 6); // Adjusted for larger font
         text.setAttribute('text-anchor', 'end');
-        text.setAttribute('font-size', '14');
+        text.setAttribute('font-size', '16'); // Increased from 14
+        text.setAttribute('class', 'chart-tick-label');
         text.setAttribute('fill', '#666');
         text.textContent = Math.round(maxValue * (4 - i) / 4);
         gridGroup.appendChild(text);
     }
     
-    // Add y-axis title
+    // Add y-axis title with enlarged font
     const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    yAxisTitle.setAttribute('x', padding.left - 45);
+    yAxisTitle.setAttribute('x', padding.left - 50); // Increased offset
     yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
     yAxisTitle.setAttribute('text-anchor', 'middle');
-    yAxisTitle.setAttribute('font-size', '16');
+    yAxisTitle.setAttribute('font-size', '18'); // Increased from 16
+    yAxisTitle.setAttribute('class', 'chart-axis-label');
     yAxisTitle.setAttribute('font-weight', 'bold');
     yAxisTitle.setAttribute('fill', '#666');
-    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 45}, ${padding.top + chartHeight / 2})`);
+    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 50}, ${padding.top + chartHeight / 2})`);
     yAxisTitle.textContent = 'Units';
     gridGroup.appendChild(yAxisTitle);
     
@@ -2171,26 +2650,19 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
         allHours.push(formattedHour);
     }
 
-    // Generate the uniqueHours from the filtered data for data plotting
-    const uniqueHours = [...new Set(filteredData.map(item => item.hour))].sort((a, b) => {
-        const [hourA, minuteA] = a.split(':').map(Number);
-        const [hourB, minuteB] = b.split(':').map(Number);
-        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-    });
-
-    // Draw X-axis ticks and labels
+    // Draw X-axis ticks and labels with larger fonts
     allHours.forEach((hour, index) => {
         const x = padding.left + (chartWidth * index / (allHours.length - 1 || 1));
-        const y = svgHeight - padding.bottom + 20;
+        const y = svgHeight - padding.bottom + 25; // Increased space for larger font
         
         // Add tick mark
         const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         tick.setAttribute('x1', x);
         tick.setAttribute('y1', svgHeight - padding.bottom);
         tick.setAttribute('x2', x);
-        tick.setAttribute('y2', svgHeight - padding.bottom + 5);
+        tick.setAttribute('y2', svgHeight - padding.bottom + 8); // Longer tick
         tick.setAttribute('stroke', '#666');
-        tick.setAttribute('stroke-width', '1');
+        tick.setAttribute('stroke-width', '1.5'); // Thicker tick
         xLabelsGroup.appendChild(tick);
         
         // Add hour label
@@ -2198,7 +2670,8 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
         text.setAttribute('x', x);
         text.setAttribute('y', y);
         text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', '14');
+        text.setAttribute('font-size', '16'); // Increased from 14
+        text.setAttribute('class', 'chart-tick-label');
         text.setAttribute('fill', '#666');
         text.textContent = hour;
         xLabelsGroup.appendChild(text);
@@ -2218,21 +2691,28 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
         hour: startTimeFormatted
     }];
     
-    // Get each subsequent data point for the line
-    uniqueHours.forEach((hour, index) => {
-        // Get combined production for this hour
-        const hourData = filteredData.find(item => item.hour === hour);
-        const production = hourData ? hourData.production : 0;
+    // Get data points for production line with proper cumulative totals
+    filteredData.forEach((dataPoint, index) => {
+        // Find the x position based on the hour
+        const hourIndex = allHours.indexOf(dataPoint.hour);
+        let x;
+        if (hourIndex >= 0) {
+            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
+        } else {
+            // If hour not in allHours, interpolate
+            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
+                          ((endTimeMinutes - earliestStartMinutes) || 1);
+            x = padding.left + (chartWidth * timeRatio);
+        }
         
-        // Calculate the x position based on where this hour falls in the allHours array
-        const hourIndex = allHours.indexOf(hour);
-        const x = hourIndex >= 0 
-            ? padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1))
-            : padding.left + (chartWidth * (index + 1) / (allHours.length || 1));
+        const y = padding.top + chartHeight - (chartHeight * (dataPoint.production / maxValue));
         
-        const y = padding.top + chartHeight - (chartHeight * (production / maxValue));
-        
-        productionPoints.push({ x, y, production, hour });
+        productionPoints.push({ 
+            x, 
+            y, 
+            production: dataPoint.production, 
+            hour: dataPoint.hour 
+        });
         productionPathD += ` L ${x} ${y}`;
     });
     
@@ -2244,20 +2724,21 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
     productionPath.setAttribute('fill', 'none');
     productionLineGroup.appendChild(productionPath);
     
-    // Add production points and labels
+    // Add production points and labels with larger fonts
     productionPoints.forEach(point => {
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', point.x);
         circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', '5');
+        circle.setAttribute('r', '6'); // Increased from 5
         circle.setAttribute('fill', 'var(--production-color)');
         productionLineGroup.appendChild(circle);
         
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 10);
+        text.setAttribute('y', point.y - 12); // Increased offset
         text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', '14');
+        text.setAttribute('font-size', '18'); // Increased from 14
+        text.setAttribute('class', 'chart-data-label');
         text.setAttribute('fill', 'var(--production-color)');
         text.textContent = point.production;
         productionLineGroup.appendChild(text);
@@ -2276,21 +2757,28 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
         hour: startTimeFormatted
     }];
     
-    // Add each subsequent target point
-    uniqueHours.forEach((hour, index) => {
-        // Get combined target for this hour
-        const hourData = filteredData.find(item => item.hour === hour);
-        const target = hourData ? hourData.target : 0;
+    // Get data points for target line with proper cumulative totals
+    filteredData.forEach((dataPoint, index) => {
+        // Find the x position based on the hour
+        const hourIndex = allHours.indexOf(dataPoint.hour);
+        let x;
+        if (hourIndex >= 0) {
+            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
+        } else {
+            // If hour not in allHours, interpolate
+            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
+                          ((endTimeMinutes - earliestStartMinutes) || 1);
+            x = padding.left + (chartWidth * timeRatio);
+        }
         
-        // Calculate the x position based on where this hour falls in the allHours array
-        const hourIndex = allHours.indexOf(hour);
-        const x = hourIndex >= 0 
-            ? padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1))
-            : padding.left + (chartWidth * (index + 1) / (allHours.length || 1));
+        const y = padding.top + chartHeight - (chartHeight * (dataPoint.target / maxValue));
         
-        const y = padding.top + chartHeight - (chartHeight * (target / maxValue));
-        
-        targetPoints.push({ x, y, target, hour });
+        targetPoints.push({ 
+            x, 
+            y, 
+            target: dataPoint.target, 
+            hour: dataPoint.hour 
+        });
         targetPathD += ` L ${x} ${y}`;
     });
     
@@ -2302,292 +2790,298 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
     targetPath.setAttribute('fill', 'none');
     targetLineGroup.appendChild(targetPath);
     
-    // Add target points and labels
+    // Add target points and labels with larger fonts
     targetPoints.forEach(point => {
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', point.x);
         circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', '5');
+        circle.setAttribute('r', '6'); // Increased from 5
         circle.setAttribute('fill', 'var(--target-color)');
         targetLineGroup.appendChild(circle);
         
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 10);
+        text.setAttribute('y', point.y - 12); // Increased offset
         text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', '14');
+        text.setAttribute('font-size', '18'); // Increased from 14
+        text.setAttribute('class', 'chart-data-label');
         text.setAttribute('fill', 'var(--target-color)');
         text.textContent = point.target;
         targetLineGroup.appendChild(text);
     });
     svg.appendChild(targetLineGroup);
 }
+        
         function updateHourlyChart() {
-            const chartContainer = document.getElementById('hourly-chart');
-            chartContainer.innerHTML = '';
-            
-            if (!currentProductVariants || currentProductVariants.length === 0) {
-                chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
-                return;
-            }
-            
-            // Determine which hour to display
-            let displayHour;
-            if (selectedHour === 'current') {
-                // For current hour option, get next production hour
-                const allHours = new Set();
-                currentProductVariants.forEach(variant => {
-                    if (variant.hourlyTargets) {
-                        variant.hourlyTargets.forEach(item => {
-                            if (item.hour) allHours.add(item.hour);
-                        });
-                    }
+    const chartContainer = document.getElementById('hourly-chart');
+    chartContainer.innerHTML = '';
+    
+    if (!currentProductVariants || currentProductVariants.length === 0) {
+        chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
+        return;
+    }
+    
+    // Determine which hour to display
+    let displayHour;
+    if (selectedHour === 'current') {
+        // For current hour option, get next production hour
+        const allHours = new Set();
+        currentProductVariants.forEach(variant => {
+            if (variant.hourlyTargets) {
+                variant.hourlyTargets.forEach(item => {
+                    if (item.hour) allHours.add(item.hour);
                 });
-                
-                displayHour = getNextProductionHour(Array.from(allHours));
-            } else {
-                // For specific hour selection
-                displayHour = selectedHour;
             }
+        });
+        
+        displayHour = getNextProductionHour(Array.from(allHours));
+    } else {
+        // For specific hour selection
+        displayHour = selectedHour;
+    }
+    
+    // Find all variants active during this hour
+    const activeVariants = [];
+    const hourlyData = { target: 0, production: 0 };
+    
+    // Get the hour's time in minutes
+    const [hourVal, minuteVal] = displayHour.split(':').map(Number);
+    const hourTimeMinutes = hourVal * 60 + minuteVal;
+    
+    // Show countdown for current hour if appropriate
+    if (selectedHour === 'current') {
+        startCountdown(displayHour);
+    } else {
+        if (countdownInterval) clearInterval(countdownInterval);
+        document.querySelector('.hour-countdown').textContent = '';
+    }
+    
+    // Process all variants to find those active during this hour
+    currentProductVariants.forEach(variant => {
+        const supervisorVariant = currentSupervisor ? 
+            productionData.supervisors.find(s => s.name === currentSupervisor)?.variants[variant.variant] : null;
+        
+        if (!supervisorVariant) return;
+        
+        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+        
+        if (!startTimeStr || !endTimeStr) return;
+        
+        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+        
+        const startTimeMinutes = startHour * 60 + startMinute;
+        const endTimeMinutes = endHour * 60 + endMinute;
+        
+        // Check if this hour falls within this variant's window
+        if (hourTimeMinutes >= startTimeMinutes && hourTimeMinutes <= endTimeMinutes) {
+            activeVariants.push(variant);
             
-            // Find all variants active during this hour
-            const activeVariants = [];
-            const hourlyData = { target: 0, production: 0 };
-            
-            // Get the hour's time in minutes
-            const [hourVal, minuteVal] = displayHour.split(':').map(Number);
-            const hourTimeMinutes = hourVal * 60 + minuteVal;
-            
-            // Show countdown for current hour if appropriate
-            if (selectedHour === 'current') {
-                startCountdown(displayHour);
-            } else {
-                if (countdownInterval) clearInterval(countdownInterval);
-                document.querySelector('.hour-countdown').textContent = '';
-            }
-            
-            // Process all variants to find those active during this hour
-            currentProductVariants.forEach(variant => {
-                const supervisorVariant = currentSupervisor ? 
-                    productionData.supervisors.find(s => s.name === currentSupervisor)?.variants[variant.variant] : null;
-                
-                if (!supervisorVariant) return;
-                
-                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-                
-                if (!startTimeStr || !endTimeStr) return;
-                
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                
-                const startTimeMinutes = startHour * 60 + startMinute;
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                // Check if this hour falls within this variant's window
-                if (hourTimeMinutes >= startTimeMinutes && hourTimeMinutes <= endTimeMinutes) {
-                    activeVariants.push(variant);
-                    
-                    // Add target and production data
-                    if (variant.hourlyTargets) {
-                        const targetData = variant.hourlyTargets.find(item => item.hour === displayHour);
-                        if (targetData) {
-                            hourlyData.target += targetData.target || 0;
-                        }
-                    }
-                    
-                    if (variant.hourlyProduction) {
-                        const productionData = variant.hourlyProduction.find(item => item.hour === displayHour);
-                        if (productionData) {
-                            hourlyData.production += productionData.production || 0;
-                        }
-                    }
+            // Add target and production data
+            if (variant.hourlyTargets) {
+                const targetData = variant.hourlyTargets.find(item => item.hour === displayHour);
+                if (targetData) {
+                    hourlyData.target += targetData.target || 0;
                 }
-            });
-            
-            // If no variants are active during this hour, show message
-            if (activeVariants.length === 0) {
-                chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No variants active during this hour</div>';
-                return;
             }
             
-            // Draw hourly chart
-            const svgWidth = chartContainer.clientWidth || 600;
-            const svgHeight = chartContainer.clientHeight || 370;
-            const padding = commonChartPadding;
-            const chartWidth = svgWidth - padding.left - padding.right;
-            const chartHeight = svgHeight - padding.top - padding.bottom;
-            
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', svgWidth);
-            svg.setAttribute('height', svgHeight);
-            svg.style.display = 'block';
-            svg.style.margin = '0 auto';
-            chartContainer.appendChild(svg);
-            
-            const maxValue = Math.max(hourlyData.production, hourlyData.target, 1) * 1.2;
-            
-            // Add grid
-            const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            for (let i = 0; i <= 4; i++) {
-                const y = padding.top + (chartHeight * i / 4);
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', padding.left);
-                line.setAttribute('y1', y);
-                line.setAttribute('x2', svgWidth - padding.right);
-                line.setAttribute('y2', y);
-                line.setAttribute('stroke', '#ddd');
-                line.setAttribute('stroke-width', '1');
-                gridGroup.appendChild(line);
-                
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', padding.left - 10);
-                text.setAttribute('y', y + 5);
-                text.setAttribute('text-anchor', 'end');
-                text.setAttribute('font-size', '14');
-                text.setAttribute('fill', '#666');
-                text.textContent = Math.round(maxValue * (4 - i) / 4);
-                gridGroup.appendChild(text);
-            }
-            
-            // Add y-axis title
-            const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            yAxisTitle.setAttribute('x', padding.left - 45);
-            yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
-            yAxisTitle.setAttribute('text-anchor', 'middle');
-            yAxisTitle.setAttribute('font-size', '16');
-            yAxisTitle.setAttribute('font-weight', 'bold');
-            yAxisTitle.setAttribute('fill', '#666');
-            yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 45}, ${padding.top + chartHeight / 2})`);
-            yAxisTitle.textContent = 'Units';
-            gridGroup.appendChild(yAxisTitle);
-            
-            // Add axes
-            const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            vLine.setAttribute('x1', padding.left);
-            vLine.setAttribute('y1', padding.top);
-            vLine.setAttribute('x2', padding.left);
-            vLine.setAttribute('y2', svgHeight - padding.bottom);
-            vLine.setAttribute('stroke', '#666');
-            vLine.setAttribute('stroke-width', '1.5');
-            gridGroup.appendChild(vLine);
-            
-            const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            xAxisLine.setAttribute('x1', padding.left);
-            xAxisLine.setAttribute('y1', svgHeight - padding.bottom);
-            xAxisLine.setAttribute('x2', svgWidth - padding.right);
-            xAxisLine.setAttribute('y2', svgHeight - padding.bottom);
-            xAxisLine.setAttribute('stroke', '#666');
-            xAxisLine.setAttribute('stroke-width', '1.5');
-            gridGroup.appendChild(xAxisLine);
-            svg.appendChild(gridGroup);
-            
-            // Draw bars
-            const barWidth = 80;
-            const barSpacing = 60;
-            const startX = svgWidth / 2 - barWidth - barSpacing / 2;
-            
-            // Production bar
-            const productionBarHeight = (hourlyData.production / maxValue) * chartHeight;
-            const productionBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            productionBar.setAttribute('x', startX);
-            productionBar.setAttribute('y', padding.top + chartHeight - productionBarHeight);
-            productionBar.setAttribute('width', barWidth);
-            productionBar.setAttribute('height', productionBarHeight);
-            productionBar.setAttribute('fill', 'var(--production-color)');
-            productionBar.setAttribute('rx', '5');
-            svg.appendChild(productionBar);
-            
-            // Target bar
-            const targetBarHeight = (hourlyData.target / maxValue) * chartHeight;
-            const targetBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            targetBar.setAttribute('x', startX + barWidth + barSpacing);
-            targetBar.setAttribute('y', padding.top + chartHeight - targetBarHeight);
-            targetBar.setAttribute('width', barWidth);
-            targetBar.setAttribute('height', targetBarHeight);
-            targetBar.setAttribute('fill', 'var(--target-color)');
-            targetBar.setAttribute('rx', '5');
-            svg.appendChild(targetBar);
-            
-            // Add production value text
-            const productionValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            productionValueText.setAttribute('x', startX + barWidth / 2);
-            productionValueText.setAttribute('y', padding.top + chartHeight - productionBarHeight - 15);
-            productionValueText.setAttribute('text-anchor', 'middle');
-            productionValueText.setAttribute('font-size', '18');
-            productionValueText.setAttribute('font-weight', '600');
-            productionValueText.setAttribute('fill', 'var(--production-color)');
-            productionValueText.textContent = hourlyData.production;
-            svg.appendChild(productionValueText);
-            
-            // Add target value text
-            const targetValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            targetValueText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
-            targetValueText.setAttribute('y', padding.top + chartHeight - targetBarHeight - 15);
-            targetValueText.setAttribute('text-anchor', 'middle');
-            targetValueText.setAttribute('font-size', '18');
-            targetValueText.setAttribute('font-weight', '600');
-            targetValueText.setAttribute('fill', 'var(--target-color)');
-            targetValueText.textContent = hourlyData.target;
-            svg.appendChild(targetValueText);
-            
-            // Add labels
-            const productionLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            productionLabelText.setAttribute('x', startX + barWidth / 2);
-            productionLabelText.setAttribute('y', svgHeight - padding.bottom + 30);
-            productionLabelText.setAttribute('text-anchor', 'middle');
-            productionLabelText.setAttribute('font-size', '16');
-            productionLabelText.setAttribute('font-weight', '500');
-            productionLabelText.setAttribute('fill', 'var(--production-color)');
-            productionLabelText.textContent = 'Production';
-            svg.appendChild(productionLabelText);
-            
-            const targetLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            targetLabelText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
-            targetLabelText.setAttribute('y', svgHeight - padding.bottom + 30);
-            targetLabelText.setAttribute('text-anchor', 'middle');
-            targetLabelText.setAttribute('font-size', '16');
-            targetLabelText.setAttribute('font-weight', '500');
-            targetLabelText.setAttribute('fill', 'var(--target-color)');
-            targetLabelText.textContent = 'Target';
-            svg.appendChild(targetLabelText);
-            
-            // X axis line
-            const xAxisLine2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            xAxisLine2.setAttribute('x1', padding.left);
-            xAxisLine2.setAttribute('y1', padding.top + chartHeight);
-            xAxisLine2.setAttribute('x2', svgWidth - padding.right);
-            xAxisLine2.setAttribute('y2', padding.top + chartHeight);
-            xAxisLine2.setAttribute('stroke', '#666');
-            xAxisLine2.setAttribute('stroke-width', '1.5');
-            svg.appendChild(xAxisLine2);
-            
-            // Update hour select dropdown
-            const select = document.getElementById('hour-range-select');
-            select.value = selectedHour === 'current' ? 'current' : displayHour;
-            
-            // Add active variants list
-            if (activeVariants.length > 1) {
-                const activeVariantsText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                activeVariantsText.setAttribute('x', svgWidth / 2);
-                activeVariantsText.setAttribute('y', padding.top + chartHeight + 45);
-                activeVariantsText.setAttribute('text-anchor', 'middle');
-                activeVariantsText.setAttribute('font-size', '14');
-                activeVariantsText.setAttribute('fill', '#666');
-                
-                const variantNames = activeVariants.map(v => {
-                    // Extract variant name from full string
-                    let displayName = v.variant;
-                    if (v.variant.startsWith(currentProduct + ' ')) {
-                        displayName = v.variant.substring(currentProduct.length + 1);
-                    }
-                    return displayName;
-                });
-                
-                activeVariantsText.textContent = `Active variants: ${variantNames.join(', ')}`;
-                svg.appendChild(activeVariantsText);
+            if (variant.hourlyProduction) {
+                const productionData = variant.hourlyProduction.find(item => item.hour === displayHour);
+                if (productionData) {
+                    hourlyData.production += productionData.production || 0;
+                }
             }
         }
+    });
+    
+    // If no variants are active during this hour, show message
+    if (activeVariants.length === 0) {
+        chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No variants active during this hour</div>';
+        return;
+    }
+    
+    // Draw hourly chart
+    const svgWidth = chartContainer.clientWidth || 600;
+    const svgHeight = chartContainer.clientHeight || 370;
+    const padding = commonChartPadding;
+    const chartWidth = svgWidth - padding.left - padding.right;
+    const chartHeight = svgHeight - padding.top - padding.bottom;
+    
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', svgWidth);
+    svg.setAttribute('height', svgHeight);
+    svg.style.display = 'block';
+    svg.style.margin = '0 auto';
+    chartContainer.appendChild(svg);
+    
+    const maxValue = Math.max(hourlyData.production, hourlyData.target, 1) * 1.2;
+    
+    // Add grid with larger fonts
+    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartHeight * i / 4);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', padding.left);
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', svgWidth - padding.right);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', '#ddd');
+        line.setAttribute('stroke-width', '1');
+        gridGroup.appendChild(line);
+        
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', padding.left - 15); // Increased offset
+        text.setAttribute('y', y + 6); // Adjusted for larger font
+        text.setAttribute('text-anchor', 'end');
+        text.setAttribute('font-size', '16'); // Increased from 14
+        text.setAttribute('class', 'chart-tick-label');
+        text.setAttribute('fill', '#666');
+        text.textContent = Math.round(maxValue * (4 - i) / 4);
+        gridGroup.appendChild(text);
+    }
+    
+    // Add y-axis title with larger font
+    const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    yAxisTitle.setAttribute('x', padding.left - 50); // Increased offset
+    yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
+    yAxisTitle.setAttribute('text-anchor', 'middle');
+    yAxisTitle.setAttribute('font-size', '18'); // Increased from 16
+    yAxisTitle.setAttribute('class', 'chart-axis-label');
+    yAxisTitle.setAttribute('font-weight', 'bold');
+    yAxisTitle.setAttribute('fill', '#666');
+    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 50}, ${padding.top + chartHeight / 2})`);
+    yAxisTitle.textContent = 'Units';
+    gridGroup.appendChild(yAxisTitle);
+    
+    // Add axes
+    const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    vLine.setAttribute('x1', padding.left);
+    vLine.setAttribute('y1', padding.top);
+    vLine.setAttribute('x2', padding.left);
+    vLine.setAttribute('y2', svgHeight - padding.bottom);
+    vLine.setAttribute('stroke', '#666');
+    vLine.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(vLine);
+    
+    const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    xAxisLine.setAttribute('x1', padding.left);
+    xAxisLine.setAttribute('y1', svgHeight - padding.bottom);
+    xAxisLine.setAttribute('x2', svgWidth - padding.right);
+    xAxisLine.setAttribute('y2', svgHeight - padding.bottom);
+    xAxisLine.setAttribute('stroke', '#666');
+    xAxisLine.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(xAxisLine);
+    svg.appendChild(gridGroup);
+    
+    // Draw bars
+    const barWidth = 80;
+    const barSpacing = 60;
+    const startX = svgWidth / 2 - barWidth - barSpacing / 2;
+    
+    // Production bar
+    const productionBarHeight = (hourlyData.production / maxValue) * chartHeight;
+    const productionBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    productionBar.setAttribute('x', startX);
+    productionBar.setAttribute('y', padding.top + chartHeight - productionBarHeight);
+    productionBar.setAttribute('width', barWidth);
+    productionBar.setAttribute('height', productionBarHeight);
+    productionBar.setAttribute('fill', 'var(--production-color)');
+    productionBar.setAttribute('rx', '5');
+    svg.appendChild(productionBar);
+    
+    // Target bar
+    const targetBarHeight = (hourlyData.target / maxValue) * chartHeight;
+    const targetBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    targetBar.setAttribute('x', startX + barWidth + barSpacing);
+    targetBar.setAttribute('y', padding.top + chartHeight - targetBarHeight);
+    targetBar.setAttribute('width', barWidth);
+    targetBar.setAttribute('height', targetBarHeight);
+    targetBar.setAttribute('fill', 'var(--target-color)');
+    targetBar.setAttribute('rx', '5');
+    svg.appendChild(targetBar);
+    
+    // Add production value text with larger font
+    const productionValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    productionValueText.setAttribute('x', startX + barWidth / 2);
+    productionValueText.setAttribute('y', padding.top + chartHeight - productionBarHeight - 20); // Increased offset
+    productionValueText.setAttribute('text-anchor', 'middle');
+    productionValueText.setAttribute('font-size', '22'); // Increased from 18
+    productionValueText.setAttribute('class', 'chart-data-label');
+    productionValueText.setAttribute('font-weight', '600');
+    productionValueText.setAttribute('fill', 'var(--production-color)');
+    productionValueText.textContent = hourlyData.production;
+    svg.appendChild(productionValueText);
+    
+    // Add target value text with larger font
+    const targetValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    targetValueText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
+    targetValueText.setAttribute('y', padding.top + chartHeight - targetBarHeight - 20); // Increased offset
+    targetValueText.setAttribute('text-anchor', 'middle');
+    targetValueText.setAttribute('font-size', '22'); // Increased from 18
+    targetValueText.setAttribute('class', 'chart-data-label');
+    targetValueText.setAttribute('font-weight', '600');
+    targetValueText.setAttribute('fill', 'var(--target-color)');
+    targetValueText.textContent = hourlyData.target;
+    svg.appendChild(targetValueText);
+    
+    // Add labels with larger font
+    const productionLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    productionLabelText.setAttribute('x', startX + barWidth / 2);
+    productionLabelText.setAttribute('y', svgHeight - padding.bottom + 35); // Increased offset
+    productionLabelText.setAttribute('text-anchor', 'middle');
+    productionLabelText.setAttribute('font-size', '18'); // Increased from 16
+    productionLabelText.setAttribute('font-weight', '500');
+    productionLabelText.setAttribute('fill', 'var(--production-color)');
+    productionLabelText.textContent = 'Production';
+    svg.appendChild(productionLabelText);
+    
+    const targetLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    targetLabelText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
+    targetLabelText.setAttribute('y', svgHeight - padding.bottom + 35); // Increased offset
+    targetLabelText.setAttribute('text-anchor', 'middle');
+    targetLabelText.setAttribute('font-size', '18'); // Increased from 16
+    targetLabelText.setAttribute('font-weight', '500');
+    targetLabelText.setAttribute('fill', 'var(--target-color)');
+    targetLabelText.textContent = 'Target';
+    svg.appendChild(targetLabelText);
+    
+    // X axis line
+    const xAxisLine2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    xAxisLine2.setAttribute('x1', padding.left);
+    xAxisLine2.setAttribute('y1', padding.top + chartHeight);
+    xAxisLine2.setAttribute('x2', svgWidth - padding.right);
+    xAxisLine2.setAttribute('y2', padding.top + chartHeight);
+    xAxisLine2.setAttribute('stroke', '#666');
+    xAxisLine2.setAttribute('stroke-width', '1.5');
+    svg.appendChild(xAxisLine2);
+    
+    // Update hour select dropdown
+    const select = document.getElementById('hour-range-select');
+    select.value = selectedHour === 'current' ? 'current' : displayHour;
+    
+    // Add active variants list with larger font
+    if (activeVariants.length > 1) {
+        const activeVariantsText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        activeVariantsText.setAttribute('x', svgWidth / 2);
+        activeVariantsText.setAttribute('y', padding.top + chartHeight + 50); // Increased offset
+        activeVariantsText.setAttribute('text-anchor', 'middle');
+        activeVariantsText.setAttribute('font-size', '16'); // Increased from 14
+        activeVariantsText.setAttribute('fill', '#666');
+        
+        const variantNames = activeVariants.map(v => {
+            // Extract variant name from full string
+            let displayName = v.variant;
+            if (v.variant.startsWith(currentProduct + ' ')) {
+                displayName = v.variant.substring(currentProduct.length + 1);
+            }
+            return displayName;
+        });
+        
+        activeVariantsText.textContent = `Active variants: ${variantNames.join(', ')}`;
+        svg.appendChild(activeVariantsText);
+    }
+}
 
         // Initialize the dashboard when the window loads
         window.onload = initDashboard;
