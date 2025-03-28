@@ -5,49 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sinapi Secondary Production Dashboard</title>
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3B82F6;
-            --success-color: #10B981;
-            --warning-color: #F59E0B;
-            --danger-color: #e74c3c;
-            --light-color: #f3f4f6;
-            --dark-color: #1e293b;
-            --supervisor-luthando: #F9E79F;
-            --supervisor-apelele: #e6e6e6; /* Light grey for Apelele */
-            --supervisor-siyabonga: #FADBD8;
-            --supervisor-nosi: #D6EAF8;
-            --supervisor-mvokwe: #D5F5E3;
-            --production-color: #e74c3c; /* Red for production */
-            --target-color: #10B981; /* Green for target */
-            --current-indicator: #F59E0B; /* Yellow for current time indicator */
-            --completed-variant: #D1E7DD; /* Light green for completed variants */
-            --current-variant: #FFF3CD; /* Light yellow for current variant */
-            --upcoming-variant: #F8D7DA; /* Light red for upcoming variants */
-        }
+       :root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3B82F6;
+    --success-color: #10B981;
+    --warning-color: #F59E0B;
+    --danger-color: #e74c3c;
+    --light-color: #f3f4f6;
+    --dark-color: #1e293b;
+    --supervisor-luthando: #F9E79F;
+    --supervisor-apelele: #e6e6e6; /* Light grey for Apelele */
+    --supervisor-siyabonga: #FADBD8;
+    --supervisor-nosi: #D6EAF8;
+    --supervisor-mvokwe: #D5F5E3;
+    --production-color: #e74c3c; /* Red for production */
+    --target-color: #10B981; /* Green for target */
+    --current-indicator: #F59E0B; /* Yellow for current time indicator */
+    --completed-variant: #D1E7DD; /* Light green for completed variants */
+    --current-variant: #FFF3CD; /* Light yellow for current variant */
+    --upcoming-variant: #F8D7DA; /* Light red for upcoming variants */
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--light-color);
-            color: var(--primary-color);
-            overflow: auto;
-            transition: background-color 0.5s ease;
-        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--light-color);
+    color: var(--primary-color);
+    overflow: auto;
+    transition: background-color 0.5s ease;
+}
 
-        .dashboard-container {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            padding: 12px; /* Reduced padding */
-            box-sizing: border-box;
-            max-width: 1400px;
-            margin: 0 auto;
-            transition: background-color 0.5s ease;
-        }
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 12px; /* Reduced padding */
+    box-sizing: border-box;
+    max-width: 1400px;
+    margin: 0 auto;
+    transition: background-color 0.5s ease;
+}
 
-        .fullscreen-mode {
+.fullscreen-mode {
     display: grid;
     grid-template-rows: auto auto auto 1fr auto;
     padding: 8px !important;
@@ -60,121 +60,115 @@
     background-color: var(--light-color) !important; /* Add this line */
 }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px; /* Reduced margin */
-            padding-bottom: 5px; /* Reduced padding */
-            border-bottom: 1px solid #e2e8f0;
-            width: 100%;
-        }
-
-        .supervisor-color-banner {
-            width: 100%;
-            height: 10px;
-            border-radius: 3px;
-            margin-bottom: 5px;
-        }
-
-        .title-section {
-            display: flex;
-            align-items: center;
-            gap: 15px; /* Reduced gap */
-            flex-wrap: wrap;
-        }
-
-        .title {
-            font-size: clamp(1.6rem, 2.4vw, 2.4rem);
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .subtitle {
-            font-size: clamp(1.2rem, 1.8vw, 1.8rem);
-            color: var(--secondary-color);
-            font-weight: 500;
-        }
-
-        .date-time {
-            text-align: right;
-            font-size: clamp(1rem, 1.4vw, 1.4rem);
-        }
-
-        .date {
-            font-weight: bold;
-        }
-
-        .time {
-            font-size: clamp(1.3rem, 1.8vw, 1.8rem);
-            margin-top: 3px; /* Reduced margin */
-        }
-
-        .content {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            overflow: hidden;
-            flex: 1; /* Make sure content takes up available space */
-        }
-
-        /* Updated Supervisor Bar CSS */
-.supervisor-bar {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    border-radius: 8px;
-    padding: 10px 15px;
-    box-sizing: border-box;
-    margin-bottom: 5px; /* Reduced from 10px to save vertical space */
-}
-
-        .supervisor-info {
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 5px;
+    margin-bottom: 5px; /* Reduced margin */
+    padding-bottom: 5px; /* Reduced padding */
+    border-bottom: 1px solid #e2e8f0;
+    width: 100%;
+}
+
+.supervisor-color-banner {
+    width: 100%;
+    height: 10px;
+    border-radius: 3px;
+    margin-bottom: 5px;
+}
+
+.title-section {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Reduced gap */
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.subtitle {
+    font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.date-time {
+    text-align: right;
+    font-size: clamp(1rem, 1.4vw, 1.4rem);
+}
+
+.date {
+    font-weight: bold;
+}
+
+.time {
+    font-size: clamp(1.3rem, 1.8vw, 1.8rem);
+    margin-top: 3px; /* Reduced margin */
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+    flex: 1; /* Make sure content takes up available space */
+}
+
+/* Supervisor Container - New consolidated layout */
+.supervisor-container {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* Supervisor Bar with Product and Sequence */
+.supervisor-bar {
+    flex: 0 0 40%; /* Take 40% of the width */
+    border-radius: 8px;
+    padding: 10px 15px;
+    box-sizing: border-box;
+    margin-right: 10px;
+    margin-bottom: 0; /* Remove bottom margin as we're using flex layout */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.supervisor-name {
+    font-size: clamp(1.6rem, 2.8vw, 2.8rem);
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--dark-color);
+}
+
+.supervisor-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .supervisor-title {
     font-size: clamp(1.4rem, 2.4vw, 2.4rem);
     font-weight: bold;
     color: var(--dark-color);
+    margin-bottom: 5px;
 }
 
-        .supervisor-name {
-            font-size: clamp(1.6rem, 2.8vw, 2.8rem);
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: var(--dark-color);
-        }
-
-        .supervisor-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-top: 5px;
-        }
-
-        
 .product-name {
     font-size: clamp(1.2rem, 2vw, 2rem);
-    text-align: right;
+    color: var(--dark-color);
 }
 
-        .variant-sequence-container {
-            display: flex;
-            flex-direction: column;
-        }
+.variant-sequence-container {
+    margin-top: 10px;
+    width: 100%;
+}
 
-        .variant-sequence-label {
-            font-size: clamp(1rem, 1.8vw, 1.8rem);
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: var(--dark-color);
-        }
-
-        .variant-sequence {
+.variant-sequence {
     display: flex;
     align-items: center;
     font-size: clamp(1rem, 1.5vw, 1.5rem); /* Increased font size */
@@ -182,476 +176,493 @@
     gap: 8px; /* Increased gap for better visibility */
 }
 
-        .variant-item {
+.variant-item {
     padding: 8px 14px; /* Increased padding for better visibility */
     border-radius: 4px;
     white-space: nowrap;
     position: relative;
     font-weight: 500; /* Added for better readability */
 }
-        
-        .variant-time {
-            font-size: clamp(0.8rem, 1.2vw, 1.2rem);
-            display: block;
-            text-align: center;
-        }
-        
-        .variant-status {
-            font-size: clamp(0.7rem, 1.1vw, 1.1rem);
-            display: block;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .variant-item.completed {
-            background-color: var(--completed-variant);
-            color: var(--dark-color);
-        }
-        
-        .variant-item.current {
-            background-color: var(--current-variant);
-            color: var(--dark-color);
-            font-weight: bold;
-        }
-        
-        .variant-item.upcoming {
-            background-color: var(--upcoming-variant);
-            color: var(--dark-color);
-        }
-        
-        .arrow-right {
-            margin: 0 4px;
-            font-size: clamp(1.2rem, 2vw, 2rem);
-            color: var(--dark-color);
-        }
 
-        .totals-display {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            margin-bottom: 10px;
-            font-size: clamp(1rem, 1.3vw, 1.3rem);
-            gap: 10px;
-            width: 100%;
-            box-sizing: border-box;
-            align-items: start;
-        }
+.variant-time {
+    font-size: clamp(0.8rem, 1.2vw, 1.2rem);
+    display: block;
+    text-align: center;
+}
 
-        .total-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px 15px;
-            width: 100%;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
+.variant-status {
+    font-size: clamp(0.7rem, 1.1vw, 1.1rem);
+    display: block;
+    text-align: center;
+    font-weight: bold;
+}
 
-        .total-label {
-            font-weight: bold;
-            margin-bottom: 4px;
-            font-size: clamp(1.1rem, 1.8vw, 1.8rem);
-            color: var(--dark-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding-bottom: 4px;
-        }
+.variant-item.completed {
+    background-color: var(--completed-variant);
+    color: var(--dark-color);
+}
 
-        .total-percentage {
-            color: var(--warning-color);
-            font-size: 1em;
-        }
+.variant-item.current {
+    background-color: var(--current-variant);
+    color: var(--dark-color);
+    font-weight: bold;
+}
 
-        .total-value {
-            font-size: clamp(1.6rem, 2.4vw, 2.4rem);
-            font-weight: bold;
-        }
+.variant-item.upcoming {
+    background-color: var(--upcoming-variant);
+    color: var(--dark-color);
+}
 
-        .total-subvalue {
-            font-size: clamp(1rem, 1.6vw, 1.6rem);
-            margin-top: 5px;
-        }
+.arrow-right {
+    margin: 0 4px;
+    font-size: clamp(1.2rem, 2vw, 2rem);
+    color: var(--dark-color);
+}
 
-        .current-value {
-            color: var(--production-color);
-        }
+/* Hourly targets wrapper - New for consolidated layout */
+.hourly-targets-wrapper {
+    flex: 0 0 58%; /* Take 58% of the width */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding: 10px;
+    height: 100%;
+    box-sizing: border-box;
+}
 
-        .target-value {
-            color: var(--target-color);
-        }
+.totals-display {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    margin-bottom: 10px;
+    font-size: clamp(1rem, 1.3vw, 1.3rem);
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    align-items: start;
+}
 
-        .total-hourly {
-            color: var(--dark-color);
-        }
-        .chart-container {
-            flex: 1; /* Takes all available space */
-            background-color: white;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            overflow: hidden;
-            width: 100%;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            min-height: 0; /* Important for flex container */
-            margin-top: 5px; /* Added small margin */
-        }
+.total-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 15px;
+    width: 100%;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
 
-        .charts-row {
-            display: flex;
-            gap: 10px;
-            flex: 1;
-            min-height: 0; /* Important for flex container */
-    height: calc(75vh - 200px); /* Increased from 70vh - 250px */
-        }
+.total-label {
+    font-weight: bold;
+    margin-bottom: 4px;
+    font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+    color: var(--dark-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 4px;
+}
 
-        .chart {
-            flex: 1;
-            background-color: white;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            min-height: 0; /* Important for flex container */
-        }
+.total-percentage {
+    color: var(--warning-color);
+    font-size: 1em;
+}
 
-        .chart-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            flex-wrap: nowrap;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 10px;
-        }
+.total-value {
+    font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+    font-weight: bold;
+}
 
-        .chart-title {
-            font-size: clamp(1.3rem, 2vw, 2rem);
-            font-weight: 600;
-            margin-right: 15px;
-            color: var(--dark-color);
-            white-space: nowrap;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+.total-subvalue {
+    font-size: clamp(1rem, 1.6vw, 1.6rem);
+    margin-top: 5px;
+}
 
-        .chart-title-select {
-            background: none;
-            border: none;
-            color: var(--dark-color);
-            font-weight: 600;
-            font-size: clamp(1.3rem, 2vw, 2rem);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            cursor: pointer;
-            padding: 0;
-            margin: 0;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            display: inline-block;
-        }
+.current-value {
+    color: var(--production-color);
+}
 
-        .chart-title-select:focus {
-            outline: none;
-        }
+.target-value {
+    color: var(--target-color);
+}
 
-        .chart-title-text {
-            font-size: clamp(1.3rem, 2vw, 2rem);
-            font-weight: 600;
-            color: var(--dark-color);
-            white-space: nowrap;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+.total-hourly {
+    color: var(--dark-color);
+}
+.chart-container {
+    flex: 1; /* Takes all available space */
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Important for flex container */
+    margin-top: 5px; /* Added small margin */
+}
 
-        .hour-info {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 10px;
-            font-weight: 500;
-            white-space: nowrap;
-            margin-left: 10px;
-        }
+.charts-row {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    min-height: 0; /* Important for flex container */
+    height: calc(75vh - 200px); /* Increased from 70vh - 250px for more visual space */
+}
 
-        .hour-countdown {
-            font-size: clamp(1rem, 1.6vw, 1.6rem);
-            color: var(--secondary-color);
-            font-style: normal;
-        }
+.chart {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0; /* Important for flex container */
+}
 
-        .hour-select-container {
-            margin-left: auto;
-        }
+.chart-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: nowrap;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 10px;
+}
 
-        .hour-select {
-            padding: 6px 12px;
-            border-radius: 5px;
-            border: 1px solid var(--secondary-color);
-            font-family: inherit;
-            background-color: white;
-            height: 36px;
-            font-size: clamp(0.9rem, 1.4vw, 1.4rem);
-            font-weight: 500;
-            color: var(--dark-color);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
+.chart-title {
+    font-size: clamp(1.3rem, 2vw, 2rem);
+    font-weight: 600;
+    margin-right: 15px;
+    color: var(--dark-color);
+    white-space: nowrap;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        .chart-area {
-            flex: 1;
-            position: relative;
-            height: 100%;
-            min-height: 0;
-        }
+.chart-title-select {
+    background: none;
+    border: none;
+    color: var(--dark-color);
+    font-weight: 600;
+    font-size: clamp(1.3rem, 2vw, 2rem);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: inline-block;
+}
 
-        .line-chart, .bar-chart {
-            height: 100%;
-            width: 100%;
-            min-height: 0; /* Important for SVG content */
-        }
+.chart-title-select:focus {
+    outline: none;
+}
 
-        .legend {
-            display: flex;
-            justify-content: center;
-            margin-top: 8px;
-            font-size: clamp(1rem, 1.6vw, 1.6rem);
-        }
+.chart-title-text {
+    font-size: clamp(1.3rem, 2vw, 2rem);
+    font-weight: 600;
+    color: var(--dark-color);
+    white-space: nowrap;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin: 0 12px;
-        }
+.hour-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: 10px;
+}
 
-        .legend-color {
-            width: 15px;
-            height: 15px;
-            margin-right: 6px;
-            border-radius: 2px;
-        }
+.hour-countdown {
+    font-size: clamp(1rem, 1.6vw, 1.6rem);
+    color: var(--secondary-color);
+    font-style: normal;
+}
 
-        .production-color {
-            background-color: var(--production-color);
-        }
+.hour-select-container {
+    margin-left: auto;
+}
 
-        .target-color {
-            background-color: var(--target-color);
-        }
+.hour-select {
+    padding: 6px 12px;
+    border-radius: 5px;
+    border: 1px solid var(--secondary-color);
+    font-family: inherit;
+    background-color: white;
+    height: 36px;
+    font-size: clamp(0.9rem, 1.4vw, 1.4rem);
+    font-weight: 500;
+    color: var(--dark-color);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
 
-        .footer {
-            margin-top: 10px;
-            text-align: center;
-            font-size: clamp(1rem, 1.4vw, 1.4rem);
-            color: var(--dark-color);
-            width: 100%;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-        }
+.chart-area {
+    flex: 1;
+    position: relative;
+    height: 100%;
+    min-height: 0;
+}
 
-        .update-info {
-            font-size: clamp(0.9rem, 1.4vw, 1.4rem);
-            color: var(--dark-color);
-            text-align: left;
-        }
+.line-chart, .bar-chart {
+    height: 100%;
+    width: 100%;
+    min-height: 0; /* Important for SVG content */
+}
 
-        .hourly-targets-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            overflow: hidden;
-            margin-top: 0;
-        }
+.legend {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+    font-size: clamp(1rem, 1.6vw, 1.6rem);
+}
 
-        .hourly-targets-svg {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            overflow: visible;
-            margin-top: -30px;
-        }
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 0 12px;
+}
 
-        .hourly-circle {
-            fill: white;
-            stroke: #999;
-            stroke-width: 4;
-            r: 80;
-        }
+.legend-color {
+    width: 15px;
+    height: 15px;
+    margin-right: 6px;
+    border-radius: 2px;
+}
 
-        .time-label {
-            font-size: clamp(0.9rem, 1.2vw, 1.2rem);
-            text-anchor: middle;
-            dominant-baseline: hanging;
-            fill: #333;
-            font-weight: 600;
-        }
-        
-        .current-arrow {
-            fill: var(--warning-color);
-            transform: scale(6.0);
-        }
+.production-color {
+    background-color: var(--production-color);
+}
 
-        .status-icon {
-            stroke-width: 12;
-        }
+.target-color {
+    background-color: var(--target-color);
+}
 
-        .status-success {
-            stroke: var(--target-color);
-        }
+.footer {
+    margin-top: 10px;
+    text-align: center;
+    font-size: clamp(1rem, 1.4vw, 1.4rem);
+    color: var(--dark-color);
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
 
-        .status-fail {
-            stroke: var(--production-color);
-        }
+.update-info {
+    font-size: clamp(0.9rem, 1.4vw, 1.4rem);
+    color: var(--dark-color);
+    text-align: left;
+}
 
-        .filter-section {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
+.hourly-targets-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: 0;
+    position: relative;
+}
 
-        .filter-select {
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: 1px solid var(--secondary-color);
-            font-size: clamp(1rem, 1.6vw, 1.6rem);
-            font-family: inherit;
-            min-width: 180px;
-            background-color: white;
-        }
+.hourly-targets-svg {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    overflow: visible;
+}
 
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: var(--dark-color);
-            font-size: clamp(1.2rem, 1.8vw, 1.8rem);
-        }
+.hourly-circle {
+    fill: white;
+    stroke: #999;
+    stroke-width: 4;
+    r: 40; /* Reduced from 80 to fit better in the consolidated layout */
+}
 
-        .error {
-            text-align: center;
-            padding: 20px;
-            color: var(--danger-color);
-            font-weight: bold;
-            font-size: clamp(1.2rem, 1.8vw, 1.8rem);
-        }
+.time-label {
+    font-size: clamp(0.9rem, 1.2vw, 1.2rem);
+    text-anchor: middle;
+    dominant-baseline: hanging;
+    fill: #333;
+    font-weight: 600;
+}
 
-        /* Dynamic supervisor color classes */
-        .dashboard-container.supervisor-luthando .supervisor-color-banner,
-        .dashboard-container.supervisor-luthando .supervisor-bar {
-            background-color: var(--supervisor-luthando);
-        }
+.current-arrow {
+    fill: var(--warning-color);
+    transform: scale(6.0);
+}
 
-        .dashboard-container.supervisor-apelele .supervisor-color-banner,
-        .dashboard-container.supervisor-apelele .supervisor-bar {
-            background-color: var(--supervisor-apelele);
-        }
+.status-icon {
+    stroke-width: 8; /* Reduced from 12 to fit smaller circles */
+}
 
-        .dashboard-container.supervisor-siyabonga .supervisor-color-banner,
-        .dashboard-container.supervisor-siyabonga .supervisor-bar {
-            background-color: var(--supervisor-siyabonga);
-        }
+.status-success {
+    stroke: var(--target-color);
+}
 
-        .dashboard-container.supervisor-nosi .supervisor-color-banner,
-        .dashboard-container.supervisor-nosi .supervisor-bar {
-            background-color: var(--supervisor-nosi);
-        }
+.status-fail {
+    stroke: var(--production-color);
+}
 
-        .dashboard-container.supervisor-mvokwe .supervisor-color-banner,
-        .dashboard-container.supervisor-mvokwe .supervisor-bar {
-            background-color: var(--supervisor-mvokwe);
-        }
+.filter-section {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
 
-        /* Responsive design */
-        @media (max-width: 1200px) {
-            .supervisor-details {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .variant-sequence-container {
-                width: 100%;
-            }
-        }
+.filter-select {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: 1px solid var(--secondary-color);
+    font-size: clamp(1rem, 1.6vw, 1.6rem);
+    font-family: inherit;
+    min-width: 180px;
+    background-color: white;
+}
 
-        /* Update responsive behavior for smaller screens */
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: var(--dark-color);
+    font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+}
+
+.error {
+    text-align: center;
+    padding: 20px;
+    color: var(--danger-color);
+    font-weight: bold;
+    font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+}
+
+/* Dynamic supervisor color classes */
+.dashboard-container.supervisor-luthando .supervisor-color-banner,
+.dashboard-container.supervisor-luthando .supervisor-bar {
+    background-color: var(--supervisor-luthando);
+}
+
+.dashboard-container.supervisor-apelele .supervisor-color-banner,
+.dashboard-container.supervisor-apelele .supervisor-bar {
+    background-color: var(--supervisor-apelele);
+}
+
+.dashboard-container.supervisor-siyabonga .supervisor-color-banner,
+.dashboard-container.supervisor-siyabonga .supervisor-bar {
+    background-color: var(--supervisor-siyabonga);
+}
+
+.dashboard-container.supervisor-nosi .supervisor-color-banner,
+.dashboard-container.supervisor-nosi .supervisor-bar {
+    background-color: var(--supervisor-nosi);
+}
+
+.dashboard-container.supervisor-mvokwe .supervisor-color-banner,
+.dashboard-container.supervisor-mvokwe .supervisor-bar {
+    background-color: var(--supervisor-mvokwe);
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .supervisor-container {
+        flex-direction: column;
+    }
+    
+    .supervisor-bar {
+        flex: 0 0 auto;
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .hourly-targets-wrapper {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+    
+    .hourly-circle {
+        r: 35;
+    }
+}
+
 @media (max-width: 1024px) {
+    .charts-row {
+        flex-direction: column;
+        height: auto;
+    }
+    
     .chart {
         height: 50vh; /* Increased from 45vh */
         min-height: 350px;
     }
+    
+    .dashboard-container {
+        padding: 8px;
+    }
 }
-            
-            .chart {
-                height: 45vh;
-                min-height: 350px;
-            }
-            
-            .dashboard-container {
-                padding: 8px;
-            }
-            
-            .hourly-circle {
-                r: 65;
-            }
-        }
 
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .title-section {
-                flex-direction: column;
-                align-items: center;
-                width: 100%;
-            }
-            
-            .filter-section {
-                flex-direction: column;
-                width: 100%;
-                margin-top: 10px;
-            }
-            
-            .filter-select {
-                width: 100%;
-            }
-            
-            .date-time {
-                text-align: center;
-                margin-top: 10px;
-            }
-            
-            .chart {
-                height: 40vh;
-                min-height: 300px;
-            }
-            
-            .chart-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .hour-select-container {
-                margin-left: 0;
-                margin-top: 10px;
-                width: 100%;
-            }
-            
-            .hour-select {
-                width: 100%;
-            }
-            
-            .hourly-circle {
-                r: 50;
-            }
-            
-            .status-icon {
-                stroke-width: 10;
-            }
-        }
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .title-section {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .filter-section {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .filter-select {
+        width: 100%;
+    }
+    
+    .date-time {
+        text-align: center;
+        margin-top: 10px;
+    }
+    
+    .chart {
+        height: 40vh;
+        min-height: 300px;
+    }
+    
+    .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .hour-select-container {
+        margin-left: 0;
+        margin-top: 10px;
+        width: 100%;
+    }
+    
+    .hour-select {
+        width: 100%;
+    }
+    
+    .hourly-circle {
+        r: 30;
+    }
+    
+    .status-icon {
+        stroke-width: 6;
+    }
+}
     </style>
     </head>
 <body>
@@ -836,6 +847,34 @@
             setTimeout(updateDashboard, 100);
         }
 
+        function setupConsolidatedLayout() {
+    // Check if the structure is already created
+    if (!document.querySelector('.supervisor-container')) {
+        const content = document.querySelector('.content');
+        const supervisorBar = document.querySelector('.supervisor-bar');
+        const totalsDisplay = document.getElementById('totals-display');
+        
+        // Create container for supervisor and hourly targets
+        const supervisorContainer = document.createElement('div');
+        supervisorContainer.className = 'supervisor-container';
+        
+        // Move supervisor bar into container
+        if (supervisorBar) {
+            supervisorBar.parentNode.removeChild(supervisorBar);
+            supervisorContainer.appendChild(supervisorBar);
+        }
+        
+        // Create wrapper for hourly targets
+        const hourlyTargetsWrapper = document.createElement('div');
+        hourlyTargetsWrapper.className = 'hourly-targets-wrapper';
+        hourlyTargetsWrapper.innerHTML = '<div class="total-label">Hourly Targets</div><div id="hourly-targets-container" class="hourly-targets-container"></div>';
+        supervisorContainer.appendChild(hourlyTargetsWrapper);
+        
+        // Insert the new container before totals display
+        content.insertBefore(supervisorContainer, totalsDisplay);
+    }
+}
+        
         function applySupervisorStyling(supervisorName) {
             const dashboardContainer = document.querySelector('.dashboard-container');
             dashboardContainer.classList.remove('supervisor-luthando', 'supervisor-apelele', 'supervisor-siyabonga', 'supervisor-nosi', 'supervisor-mvokwe');
@@ -1049,6 +1088,48 @@
     return Math.round(totalElapsedWorkingTime / totalProduction);
 }
 
+function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
+    let totalElapsedBreakMinutes = 0;
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    
+    // Function to check if a break has already occurred or is occurring
+    const getElapsedBreakMinutes = (breakStartStr, breakEndStr) => {
+        if (!breakStartStr || !breakEndStr) return 0;
+        if (breakStartStr === "-" || breakEndStr === "-") return 0;
+        
+        const [breakStartHour, breakStartMinute] = breakStartStr.split(':').map(Number);
+        const [breakEndHour, breakEndMinute] = breakEndStr.split(':').map(Number);
+        
+        const breakStartMinutes = breakStartHour * 60 + breakStartMinute;
+        const breakEndMinutes = breakEndHour * 60 + breakEndMinute;
+        
+        // If break hasn't started yet, return 0
+        if (currentTime < breakStartMinutes) return 0;
+        
+        // If break is in progress, return elapsed portion
+        if (currentTime < breakEndMinutes) return currentTime - breakStartMinutes;
+        
+        // If break is complete, return full duration
+        return breakEndMinutes - breakStartMinutes;
+    };
+    
+    // Check each break
+    if (variant["Break Start (Lunch)"] && variant["Break End (Lunch)"]) {
+        totalElapsedBreakMinutes += getElapsedBreakMinutes(variant["Break Start (Lunch)"], variant["Break End (Lunch)"]);
+    }
+    
+    if (variant["Break Start (Tea)"] && variant["Break End (Tea)"]) {
+        totalElapsedBreakMinutes += getElapsedBreakMinutes(variant["Break Start (Tea)"], variant["Break End (Tea)"]);
+    }
+    
+    if (variant["OT Break Start (Tea)"] && variant["OT Break End (Tea)"] && 
+        variant["OT Break Start (Tea)"] !== "-" && variant["OT Break End (Tea)"] !== "-") {
+        totalElapsedBreakMinutes += getElapsedBreakMinutes(variant["OT Break Start (Tea)"], variant["OT Break End (Tea)"]);
+    }
+    
+    return totalElapsedBreakMinutes;
+}
+
 // New helper function to calculate only elapsed break time
 function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
     let totalElapsedBreakMinutes = 0;
@@ -1169,39 +1250,39 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
             return parts[0];
         }
         async function fetchProductionData() {
-            try {
-                console.log(`Attempting to fetch data from: ${DATA_URL}`);
-                const cacheBuster = '?_=' + new Date().getTime();
-                const response = await fetch(DATA_URL + cacheBuster);
-                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                const data = await response.json();
-                
-                if (!data.variants || !Array.isArray(data.variants) || !data.supervisors || !Array.isArray(data.supervisors)) {
-                    throw new Error('Invalid data structure in data.json');
-                }
-                
-                if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
-                    productionData = data;
-                    lastUpdateTime = data.timestamp;
-                    
-                    // Update both last update displays
-                    document.getElementById('last-update2').textContent = 'Last updated: ' + data.timestamp;
-                    
-                    // Process product-supervisor groups from the new data
-                    processProductSupervisorGroups();
-                    
-                    updateFilterValueDropdown();
-                    updateDashboard();
-                    updateHourDropdown();
-                }
-                
-                isLoading = false;
-            } catch (error) {
-                console.error(`Fetch failed:`, error);
-                isLoading = false;
-                showLoadingOrError(`Failed to load data: ${error.message}`);
-            }
+    try {
+        console.log(`Attempting to fetch data from: ${DATA_URL}`);
+        const cacheBuster = '?_=' + new Date().getTime();
+        const response = await fetch(DATA_URL + cacheBuster);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        const data = await response.json();
+        
+        if (!data.variants || !Array.isArray(data.variants) || !data.supervisors || !Array.isArray(data.supervisors)) {
+            throw new Error('Invalid data structure in data.json');
         }
+        
+        if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
+            productionData = data;
+            lastUpdateTime = data.timestamp;
+            
+            // Update only the footer timestamp
+            document.getElementById('last-update2').textContent = 'Last updated: ' + data.timestamp;
+            
+            // Process product-supervisor groups from the new data
+            processProductSupervisorGroups();
+            
+            updateFilterValueDropdown();
+            updateDashboard();
+            updateHourDropdown();
+        }
+        
+        isLoading = false;
+    } catch (error) {
+        console.error(`Fetch failed:`, error);
+        isLoading = false;
+        showLoadingOrError(`Failed to load data: ${error.message}`);
+    }
+}
 
         function processProductSupervisorGroups() {
             // Reset groups
@@ -1378,64 +1459,67 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
             }
         }
         function updateDashboard() {
-            // Filter groups based on selection
-            let filteredGroups = {};
-            
-            if (selectedFilterValue === 'all') {
-                filteredGroups = productSupervisorGroups;
-            } else if (selectedFilterType === 'supervisor') {
-                // Filter by supervisor
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    if (productSupervisorGroups[key].supervisor === selectedFilterValue) {
-                        filteredGroups[key] = productSupervisorGroups[key];
-                    }
-                });
-            } else if (selectedFilterType === 'product') {
-                // Filter by product
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    if (productSupervisorGroups[key].product === selectedFilterValue) {
-                        filteredGroups[key] = productSupervisorGroups[key];
-                    }
-                });
-            } else if (selectedFilterType === 'variant') {
-                // Filter by variant
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    const group = productSupervisorGroups[key];
-                    if (group.variants.some(v => v.variant === selectedFilterValue)) {
-                        filteredGroups[key] = group;
-                    }
-                });
+    // Filter groups based on selection
+    let filteredGroups = {};
+    
+    if (selectedFilterValue === 'all') {
+        filteredGroups = productSupervisorGroups;
+    } else if (selectedFilterType === 'supervisor') {
+        // Filter by supervisor
+        Object.keys(productSupervisorGroups).forEach(key => {
+            if (productSupervisorGroups[key].supervisor === selectedFilterValue) {
+                filteredGroups[key] = productSupervisorGroups[key];
             }
-            
-            // If no groups after filtering, show error and return
-            if (Object.keys(filteredGroups).length === 0) {
-                showLoadingOrError('No data available for this filter.');
-                if (cycleInterval) clearInterval(cycleInterval);
-                cycleInterval = null;
-                return;
+        });
+    } else if (selectedFilterType === 'product') {
+        // Filter by product
+        Object.keys(productSupervisorGroups).forEach(key => {
+            if (productSupervisorGroups[key].product === selectedFilterValue) {
+                filteredGroups[key] = productSupervisorGroups[key];
             }
-            
-            // Multiple groups - setup cycling
-            const groupKeys = Object.keys(filteredGroups);
-            if (groupKeys.length > 1) {
-                // Clear existing interval
-                if (cycleInterval) clearInterval(cycleInterval);
-                
-                // Set cycling logic
-                cycleIndex = 0;
-                cycleInterval = setInterval(() => {
-                    cycleIndex = (cycleIndex + 1) % groupKeys.length;
-                    displayGroup(filteredGroups[groupKeys[cycleIndex]]);
-                }, CYCLE_INTERVAL);
-            } else {
-                // Single group - clear cycling
-                if (cycleInterval) clearInterval(cycleInterval);
-                cycleInterval = null;
+        });
+    } else if (selectedFilterType === 'variant') {
+        // Filter by variant
+        Object.keys(productSupervisorGroups).forEach(key => {
+            const group = productSupervisorGroups[key];
+            if (group.variants.some(v => v.variant === selectedFilterValue)) {
+                filteredGroups[key] = group;
             }
-            
-            // Display the first group initially
-            displayGroup(filteredGroups[groupKeys[0]]);
-        }
+        });
+    }
+    
+    // If no groups after filtering, show error and return
+    if (Object.keys(filteredGroups).length === 0) {
+        showLoadingOrError('No data available for this filter.');
+        if (cycleInterval) clearInterval(cycleInterval);
+        cycleInterval = null;
+        return;
+    }
+    
+    // Multiple groups - setup cycling
+    const groupKeys = Object.keys(filteredGroups);
+    if (groupKeys.length > 1) {
+        // Clear existing interval
+        if (cycleInterval) clearInterval(cycleInterval);
+        
+        // Set cycling logic
+        cycleIndex = 0;
+        cycleInterval = setInterval(() => {
+            cycleIndex = (cycleIndex + 1) % groupKeys.length;
+            displayGroup(filteredGroups[groupKeys[cycleIndex]]);
+        }, CYCLE_INTERVAL);
+    } else {
+        // Single group - clear cycling
+        if (cycleInterval) clearInterval(cycleInterval);
+        cycleInterval = null;
+    }
+    
+    // Setup the consolidated layout
+    setupConsolidatedLayout();
+    
+    // Display the first group initially
+    displayGroup(filteredGroups[groupKeys[0]]);
+}
 
         function displayGroup(group) {
             // Set current product and supervisor
@@ -1578,276 +1662,269 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
 }
 
         function updateTotalsDisplay(group) {
-            // Initialize aggregated values
-            let totalTarget = 0;
-            let totalProduction = 0;
-            let totalBoxTarget = 0;
-            let totalBoxProduction = 0;
-            let weightedCycleTime = 0;
-            let totalCycleTimeWeight = 0;
+    // Initialize aggregated values
+    let totalTarget = 0;
+    let totalProduction = 0;
+    let totalBoxTarget = 0;
+    let totalBoxProduction = 0;
+    let weightedCycleTime = 0;
+    let totalCycleTimeWeight = 0;
+    
+    // Calculate aggregated values
+    group.variants.forEach(variant => {
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        
+        if (supervisorVariant) {
+            totalTarget += (supervisorVariant.dailyTarget || 0);
+            totalProduction += (supervisorVariant.currentTotal || 0);
             
-            // Calculate aggregated values
-            group.variants.forEach(variant => {
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                
-                if (supervisorVariant) {
-                    totalTarget += (supervisorVariant.dailyTarget || 0);
-                    totalProduction += (supervisorVariant.currentTotal || 0);
-                    
-                    // Add box totals consistently for all variants
-                    totalBoxTarget += (variant.dailyBoxTarget || 0);
-                    totalBoxProduction += (variant.currentBoxTotal || 0);
-                    
-                    // Add cycle time weighted by target
-                    const cycleTime = variant.cycleTime || 0;
-                    const target = supervisorVariant.dailyTarget || 0;
-                    
-                    if (cycleTime > 0 && target > 0) {
-                        weightedCycleTime += cycleTime * target;
-                        totalCycleTimeWeight += target;
-                    }
-                }
-            });
+            // Add box totals consistently for all variants
+            totalBoxTarget += (variant.dailyBoxTarget || 0);
+            totalBoxProduction += (variant.currentBoxTotal || 0);
             
-            // Calculate overall progress percentage
-            const progressPercentage = totalTarget > 0 ? Math.round((totalProduction / totalTarget) * 100) : 0;
+            // Add cycle time weighted by target
+            const cycleTime = variant.cycleTime || 0;
+            const target = supervisorVariant.dailyTarget || 0;
             
-            // Calculate average cycle time
-            const avgCycleTime = totalCycleTimeWeight > 0 ? Math.round(weightedCycleTime / totalCycleTimeWeight) : 0;
-            
-            // Calculate actual cycle time across all variants
-            const actualCycleTime = calculateActualCycleTime(group.variants);
-            
-            // Update totals display
-            const totalsDisplay = document.getElementById('totals-display');
-            totalsDisplay.innerHTML = '';
-            
-            // Progress display with percentage
-            totalsDisplay.innerHTML += `
-                <div class="total-item">
-                    <div class="total-label">
-                        Progress <span class="total-percentage">${progressPercentage}%</span>
-                    </div>
-                    <div class="total-value">
-                        <span class="current-value">${totalProduction}</span>/<span class="target-value">${totalTarget}</span>
-                    </div>
-                    <div class="total-subvalue">
-                        <span class="current-value">${totalBoxProduction}</span>/<span class="target-value">${totalBoxTarget}</span> boxes
-                    </div>
-                </div>
-            `;
-            
-            // Cycle Time display
-            totalsDisplay.innerHTML += `
-                <div class="total-item">
-                    <div class="total-label">Cycle Time</div>
-                    <div class="total-value">
-                        <span class="current-value">${actualCycleTime}</span>/<span class="target-value">${avgCycleTime}</span>
-                    </div>
-                    <div class="total-subvalue">sec/unit</div>
-                </div>
-            `;
-            
-            // Hourly targets visual display
-            const hourlyTargetsContainer = document.createElement('div');
-            hourlyTargetsContainer.className = 'total-item';
-            hourlyTargetsContainer.style.height = 'auto';
-            hourlyTargetsContainer.style.paddingTop = '0';
-            hourlyTargetsContainer.innerHTML = `<div class="total-label">Hourly Targets</div>`;
-            
-            // Create SVG for hourly targets
-            const hourlyTargetsContent = renderHourlyTargetsVisual(group);
-            hourlyTargetsContainer.appendChild(hourlyTargetsContent);
-            
-            totalsDisplay.appendChild(hourlyTargetsContainer);
+            if (cycleTime > 0 && target > 0) {
+                weightedCycleTime += cycleTime * target;
+                totalCycleTimeWeight += target;
+            }
         }
+    });
+    
+    // Calculate overall progress percentage
+    const progressPercentage = totalTarget > 0 ? Math.round((totalProduction / totalTarget) * 100) : 0;
+    
+    // Calculate average cycle time
+    const avgCycleTime = totalCycleTimeWeight > 0 ? Math.round(weightedCycleTime / totalCycleTimeWeight) : 0;
+    
+    // Calculate actual cycle time across all variants
+    const actualCycleTime = calculateActualCycleTime(group.variants);
+    
+    // Update totals display
+    const totalsDisplay = document.getElementById('totals-display');
+    totalsDisplay.innerHTML = '';
+    
+    // Progress display with percentage
+    totalsDisplay.innerHTML += `
+        <div class="total-item">
+            <div class="total-label">
+                Progress <span class="total-percentage">${progressPercentage}%</span>
+            </div>
+            <div class="total-value">
+                <span class="current-value">${totalProduction}</span>/<span class="target-value">${totalTarget}</span>
+            </div>
+            <div class="total-subvalue">
+                <span class="current-value">${totalBoxProduction}</span>/<span class="target-value">${totalBoxTarget}</span> boxes
+            </div>
+        </div>
+    `;
+    
+    // Cycle Time display
+    totalsDisplay.innerHTML += `
+        <div class="total-item">
+            <div class="total-label">Cycle Time</div>
+            <div class="total-value">
+                <span class="current-value">${actualCycleTime}</span>/<span class="target-value">${avgCycleTime}</span>
+            </div>
+            <div class="total-subvalue">sec/unit</div>
+        </div>
+    `;
+    
+    // Render hourly targets in the dedicated container
+    const hourlyTargetsContainer = document.getElementById('hourly-targets-container');
+    if (hourlyTargetsContainer) {
+        hourlyTargetsContainer.innerHTML = '';
+        hourlyTargetsContainer.appendChild(renderHourlyTargetsVisual(group));
+    }
+}
         function renderHourlyTargetsVisual(group) {
-            // Create container
-            const container = document.createElement('div');
-            container.className = 'hourly-targets-container';
-            container.style.marginTop = '-25px';
-            
-            // Get all hourly targets and production for this product group
-            const hourlyTargetsMap = new Map();
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentTimeMinutes = currentHour * 60 + currentMinute;
-            
-            // Combine hourly data from all variants
-            group.variants.forEach(variant => {
-                // Get variant time window
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                if (!supervisorVariant) return;
+    // Create container
+    const container = document.createElement('div');
+    container.className = 'hourly-targets-container';
+    
+    // Get all hourly targets and production for this product group
+    const hourlyTargetsMap = new Map();
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTimeMinutes = currentHour * 60 + currentMinute;
+    
+    // Combine hourly data from all variants
+    group.variants.forEach(variant => {
+        // Get variant time window
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        if (!supervisorVariant) return;
+        
+        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+        
+        if (!startTimeStr || !endTimeStr) return;
+        
+        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+        
+        const startTimeMinutes = startHour * 60 + startMinute;
+        const endTimeMinutes = endHour * 60 + endMinute;
+        
+        // Process hourly targets
+        if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+            variant.hourlyTargets.forEach(item => {
+                if (!item.hour) return;
                 
-                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+                // Check if this hour is within this variant's time window
+                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
                 
-                if (!startTimeStr || !endTimeStr) return;
-                
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                
-                const startTimeMinutes = startHour * 60 + startMinute;
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                // Process hourly targets
-                if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
-                    variant.hourlyTargets.forEach(item => {
-                        if (!item.hour) return;
-                        
-                        // Check if this hour is within this variant's time window
-                        const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                        const itemTimeMinutes = itemHour * 60 + itemMinute;
-                        
-                        if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                            hourlyTargetsMap.set(item.hour, {
-                                hour: item.hour,
-                                target: item.target || 0,
-                                production: 0,
-                                metTarget: false,
-                                variant: variant.variant
-                            });
-                        }
-                    });
-                }
-                
-                // Process hourly production
-                if (variant.hourlyProduction && Array.isArray(variant.hourlyProduction)) {
-                    variant.hourlyProduction.forEach(item => {
-                        if (!item.hour) return;
-                        
-                        // Check if this hour is within this variant's time window
-                        const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                        const itemTimeMinutes = itemHour * 60 + itemMinute;
-                        
-                        if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                            if (hourlyTargetsMap.has(item.hour)) {
-                                const hourData = hourlyTargetsMap.get(item.hour);
-                                hourData.production = item.production || 0;
-                                hourData.metTarget = hourData.production >= hourData.target;
-                            } else {
-                                hourlyTargetsMap.set(item.hour, {
-                                    hour: item.hour,
-                                    target: 0,
-                                    production: item.production || 0,
-                                    metTarget: true,
-                                    variant: variant.variant
-                                });
-                            }
-                        }
+                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    hourlyTargetsMap.set(item.hour, {
+                        hour: item.hour,
+                        target: item.target || 0,
+                        production: 0,
+                        metTarget: false,
+                        variant: variant.variant
                     });
                 }
             });
-            
-            // Sort hours
-            const hours = Array.from(hourlyTargetsMap.keys()).sort((a, b) => {
-                const [hourA, minuteA] = a.split(':').map(Number);
-                const [hourB, minuteB] = b.split(':').map(Number);
-                return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-            });
-            
-            // Find which hour is current
-            let currentHourIndex = -1;
-            for (let i = 0; i < hours.length; i++) {
-                const [hour, minute] = hours[i].split(':').map(Number);
-                const hourMinutes = hour * 60 + minute;
+        }
+        
+        // Process hourly production
+        if (variant.hourlyProduction && Array.isArray(variant.hourlyProduction)) {
+            variant.hourlyProduction.forEach(item => {
+                if (!item.hour) return;
                 
-                const prevHourMinutes = i > 0 ? 
-                    hours[i-1].split(':').map(Number).reduce((h, m) => h * 60 + m, 0) :
-                    0;
+                // Check if this hour is within this variant's time window
+                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
                 
-                if (currentTimeMinutes >= prevHourMinutes && currentTimeMinutes < hourMinutes) {
-                    currentHourIndex = i;
-                    break;
-                }
-            }
-            
-            // If not found but time is after last hour, use last hour
-            if (currentHourIndex === -1 && hours.length > 0) {
-                const lastHourTime = hours[hours.length - 1].split(':').map(Number);
-                const lastHourMinutes = lastHourTime[0] * 60 + lastHourTime[1];
-                if (currentTimeMinutes >= lastHourMinutes) {
-                    currentHourIndex = hours.length - 1;
-                }
-            }
-            
-            // Create SVG for visualization
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('class', 'hourly-targets-svg');
-            svg.setAttribute('height', '180');
-            svg.setAttribute('viewBox', `0 0 ${Math.max(hours.length * 180, 400)} 180`);
-            
-            // Calculate spacing
-            const circleRadius = 80;
-            const spacing = 160;
-            const yPosition = 60;
-            
-            // Draw each hour circle
-            hours.forEach((hour, index) => {
-                const hourData = hourlyTargetsMap.get(hour);
-                const xPosition = index * spacing + 80;
-                
-                // Circle
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('class', 'hourly-circle');
-                circle.setAttribute('cx', xPosition);
-                circle.setAttribute('cy', yPosition);
-                circle.setAttribute('r', circleRadius);
-                svg.appendChild(circle);
-                
-                // Time label
-                const timeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                timeLabel.setAttribute('class', 'time-label');
-                timeLabel.setAttribute('x', xPosition);
-                timeLabel.setAttribute('y', yPosition + circleRadius + 25);
-                timeLabel.setAttribute('font-size', '1.9');
-                timeLabel.textContent = hour;
-                svg.appendChild(timeLabel);
-                
-                // Status indicator
-                if (hourData) {
-                    if (hourData.metTarget) {
-                        // Check mark
-                        const checkmark = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        checkmark.setAttribute('class', 'status-icon status-success');
-                        checkmark.setAttribute('d', `M${xPosition - 35},${yPosition} L${xPosition - 10},${yPosition + 25} L${xPosition + 35},${yPosition - 25}`);
-                        checkmark.setAttribute('fill', 'none');
-                        svg.appendChild(checkmark);
+                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    if (hourlyTargetsMap.has(item.hour)) {
+                        const hourData = hourlyTargetsMap.get(item.hour);
+                        hourData.production = item.production || 0;
+                        hourData.metTarget = hourData.production >= hourData.target;
                     } else {
-                        // X mark
-                        const xMark1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                        xMark1.setAttribute('class', 'status-icon status-fail');
-                        xMark1.setAttribute('x1', xPosition - 35);
-                        xMark1.setAttribute('y1', yPosition - 35);
-                        xMark1.setAttribute('x2', xPosition + 35);
-                        xMark1.setAttribute('y2', yPosition + 35);
-                        xMark1.setAttribute('stroke-linecap', 'round');
-                        svg.appendChild(xMark1);
-                        
-                        const xMark2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                        xMark2.setAttribute('class', 'status-icon status-fail');
-                        xMark2.setAttribute('x1', xPosition - 35);
-                        xMark2.setAttribute('y1', yPosition + 35);
-                        xMark2.setAttribute('x2', xPosition + 35);
-                        xMark2.setAttribute('y2', yPosition - 35);
-                        xMark2.setAttribute('stroke-linecap', 'round');
-                        svg.appendChild(xMark2);
+                        hourlyTargetsMap.set(item.hour, {
+                            hour: item.hour,
+                            target: 0,
+                            production: item.production || 0,
+                            metTarget: true,
+                            variant: variant.variant
+                        });
                     }
                 }
-                
-                // Current hour indicator
-                if (index === currentHourIndex) {
-                    const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    arrow.setAttribute('class', 'current-arrow');
-                    arrow.setAttribute('d', `M${xPosition - 35},${yPosition - 85} L${xPosition},${yPosition - 50} L${xPosition + 35},${yPosition - 85} Z`);
-                    svg.appendChild(arrow);
-                }
             });
-            
-            container.appendChild(svg);
-            return container;
         }
+    });
+    
+    // Sort hours
+    const hours = Array.from(hourlyTargetsMap.keys()).sort((a, b) => {
+        const [hourA, minuteA] = a.split(':').map(Number);
+        const [hourB, minuteB] = b.split(':').map(Number);
+        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
+    });
+    
+    // Find which hour is current
+    let currentHourIndex = -1;
+    for (let i = 0; i < hours.length; i++) {
+        const [hour, minute] = hours[i].split(':').map(Number);
+        const hourMinutes = hour * 60 + minute;
+        
+        const prevHourMinutes = i > 0 ? 
+            hours[i-1].split(':').map(Number).reduce((h, m) => h * 60 + m, 0) :
+            0;
+        
+        if (currentTimeMinutes >= prevHourMinutes && currentTimeMinutes < hourMinutes) {
+            currentHourIndex = i;
+            break;
+        }
+    }
+    
+    // If not found but time is after last hour, use last hour
+    if (currentHourIndex === -1 && hours.length > 0) {
+        const lastHourTime = hours[hours.length - 1].split(':').map(Number);
+        const lastHourMinutes = lastHourTime[0] * 60 + lastHourTime[1];
+        if (currentTimeMinutes >= lastHourMinutes) {
+            currentHourIndex = hours.length - 1;
+        }
+    }
+    
+    // Create SVG for visualization
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'hourly-targets-svg');
+    svg.setAttribute('height', '150');
+    svg.setAttribute('viewBox', `0 0 ${Math.max(hours.length * 100, 400)} 150`);
+    
+    // Calculate spacing - adjusted for consolidated layout
+    const circleRadius = 40; // Smaller radius for consolidated layout
+    const spacing = 100; // Reduced spacing
+    const yPosition = 60;
+    
+    // Draw each hour circle
+    hours.forEach((hour, index) => {
+        const hourData = hourlyTargetsMap.get(hour);
+        const xPosition = index * spacing + 80;
+        
+        // Circle
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('class', 'hourly-circle');
+        circle.setAttribute('cx', xPosition);
+        circle.setAttribute('cy', yPosition);
+        circle.setAttribute('r', circleRadius);
+        svg.appendChild(circle);
+        
+        // Time label
+        const timeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        timeLabel.setAttribute('class', 'time-label');
+        timeLabel.setAttribute('x', xPosition);
+        timeLabel.setAttribute('y', yPosition + circleRadius + 15);
+        timeLabel.setAttribute('font-size', '1.9');
+        timeLabel.textContent = hour;
+        svg.appendChild(timeLabel);
+        
+        // Status indicator
+        if (hourData) {
+            if (hourData.metTarget) {
+                // Check mark
+                const checkmark = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                checkmark.setAttribute('class', 'status-icon status-success');
+                checkmark.setAttribute('d', `M${xPosition - 25},${yPosition} L${xPosition - 5},${yPosition + 20} L${xPosition + 25},${yPosition - 20}`);
+                checkmark.setAttribute('fill', 'none');
+                svg.appendChild(checkmark);
+            } else {
+                // X mark
+                const xMark1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                xMark1.setAttribute('class', 'status-icon status-fail');
+                xMark1.setAttribute('x1', xPosition - 25);
+                xMark1.setAttribute('y1', yPosition - 25);
+                xMark1.setAttribute('x2', xPosition + 25);
+                xMark1.setAttribute('y2', yPosition + 25);
+                xMark1.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(xMark1);
+                
+                const xMark2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                xMark2.setAttribute('class', 'status-icon status-fail');
+                xMark2.setAttribute('x1', xPosition - 25);
+                xMark2.setAttribute('y1', yPosition + 25);
+                xMark2.setAttribute('x2', xPosition + 25);
+                xMark2.setAttribute('y2', yPosition - 25);
+                xMark2.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(xMark2);
+            }
+        }
+        
+        // Current hour indicator
+        if (index === currentHourIndex) {
+            const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            arrow.setAttribute('class', 'current-arrow');
+            arrow.setAttribute('d', `M${xPosition - 25},${yPosition - 65} L${xPosition},${yPosition - 40} L${xPosition + 25},${yPosition - 65} Z`);
+            svg.appendChild(arrow);
+        }
+    });
+    
+    container.appendChild(svg);
+    return container;
+}
 
         function renderCumulativeChart(group) {
     const chartContainer = document.getElementById('cumulative-chart');
