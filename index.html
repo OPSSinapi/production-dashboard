@@ -1790,368 +1790,401 @@
         }
 
         function renderCumulativeChart(group) {
-            const chartContainer = document.getElementById('cumulative-chart');
-            const chartTitle = document.getElementById('cumulative-chart-title');
-            chartContainer.innerHTML = '';
-            
-            const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-            chartTitle.textContent = `${currentDay}'s Production Progress`;
-            
-            // Collect all hours across all variants
-            const allHoursSet = new Set();
-            const allData = [];
-            
-            // Process each variant
-            group.variants.forEach(variant => {
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                if (!supervisorVariant) return;
-                
-                // Get variant time window
-                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-                
-                if (!startTimeStr || !endTimeStr) return;
-                
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                
-                const startTimeMinutes = startHour * 60 + startMinute;
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                // Collect hours and data
-                if (variant.cumulativeTargets) {
-                    variant.cumulativeTargets.forEach(item => {
-                        if (!item.hour) return;
-                        
-                        // Check if this hour is within this variant's time window
-                        const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                        const itemTimeMinutes = itemHour * 60 + itemMinute;
-                        
-                        if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                            allHoursSet.add(item.hour);
-                            allData.push({
-                                hour: item.hour,
-                                target: item.target || 0,
-                                production: 0,
-                                timeMinutes: itemTimeMinutes
-                            });
-                        }
-                    });
-                }
-                
-                if (variant.cumulativeProduction) {
-                    variant.cumulativeProduction.forEach(item => {
-                        if (!item.hour) return;
-                        
-                        // Check if this hour is within this variant's time window
-                        const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                        const itemTimeMinutes = itemHour * 60 + itemMinute;
-                        
-                        if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                            allHoursSet.add(item.hour);
-                            
-                            // Find existing data point or add new one
-                            const existingDataPoint = allData.find(d => d.hour === item.hour);
-                            if (existingDataPoint) {
-                                existingDataPoint.production += (item.production || 0);
-                            } else {
-                                allData.push({
-                                    hour: item.hour,
-                                    target: 0,
-                                    production: item.production || 0,
-                                    timeMinutes: itemTimeMinutes
-                                });
-                            }
-                        }
-                    });
-                }
-            });
-            
-            // Aggregate data by hour
-            const aggregatedData = {};
-            allData.forEach(item => {
-                if (!aggregatedData[item.hour]) {
-                    aggregatedData[item.hour] = {
-                        hour: item.hour,
-                        target: 0,
-                        production: 0,
-                        timeMinutes: item.timeMinutes
-                    };
-                }
-                aggregatedData[item.hour].target += item.target;
-                aggregatedData[item.hour].production += item.production;
-            });
-            
-            // Convert to array and sort
-            const processedData = Object.values(aggregatedData).sort((a, b) => a.timeMinutes - b.timeMinutes);
-            
-            if (processedData.length === 0) {
-                chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
-                return;
-            }
-            
-            // Filter data to only show up to current time plus buffer
-            const now = new Date();
-            const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
-            const currentTimePlusBuffer = currentMinuteOfDay + 30;
-            
-            const filteredData = processedData.filter(item => item.timeMinutes <= currentTimePlusBuffer);
-            
-            if (filteredData.length === 0) {
-                chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available for current time period</div>';
-                return;
-            }
-            
-            // Find max value for chart scaling
-            const maxValue = Math.max(
-                ...filteredData.map(item => Math.max(item.target || 0, item.production || 0))
-            ) * 1.1;
-            
-            // Set up chart dimensions
-            const svgWidth = chartContainer.clientWidth || 600;
-            const svgHeight = chartContainer.clientHeight || 370;
-            const padding = commonChartPadding;
-            const chartWidth = svgWidth - padding.left - padding.right;
-            const chartHeight = svgHeight - padding.top - padding.bottom;
-            
-            // Create SVG
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', svgWidth);
-            svg.setAttribute('height', svgHeight);
-            svg.style.display = 'block';
-            svg.style.margin = '0 auto';
-            chartContainer.appendChild(svg);
-            
-            // Add grid lines
-            const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            for (let i = 0; i <= 4; i++) {
-                const y = padding.top + (chartHeight * i / 4);
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', padding.left);
-                line.setAttribute('y1', y);
-                line.setAttribute('x2', svgWidth - padding.right);
-                line.setAttribute('y2', y);
-                line.setAttribute('stroke', '#ddd');
-                line.setAttribute('stroke-width', '1');
-                gridGroup.appendChild(line);
-                
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', padding.left - 10);
-                text.setAttribute('y', y + 5);
-                text.setAttribute('text-anchor', 'end');
-                text.setAttribute('font-size', '14');
-                text.setAttribute('fill', '#666');
-                text.textContent = Math.round(maxValue * (4 - i) / 4);
-                gridGroup.appendChild(text);
-            }
-            
-            // Add y-axis title
-            const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            yAxisTitle.setAttribute('x', padding.left - 45);
-            yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
-            yAxisTitle.setAttribute('text-anchor', 'middle');
-            yAxisTitle.setAttribute('font-size', '16');
-            yAxisTitle.setAttribute('font-weight', 'bold');
-            yAxisTitle.setAttribute('fill', '#666');
-            yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 45}, ${padding.top + chartHeight / 2})`);
-            yAxisTitle.textContent = 'Units';
-            gridGroup.appendChild(yAxisTitle);
-            
-            // Add y-axis line
-            const startLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            startLine.setAttribute('x1', padding.left);
-            startLine.setAttribute('y1', padding.top);
-            startLine.setAttribute('x2', padding.left);
-            startLine.setAttribute('y2', svgHeight - padding.bottom);
-            startLine.setAttribute('stroke', '#666');
-            startLine.setAttribute('stroke-width', '1.5');
-            gridGroup.appendChild(startLine);
-            
-            // Add x-axis line
-            const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            xAxisLine.setAttribute('x1', padding.left);
-            xAxisLine.setAttribute('y1', svgHeight - padding.bottom);
-            xAxisLine.setAttribute('x2', svgWidth - padding.right);
-            xAxisLine.setAttribute('y2', svgHeight - padding.bottom);
-            xAxisLine.setAttribute('stroke', '#666');
-            xAxisLine.setAttribute('stroke-width', '1.5');
-            gridGroup.appendChild(xAxisLine);
-            svg.appendChild(gridGroup);
-            
-            
-// Add x-axis labels
-const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-
-// First define uniqueHours from the data (original method)
-const uniqueHours = [...new Set(filteredData.map(item => item.hour))].sort((a, b) => {
-    const [hourA, minuteA] = a.split(':').map(Number);
-    const [hourB, minuteB] = b.split(':').map(Number);
-    return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-});
-
-// Find earliest start time and latest end time across all variants
-let earliestStartMinutes = 24 * 60; // Initialize to end of day
-let latestEndMinutes = 0;
-
-group.variants.forEach(variant => {
-    const supervisorVariant = group.supervisorData.variants[variant.variant];
-    if (supervisorVariant) {
+    const chartContainer = document.getElementById('cumulative-chart');
+    const chartTitle = document.getElementById('cumulative-chart-title');
+    chartContainer.innerHTML = '';
+    
+    const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+    chartTitle.textContent = `${currentDay}'s Production Progress`;
+    
+    // Collect all hours across all variants
+    const allHoursSet = new Set();
+    const allData = [];
+    
+    // Process each variant
+    group.variants.forEach(variant => {
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        if (!supervisorVariant) return;
+        
+        // Get variant time window
         const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
         const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
         
-        if (startTimeStr && endTimeStr) {
-            const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-            const startTimeMinutes = startHour * 60 + startMinute;
-            
-            if (startTimeMinutes < earliestStartMinutes) {
-                earliestStartMinutes = startTimeMinutes;
-            }
-            
-            const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-            const endTimeMinutes = endHour * 60 + endMinute;
-            
-            if (endTimeMinutes > latestEndMinutes) {
-                latestEndMinutes = endTimeMinutes;
-            }
+        if (!startTimeStr || !endTimeStr) return;
+        
+        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+        
+        const startTimeMinutes = startHour * 60 + startMinute;
+        const endTimeMinutes = endHour * 60 + endMinute;
+        
+        // Collect hours and data
+        if (variant.cumulativeTargets) {
+            variant.cumulativeTargets.forEach(item => {
+                if (!item.hour) return;
+                
+                // Check if this hour is within this variant's time window
+                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
+                
+                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    allHoursSet.add(item.hour);
+                    allData.push({
+                        hour: item.hour,
+                        target: item.target || 0,
+                        production: 0,
+                        timeMinutes: itemTimeMinutes
+                    });
+                }
+            });
         }
+        
+        if (variant.cumulativeProduction) {
+            variant.cumulativeProduction.forEach(item => {
+                if (!item.hour) return;
+                
+                // Check if this hour is within this variant's time window
+                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
+                
+                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    allHoursSet.add(item.hour);
+                    
+                    // Find existing data point or add new one
+                    const existingDataPoint = allData.find(d => d.hour === item.hour);
+                    if (existingDataPoint) {
+                        existingDataPoint.production += (item.production || 0);
+                    } else {
+                        allData.push({
+                            hour: item.hour,
+                            target: 0,
+                            production: item.production || 0,
+                            timeMinutes: itemTimeMinutes
+                        });
+                    }
+                }
+            });
+        }
+    });
+    
+    // Aggregate data by hour
+    const aggregatedData = {};
+    allData.forEach(item => {
+        if (!aggregatedData[item.hour]) {
+            aggregatedData[item.hour] = {
+                hour: item.hour,
+                target: 0,
+                production: 0,
+                timeMinutes: item.timeMinutes
+            };
+        }
+        aggregatedData[item.hour].target += item.target;
+        aggregatedData[item.hour].production += item.production;
+    });
+    
+    // Convert to array and sort
+    const processedData = Object.values(aggregatedData).sort((a, b) => a.timeMinutes - b.timeMinutes);
+    
+    if (processedData.length === 0) {
+        chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
+        return;
     }
-});
-
-// Generate hourly intervals from earliest start to current time
-const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-const endTimeMinutes = Math.min(latestEndMinutes, currentTimeMinutes + 60); // Show up to 1 hour ahead
-
-// Create hourly ticks with proper start time
-const allHours = [];
-
-// First add the exact start time 
-const startHour = Math.floor(earliestStartMinutes / 60);
-const startMinute = earliestStartMinutes % 60;
-allHours.push(`${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`);
-
-// Then add standard hour markers (8:30, 9:30, etc.)
-const firstFullHour = Math.ceil(earliestStartMinutes / 60);
-for (let hour = firstFullHour; hour * 60 + 30 <= endTimeMinutes; hour++) {
-    allHours.push(`${hour.toString().padStart(2, '0')}:30`);
-}
-// Use allHours instead of uniqueHours for drawing the ticks
-(allHours.length > 0 ? allHours : uniqueHours).forEach((hour, index) => {
-    const hourArray = allHours.length > 0 ? allHours : uniqueHours;
-    const x = padding.left + (chartWidth * index / (hourArray.length - 1 || 1));
-    const y = svgHeight - padding.bottom + 20;
     
-    // Add tick mark
-    const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    tick.setAttribute('x1', x);
-    tick.setAttribute('y1', svgHeight - padding.bottom);
-    tick.setAttribute('x2', x);
-    tick.setAttribute('y2', svgHeight - padding.bottom + 5);
-    tick.setAttribute('stroke', '#666');
-    tick.setAttribute('stroke-width', '1');
-    xLabelsGroup.appendChild(tick);
+    // Filter data to only show up to current time plus buffer
+    const now = new Date();
+    const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
+    const currentTimePlusBuffer = currentMinuteOfDay + 30;
     
-    // Add hour label
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', x);
-    text.setAttribute('y', y);
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('font-size', '14');
-    text.setAttribute('fill', '#666');
-    text.textContent = hour;
-    xLabelsGroup.appendChild(text);
-});
-            svg.appendChild(xLabelsGroup);
+    const filteredData = processedData.filter(item => item.timeMinutes <= currentTimePlusBuffer);
+    
+    if (filteredData.length === 0) {
+        chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available for current time period</div>';
+        return;
+    }
+    
+    // Find max value for chart scaling
+    const maxValue = Math.max(
+        ...filteredData.map(item => Math.max(item.target || 0, item.production || 0))
+    ) * 1.1;
+    
+    // Set up chart dimensions
+    const svgWidth = chartContainer.clientWidth || 600;
+    const svgHeight = chartContainer.clientHeight || 370;
+    const padding = commonChartPadding;
+    const chartWidth = svgWidth - padding.left - padding.right;
+    const chartHeight = svgHeight - padding.top - padding.bottom;
+    
+    // Create SVG
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', svgWidth);
+    svg.setAttribute('height', svgHeight);
+    svg.style.display = 'block';
+    svg.style.margin = '0 auto';
+    chartContainer.appendChild(svg);
+    
+    // Add grid lines
+    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartHeight * i / 4);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', padding.left);
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', svgWidth - padding.right);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', '#ddd');
+        line.setAttribute('stroke-width', '1');
+        gridGroup.appendChild(line);
+        
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', padding.left - 10);
+        text.setAttribute('y', y + 5);
+        text.setAttribute('text-anchor', 'end');
+        text.setAttribute('font-size', '14');
+        text.setAttribute('fill', '#666');
+        text.textContent = Math.round(maxValue * (4 - i) / 4);
+        gridGroup.appendChild(text);
+    }
+    
+    // Add y-axis title
+    const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    yAxisTitle.setAttribute('x', padding.left - 45);
+    yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
+    yAxisTitle.setAttribute('text-anchor', 'middle');
+    yAxisTitle.setAttribute('font-size', '16');
+    yAxisTitle.setAttribute('font-weight', 'bold');
+    yAxisTitle.setAttribute('fill', '#666');
+    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 45}, ${padding.top + chartHeight / 2})`);
+    yAxisTitle.textContent = 'Units';
+    gridGroup.appendChild(yAxisTitle);
+    
+    // Add y-axis line
+    const startLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    startLine.setAttribute('x1', padding.left);
+    startLine.setAttribute('y1', padding.top);
+    startLine.setAttribute('x2', padding.left);
+    startLine.setAttribute('y2', svgHeight - padding.bottom);
+    startLine.setAttribute('stroke', '#666');
+    startLine.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(startLine);
+    
+    // Add x-axis line
+    const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    xAxisLine.setAttribute('x1', padding.left);
+    xAxisLine.setAttribute('y1', svgHeight - padding.bottom);
+    xAxisLine.setAttribute('x2', svgWidth - padding.right);
+    xAxisLine.setAttribute('y2', svgHeight - padding.bottom);
+    xAxisLine.setAttribute('stroke', '#666');
+    xAxisLine.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(xAxisLine);
+    svg.appendChild(gridGroup);
+    
+    // Add x-axis labels
+    const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+    // Find earliest start time and latest end time across all variants
+    let earliestStartMinutes = 24 * 60; // Initialize to end of day
+    let latestEndMinutes = 0;
+
+    group.variants.forEach(variant => {
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        if (supervisorVariant) {
+            const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+            const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
             
-            // Draw production line
-            const productionLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            let productionPathD = '';
-            const productionPoints = [];
-            
-            uniqueHours.forEach((hour, index) => {
-                // Get combined production for this hour
-                const hourData = filteredData.find(item => item.hour === hour);
-                const production = hourData ? hourData.production : 0;
+            if (startTimeStr && endTimeStr) {
+                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+                const startTimeMinutes = startHour * 60 + startMinute;
                 
-                const x = padding.left + (chartWidth * index / (uniqueHours.length - 1 || 1));
-                const y = padding.top + chartHeight - (chartHeight * (production / maxValue));
+                if (startTimeMinutes < earliestStartMinutes) {
+                    earliestStartMinutes = startTimeMinutes;
+                }
                 
-                productionPoints.push({ x, y, production });
-                productionPathD += index === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
-            });
-            
-            // Add production line
-            const productionPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            productionPath.setAttribute('d', productionPathD);
-            productionPath.setAttribute('stroke', 'var(--production-color)');
-            productionPath.setAttribute('stroke-width', '3');
-            productionPath.setAttribute('fill', 'none');
-            productionLineGroup.appendChild(productionPath);
-            
-            // Add production points and labels
-            productionPoints.forEach(point => {
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', point.x);
-                circle.setAttribute('cy', point.y);
-                circle.setAttribute('r', '5');
-                circle.setAttribute('fill', 'var(--production-color)');
-                productionLineGroup.appendChild(circle);
+                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                const endTimeMinutes = endHour * 60 + endMinute;
                 
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', point.x);
-                text.setAttribute('y', point.y - 10);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('font-size', '14');
-                text.setAttribute('fill', 'var(--production-color)');
-                text.textContent = point.production;
-                productionLineGroup.appendChild(text);
-            });
-            svg.appendChild(productionLineGroup);
-            
-            // Draw target line
-            const targetLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            let targetPathD = '';
-            const targetPoints = [];
-            
-            uniqueHours.forEach((hour, index) => {
-                // Get combined target for this hour
-                const hourData = filteredData.find(item => item.hour === hour);
-                const target = hourData ? hourData.target : 0;
-                
-                const x = padding.left + (chartWidth * index / (uniqueHours.length - 1 || 1));
-                const y = padding.top + chartHeight - (chartHeight * (target / maxValue));
-                
-                targetPoints.push({ x, y, target });
-                targetPathD += index === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
-            });
-            
-            // Add target line
-            const targetPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            targetPath.setAttribute('d', targetPathD);
-            targetPath.setAttribute('stroke', 'var(--target-color)');
-            targetPath.setAttribute('stroke-width', '3');
-            targetPath.setAttribute('fill', 'none');
-            targetLineGroup.appendChild(targetPath);
-            
-            // Add target points and labels
-            targetPoints.forEach(point => {
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', point.x);
-                circle.setAttribute('cy', point.y);
-                circle.setAttribute('r', '5');
-                circle.setAttribute('fill', 'var(--target-color)');
-                targetLineGroup.appendChild(circle);
-                
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', point.x);
-                text.setAttribute('y', point.y - 10);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('font-size', '14');
-                text.setAttribute('fill', 'var(--target-color)');
-                text.textContent = point.target;
-                targetLineGroup.appendChild(text);
-            });
-            svg.appendChild(targetLineGroup);
+                if (endTimeMinutes > latestEndMinutes) {
+                    latestEndMinutes = endTimeMinutes;
+                }
+            }
         }
+    });
+
+    // Format the start time for display (first tick)
+    const startTimeHour = Math.floor(earliestStartMinutes / 60);
+    const startTimeMinute = earliestStartMinutes % 60;
+    const startTimeFormatted = `${startTimeHour.toString().padStart(2, '0')}:${startTimeMinute.toString().padStart(2, '0')}`;
+
+    // Generate hourly intervals from start time to current time
+    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+    const endTimeMinutes = Math.min(latestEndMinutes, currentTimeMinutes + 60); // Show up to 1 hour ahead
+
+    // Create hourly ticks (standard hour endings after start time)
+    const allHours = [];
+    
+    // Add the start time as the first tick
+    allHours.push(startTimeFormatted);
+    
+    // Calculate the first full hour after start time
+    const firstFullHourMinutes = Math.ceil(earliestStartMinutes / 60) * 60 + 30;
+    
+    // Then add standard hour markers (8:30, 9:30, etc.)
+    for (let minutes = firstFullHourMinutes; minutes <= endTimeMinutes; minutes += 60) {
+        const hour = Math.floor(minutes / 60);
+        const formattedHour = `${hour.toString().padStart(2, '0')}:30`;
+        allHours.push(formattedHour);
+    }
+
+    // Generate the uniqueHours from the filtered data for data plotting
+    const uniqueHours = [...new Set(filteredData.map(item => item.hour))].sort((a, b) => {
+        const [hourA, minuteA] = a.split(':').map(Number);
+        const [hourB, minuteB] = b.split(':').map(Number);
+        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
+    });
+
+    // Draw X-axis ticks and labels
+    allHours.forEach((hour, index) => {
+        const x = padding.left + (chartWidth * index / (allHours.length - 1 || 1));
+        const y = svgHeight - padding.bottom + 20;
+        
+        // Add tick mark
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        tick.setAttribute('x1', x);
+        tick.setAttribute('y1', svgHeight - padding.bottom);
+        tick.setAttribute('x2', x);
+        tick.setAttribute('y2', svgHeight - padding.bottom + 5);
+        tick.setAttribute('stroke', '#666');
+        tick.setAttribute('stroke-width', '1');
+        xLabelsGroup.appendChild(tick);
+        
+        // Add hour label
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x);
+        text.setAttribute('y', y);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '14');
+        text.setAttribute('fill', '#666');
+        text.textContent = hour;
+        xLabelsGroup.appendChild(text);
+    });
+    
+    svg.appendChild(xLabelsGroup);
+    
+    // Draw production line - starting from the first tick (start time) with zero production
+    const productionLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    
+    // Start with a point at zero (at the start time)
+    let productionPathD = `M ${padding.left} ${padding.top + chartHeight}`;
+    const productionPoints = [{
+        x: padding.left,
+        y: padding.top + chartHeight,
+        production: 0,
+        hour: startTimeFormatted
+    }];
+    
+    // Get each subsequent data point for the line
+    uniqueHours.forEach((hour, index) => {
+        // Get combined production for this hour
+        const hourData = filteredData.find(item => item.hour === hour);
+        const production = hourData ? hourData.production : 0;
+        
+        // Calculate the x position based on where this hour falls in the allHours array
+        const hourIndex = allHours.indexOf(hour);
+        const x = hourIndex >= 0 
+            ? padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1))
+            : padding.left + (chartWidth * (index + 1) / (allHours.length || 1));
+        
+        const y = padding.top + chartHeight - (chartHeight * (production / maxValue));
+        
+        productionPoints.push({ x, y, production, hour });
+        productionPathD += ` L ${x} ${y}`;
+    });
+    
+    // Add production line
+    const productionPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    productionPath.setAttribute('d', productionPathD);
+    productionPath.setAttribute('stroke', 'var(--production-color)');
+    productionPath.setAttribute('stroke-width', '3');
+    productionPath.setAttribute('fill', 'none');
+    productionLineGroup.appendChild(productionPath);
+    
+    // Add production points and labels
+    productionPoints.forEach(point => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', point.x);
+        circle.setAttribute('cy', point.y);
+        circle.setAttribute('r', '5');
+        circle.setAttribute('fill', 'var(--production-color)');
+        productionLineGroup.appendChild(circle);
+        
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', point.x);
+        text.setAttribute('y', point.y - 10);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '14');
+        text.setAttribute('fill', 'var(--production-color)');
+        text.textContent = point.production;
+        productionLineGroup.appendChild(text);
+    });
+    svg.appendChild(productionLineGroup);
+    
+    // Draw target line - starting from the first tick (start time) with zero target
+    const targetLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    
+    // Start with a point at zero (at the start time)
+    let targetPathD = `M ${padding.left} ${padding.top + chartHeight}`;
+    const targetPoints = [{
+        x: padding.left,
+        y: padding.top + chartHeight,
+        target: 0,
+        hour: startTimeFormatted
+    }];
+    
+    // Add each subsequent target point
+    uniqueHours.forEach((hour, index) => {
+        // Get combined target for this hour
+        const hourData = filteredData.find(item => item.hour === hour);
+        const target = hourData ? hourData.target : 0;
+        
+        // Calculate the x position based on where this hour falls in the allHours array
+        const hourIndex = allHours.indexOf(hour);
+        const x = hourIndex >= 0 
+            ? padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1))
+            : padding.left + (chartWidth * (index + 1) / (allHours.length || 1));
+        
+        const y = padding.top + chartHeight - (chartHeight * (target / maxValue));
+        
+        targetPoints.push({ x, y, target, hour });
+        targetPathD += ` L ${x} ${y}`;
+    });
+    
+    // Add target line
+    const targetPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    targetPath.setAttribute('d', targetPathD);
+    targetPath.setAttribute('stroke', 'var(--target-color)');
+    targetPath.setAttribute('stroke-width', '3');
+    targetPath.setAttribute('fill', 'none');
+    targetLineGroup.appendChild(targetPath);
+    
+    // Add target points and labels
+    targetPoints.forEach(point => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', point.x);
+        circle.setAttribute('cy', point.y);
+        circle.setAttribute('r', '5');
+        circle.setAttribute('fill', 'var(--target-color)');
+        targetLineGroup.appendChild(circle);
+        
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', point.x);
+        text.setAttribute('y', point.y - 10);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '14');
+        text.setAttribute('fill', 'var(--target-color)');
+        text.textContent = point.target;
+        targetLineGroup.appendChild(text);
+    });
+    svg.appendChild(targetLineGroup);
+}
         function updateHourlyChart() {
             const chartContainer = document.getElementById('hourly-chart');
             chartContainer.innerHTML = '';
