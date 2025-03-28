@@ -2023,14 +2023,13 @@ const endTimeMinutes = Math.min(latestEndMinutes, currentTimeMinutes + 60); // S
 
 // Create hourly ticks (standard production hours)
 const allHours = [];
-for (let minutes = earliestStartMinutes; minutes <= endTimeMinutes; minutes += 60) {
-    // Round to nearest hour
-    const hourMinutes = Math.floor(minutes / 60) * 60;
-    const hour = Math.floor(hourMinutes / 60);
+// Start from the hour AFTER the earliest start time
+const firstHourAfterStart = Math.ceil(earliestStartMinutes / 60) * 60;
+for (let minutes = firstHourAfterStart; minutes <= endTimeMinutes; minutes += 60) {
+    const hour = Math.floor(minutes / 60);
     const minute = '30'; // Use standard 30-minute mark for hour labels
     allHours.push(`${hour.toString().padStart(2, '0')}:${minute}`);
 }
-
 // Use allHours instead of uniqueHours for drawing the ticks
 (allHours.length > 0 ? allHours : uniqueHours).forEach((hour, index) => {
     const hourArray = allHours.length > 0 ? allHours : uniqueHours;
