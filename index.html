@@ -1979,7 +1979,7 @@
             svg.appendChild(gridGroup);
             
             
-// Replace with this:
+// Add x-axis labels
 const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
 // Find earliest start time and latest end time across all variants
@@ -2011,7 +2011,7 @@ group.variants.forEach(variant => {
 });
 
 // Generate hourly intervals from earliest start to current time
-const now = new Date();
+// Use the existing 'now' variable that was already defined in the function
 const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
 const endTimeMinutes = Math.min(latestEndMinutes, currentTimeMinutes + 60); // Show up to 1 hour ahead
 
@@ -2027,6 +2027,12 @@ for (let minutes = earliestStartMinutes; minutes <= endTimeMinutes; minutes += 6
 
 // Make sure we have some hours to display
 if (allHours.length === 0 && filteredData.length > 0) {
+    // Use the original uniqueHours array that's created earlier
+    const uniqueHours = [...new Set(filteredData.map(item => item.hour))].sort((a, b) => {
+        const [hourA, minuteA] = a.split(':').map(Number);
+        const [hourB, minuteB] = b.split(':').map(Number);
+        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
+    });
     allHours.push(...uniqueHours); // Fall back to original method if needed
 }
 
