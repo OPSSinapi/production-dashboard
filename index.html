@@ -1824,9 +1824,20 @@ function transformDataFormat(newData) {
                                     variantStartTime: assignment.startTime,
                                     variantEndTime: assignment.endTime,
                                     dailyTarget: assignment.target,
-                                    currentTotal: assignment.production, // This is the correct property name in the new structure
+                                    currentTotal: assignment.production, // This is the correct property in the new structure
                                     variance: assignment.production - assignment.target,
                                     percentage: assignment.progress
+                                };
+                            } else {
+                                // Fallback to using summary data if detailed assignment not found
+                                // This ensures supervisor data is populated even if specific assignment details are missing
+                                transformedSupervisor.variants[variantId] = {
+                                    variantStartTime: prodItem.supervisors[0]?.startTime || "07:30",
+                                    variantEndTime: prodItem.supervisors[0]?.endTime || "18:30",
+                                    dailyTarget: prodItem.targets.daily,
+                                    currentTotal: prodItem.actual.total,
+                                    variance: prodItem.actual.total - prodItem.targets.daily,
+                                    percentage: prodItem.actual.progress
                                 };
                             }
                         }
@@ -1907,8 +1918,8 @@ function transformDataFormat(newData) {
                                 variantStartTime: assignment.startTime,
                                 variantEndTime: assignment.endTime,
                                 dailyTarget: assignment.target,
-                                currentTotal: assignment.production,
-                                variance: assignment.production - assignment.target,
+                                currentTotal: assignment.actual,
+                                variance: assignment.actual - assignment.target,
                                 percentage: assignment.progress
                             };
                         }
