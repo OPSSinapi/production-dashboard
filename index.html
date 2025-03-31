@@ -1123,79 +1123,79 @@ body {
                 };
                 
                 // Check which structure we're working with
-                if (data.metadata && data.products && data.personnel?.supervisors) {
-                    console.log('Processing new data structure with metadata, products, and supervisors');
+                if (data.metadata && data.production && data.summary) {
+                    console.log('Processing data structure with metadata, production, and summary');
                     
-                    // Transform products to variants
-                    data.products.forEach(product => {
-                        if (product.variants) {
-                            product.variants.forEach(variant => {
-                                const transformedVariant = {
-                                    variant: `${product.id}-${variant.id}`,
-                                    "Product Name": `${product.name} ${variant.name}`,
-                                    cycleTime: variant.cycleTime || 0,
-                                    actualCycleTime: variant.actualCycleTime || variant.cycleTime || 0,
-                                    "Start Time": "07:30", // Default times
-                                    "End Time": "18:30",
-                                    dailyBoxTarget: variant.dailyTarget || 0,
-                                    currentBoxTotal: variant.production || 0,
-                                    hourlyTargets: [],
-                                    hourlyProduction: []
-                                };
-                                
-                                // Process hourly data if available
-                                if (variant.hourlyData && Array.isArray(variant.hourlyData)) {
-                                    variant.hourlyData.forEach(hour => {
-                                        // Add hourly target
-                                        transformedVariant.hourlyTargets.push({
-                                            hour: hour.time,
-                                            target: hour.target || 0
-                                        });
-                                        
-                                        // Add hourly production
-                                        transformedVariant.hourlyProduction.push({
-                                            hour: hour.time,
-                                            production: hour.actual || 0
-                                        });
-                                    });
-                                }
-                                
-                                transformedData.variants.push(transformedVariant);
-                            });
-                        }
-                    });
-                    
-                    // Process supervisors
-                    data.personnel.supervisors.forEach(supervisor => {
-                        const transformedSupervisor = {
-                            name: supervisor.name,
-                            variants: {}
+                    // Transform production items to variants
+                    data.production.forEach(item => {
+                        const transformedVariant = {
+                            variant: item.id,
+                            "Product Name": item.variant.fullName || `${item.product.name} ${item.variant.name}`,
+                            cycleTime: item.variant.cycleTime || 0,
+                            actualCycleTime: item.variant.actualCycleTime || item.variant.cycleTime || 0,
+                            "Start Time": item.supervisors && item.supervisors[0] ? item.supervisors[0].startTime : "07:30",
+                            "End Time": item.supervisors && item.supervisors[0] ? item.supervisors[0].endTime : "18:30",
+                            dailyBoxTarget: item.targets.boxes || 0,
+                            currentBoxTotal: item.actual.boxes || 0,
+                            hourlyTargets: [],
+                            hourlyProduction: []
                         };
                         
-                        // Process assignments
-                        if (supervisor.assignments && Array.isArray(supervisor.assignments)) {
-                            supervisor.assignments.forEach(assignment => {
-                                const productId = assignment.productId;
-                                const variantId = assignment.variantId;
+                        // Process hourly data from timeline
+                        if (item.timeline && Array.isArray(item.timeline)) {
+                            item.timeline.forEach(hour => {
+                                // Add hourly target
+                                transformedVariant.hourlyTargets.push({
+                                    hour: hour.hour,
+                                    target: hour.target || 0
+                                });
                                 
-                                if (productId && variantId) {
-                                    const fullVariantId = `${productId}-${variantId}`;
-                                    
-                                    transformedSupervisor.variants[fullVariantId] = {
-                                        variantStartTime: assignment.startTime || "07:30",
-                                        variantEndTime: assignment.endTime || "18:30",
-                                        dailyTarget: assignment.target || 0,
-                                        currentTotal: assignment.actual || 0,
-                                        variance: (assignment.actual || 0) - (assignment.target || 0),
-                                        percentage: assignment.progress || 0
-                                    };
-                                }
+                                // Add hourly production
+                                transformedVariant.hourlyProduction.push({
+                                    hour: hour.hour,
+                                    production: hour.actual || 0
+                                });
                             });
                         }
                         
-                        transformedData.supervisors.push(transformedSupervisor);
+                        transformedData.variants.push(transformedVariant);
                     });
                     
+                    // Process supervisors from the summary section
+                    if (data.summary.supervisors) {
+                        data.summary.supervisors.forEach(supervisor => {
+                            const transformedSupervisor = {
+                                name: supervisor.name,
+                                variants: {}
+                            };
+                            
+                            // Find all variants assigned to this supervisor
+                            if (supervisor.variants && Array.isArray(supervisor.variants)) {
+                                supervisor.variants.forEach(variantId => {
+                                    // Find the production item for this variant
+                                    const prodItem = data.production.find(p => p.id === variantId);
+                                    
+                                    if (prodItem) {
+                                        // Find the supervisor assignment within the production item
+                                        const assignment = prodItem.supervisors.find(s => s.id === supervisor.id);
+                                        
+                                        if (assignment) {
+                                            transformedSupervisor.variants[variantId] = {
+                                                variantStartTime: assignment.startTime,
+                                                variantEndTime: assignment.endTime,
+                                                dailyTarget: assignment.target,
+                                                currentTotal: assignment.production,
+                                                variance: assignment.production - assignment.target,
+                                                percentage: assignment.progress
+                                            };
+                                        }
+                                    }
+                                });
+                            }
+                            
+                            transformedData.supervisors.push(transformedSupervisor);
+                        });
+                    }
                 } else if (data.variants && Array.isArray(data.variants)) {
                     console.log('Processing legacy data structure with variants array');
                     // Legacy format - copy as is
@@ -1205,6 +1205,11 @@ body {
                     if (data.supervisors && Array.isArray(data.supervisors)) {
                         transformedData.supervisors = [...data.supervisors];
                     }
+                }
+                
+                // Make sure we have at least some data
+                if (transformedData.variants.length === 0 || transformedData.supervisors.length === 0) {
+                    console.warn("Data transformation resulted in empty variants or supervisors. Original data:", data);
                 }
                 
                 console.log('Transformed data:', transformedData);
