@@ -1479,6 +1479,41 @@ function loadSelectedSupervisors() {
         }
 
         function calculateActualCycleTime(variants) {
+    // Check if any variant has actualCycleTime - if so, use weighted average of those values
+    const variantsWithActualCycleTime = variants.filter(v => v.actualCycleTime !== undefined && v.actualCycleTime !== null);
+    
+    if (variantsWithActualCycleTime.length > 0) {
+        // Calculate weighted average of actualCycleTime if multiple variants
+        if (variantsWithActualCycleTime.length > 1) {
+            let totalWeight = 0;
+            let weightedSum = 0;
+            
+            // Weight by production quantities
+            variantsWithActualCycleTime.forEach(variant => {
+                const supervisor = productionData.supervisors.find(s => s.name === currentSupervisor);
+                if (supervisor && supervisor.variants[variant.variant]) {
+                    const supervisorVariant = supervisor.variants[variant.variant];
+                    if (supervisorVariant.currentTotal && supervisorVariant.currentTotal > 0) {
+                        totalWeight += supervisorVariant.currentTotal;
+                        weightedSum += variant.actualCycleTime * supervisorVariant.currentTotal;
+                    }
+                }
+            });
+            
+            if (totalWeight > 0) {
+                return Math.round(weightedSum / totalWeight);
+            } else {
+                // If no weights, use simple average
+                const sum = variantsWithActualCycleTime.reduce((acc, v) => acc + v.actualCycleTime, 0);
+                return Math.round(sum / variantsWithActualCycleTime.length);
+            }
+        } else {
+            // If only one variant, just return its actualCycleTime
+            return variantsWithActualCycleTime[0].actualCycleTime;
+        }
+    }
+    
+    // Fall back to original calculation if no actualCycleTime is available
     // Get current time to calculate elapsed time
     const now = new Date();
     const currentHour = now.getHours();
@@ -1773,6 +1808,7 @@ function transformDataFormat(newData) {
                 variant: item.id,
                 "Product Name": item.variant.fullName || `${item.product.name} ${item.variant.name}`,
                 cycleTime: item.variant.cycleTime,
+                actualCycleTime: item.variant.actualCycleTime, // Add the actualCycleTime from the data
                 "Start Time": item.shiftId === "overtime" ? "07:30" : "07:30", // Default times based on shift
                 "End Time": item.shiftId === "overtime" ? "18:30" : "16:30",
                 dailyBoxTarget: item.targets.boxes,
@@ -1855,6 +1891,7 @@ function transformDataFormat(newData) {
                 variant: variant.id,
                 "Product Name": variant.fullName || variant.name,
                 cycleTime: variant.cycleTime,
+                actualCycleTime: variant.actualCycleTime, // Add actualCycleTime if available
                 "Start Time": variant.shiftRef === "overtime" ? "07:30" : "07:30", // Default times based on shift
                 "End Time": variant.shiftRef === "overtime" ? "18:30" : "16:30",
                 dailyBoxTarget: variant.targets.boxes,
@@ -2386,7 +2423,7 @@ function updateDashboard() {
         <div class="total-item">
             <div class="total-label">Cycle Time</div>
             <div class="total-value">
-                <span class="current-value">${actualCycleTime}</span>/<span class="target-value">${avgCycleTime}</span>
+                <span class="current-value">${actualCycleTime === "N/A" ? "N/A" : actualCycleTime}</span>/<span class="target-value">${avgCycleTime}</span>
             </div>
             <div class="total-subvalue">sec/unit</div>
         </div>
