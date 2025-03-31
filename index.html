@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sinapi Secondary Production Dashboard</title>
+    <!-- Add Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <style>
        :root {
     --primary-color: #2c3e50;
@@ -1068,40 +1070,49 @@ function initDashboard() {
 }
 
         function toggleFullscreen() {
-            const dashboard = document.querySelector('.dashboard-container');
-            const fullscreenButton = document.querySelector('.fullscreen-button');
-
-            if (!document.fullscreenElement && !document.mozFullScreenElement && 
-                !document.webkitFullscreenElement && !document.msFullscreenElement) {
-                dashboard.classList.add('fullscreen-mode');
-                isFullscreen = true;
-                fullscreenButton.textContent = 'Exit Fullscreen';
-
-                if (dashboard.requestFullscreen) dashboard.requestFullscreen();
-                else if (dashboard.msRequestFullscreen) dashboard.msRequestFullscreen();
-                else if (dashboard.mozRequestFullScreen) dashboard.mozRequestFullScreen();
-                else if (dashboard.webkitRequestFullscreen) dashboard.webkitRequestFullscreen();
+            const container = document.querySelector('.dashboard-container');
+            if (!container) return;
+            
+            if (!document.fullscreenElement &&
+                !document.mozFullScreenElement &&
+                !document.webkitFullscreenElement &&
+                !document.msFullscreenElement) {
+                // Enter fullscreen
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.msRequestFullscreen) {
+                    container.msRequestFullscreen();
+                } else if (container.mozRequestFullScreen) {
+                    container.mozRequestFullScreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+                }
             } else {
-                if (document.exitFullscreen) document.exitFullscreen();
-                else if (document.msExitFullscreen) document.msExitFullscreen();
-                else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
-                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
             }
         }
 
         function handleFullscreenChange() {
-            const dashboard = document.querySelector('.dashboard-container');
-            const fullscreenButton = document.querySelector('.fullscreen-button');
-
-            if (!document.fullscreenElement && !document.webkitFullscreenElement && 
-                !document.mozFullScreenElement && !document.msFullscreenElement) {
-                dashboard.classList.remove('fullscreen-mode');
-                isFullscreen = false;
-                fullscreenButton.textContent = 'Fullscreen';
+            const container = document.querySelector('.dashboard-container');
+            if (!container) return;
+            
+            if (document.fullscreenElement || 
+                document.webkitFullscreenElement || 
+                document.mozFullScreenElement || 
+                document.msFullscreenElement) {
+                container.classList.add('fullscreen-mode');
+            } else {
+                container.classList.remove('fullscreen-mode');
             }
-
-            // Redraw as needed
-            setTimeout(updateDashboard, 100);
         }
 
         // Add this function to initialize the supervisor selection UI
@@ -2170,10 +2181,32 @@ function updateProductionChart(group) {
     
     // Clear previous chart
     const chartArea = document.querySelector('.chart-area');
+    if (!chartArea) {
+        console.error('Chart area element not found');
+        return;
+    }
     chartArea.innerHTML = '';
     
     // Set chart title
-    document.querySelector('.chart-title').textContent = `${product.name} Production`;
+    const chartTitle = document.querySelector('.chart-title');
+    if (chartTitle) {
+        chartTitle.textContent = `${product.name} Production`;
+    }
+    
+    // Check if Chart.js is loaded
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is not loaded. Unable to create chart.');
+        // Create a fallback display
+        const fallbackDiv = document.createElement('div');
+        fallbackDiv.className = 'chart-fallback';
+        fallbackDiv.innerHTML = `
+            <h3>Chart Could Not Be Loaded</h3>
+            <p>Production: ${product.production.total} / ${product.targets.daily} (${product.production.progress}%)</p>
+            <p>Boxes: ${product.production.boxes} / ${product.targets.boxes}</p>
+        `;
+        chartArea.appendChild(fallbackDiv);
+        return;
+    }
     
     // Create canvas for Chart.js
     const canvas = document.createElement('canvas');
@@ -2187,71 +2220,81 @@ function updateProductionChart(group) {
     const cumTargets = product.timeline.byHour.map(item => item.cumTarget);
     const cumActuals = product.timeline.byHour.map(item => item.cumActual);
     
-    // Create chart
-    const ctx = canvas.getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: hours,
-            datasets: [
-                {
-                    label: 'Cum. Target',
-                    data: cumTargets,
-                    borderColor: 'rgba(16, 185, 129, 1)', // Green
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    borderWidth: 3
-                },
-                {
-                    label: 'Cum. Actual',
-                    data: cumActuals,
-                    borderColor: 'rgba(231, 76, 60, 1)', // Red
-                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    borderWidth: 3
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
+    try {
+        // Create chart
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: hours,
+                datasets: [
+                    {
+                        label: 'Cum. Target',
+                        data: cumTargets,
+                        borderColor: 'rgba(16, 185, 129, 1)', // Green
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        borderWidth: 3
+                    },
+                    {
+                        label: 'Cum. Actual',
+                        data: cumActuals,
+                        borderColor: 'rgba(231, 76, 60, 1)', // Red
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        borderWidth: 3
                     }
-                },
-                x: {
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
-                }
+                ]
             },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top',
-                    labels: {
-                        font: {
-                            size: 14
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
                         }
                     }
                 },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
                 }
             }
-        }
-    });
-    
-    // Update hour countdown based on current time
-    updateHourCountdown(hours);
+        });
+        
+        // Update hour countdown based on current time
+        updateHourCountdown(hours);
+    } catch (error) {
+        console.error('Error creating chart:', error);
+        // Provide a fallback display
+        chartArea.innerHTML = '';
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'chart-error';
+        errorDiv.textContent = 'Unable to create chart. Please check console for details.';
+        chartArea.appendChild(errorDiv);
+    }
 }
 
 function updateHourCountdown(hours) {
@@ -3019,7 +3062,7 @@ function updateHourlyChart() {
 
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize the dashboard
-            initializeDashboard();
+            initDashboard();
             
             // Set the facility name from metadata
             const facilityNameElement = document.getElementById('facility-name');
