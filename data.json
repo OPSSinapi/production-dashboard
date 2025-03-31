@@ -1,15 +1,1061 @@
 {
   "metadata": {
-    "timestamp": "2025-03-31T17:34:28.302Z",
+    "timestamp": "2025-03-31T19:37:41.294Z",
     "date": "2025-03-31",
-    "facility": "Main Plant",
-    "error": "ReferenceError: variantData is not defined"
+    "facility": "Main Plant"
   },
   "schedule": {
-    "shifts": []
+    "shifts": [
+      {
+        "id": "overtime",
+        "startTime": "07:30",
+        "endTime": "18:30",
+        "breaks": [
+          {
+            "type": "tea",
+            "startTime": "10:25",
+            "endTime": "10:40"
+          },
+          {
+            "type": "lunch",
+            "startTime": "13:40",
+            "endTime": "14:10"
+          },
+          {
+            "type": "otTea",
+            "startTime": "17:45",
+            "endTime": "18:00"
+          }
+        ],
+        "availableWorkHours": 10
+      },
+      {
+        "id": "standard",
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "breaks": [
+          {
+            "type": "tea",
+            "startTime": "10:25",
+            "endTime": "10:40"
+          },
+          {
+            "type": "lunch",
+            "startTime": "13:40",
+            "endTime": "14:10"
+          }
+        ],
+        "availableWorkHours": 8.25
+      }
+    ]
   },
-  "products": [],
+  "products": [
+    {
+      "id": "LEVO",
+      "name": "LEVO",
+      "cycleTime": 97.06000000000002,
+      "totalProduction": 180,
+      "totalTarget": 370,
+      "progress": 49
+    },
+    {
+      "id": "PopUp",
+      "name": "PopUp",
+      "cycleTime": 49.5,
+      "totalProduction": 100,
+      "totalTarget": 600,
+      "progress": 17
+    },
+    {
+      "id": "SCD",
+      "name": "SCD",
+      "cycleTime": 47.02980158730159,
+      "totalProduction": 1068,
+      "totalTarget": 1260,
+      "progress": 85
+    },
+    {
+      "id": "SUM",
+      "name": "SUM",
+      "cycleTime": 28.13,
+      "totalProduction": 720,
+      "totalTarget": 1055,
+      "progress": 68
+    },
+    {
+      "id": "Scalpel-Assembly",
+      "name": "Scalpel Assembly",
+      "cycleTime": 2.28,
+      "totalProduction": 12000,
+      "totalTarget": 31578,
+      "progress": 38
+    },
+    {
+      "id": "Scalpel-Packaging",
+      "name": "Scalpel Packaging",
+      "cycleTime": 2.28,
+      "totalProduction": 9000,
+      "totalTarget": 15789,
+      "progress": 57
+    }
+  ],
+  "variants": [
+    {
+      "id": "LEVO-XL2200S",
+      "productId": "LEVO",
+      "name": "XL2200S",
+      "fullName": "LEVO XL2200S",
+      "cycleTime": 97.06,
+      "devicesPerBox": 12,
+      "targets": {
+        "hourly": 37,
+        "daily": 370,
+        "boxes": 30
+      },
+      "production": {
+        "total": 180,
+        "boxes": 15,
+        "progress": 49,
+        "batches": [
+          {
+            "id": "25033157",
+            "quantity": 180,
+            "boxes": 15
+          }
+        ]
+      },
+      "timeline": {
+        "byHour": [
+          {
+            "hour": "08:30",
+            "target": 37,
+            "actual": 0,
+            "cumTarget": 37,
+            "cumActual": 0
+          },
+          {
+            "hour": "09:30",
+            "target": 37,
+            "actual": 0,
+            "cumTarget": 74,
+            "cumActual": 0
+          },
+          {
+            "hour": "10:30",
+            "target": 33,
+            "actual": 0,
+            "cumTarget": 107,
+            "cumActual": 0
+          },
+          {
+            "hour": "11:30",
+            "target": 30,
+            "actual": 0,
+            "cumTarget": 137,
+            "cumActual": 0
+          },
+          {
+            "hour": "12:30",
+            "target": 37,
+            "actual": 0,
+            "cumTarget": 174,
+            "cumActual": 0
+          },
+          {
+            "hour": "13:30",
+            "target": 37,
+            "actual": 48,
+            "cumTarget": 211,
+            "cumActual": 48
+          },
+          {
+            "hour": "14:30",
+            "target": 18,
+            "actual": 12,
+            "cumTarget": 229,
+            "cumActual": 60
+          },
+          {
+            "hour": "15:30",
+            "target": 37,
+            "actual": 36,
+            "cumTarget": 266,
+            "cumActual": 96
+          },
+          {
+            "hour": "16:30",
+            "target": 37,
+            "actual": 24,
+            "cumTarget": 303,
+            "cumActual": 120
+          },
+          {
+            "hour": "17:30",
+            "target": 37,
+            "actual": 36,
+            "cumTarget": 340,
+            "cumActual": 156
+          },
+          {
+            "hour": "18:30",
+            "target": 27,
+            "actual": 24,
+            "cumTarget": 367,
+            "cumActual": 180
+          }
+        ]
+      },
+      "shiftRef": "overtime"
+    },
+    {
+      "id": "PopUp-CON021.2",
+      "productId": "PopUp",
+      "name": "CON021.2",
+      "fullName": "PopUp CON021.2",
+      "cycleTime": 49.5,
+      "devicesPerBox": 100,
+      "targets": {
+        "hourly": 72,
+        "daily": 600,
+        "boxes": 6
+      },
+      "production": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 17,
+        "batches": [
+          {
+            "id": "25032548",
+            "quantity": 100,
+            "boxes": 1
+          }
+        ]
+      },
+      "timeline": {
+        "byHour": [
+          {
+            "hour": "08:30",
+            "target": 72,
+            "actual": 0,
+            "cumTarget": 72,
+            "cumActual": 0
+          },
+          {
+            "hour": "09:30",
+            "target": 72,
+            "actual": 0,
+            "cumTarget": 144,
+            "cumActual": 0
+          },
+          {
+            "hour": "10:30",
+            "target": 66,
+            "actual": 0,
+            "cumTarget": 210,
+            "cumActual": 0
+          },
+          {
+            "hour": "11:30",
+            "target": 60,
+            "actual": 100,
+            "cumTarget": 270,
+            "cumActual": 100
+          },
+          {
+            "hour": "12:30",
+            "target": 72,
+            "actual": 0,
+            "cumTarget": 342,
+            "cumActual": 100
+          },
+          {
+            "hour": "13:30",
+            "target": 72,
+            "actual": 0,
+            "cumTarget": 414,
+            "cumActual": 100
+          },
+          {
+            "hour": "14:30",
+            "target": 36,
+            "actual": 0,
+            "cumTarget": 450,
+            "cumActual": 100
+          },
+          {
+            "hour": "15:30",
+            "target": 72,
+            "actual": 0,
+            "cumTarget": 522,
+            "cumActual": 100
+          },
+          {
+            "hour": "16:30",
+            "target": 72,
+            "actual": 0,
+            "cumTarget": 594,
+            "cumActual": 100
+          }
+        ]
+      },
+      "shiftRef": "standard"
+    },
+    {
+      "id": "SCD-XL1000SCP",
+      "productId": "SCD",
+      "name": "XL1000SCP",
+      "fullName": "SCD XL1000SCP",
+      "cycleTime": 29.41,
+      "devicesPerBox": 12,
+      "targets": {
+        "hourly": 122,
+        "daily": 1009,
+        "boxes": 84
+      },
+      "production": {
+        "total": 816,
+        "boxes": 68,
+        "progress": 81,
+        "batches": [
+          {
+            "id": "25032754",
+            "quantity": 1020,
+            "boxes": 85
+          }
+        ]
+      },
+      "timeline": {
+        "byHour": [
+          {
+            "hour": "08:30",
+            "target": 122,
+            "actual": 0,
+            "cumTarget": 122,
+            "cumActual": 0
+          },
+          {
+            "hour": "09:30",
+            "target": 122,
+            "actual": 0,
+            "cumTarget": 244,
+            "cumActual": 0
+          },
+          {
+            "hour": "10:30",
+            "target": 112,
+            "actual": 0,
+            "cumTarget": 356,
+            "cumActual": 0
+          },
+          {
+            "hour": "11:30",
+            "target": 102,
+            "actual": 288,
+            "cumTarget": 458,
+            "cumActual": 288
+          },
+          {
+            "hour": "12:30",
+            "target": 122,
+            "actual": 108,
+            "cumTarget": 580,
+            "cumActual": 396
+          },
+          {
+            "hour": "13:30",
+            "target": 122,
+            "actual": 156,
+            "cumTarget": 702,
+            "cumActual": 552
+          },
+          {
+            "hour": "14:30",
+            "target": 61,
+            "actual": 24,
+            "cumTarget": 763,
+            "cumActual": 576
+          },
+          {
+            "hour": "15:30",
+            "target": 122,
+            "actual": 144,
+            "cumTarget": 885,
+            "cumActual": 720
+          },
+          {
+            "hour": "16:30",
+            "target": 122,
+            "actual": 96,
+            "cumTarget": 1007,
+            "cumActual": 816
+          }
+        ]
+      },
+      "shiftRef": "standard"
+    },
+    {
+      "id": "SCD-XL2000S",
+      "productId": "SCD",
+      "name": "XL2000S",
+      "fullName": "SCD XL2000S",
+      "cycleTime": 117.86,
+      "devicesPerBox": 6,
+      "targets": {
+        "hourly": 30,
+        "daily": 251,
+        "boxes": 41
+      },
+      "production": {
+        "total": 252,
+        "boxes": 42,
+        "progress": 100,
+        "batches": [
+          {
+            "id": "25032755",
+            "quantity": 252,
+            "boxes": 42
+          }
+        ]
+      },
+      "timeline": {
+        "byHour": [
+          {
+            "hour": "08:30",
+            "target": 30,
+            "actual": 0,
+            "cumTarget": 30,
+            "cumActual": 0
+          },
+          {
+            "hour": "09:30",
+            "target": 30,
+            "actual": 12,
+            "cumTarget": 60,
+            "cumActual": 12
+          },
+          {
+            "hour": "10:30",
+            "target": 27,
+            "actual": 48,
+            "cumTarget": 87,
+            "cumActual": 60
+          },
+          {
+            "hour": "11:30",
+            "target": 25,
+            "actual": 18,
+            "cumTarget": 112,
+            "cumActual": 78
+          },
+          {
+            "hour": "12:30",
+            "target": 30,
+            "actual": 30,
+            "cumTarget": 142,
+            "cumActual": 108
+          },
+          {
+            "hour": "13:30",
+            "target": 30,
+            "actual": 42,
+            "cumTarget": 172,
+            "cumActual": 150
+          },
+          {
+            "hour": "14:30",
+            "target": 15,
+            "actual": 24,
+            "cumTarget": 187,
+            "cumActual": 174
+          },
+          {
+            "hour": "15:30",
+            "target": 30,
+            "actual": 24,
+            "cumTarget": 217,
+            "cumActual": 198
+          },
+          {
+            "hour": "16:30",
+            "target": 30,
+            "actual": 54,
+            "cumTarget": 247,
+            "cumActual": 252
+          }
+        ]
+      },
+      "shiftRef": "standard"
+    },
+    {
+      "id": "SUM-SUM500V2",
+      "productId": "SUM",
+      "name": "SUM500V2",
+      "fullName": "SUM SUM500V2",
+      "cycleTime": 28.13,
+      "devicesPerBox": 20,
+      "targets": {
+        "hourly": 127,
+        "daily": 1055,
+        "boxes": 52
+      },
+      "production": {
+        "total": 720,
+        "boxes": 36,
+        "progress": 68,
+        "batches": [
+          {
+            "id": "25033156",
+            "quantity": 900,
+            "boxes": 45
+          }
+        ]
+      },
+      "timeline": {
+        "byHour": [
+          {
+            "hour": "08:30",
+            "target": 127,
+            "actual": 80,
+            "cumTarget": 127,
+            "cumActual": 80
+          },
+          {
+            "hour": "09:30",
+            "target": 127,
+            "actual": 80,
+            "cumTarget": 254,
+            "cumActual": 160
+          },
+          {
+            "hour": "10:30",
+            "target": 117,
+            "actual": 80,
+            "cumTarget": 371,
+            "cumActual": 240
+          },
+          {
+            "hour": "11:30",
+            "target": 106,
+            "actual": 60,
+            "cumTarget": 477,
+            "cumActual": 300
+          },
+          {
+            "hour": "12:30",
+            "target": 127,
+            "actual": 60,
+            "cumTarget": 604,
+            "cumActual": 360
+          },
+          {
+            "hour": "13:30",
+            "target": 127,
+            "actual": 60,
+            "cumTarget": 731,
+            "cumActual": 420
+          },
+          {
+            "hour": "14:30",
+            "target": 63,
+            "actual": 80,
+            "cumTarget": 794,
+            "cumActual": 500
+          },
+          {
+            "hour": "15:30",
+            "target": 127,
+            "actual": 80,
+            "cumTarget": 921,
+            "cumActual": 580
+          },
+          {
+            "hour": "16:30",
+            "target": 127,
+            "actual": 120,
+            "cumTarget": 1048,
+            "cumActual": 700
+          }
+        ]
+      },
+      "shiftRef": "standard"
+    },
+    {
+      "id": "Scalpel-Assembly-PARC11NS",
+      "productId": "Scalpel-Assembly",
+      "name": "PARC11NS",
+      "fullName": "Scalpel Assembly PARC11NS",
+      "cycleTime": 2.28,
+      "devicesPerBox": 1000,
+      "targets": {
+        "hourly": 1578,
+        "daily": 15789,
+        "boxes": 15
+      },
+      "production": {
+        "total": 9000,
+        "boxes": 9,
+        "progress": 57,
+        "batches": [
+          {
+            "id": "25033158",
+            "quantity": 9000,
+            "boxes": 9
+          }
+        ]
+      },
+      "timeline": {
+        "byHour": [
+          {
+            "hour": "08:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 1578,
+            "cumActual": 0
+          },
+          {
+            "hour": "09:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 3156,
+            "cumActual": 0
+          },
+          {
+            "hour": "10:30",
+            "target": 1447,
+            "actual": 0,
+            "cumTarget": 4603,
+            "cumActual": 0
+          },
+          {
+            "hour": "11:30",
+            "target": 1315,
+            "actual": 0,
+            "cumTarget": 5918,
+            "cumActual": 0
+          },
+          {
+            "hour": "12:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 7496,
+            "cumActual": 0
+          },
+          {
+            "hour": "13:30",
+            "target": 1578,
+            "actual": 3000,
+            "cumTarget": 9074,
+            "cumActual": 3000
+          },
+          {
+            "hour": "14:30",
+            "target": 789,
+            "actual": 0,
+            "cumTarget": 9863,
+            "cumActual": 3000
+          },
+          {
+            "hour": "15:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 11441,
+            "cumActual": 3000
+          },
+          {
+            "hour": "16:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 13019,
+            "cumActual": 3000
+          },
+          {
+            "hour": "17:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 14597,
+            "cumActual": 3000
+          },
+          {
+            "hour": "18:30",
+            "target": 1184,
+            "actual": 6000,
+            "cumTarget": 15781,
+            "cumActual": 9000
+          }
+        ]
+      },
+      "shiftRef": "overtime"
+    },
+    {
+      "id": "Scalpel-Assembly-PARC15S",
+      "productId": "Scalpel-Assembly",
+      "name": "PARC15S",
+      "fullName": "Scalpel Assembly PARC15S",
+      "cycleTime": 2.28,
+      "devicesPerBox": 500,
+      "targets": {
+        "hourly": 1578,
+        "daily": 15789,
+        "boxes": 31
+      },
+      "production": {
+        "total": 3000,
+        "boxes": 6,
+        "progress": 19,
+        "batches": [
+          {
+            "id": "25032653",
+            "quantity": 3000,
+            "boxes": 6
+          }
+        ]
+      },
+      "timeline": {
+        "byHour": [
+          {
+            "hour": "08:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 1578,
+            "cumActual": 0
+          },
+          {
+            "hour": "09:30",
+            "target": 1578,
+            "actual": 500,
+            "cumTarget": 3156,
+            "cumActual": 500
+          },
+          {
+            "hour": "10:30",
+            "target": 1447,
+            "actual": 0,
+            "cumTarget": 4603,
+            "cumActual": 500
+          },
+          {
+            "hour": "11:30",
+            "target": 1315,
+            "actual": 1000,
+            "cumTarget": 5918,
+            "cumActual": 1500
+          },
+          {
+            "hour": "12:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 7496,
+            "cumActual": 1500
+          },
+          {
+            "hour": "13:30",
+            "target": 1578,
+            "actual": 1500,
+            "cumTarget": 9074,
+            "cumActual": 3000
+          },
+          {
+            "hour": "14:30",
+            "target": 789,
+            "actual": 0,
+            "cumTarget": 9863,
+            "cumActual": 3000
+          },
+          {
+            "hour": "15:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 11441,
+            "cumActual": 3000
+          },
+          {
+            "hour": "16:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 13019,
+            "cumActual": 3000
+          },
+          {
+            "hour": "17:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 14597,
+            "cumActual": 3000
+          },
+          {
+            "hour": "18:30",
+            "target": 1184,
+            "actual": 0,
+            "cumTarget": 15781,
+            "cumActual": 3000
+          }
+        ]
+      },
+      "shiftRef": "overtime"
+    },
+    {
+      "id": "Scalpel-Packaging-PARC15S",
+      "productId": "Scalpel-Packaging",
+      "name": "PARC15S",
+      "fullName": "Scalpel Packaging PARC15S",
+      "cycleTime": 2.28,
+      "devicesPerBox": 500,
+      "targets": {
+        "hourly": 1578,
+        "daily": 15789,
+        "boxes": 31
+      },
+      "production": {
+        "total": 9000,
+        "boxes": 18,
+        "progress": 57,
+        "batches": [
+          {
+            "id": "25032653",
+            "quantity": 9000,
+            "boxes": 18
+          }
+        ]
+      },
+      "timeline": {
+        "byHour": [
+          {
+            "hour": "08:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 1578,
+            "cumActual": 0
+          },
+          {
+            "hour": "09:30",
+            "target": 1578,
+            "actual": 0,
+            "cumTarget": 3156,
+            "cumActual": 0
+          },
+          {
+            "hour": "10:30",
+            "target": 1447,
+            "actual": 0,
+            "cumTarget": 4603,
+            "cumActual": 0
+          },
+          {
+            "hour": "11:30",
+            "target": 1315,
+            "actual": 0,
+            "cumTarget": 5918,
+            "cumActual": 0
+          },
+          {
+            "hour": "12:30",
+            "target": 1578,
+            "actual": 1500,
+            "cumTarget": 7496,
+            "cumActual": 1500
+          },
+          {
+            "hour": "13:30",
+            "target": 1578,
+            "actual": 1000,
+            "cumTarget": 9074,
+            "cumActual": 2500
+          },
+          {
+            "hour": "14:30",
+            "target": 789,
+            "actual": 1000,
+            "cumTarget": 9863,
+            "cumActual": 3500
+          },
+          {
+            "hour": "15:30",
+            "target": 1578,
+            "actual": 3000,
+            "cumTarget": 11441,
+            "cumActual": 6500
+          },
+          {
+            "hour": "16:30",
+            "target": 1578,
+            "actual": 1500,
+            "cumTarget": 13019,
+            "cumActual": 8000
+          },
+          {
+            "hour": "17:30",
+            "target": 1578,
+            "actual": 1000,
+            "cumTarget": 14597,
+            "cumActual": 9000
+          },
+          {
+            "hour": "18:30",
+            "target": 1184,
+            "actual": 0,
+            "cumTarget": 15781,
+            "cumActual": 9000
+          }
+        ]
+      },
+      "shiftRef": "overtime"
+    }
+  ],
   "personnel": {
-    "supervisors": []
+    "supervisors": [
+      {
+        "id": "Nosi",
+        "name": "Nosi",
+        "totalProduction": 720,
+        "totalTarget": 959,
+        "progress": 75,
+        "assignments": [
+          {
+            "productId": "SUM",
+            "variantId": "SUM-SUM500V2",
+            "productName": "SUM",
+            "variantName": "SUM500V2",
+            "startTime": "08:15",
+            "endTime": "16:30",
+            "target": 959,
+            "actual": 720,
+            "progress": 75,
+            "workHours": 7.5
+          }
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 364,
+        "totalTarget": 545,
+        "progress": 67,
+        "assignments": [
+          {
+            "productId": "SCD",
+            "variantId": "SCD-XL2000S",
+            "productName": "SCD",
+            "variantName": "XL2000S",
+            "startTime": "09:01",
+            "endTime": "16:30",
+            "target": 205,
+            "actual": 252,
+            "progress": 123,
+            "workHours": 6.733333333333333
+          },
+          {
+            "productId": "PopUp",
+            "variantId": "PopUp-CON021.2",
+            "productName": "PopUp",
+            "variantName": "CON021.2",
+            "startTime": "11:22",
+            "endTime": "16:30",
+            "target": 336,
+            "actual": 100,
+            "progress": 30,
+            "workHours": 4.633333333333334
+          },
+          {
+            "productId": "LEVO",
+            "variantId": "LEVO-XL2200S",
+            "productName": "LEVO",
+            "variantName": "XL2200S",
+            "startTime": "18:23",
+            "endTime": "18:30",
+            "target": 4,
+            "actual": 12,
+            "progress": 300,
+            "workHours": 0.11666666666666667
+          }
+        ]
+      },
+      {
+        "id": "Ayanda",
+        "name": "Ayanda",
+        "totalProduction": 21000,
+        "totalTarget": 21788,
+        "progress": 96,
+        "assignments": [
+          {
+            "productId": "Scalpel-Assembly",
+            "variantId": "Scalpel-Assembly-Assembly-PARC15S",
+            "productName": "Scalpel Assembly",
+            "variantName": "Assembly PARC15S",
+            "startTime": "09:11",
+            "endTime": "13:18",
+            "target": 6105,
+            "actual": 0,
+            "progress": 0,
+            "workHours": 3.8666666666666667
+          },
+          {
+            "productId": "Scalpel-Assembly",
+            "variantId": "Scalpel-Assembly-Assembly-PARC11NS",
+            "productName": "Scalpel Assembly",
+            "variantName": "Assembly PARC11NS",
+            "startTime": "13:18",
+            "endTime": "18:30",
+            "target": 7026,
+            "actual": 0,
+            "progress": 0,
+            "workHours": 4.45
+          },
+          {
+            "productId": "Scalpel-Packaging",
+            "variantId": "Scalpel-Packaging-Packaging-PARC15S",
+            "productName": "Scalpel Packaging",
+            "variantName": "Packaging PARC15S",
+            "startTime": "12:16",
+            "endTime": "18:30",
+            "target": 8657,
+            "actual": 0,
+            "progress": 0,
+            "workHours": 5.483333333333333
+          }
+        ]
+      },
+      {
+        "id": "Luthando",
+        "name": "Luthando",
+        "totalProduction": 816,
+        "totalTarget": 593,
+        "progress": 138,
+        "assignments": [
+          {
+            "productId": "SCD",
+            "variantId": "SCD-XL1000SCP",
+            "productName": "SCD",
+            "variantName": "XL1000SCP",
+            "startTime": "11:09",
+            "endTime": "16:30",
+            "target": 593,
+            "actual": 816,
+            "progress": 138,
+            "workHours": 4.85
+          }
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 168,
+        "totalTarget": 191,
+        "progress": 88,
+        "assignments": [
+          {
+            "productId": "LEVO",
+            "variantId": "LEVO-XL2200S",
+            "productName": "LEVO",
+            "variantName": "XL2200S",
+            "startTime": "12:35",
+            "endTime": "18:30",
+            "target": 191,
+            "actual": 168,
+            "progress": 88,
+            "workHours": 5.166666666666667
+          }
+        ]
+      }
+    ]
   }
 }
