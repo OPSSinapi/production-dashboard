@@ -20,7 +20,6 @@
     --supervisor-siyabonga: #FADBD8;
     --supervisor-nosi: #D6EAF8;
     --supervisor-mvokwe: #D5F5E3;
-    --supervisor-ayanda: #D7BDE2; /* Light purple for Ayanda */
     --production-color: #e74c3c; /* Red for production */
     --target-color: #10B981; /* Green for target */
     --current-indicator: #F59E0B; /* Yellow for current time indicator */
@@ -900,50 +899,48 @@ body {
         <div class="header">
             <div class="title-section">
                 <div>
-                    <div class="title">Production Dashboard</div>
-                    <div class="subtitle" id="facility-name">Main Plant</div>
+                    <div class="title">Sinapi Secondary Production Dashboard</div>
+                    <div class="subtitle">Medical Device Assembly</div>
                 </div>
-                <div class="supervisor-color-banner"></div>
                 <div class="filter-section">
                     <select id="filter-type-select" class="filter-select">
                         <option value="supervisor">Filter by Supervisor</option>
                         <option value="product">Filter by Product</option>
+                        <option value="variant">Filter by Variant</option>
                     </select>
                     <select id="filter-value-select" class="filter-select">
                         <option value="all">All</option>
                     </select>
                 </div>
             </div>
-            
-            <div class="date-time">
-                <div class="date" id="current-date">Loading...</div>
-                <div class="time" id="current-time">Loading...</div>
-                <button id="toggle-fullscreen-btn" class="fullscreen-button">Fullscreen</button>
+            <div class="supervisor-selection-container">
+    <button id="supervisor-select-btn" class="supervisor-select-btn">
+        Select Supervisors
+    </button>
+    <div id="supervisor-select-modal" class="supervisor-select-modal">
+        <div class="supervisor-select-content">
+            <div class="supervisor-select-header">
+                <h3>Select Supervisors to Display</h3>
+                <span class="supervisor-select-close">&times;</span>
             </div>
-        </div>
-
-        <div class="supervisor-selection-container">
-            <button id="supervisor-filter-btn" class="supervisor-select-btn">
-                Select Supervisors
-            </button>
-            <div id="supervisor-select-modal" class="supervisor-select-modal">
-                <div class="supervisor-select-content">
-                    <div class="supervisor-select-header">
-                        <h3>Select Supervisors to Display</h3>
-                        <span class="supervisor-select-close">&times;</span>
-                    </div>
-                    <div class="supervisor-select-body">
-                        <div id="supervisor-checkboxes" class="supervisor-checkboxes">
-                            <!-- Checkboxes will be added dynamically -->
-                        </div>
-                    </div>
-                    <div class="supervisor-select-footer">
-                        <button id="select-all-supervisors" class="supervisor-select-btn secondary">Select All</button>
-                        <button id="deselect-all-supervisors" class="supervisor-select-btn secondary">Deselect All</button>
-                        <button id="apply-supervisor-selection" class="supervisor-select-btn primary">Apply Selection</button>
-                    </div>
+            <div class="supervisor-select-body">
+                <div id="supervisor-checkboxes" class="supervisor-checkboxes">
+                    <!-- Checkboxes will be added dynamically -->
                 </div>
             </div>
+            <div class="supervisor-select-footer">
+                <button id="select-all-supervisors" class="supervisor-select-btn secondary">Select All</button>
+                <button id="deselect-all-supervisors" class="supervisor-select-btn secondary">Deselect All</button>
+                <button id="apply-supervisor-selection" class="supervisor-select-btn primary">Apply Selection</button>
+            </div>
+        </div>
+    </div>
+</div>
+            <div class="date-time">
+    <div class="date" id="current-date">Loading...</div>
+    <div class="time" id="current-time">Loading...</div>
+    <button class="fullscreen-button" onclick="toggleFullscreen()">Fullscreen</button>
+</div>
         </div>
 
         <div class="content">
@@ -1070,79 +1067,54 @@ function initDashboard() {
 }
 
         function toggleFullscreen() {
-            const container = document.querySelector('.dashboard-container');
-            if (!container) return;
-            
-            if (!document.fullscreenElement &&
-                !document.mozFullScreenElement &&
-                !document.webkitFullscreenElement &&
-                !document.msFullscreenElement) {
-                // Enter fullscreen
-                if (container.requestFullscreen) {
-                    container.requestFullscreen();
-                } else if (container.msRequestFullscreen) {
-                    container.msRequestFullscreen();
-                } else if (container.mozRequestFullScreen) {
-                    container.mozRequestFullScreen();
-                } else if (container.webkitRequestFullscreen) {
-                    container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-                }
+            const dashboard = document.querySelector('.dashboard-container');
+            const fullscreenButton = document.querySelector('.fullscreen-button');
+
+            if (!document.fullscreenElement && !document.mozFullScreenElement && 
+                !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                dashboard.classList.add('fullscreen-mode');
+                isFullscreen = true;
+                fullscreenButton.textContent = 'Exit Fullscreen';
+
+                if (dashboard.requestFullscreen) dashboard.requestFullscreen();
+                else if (dashboard.msRequestFullscreen) dashboard.msRequestFullscreen();
+                else if (dashboard.mozRequestFullScreen) dashboard.mozRequestFullScreen();
+                else if (dashboard.webkitRequestFullscreen) dashboard.webkitRequestFullscreen();
             } else {
-                // Exit fullscreen
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                }
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.msExitFullscreen) document.msExitFullscreen();
+                else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
             }
         }
 
         function handleFullscreenChange() {
-            const container = document.querySelector('.dashboard-container');
-            if (!container) return;
-            
-            if (document.fullscreenElement || 
-                document.webkitFullscreenElement || 
-                document.mozFullScreenElement || 
-                document.msFullscreenElement) {
-                container.classList.add('fullscreen-mode');
-            } else {
-                container.classList.remove('fullscreen-mode');
+            const dashboard = document.querySelector('.dashboard-container');
+            const fullscreenButton = document.querySelector('.fullscreen-button');
+
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && 
+                !document.mozFullScreenElement && !document.msFullscreenElement) {
+                dashboard.classList.remove('fullscreen-mode');
+                isFullscreen = false;
+                fullscreenButton.textContent = 'Fullscreen';
             }
+
+            // Redraw as needed
+            setTimeout(updateDashboard, 100);
         }
 
         // Add this function to initialize the supervisor selection UI
 function initSupervisorSelection() {
-    const selectBtn = document.getElementById('supervisor-filter-btn');
-    if (!selectBtn) {
-        console.error('supervisor-filter-btn not found in DOM');
-        return; // Exit the function if the button doesn't exist
-    }
-    
+    const selectBtn = document.getElementById('supervisor-select-btn');
     const modal = document.getElementById('supervisor-select-modal');
-    if (!modal) {
-        console.error('supervisor-select-modal not found in DOM');
-        return;
-    }
-    
     const closeBtn = document.querySelector('.supervisor-select-close');
     const applyBtn = document.getElementById('apply-supervisor-selection');
     const selectAllBtn = document.getElementById('select-all-supervisors');
     const deselectAllBtn = document.getElementById('deselect-all-supervisors');
     
-    // Check that all elements exist before adding event listeners
-    if (!closeBtn || !applyBtn || !selectAllBtn || !deselectAllBtn) {
-        console.error('One or more supervisor selection elements not found in DOM');
-        return;
-    }
-    
     // Open modal when button is clicked
     selectBtn.addEventListener('click', function() {
-        updateSupervisorFilter(); // Updated function name
+        updateSupervisorCheckboxes();
         modal.style.display = 'block';
     });
     
@@ -1181,8 +1153,8 @@ function initSupervisorSelection() {
     });
     
     // Initialize with all supervisors selected
-    if (productionData && productionData.personnel && productionData.personnel.supervisors) {
-        selectedSupervisors = productionData.personnel.supervisors.map(supervisor => supervisor.id);
+    if (productionData && productionData.supervisors) {
+        selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
     }
 }
 
@@ -1249,15 +1221,11 @@ function applySupervisorSelection() {
     localStorage.setItem('selectedSupervisors', JSON.stringify(selectedSupervisors));
     
     // Update the selection button style based on whether filtering is active
-    const supervisorFilterActive = productionData.personnel && productionData.personnel.supervisors ? 
-        selectedSupervisors.length < productionData.personnel.supervisors.length : false;
-    
-    const selectBtn = document.getElementById('supervisor-filter-btn');
-    if (!selectBtn) return;
+    supervisorFilterActive = selectedSupervisors.length < productionData.supervisors.length;
+    const selectBtn = document.getElementById('supervisor-select-btn');
     
     if (supervisorFilterActive) {
-        const totalSupervisors = productionData.personnel?.supervisors?.length || 0;
-        selectBtn.textContent = `Supervisors (${selectedSupervisors.length}/${totalSupervisors})`;
+        selectBtn.textContent = `Supervisors (${selectedSupervisors.length}/${productionData.supervisors.length})`;
         selectBtn.classList.add('filtered');
     } else {
         selectBtn.textContent = 'Select Supervisors';
@@ -1276,7 +1244,7 @@ function getSupervisorColor(supervisorName) {
         'Siyabonga': 'var(--supervisor-siyabonga)',
         'Nosi': 'var(--supervisor-nosi)',
         'Mvokwe': 'var(--supervisor-mvokwe)',
-        'Ayanda': 'var(--supervisor-ayanda)' // Reusing Ayanda's color for Ayanda or add a new one
+        'Ayanda': 'var(--supervisor-luthando)' // Reusing Luthando's color for Ayanda or add a new one
     };
     
     return colorMap[supervisorName] || '#e2e8f0'; // Default color if not found
@@ -1345,14 +1313,14 @@ function loadSelectedSupervisors() {
     }
 }
         
-        function applySupervisorStyling(supervisorId) {
-    const dashboardContainer = document.querySelector('.dashboard-container');
-    dashboardContainer.classList.remove('supervisor-luthando', 'supervisor-apelele', 'supervisor-siyabonga', 'supervisor-nosi', 'supervisor-mvokwe', 'supervisor-ayanda');
-    if (supervisorId) {
-        const supervisorClass = 'supervisor-' + supervisorId.toLowerCase();
-        dashboardContainer.classList.add(supervisorClass);
-    }
-}
+        function applySupervisorStyling(supervisorName) {
+            const dashboardContainer = document.querySelector('.dashboard-container');
+            dashboardContainer.classList.remove('supervisor-luthando', 'supervisor-apelele', 'supervisor-siyabonga', 'supervisor-nosi', 'supervisor-mvokwe');
+            if (supervisorName) {
+                const supervisorClass = 'supervisor-' + supervisorName.toLowerCase();
+                dashboardContainer.classList.add(supervisorClass);
+            }
+        }
 
         function updateHourDropdown() {
             const hourSelect = document.getElementById('hour-range-select');
@@ -1360,17 +1328,22 @@ function loadSelectedSupervisors() {
             // Clear existing options
             while (hourSelect.options.length > 0) hourSelect.remove(0);
             
-            // Get all production hours from the current product
+            // Get all production hours from all variants in the current group
             const productionHours = new Set();
             
             if (currentProductVariants.length > 0) {
-                const product = currentProductVariants[0]; // Only one product now, not multiple variants
-                
-                if (product.timeline && product.timeline.byHour) {
-                    product.timeline.byHour.forEach(item => {
-                        if (item.hour) productionHours.add(item.hour);
-                    });
-                }
+                currentProductVariants.forEach(variant => {
+                    // Get times from supervisor variant data
+                    const supervisor = productionData.supervisors.find(s => s.name === currentSupervisor);
+                    if (supervisor && supervisor.variants[variant.variant]) {
+                        const variantData = supervisor.variants[variant.variant];
+                        const hourlyData = variant.hourlyTargets || [];
+                        
+                        hourlyData.forEach(item => {
+                            if (item.hour) productionHours.add(item.hour);
+                        });
+                    }
+                });
             }
             
             // Use default hours if no production hours available
@@ -1723,29 +1696,55 @@ async function fetchProductionData() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const data = await response.json();
         
-        if (!data.metadata || !data.products || !Array.isArray(data.products) || !data.personnel || !data.personnel.supervisors) {
-            throw new Error('Invalid data structure in data.json');
-        }
-        
-        if (!lastUpdateTime || lastUpdateTime !== data.metadata.timestamp) {
-            productionData = data;
-            lastUpdateTime = data.metadata.timestamp;
+        // Check if data has the new structure
+        if (data.metadata && data.products && Array.isArray(data.products) && data.personnel && data.personnel.supervisors) {
+            // Transform new data structure to match the old structure
+            const transformedData = transformDataFormat(data);
             
-            // Update only the footer timestamp
-            document.getElementById('last-update2').textContent = 'Last updated: ' + data.metadata.timestamp;
-            
-            // Process product-supervisor groups from the new data
-            processProductSupervisorGroups();
-            
-            // Load saved supervisor selections or initialize all selected
-            if (selectedSupervisors.length === 0) {
-                selectedSupervisors = productionData.personnel.supervisors.map(supervisor => supervisor.id);
-                loadSelectedSupervisors(); // Load any saved preferences
+            if (!lastUpdateTime || lastUpdateTime !== transformedData.timestamp) {
+                productionData = transformedData;
+                lastUpdateTime = transformedData.timestamp;
+                
+                // Update only the footer timestamp
+                document.getElementById('last-update2').textContent = 'Last updated: ' + transformedData.timestamp;
+                
+                // Process product-supervisor groups from the transformed data
+                processProductSupervisorGroups();
+                
+                // Load saved supervisor selections or initialize all selected
+                if (selectedSupervisors.length === 0) {
+                    selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
+                    loadSelectedSupervisors(); // Load any saved preferences
+                }
+                
+                updateFilterValueDropdown();
+                updateDashboard();
+                updateHourDropdown();
             }
-            
-            updateFilterValueDropdown();
-            updateDashboard();
-            updateHourDropdown();
+        } else if (!data.variants || !Array.isArray(data.variants) || !data.supervisors || !Array.isArray(data.supervisors)) {
+            throw new Error('Invalid data structure in data.json');
+        } else {
+            // Old data structure, use as is
+            if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
+                productionData = data;
+                lastUpdateTime = data.timestamp;
+                
+                // Update only the footer timestamp
+                document.getElementById('last-update2').textContent = 'Last updated: ' + data.timestamp;
+                
+                // Process product-supervisor groups from the new data
+                processProductSupervisorGroups();
+                
+                // Load saved supervisor selections or initialize all selected
+                if (selectedSupervisors.length === 0) {
+                    selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
+                    loadSelectedSupervisors(); // Load any saved preferences
+                }
+                
+                updateFilterValueDropdown();
+                updateDashboard();
+                updateHourDropdown();
+            }
         }
         
         isLoading = false;
@@ -1756,36 +1755,141 @@ async function fetchProductionData() {
     }
 }
 
+// Function to transform new data format to match old format
+function transformDataFormat(newData) {
+    const transformedData = {
+        variants: [],
+        supervisors: [],
+        timestamp: newData.metadata.timestamp || new Date().toISOString()
+    };
+    
+    // Transform products data to variants
+    if (newData.products && Array.isArray(newData.products)) {
+        newData.products.forEach(product => {
+            // Create a variant object for each product
+            const variant = {
+                variant: product.id,
+                "Product Name": product.name,
+                cycleTime: product.cycleTime,
+                "Start Time": product.shiftRef === "overtime" ? "07:30" : "07:30", // Default times based on shift
+                "End Time": product.shiftRef === "overtime" ? "18:30" : "16:30",
+                dailyBoxTarget: product.targets.boxes,
+                currentBoxTotal: product.production.boxes,
+                hourlyTargets: [],
+                hourlyProduction: []
+            };
+            
+            // Add hourly targets and production data
+            if (product.timeline && product.timeline.byHour) {
+                product.timeline.byHour.forEach(hour => {
+                    // Add hourly target
+                    variant.hourlyTargets.push({
+                        hour: hour.hour,
+                        target: hour.target
+                    });
+                    
+                    // Add hourly production
+                    variant.hourlyProduction.push({
+                        hour: hour.hour,
+                        production: hour.actual
+                    });
+                });
+            }
+            
+            transformedData.variants.push(variant);
+        });
+    }
+    
+    // Transform personnel data to supervisors
+    if (newData.personnel && newData.personnel.supervisors) {
+        newData.personnel.supervisors.forEach(supervisor => {
+            const transformedSupervisor = {
+                name: supervisor.name,
+                variants: {}
+            };
+            
+            // Process assignments to create variants data
+            if (supervisor.assignments && Array.isArray(supervisor.assignments)) {
+                supervisor.assignments.forEach(assignment => {
+                    const productId = assignment.productId;
+                    const product = newData.products.find(p => p.id === productId);
+                    
+                    if (product) {
+                        transformedSupervisor.variants[productId] = {
+                            variantStartTime: assignment.startTime,
+                            variantEndTime: assignment.endTime,
+                            dailyTarget: assignment.target,
+                            currentTotal: assignment.actual,
+                            variance: assignment.actual - assignment.target,
+                            percentage: assignment.progress
+                        };
+                    }
+                });
+            }
+            
+            transformedData.supervisors.push(transformedSupervisor);
+        });
+    }
+    
+    return transformedData;
+}
+
         function processProductSupervisorGroups() {
             // Reset groups
             productSupervisorGroups = {};
             
-            // First, create supervisor-product mapping from assignments
-            productionData.personnel.supervisors.forEach(supervisor => {
-                if (!supervisor.assignments || !Array.isArray(supervisor.assignments)) return;
+            // First, create supervisor-product mapping
+            productionData.supervisors.forEach(supervisor => {
+                if (!supervisor.variants) return;
                 
-                // Process each assignment
-                supervisor.assignments.forEach(assignment => {
-                    const productId = assignment.productId;
+                // Create a temporary map of product -> variants
+                const productVariants = {};
+                
+                // Process each variant
+                Object.keys(supervisor.variants).forEach(variantKey => {
+                    const product = extractProductFromVariant(variantKey);
                     
-                    // Find the product in the products array
-                    const product = productionData.products.find(p => p.id === productId);
-                    
-                    if (product) {
-                        const group = `${supervisor.id}:${product.id}`;
-                        
-                        // Store in groups
-                        productSupervisorGroups[group] = {
-                            supervisor: supervisor.id,
-                            product: product.name,
-                            productId: product.id,
-                            variants: [product], // Use product directly instead of variants
-                            supervisorData: supervisor,
-                            productData: product,
-                            assignment: assignment,
-                            shiftData: productionData.schedule.shifts.find(s => s.id === product.shiftRef)
-                        };
+                    if (!productVariants[product]) {
+                        productVariants[product] = [];
                     }
+                    
+                    // Find the variant in the variants array
+                    const variantData = productionData.variants.find(v => v.variant === variantKey);
+                    
+                    if (variantData) {
+                        productVariants[product].push({
+                            variantKey,
+                            variantData,
+                            supervisorVariant: supervisor.variants[variantKey]
+                        });
+                    }
+                });
+                
+                // Sort variants by start time and add to groups
+                Object.keys(productVariants).forEach(product => {
+                    const group = `${supervisor.name}:${product}`;
+                    
+                    // Sort variants by start time
+                    const sortedVariants = productVariants[product].sort((a, b) => {
+                        const timeA = a.supervisorVariant.variantStartTime || a.variantData["Start Time"] || "00:00";
+                        const timeB = b.supervisorVariant.variantStartTime || b.variantData["Start Time"] || "00:00";
+                        
+                        const [hoursA, minutesA] = timeA.split(':').map(Number);
+                        const [hoursB, minutesB] = timeB.split(':').map(Number);
+                        
+                        const totalMinutesA = hoursA * 60 + minutesA;
+                        const totalMinutesB = hoursB * 60 + minutesB;
+                        
+                        return totalMinutesA - totalMinutesB;
+                    });
+                    
+                    // Store in groups
+                    productSupervisorGroups[group] = {
+                        supervisor: supervisor.name,
+                        product,
+                        variants: sortedVariants.map(v => v.variantData),
+                        supervisorData: supervisor
+                    };
                 });
             });
             
@@ -1801,11 +1905,11 @@ async function fetchProductionData() {
                 filterValueSelect.remove(1);
             }
             
-            if (selectedFilterType === 'supervisor' && productionData.personnel?.supervisors?.length > 0) {
+            if (selectedFilterType === 'supervisor' && productionData.supervisors?.length > 0) {
                 // Add all supervisors
-                productionData.personnel.supervisors.forEach(supervisor => {
+                productionData.supervisors.forEach(supervisor => {
                     const option = document.createElement('option');
-                    option.value = supervisor.id;
+                    option.value = supervisor.name;
                     option.textContent = supervisor.name;
                     filterValueSelect.appendChild(option);
                 });
@@ -1816,28 +1920,33 @@ async function fetchProductionData() {
                 // Extract products from all variants
                 Object.keys(productSupervisorGroups).forEach(key => {
                     const group = productSupervisorGroups[key];
-                    uniqueProducts.add(group.productId);
+                    uniqueProducts.add(group.product);
                 });
                 
                 // Add options
-                uniqueProducts.forEach(productId => {
-                    const product = productionData.products.find(p => p.id === productId);
-                    if (product) {
-                        const option = document.createElement('option');
-                        option.value = product.id;
-                        option.textContent = product.name;
-                        filterValueSelect.appendChild(option);
-                    }
+                uniqueProducts.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product;
+                    option.textContent = product;
+                    filterValueSelect.appendChild(option);
+                });
+            } else if (selectedFilterType === 'variant' && productionData.variants?.length > 0) {
+                // Add all unique variants
+                const uniqueVariants = new Set(productionData.variants.map(v => v.variant));
+                uniqueVariants.forEach(variantName => {
+                    const option = document.createElement('option');
+                    option.value = variantName;
+                    option.textContent = variantName;
+                    filterValueSelect.appendChild(option);
                 });
             }
             
-            // Try to restore previous selection if it exists
-            for (let i = 0; i < filterValueSelect.options.length; i++) {
-                if (filterValueSelect.options[i].value === currentValue) {
-                    filterValueSelect.selectedIndex = i;
-                    break;
-                }
-            }
+            // Restore previous selection if available, otherwise use 'all'
+            filterValueSelect.value = Array.from(filterValueSelect.options).some(opt => opt.value === currentValue) 
+                ? currentValue 
+                : 'all';
+                
+            selectedFilterValue = filterValueSelect.value;
         }
 
         function showLoadingOrError(message) {
@@ -1923,121 +2032,122 @@ function updateDashboard() {
     } else if (selectedFilterType === 'product') {
         // Filter by product but only for selected supervisors
         Object.keys(productSupervisorGroups).forEach(key => {
-            if (productSupervisorGroups[key].productId === selectedFilterValue &&
+            if (productSupervisorGroups[key].product === selectedFilterValue &&
                 selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
                 filteredGroups[key] = productSupervisorGroups[key];
+            }
+        });
+    } else if (selectedFilterType === 'variant') {
+        // Filter by variant but only for selected supervisors
+        Object.keys(productSupervisorGroups).forEach(key => {
+            const group = productSupervisorGroups[key];
+            if (group.variants.some(v => v.variant === selectedFilterValue) &&
+                selectedSupervisors.includes(group.supervisor)) {
+                filteredGroups[key] = group;
             }
         });
     }
     
     // If no groups after filtering, show error and return
     if (Object.keys(filteredGroups).length === 0) {
-        showLoadingOrError("No production data available for the selected filter");
+        showLoadingOrError('No data available for this filter or selected supervisors.');
+        if (cycleInterval) clearInterval(cycleInterval);
+        cycleInterval = null;
         return;
     }
     
-    // Sort groups by supervisor and product
-    const sortedGroupKeys = Object.keys(filteredGroups).sort((a, b) => {
-        const groupA = filteredGroups[a];
-        const groupB = filteredGroups[b];
+    // Multiple groups - setup cycling
+    const groupKeys = Object.keys(filteredGroups);
+    if (groupKeys.length > 1) {
+        // Clear existing interval
+        if (cycleInterval) clearInterval(cycleInterval);
         
-        // First sort by supervisor
-        if (groupA.supervisor !== groupB.supervisor) {
-            return groupA.supervisor.localeCompare(groupB.supervisor);
-        }
-        
-        // Then by product name
-        return groupA.product.localeCompare(groupB.product);
-    });
+        // Set cycling logic
+        cycleIndex = 0;
+        cycleInterval = setInterval(() => {
+            cycleIndex = (cycleIndex + 1) % groupKeys.length;
+            displayGroup(filteredGroups[groupKeys[cycleIndex]]);
+        }, CYCLE_INTERVAL);
+    } else {
+        // Single group - clear cycling
+        if (cycleInterval) clearInterval(cycleInterval);
+        cycleInterval = null;
+    }
     
-    // Display the first group
-    displayGroup(filteredGroups[sortedGroupKeys[0]]);
+    // Setup the consolidated layout
+    setupConsolidatedLayout();
     
-    // Show dashboard, hide loading message
-    hideLoadingMessage();
+    // Display the first group initially
+    displayGroup(filteredGroups[groupKeys[0]]);
 }
 
         function displayGroup(group) {
-    // Set current product and supervisor
-    currentProduct = group.productId;
-    currentSupervisor = group.supervisor;
-    currentProductVariants = group.variants;
-    
-    // Apply supervisor styling
-    applySupervisorStyling(group.supervisor);
-    
-    // Supervisor info section
-    document.getElementById('supervisor-name').textContent = group.supervisorData.name;
-    document.getElementById('product-name').textContent = group.product;
-    
-    // Update supervisor color banner
-    const banner = document.querySelector('.supervisor-color-banner');
-    banner.classList.remove('supervisor-luthando', 'supervisor-apelele', 'supervisor-siyabonga', 'supervisor-nosi', 'supervisor-mvokwe');
-    banner.classList.add('supervisor-' + group.supervisor.toLowerCase());
-    
-    // Update variant sequence - now showing assignment times
-    const sequenceContainer = document.getElementById('variant-sequence');
-    sequenceContainer.innerHTML = '';
-    
-    const assignment = group.assignment;
-    const product = group.productData;
-    
-    if (assignment) {
-        // Add assignment time info
-        const startTime = assignment.startTime;
-        const endTime = assignment.endTime;
-        
-        // Get current time to determine status
-        const now = new Date();
-        const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-        
-        // Parse start and end times
-        const [startHour, startMinute] = startTime.split(':').map(Number);
-        const [endHour, endMinute] = endTime.split(':').map(Number);
-        
-        const startTimeMinutes = startHour * 60 + startMinute;
-        const endTimeMinutes = endHour * 60 + endMinute;
-        
-        // Determine assignment status
-        let status = '';
-        if (currentTimeMinutes < startTimeMinutes) {
-            status = 'upcoming';
-        } else if (currentTimeMinutes > endTimeMinutes) {
-            status = 'completed';
-        } else {
-            status = 'current';
+            // Set current product and supervisor
+            currentProduct = group.product;
+            currentSupervisor = group.supervisor;
+            currentProductVariants = group.variants;
+            
+            // Find current variant
+            const now = new Date();
+            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            // Sort variants by start time
+            const sortedVariants = [...currentProductVariants].sort((a, b) => {
+                const supervisorA = group.supervisorData.variants[a.variant];
+                const supervisorB = group.supervisorData.variants[b.variant];
+                
+                const timeA = supervisorA.variantStartTime || a["Start Time"] || "00:00";
+                const timeB = supervisorB.variantStartTime || b["Start Time"] || "00:00";
+                
+                const [hoursA, minutesA] = timeA.split(':').map(Number);
+                const [hoursB, minutesB] = timeB.split(':').map(Number);
+                
+                return (hoursA * 60 + minutesA) - (hoursB * 60 + minutesB);
+            });
+            
+            // Find the current active variant
+            let currentVariantIndex = -1;
+            
+            for (let i = 0; i < sortedVariants.length; i++) {
+                const variant = sortedVariants[i];
+                const supervisorVariant = group.supervisorData.variants[variant.variant];
+                
+                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+                
+                if (!startTimeStr || !endTimeStr) continue;
+                
+                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                
+                const startTimeMinutes = startHour * 60 + startMinute;
+                const endTimeMinutes = endHour * 60 + endMinute;
+                
+                // Check if current time is within this variant's window
+                if (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes) {
+                    currentVariantIndex = i;
+                    break;
+                }
+            }
+            
+            // If no current variant found, use last variant
+            if (currentVariantIndex === -1 && sortedVariants.length > 0) {
+                currentVariantIndex = sortedVariants.length - 1;
+            }
+            
+            // Set current variant
+            currentVariantKey = currentVariantIndex >= 0 ? sortedVariants[currentVariantIndex].variant : null;
+            
+            // Apply styling based on supervisor
+            applySupervisorStyling(currentSupervisor);
+            
+            // Update UI
+            updateSupervisorInfo(group);
+            updateTotalsDisplay(group);
+            renderCumulativeChart(group);
+            updateHourlyChart();
+            updateHourDropdown();
         }
-        
-        // Create the variant item with start/end times
-        const variantItem = document.createElement('div');
-        variantItem.className = `variant-item ${status}`;
-        
-        // Add time spans
-        const timeSpan = document.createElement('span');
-        timeSpan.className = 'variant-time';
-        timeSpan.textContent = `${startTime} - ${endTime}`;
-        variantItem.appendChild(timeSpan);
-        
-        // Add progress status
-        const statusSpan = document.createElement('span');
-        statusSpan.className = 'variant-status';
-        statusSpan.textContent = `${assignment.progress}%`;
-        variantItem.appendChild(statusSpan);
-        
-        sequenceContainer.appendChild(variantItem);
-    } else {
-        sequenceContainer.innerHTML = '<div>No assignment information</div>';
-    }
-    
-    // Update totals
-    updateTotals(group);
-    
-    // Update time-series chart for production vs targets
-    updateProductionChart(group);
-    
-    // Update hour dropdown
-    updateHourDropdown();
-}
 
         function updateSupervisorInfo(group) {
     document.getElementById('supervisor-name').textContent = `SUPERVISOR: ${group.supervisor}`;
@@ -2111,220 +2221,269 @@ function updateDashboard() {
     });
 }
 
-        function updateTotals(group) {
-    const totalsDisplay = document.querySelector('.totals-display');
+        function updateTotalsDisplay(group) {
+    // Initialize aggregated values
+    let totalTarget = 0;
+    let totalProduction = 0;
+    let totalBoxTarget = 0;
+    let totalBoxProduction = 0;
+    let weightedCycleTime = 0;
+    let totalCycleTimeWeight = 0;
+    
+    // Calculate aggregated values
+    group.variants.forEach(variant => {
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        
+        if (supervisorVariant) {
+            totalTarget += (supervisorVariant.dailyTarget || 0);
+            totalProduction += (supervisorVariant.currentTotal || 0);
+            
+            // Add box totals consistently for all variants
+            totalBoxTarget += (variant.dailyBoxTarget || 0);
+            totalBoxProduction += (variant.currentBoxTotal || 0);
+            
+            // Add cycle time weighted by target
+            const cycleTime = variant.cycleTime || 0;
+            const target = supervisorVariant.dailyTarget || 0;
+            
+            if (cycleTime > 0 && target > 0) {
+                weightedCycleTime += cycleTime * target;
+                totalCycleTimeWeight += target;
+            }
+        }
+    });
+    
+    // Calculate overall progress percentage
+    const progressPercentage = totalTarget > 0 ? Math.round((totalProduction / totalTarget) * 100) : 0;
+    
+    // Calculate average cycle time
+    const avgCycleTime = totalCycleTimeWeight > 0 ? Math.round(weightedCycleTime / totalCycleTimeWeight) : 0;
+    
+    // Calculate actual cycle time across all variants
+    const actualCycleTime = calculateActualCycleTime(group.variants);
+    
+    // Update totals display
+    const totalsDisplay = document.getElementById('totals-display');
     totalsDisplay.innerHTML = '';
     
-    const product = group.productData;
-    const assignment = group.assignment;
-    
-    // Product information
-    const totalItem1 = document.createElement('div');
-    totalItem1.className = 'total-item';
-    totalItem1.innerHTML = `
-        <div class="total-label">Device Type</div>
-        <div class="total-value">${product.name}</div>
-        <div class="total-subvalue">Cycle Time: ${product.cycleTime}s</div>
-        <div class="total-subvalue">${product.devicesPerBox} per box</div>
+    // Progress display with percentage
+    totalsDisplay.innerHTML += `
+        <div class="total-item">
+            <div class="total-label">
+                Progress <span class="total-percentage">${progressPercentage}%</span>
+            </div>
+            <div class="total-value">
+                <span class="current-value">${totalProduction}</span>/<span class="target-value">${totalTarget}</span>
+            </div>
+            <div class="total-subvalue">
+                <span class="current-value">${totalBoxProduction}</span>/<span class="target-value">${totalBoxTarget}</span> boxes
+            </div>
+        </div>
     `;
-    totalsDisplay.appendChild(totalItem1);
     
-    // Production targets
-    const totalItem2 = document.createElement('div');
-    totalItem2.className = 'total-item';
-    totalItem2.innerHTML = `
-        <div class="total-label">Targets</div>
-        <div class="total-value target-value">${product.targets.daily}</div>
-        <div class="total-subvalue">Hourly: ${product.targets.hourly}</div>
-        <div class="total-subvalue">Boxes: ${product.targets.boxes}</div>
+    // Cycle Time display
+    totalsDisplay.innerHTML += `
+        <div class="total-item">
+            <div class="total-label">Cycle Time</div>
+            <div class="total-value">
+                <span class="current-value">${actualCycleTime}</span>/<span class="target-value">${avgCycleTime}</span>
+            </div>
+            <div class="total-subvalue">sec/unit</div>
+        </div>
     `;
-    totalsDisplay.appendChild(totalItem2);
     
-    // Current production
-    const totalItem3 = document.createElement('div');
-    totalItem3.className = 'total-item';
-    totalItem3.innerHTML = `
-        <div class="total-label">Production <span class="total-percentage">${product.production.progress}%</span></div>
-        <div class="total-value current-value">${product.production.total}</div>
-        <div class="total-subvalue">Boxes: ${product.production.boxes}</div>
-        <div class="total-subvalue">Batch: ${product.production.batches[0]?.id || 'N/A'}</div>
-    `;
-    totalsDisplay.appendChild(totalItem3);
-    
-    // Supervisor metrics
-    const totalItem4 = document.createElement('div');
-    totalItem4.className = 'total-item';
-    totalItem4.innerHTML = `
-        <div class="total-label">Supervisor Metrics</div>
-        <div class="total-value">${assignment ? assignment.progress + '%' : 'N/A'}</div>
-        <div class="total-subvalue">Target: ${assignment ? assignment.target : 'N/A'}</div>
-        <div class="total-subvalue">Actual: ${assignment ? assignment.actual : 'N/A'}</div>
-    `;
-    totalsDisplay.appendChild(totalItem4);
-    
-    // Shift information
-    if (group.shiftData) {
-        const totalItem5 = document.createElement('div');
-        totalItem5.className = 'total-item';
-        totalItem5.innerHTML = `
-            <div class="total-label">Shift</div>
-            <div class="total-value">${group.shiftData.id}</div>
-            <div class="total-subvalue">${group.shiftData.startTime} - ${group.shiftData.endTime}</div>
-            <div class="total-subvalue">Work Hours: ${group.shiftData.availableWorkHours}</div>
-        `;
-        totalsDisplay.appendChild(totalItem5);
+    // Render hourly targets in the dedicated container
+    const hourlyTargetsContainer = document.getElementById('hourly-targets-container');
+    if (hourlyTargetsContainer) {
+        hourlyTargetsContainer.innerHTML = '';
+        hourlyTargetsContainer.appendChild(renderHourlyTargetsVisual(group));
     }
 }
-
-function updateProductionChart(group) {
-    const product = group.productData;
+        function renderHourlyTargetsVisual(group) {
+    // Create container
+    const container = document.createElement('div');
+    container.className = 'hourly-targets-container';
     
-    // Clear previous chart
-    const chartArea = document.querySelector('.chart-area');
-    if (!chartArea) {
-        console.error('Chart area element not found');
-        return;
-    }
-    chartArea.innerHTML = '';
-    
-    // Set chart title
-    const chartTitle = document.querySelector('.chart-title');
-    if (chartTitle) {
-        chartTitle.textContent = `${product.name} Production`;
-    }
-    
-    // Check if Chart.js is loaded
-    if (typeof Chart === 'undefined') {
-        console.error('Chart.js is not loaded. Unable to create chart.');
-        // Create a fallback display
-        const fallbackDiv = document.createElement('div');
-        fallbackDiv.className = 'chart-fallback';
-        fallbackDiv.innerHTML = `
-            <h3>Chart Could Not Be Loaded</h3>
-            <p>Production: ${product.production.total} / ${product.targets.daily} (${product.production.progress}%)</p>
-            <p>Boxes: ${product.production.boxes} / ${product.targets.boxes}</p>
-        `;
-        chartArea.appendChild(fallbackDiv);
-        return;
-    }
-    
-    // Create canvas for Chart.js
-    const canvas = document.createElement('canvas');
-    canvas.className = 'line-chart';
-    chartArea.appendChild(canvas);
-    
-    // Extract timeline data
-    const hours = product.timeline.byHour.map(item => item.hour);
-    const targets = product.timeline.byHour.map(item => item.target);
-    const actuals = product.timeline.byHour.map(item => item.actual);
-    const cumTargets = product.timeline.byHour.map(item => item.cumTarget);
-    const cumActuals = product.timeline.byHour.map(item => item.cumActual);
-    
-    try {
-        // Create chart
-        const ctx = canvas.getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: hours,
-                datasets: [
-                    {
-                        label: 'Cum. Target',
-                        data: cumTargets,
-                        borderColor: 'rgba(16, 185, 129, 1)', // Green
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        borderWidth: 3
-                    },
-                    {
-                        label: 'Cum. Actual',
-                        data: cumActuals,
-                        borderColor: 'rgba(231, 76, 60, 1)', // Red
-                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        borderWidth: 3
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                        labels: {
-                            font: {
-                                size: 14
-                            }
-                        }
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false
-                    }
-                }
-            }
-        });
-        
-        // Update hour countdown based on current time
-        updateHourCountdown(hours);
-    } catch (error) {
-        console.error('Error creating chart:', error);
-        // Provide a fallback display
-        chartArea.innerHTML = '';
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'chart-error';
-        errorDiv.textContent = 'Unable to create chart. Please check console for details.';
-        chartArea.appendChild(errorDiv);
-    }
-}
-
-function updateHourCountdown(hours) {
+    // Get all hourly targets and production for this product group
+    const hourlyTargetsMap = new Map();
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
     const currentTimeMinutes = currentHour * 60 + currentMinute;
     
-    // Find next production hour
-    let nextHourStr = null;
-    let minutesToNext = null;
-    
-    for (const hourStr of hours) {
-        const [hour, minute] = hourStr.split(':').map(Number);
-        const hourTimeMinutes = hour * 60 + minute;
+    // Combine hourly data from all variants
+    group.variants.forEach(variant => {
+        // Get variant time window
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        if (!supervisorVariant) return;
         
-        if (hourTimeMinutes > currentTimeMinutes) {
-            nextHourStr = hourStr;
-            minutesToNext = hourTimeMinutes - currentTimeMinutes;
+        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+        
+        if (!startTimeStr || !endTimeStr) return;
+        
+        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+        
+        const startTimeMinutes = startHour * 60 + startMinute;
+        const endTimeMinutes = endHour * 60 + endMinute;
+        
+        // Process hourly targets
+        if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
+            variant.hourlyTargets.forEach(item => {
+                if (!item.hour) return;
+                
+                // Check if this hour is within this variant's time window
+                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
+                
+                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    hourlyTargetsMap.set(item.hour, {
+                        hour: item.hour,
+                        target: item.target || 0,
+                        production: 0,
+                        metTarget: false,
+                        variant: variant.variant
+                    });
+                }
+            });
+        }
+        
+        // Process hourly production
+        if (variant.hourlyProduction && Array.isArray(variant.hourlyProduction)) {
+            variant.hourlyProduction.forEach(item => {
+                if (!item.hour) return;
+                
+                // Check if this hour is within this variant's time window
+                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
+                
+                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    if (hourlyTargetsMap.has(item.hour)) {
+                        const hourData = hourlyTargetsMap.get(item.hour);
+                        hourData.production = item.production || 0;
+                        hourData.metTarget = hourData.production >= hourData.target;
+                    } else {
+                        hourlyTargetsMap.set(item.hour, {
+                            hour: item.hour,
+                            target: 0,
+                            production: item.production || 0,
+                            metTarget: true,
+                            variant: variant.variant
+                        });
+                    }
+                }
+            });
+        }
+    });
+    
+    // Sort hours
+    const hours = Array.from(hourlyTargetsMap.keys()).sort((a, b) => {
+        const [hourA, minuteA] = a.split(':').map(Number);
+        const [hourB, minuteB] = b.split(':').map(Number);
+        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
+    });
+    
+    // Find which hour is current
+    let currentHourIndex = -1;
+    for (let i = 0; i < hours.length; i++) {
+        const [hour, minute] = hours[i].split(':').map(Number);
+        const hourMinutes = hour * 60 + minute;
+        
+        const prevHourMinutes = i > 0 ? 
+            hours[i-1].split(':').map(Number).reduce((h, m) => h * 60 + m, 0) :
+            0;
+        
+        if (currentTimeMinutes >= prevHourMinutes && currentTimeMinutes < hourMinutes) {
+            currentHourIndex = i;
             break;
         }
     }
     
-    // Update countdown display
-    const countdownEl = document.querySelector('.hour-countdown');
-    if (nextHourStr && minutesToNext !== null) {
-        countdownEl.textContent = `Next: ${nextHourStr} (${minutesToNext} min)`;
-    } else {
-        countdownEl.textContent = 'Completed';
+    // If not found but time is after last hour, use last hour
+    if (currentHourIndex === -1 && hours.length > 0) {
+        const lastHourTime = hours[hours.length - 1].split(':').map(Number);
+        const lastHourMinutes = lastHourTime[0] * 60 + lastHourTime[1];
+        if (currentTimeMinutes >= lastHourMinutes) {
+            currentHourIndex = hours.length - 1;
+        }
     }
+    
+    // Create SVG for visualization - REDUCED HEIGHT
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'hourly-targets-svg');
+    svg.setAttribute('height', '90'); // Reduced height
+    svg.setAttribute('viewBox', `0 0 ${Math.max(hours.length * 80, 400)} 90`); // Adjusted viewBox
+    
+    // Calculate spacing - MORE COMPACT
+    const circleRadius = 25; // Smaller radius
+    const spacing = 80;     // Reduced spacing
+    const yPosition = 40;   // Reduced vertical center
+    
+    // Draw each hour circle
+    hours.forEach((hour, index) => {
+        const hourData = hourlyTargetsMap.get(hour);
+        const xPosition = index * spacing + 60; // Adjusted position
+        
+        // Circle
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('class', 'hourly-circle');
+        circle.setAttribute('cx', xPosition);
+        circle.setAttribute('cy', yPosition);
+        circle.setAttribute('r', circleRadius);
+        svg.appendChild(circle);
+        
+        // Time label
+        const timeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        timeLabel.setAttribute('class', 'time-label');
+        timeLabel.setAttribute('x', xPosition);
+        timeLabel.setAttribute('y', yPosition + circleRadius + 10); // Adjusted position
+        timeLabel.setAttribute('font-size', '1.5'); // Smaller font
+        timeLabel.textContent = hour;
+        svg.appendChild(timeLabel);
+        
+        // Status indicator - SMALLER
+        if (hourData) {
+            if (hourData.metTarget) {
+                // Check mark - scaled down
+                const checkmark = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                checkmark.setAttribute('class', 'status-icon status-success');
+                checkmark.setAttribute('d', `M${xPosition - 15},${yPosition} L${xPosition - 3},${yPosition + 12} L${xPosition + 15},${yPosition - 12}`);
+                checkmark.setAttribute('fill', 'none');
+                svg.appendChild(checkmark);
+            } else {
+                // X mark - scaled down
+                const xMark1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                xMark1.setAttribute('class', 'status-icon status-fail');
+                xMark1.setAttribute('x1', xPosition - 15);
+                xMark1.setAttribute('y1', yPosition - 15);
+                xMark1.setAttribute('x2', xPosition + 15);
+                xMark1.setAttribute('y2', yPosition + 15);
+                xMark1.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(xMark1);
+                
+                const xMark2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                xMark2.setAttribute('class', 'status-icon status-fail');
+                xMark2.setAttribute('x1', xPosition - 15);
+                xMark2.setAttribute('y1', yPosition + 15);
+                xMark2.setAttribute('x2', xPosition + 15);
+                xMark2.setAttribute('y2', yPosition - 15);
+                xMark2.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(xMark2);
+            }
+        }
+        
+        // Current hour indicator - scaled down
+        if (index === currentHourIndex) {
+            const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            arrow.setAttribute('class', 'current-arrow');
+            arrow.setAttribute('d', `M${xPosition - 15},${yPosition - 45} L${xPosition},${yPosition - 30} L${xPosition + 15},${yPosition - 45} Z`);
+            svg.appendChild(arrow);
+        }
+    });
+    
+    container.appendChild(svg);
+    return container;
 }
 
         function renderCumulativeChart(group) {
@@ -3027,112 +3186,6 @@ function updateHourlyChart() {
                 }
             }
         });
-
-        function updateSupervisorFilter() {
-            const checkboxContainer = document.getElementById('supervisor-checkboxes');
-            checkboxContainer.innerHTML = '';
-            
-            if (productionData && productionData.personnel && productionData.personnel.supervisors) {
-                productionData.personnel.supervisors.forEach(supervisor => {
-                    const checkboxDiv = document.createElement('div');
-                    checkboxDiv.className = 'supervisor-checkbox-item';
-                    
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.id = `supervisor-${supervisor.id}`;
-                    checkbox.value = supervisor.id;
-                    checkbox.checked = selectedSupervisors.includes(supervisor.id);
-                    
-                    const label = document.createElement('label');
-                    label.htmlFor = `supervisor-${supervisor.id}`;
-                    label.textContent = supervisor.name;
-                    
-                    // Add supervisor color indicator
-                    const colorIndicator = document.createElement('span');
-                    colorIndicator.className = `color-indicator supervisor-${supervisor.id.toLowerCase()}-bg`;
-                    
-                    checkboxDiv.appendChild(checkbox);
-                    checkboxDiv.appendChild(colorIndicator);
-                    checkboxDiv.appendChild(label);
-                    
-                    checkboxContainer.appendChild(checkboxDiv);
-                });
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize the dashboard
-            initDashboard();
-            
-            // Set the facility name from metadata
-            const facilityNameElement = document.getElementById('facility-name');
-            if (facilityNameElement) {
-                fetch(DATA_URL)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.metadata && data.metadata.facility) {
-                            facilityNameElement.textContent = data.metadata.facility;
-                        }
-                    })
-                    .catch(error => console.error('Failed to load facility name:', error));
-            }
-            
-            // Update date and time
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
-            
-            // Set up event listeners for filter controls if they exist
-            const filterTypeSelect = document.getElementById('filter-type-select');
-            if (filterTypeSelect) {
-                filterTypeSelect.addEventListener('change', changeFilterType);
-            }
-            
-            const filterValueSelect = document.getElementById('filter-value-select');
-            if (filterValueSelect) {
-                filterValueSelect.addEventListener('change', changeFilterValue);
-            }
-            
-            const hourRangeSelect = document.getElementById('hour-range-select');
-            if (hourRangeSelect) {
-                hourRangeSelect.addEventListener('change', changeHourRange);
-            }
-            
-            const supervisorFilterBtn = document.getElementById('supervisor-filter-btn');
-            if (supervisorFilterBtn) {
-                supervisorFilterBtn.addEventListener('click', openSupervisorFilter);
-            }
-            
-            const toggleFullscreenBtn = document.getElementById('toggle-fullscreen-btn');
-            if (toggleFullscreenBtn) {
-                toggleFullscreenBtn.addEventListener('click', toggleFullscreen);
-            }
-            
-            // Set up refresh interval
-            setInterval(fetchProductionData, REFRESH_INTERVAL);
-        });
-
-        function openSupervisorFilter() {
-            const modal = document.getElementById('supervisor-select-modal');
-            if (modal) {
-                updateSupervisorFilter();
-                modal.style.display = 'block';
-            }
-        }
-
-        function changeFilterType() {
-            selectedFilterType = this.value;
-            updateFilterValueDropdown();
-        }
-
-        function changeFilterValue() {
-            selectedFilterValue = this.value;
-            updateDashboard();
-        }
-
-        function changeHourRange() {
-            selectedHour = this.value;
-            // Update hour-specific chart if needed
-        }
     </script>
 </body>
 </html>
