@@ -1670,12 +1670,19 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
         }
 
         function extractProductFromVariant(variantId) {
-    // Check if the variant uses the new ProductId-VariantName format (e.g., "Scalpel-Assembly-PARC11NS")
+    // For the new structure format with product-variant IDs like "Scalpel-Assembly-PARC11NS"
     if (variantId.includes('-')) {
-        // For new format, get the product part (everything before the last dash)
-        const lastDashIndex = variantId.lastIndexOf('-');
-        if (lastDashIndex > 0) {
-            return variantId.substring(0, lastDashIndex);
+        // Try splitting by dash and look for known product patterns
+        const parts = variantId.split('-');
+        
+        // Handle case where product name contains a dash (like Scalpel-Assembly)
+        if (parts.length > 2) {
+            // If we have more than one dash, the product likely contains a dash
+            // Extract everything except the last part (which is the variant)
+            return parts.slice(0, -1).join('-');
+        } else if (parts.length === 2) {
+            // Simple product-variant format
+            return parts[0];
         }
     }
 
@@ -1756,8 +1763,81 @@ function transformDataFormat(newData) {
         timestamp: newData.metadata.timestamp || new Date().toISOString()
     };
     
-    // Transform variants data directly (variants are now a top-level array)
-    if (newData.variants && Array.isArray(newData.variants)) {
+    // Check which structure we're working with and handle accordingly
+    if (newData.production && Array.isArray(newData.production)) {
+        // New structure with production array and summary
+        
+        // Transform production items to variants
+        newData.production.forEach(item => {
+            const transformedVariant = {
+                variant: item.id,
+                "Product Name": item.variant.fullName || `${item.product.name} ${item.variant.name}`,
+                cycleTime: item.variant.cycleTime,
+                "Start Time": item.shiftId === "overtime" ? "07:30" : "07:30", // Default times based on shift
+                "End Time": item.shiftId === "overtime" ? "18:30" : "16:30",
+                dailyBoxTarget: item.targets.boxes,
+                currentBoxTotal: item.actual.boxes,
+                hourlyTargets: [],
+                hourlyProduction: []
+            };
+            
+            // Add hourly targets and production data
+            if (item.timeline && Array.isArray(item.timeline)) {
+                item.timeline.forEach(hour => {
+                    // Add hourly target
+                    transformedVariant.hourlyTargets.push({
+                        hour: hour.hour,
+                        target: hour.target
+                    });
+                    
+                    // Add hourly production
+                    transformedVariant.hourlyProduction.push({
+                        hour: hour.hour,
+                        production: hour.actual
+                    });
+                });
+            }
+            
+            transformedData.variants.push(transformedVariant);
+        });
+        
+        // Process supervisors from the summary section
+        if (newData.summary && newData.summary.supervisors && Array.isArray(newData.summary.supervisors)) {
+            newData.summary.supervisors.forEach(supervisor => {
+                const transformedSupervisor = {
+                    name: supervisor.name,
+                    variants: {}
+                };
+                
+                // Find all production items assigned to this supervisor
+                if (supervisor.variants && Array.isArray(supervisor.variants)) {
+                    supervisor.variants.forEach(variantId => {
+                        // Find the production item for this variant
+                        const prodItem = newData.production.find(p => p.id === variantId);
+                        
+                        if (prodItem) {
+                            // Find the supervisor assignment within the production item
+                            const assignment = prodItem.supervisors.find(s => s.id === supervisor.id);
+                            
+                            if (assignment) {
+                                transformedSupervisor.variants[variantId] = {
+                                    variantStartTime: assignment.startTime,
+                                    variantEndTime: assignment.endTime,
+                                    dailyTarget: assignment.target,
+                                    currentTotal: assignment.production, // This is the correct property name in the new structure
+                                    variance: assignment.production - assignment.target,
+                                    percentage: assignment.progress
+                                };
+                            }
+                        }
+                    });
+                }
+                
+                transformedData.supervisors.push(transformedSupervisor);
+            });
+        }
+    } else if (newData.variants && Array.isArray(newData.variants)) {
+        // Previous structure with variants array
         newData.variants.forEach(variant => {
             // Create a variant object for each entry
             const transformedVariant = {
@@ -1791,53 +1871,53 @@ function transformDataFormat(newData) {
             
             transformedData.variants.push(transformedVariant);
         });
-    }
-    
-    // Transform personnel data to supervisors
-    if (newData.personnel && newData.personnel.supervisors) {
-        newData.personnel.supervisors.forEach(supervisor => {
-            const transformedSupervisor = {
-                name: supervisor.name,
-                variants: {}
-            };
-            
-            // Process assignments to create variants data
-            if (supervisor.assignments && Array.isArray(supervisor.assignments)) {
-                supervisor.assignments.forEach(assignment => {
-                    // Find the matching variant based on variantId or by combining productId and variantName
-                    let variantId = assignment.variantId;
-                    
-                    // If variantId is missing, try to construct it from productId and variantName
-                    if (!variantId && assignment.productId) {
-                        // Check if the variantId might be in the format "ProductId-VariantName"
-                        const possibleVariantId = `${assignment.productId}-${assignment.variantName.replace(/\s+/g, '')}`;
-                        const matchingVariant = newData.variants.find(v => v.id === possibleVariantId);
-                        if (matchingVariant) {
-                            variantId = matchingVariant.id;
-                        } else {
-                            // Find any variant with matching productId if direct match not found
-                            const productVariants = newData.variants.filter(v => v.productId === assignment.productId);
-                            if (productVariants.length > 0) {
-                                variantId = productVariants[0].id; // Take the first matching variant
+        
+        // Transform personnel data to supervisors
+        if (newData.personnel && newData.personnel.supervisors) {
+            newData.personnel.supervisors.forEach(supervisor => {
+                const transformedSupervisor = {
+                    name: supervisor.name,
+                    variants: {}
+                };
+                
+                // Process assignments to create variants data
+                if (supervisor.assignments && Array.isArray(supervisor.assignments)) {
+                    supervisor.assignments.forEach(assignment => {
+                        // Find the matching variant based on variantId or by combining productId and variantName
+                        let variantId = assignment.variantId;
+                        
+                        // If variantId is missing, try to construct it from productId and variantName
+                        if (!variantId && assignment.productId) {
+                            // Check if the variantId might be in the format "ProductId-VariantName"
+                            const possibleVariantId = `${assignment.productId}-${assignment.variantName.replace(/\s+/g, '')}`;
+                            const matchingVariant = newData.variants.find(v => v.id === possibleVariantId);
+                            if (matchingVariant) {
+                                variantId = matchingVariant.id;
+                            } else {
+                                // Find any variant with matching productId if direct match not found
+                                const productVariants = newData.variants.filter(v => v.productId === assignment.productId);
+                                if (productVariants.length > 0) {
+                                    variantId = productVariants[0].id; // Take the first matching variant
+                                }
                             }
                         }
-                    }
-                    
-                    if (variantId) {
-                        transformedSupervisor.variants[variantId] = {
-                            variantStartTime: assignment.startTime,
-                            variantEndTime: assignment.endTime,
-                            dailyTarget: assignment.target,
-                            currentTotal: assignment.actual,
-                            variance: assignment.actual - assignment.target,
-                            percentage: assignment.progress
-                        };
-                    }
-                });
-            }
-            
-            transformedData.supervisors.push(transformedSupervisor);
-        });
+                        
+                        if (variantId) {
+                            transformedSupervisor.variants[variantId] = {
+                                variantStartTime: assignment.startTime,
+                                variantEndTime: assignment.endTime,
+                                dailyTarget: assignment.target,
+                                currentTotal: assignment.production,
+                                variance: assignment.production - assignment.target,
+                                percentage: assignment.progress
+                            };
+                        }
+                    });
+                }
+                
+                transformedData.supervisors.push(transformedSupervisor);
+            });
+        }
     }
     
     return transformedData;
