@@ -1114,13 +1114,102 @@ body {
              * @returns {Object} - Transformed data in a consistent format
              */
             transformDataFormat(data) {
-                // Basic transformation logic - this would need to be expanded
-                // based on the actual data structure
-                return {
-                    variants: data.variants || [],
-                    supervisors: data.supervisors || [],
-                    timestamp: data.timestamp || new Date().toISOString()
+                console.log('Transforming data:', data);
+                
+                const transformedData = {
+                    variants: [],
+                    supervisors: [],
+                    timestamp: data.metadata ? data.metadata.timestamp : (data.timestamp || new Date().toISOString())
                 };
+                
+                // Check which structure we're working with
+                if (data.metadata && data.products && data.personnel?.supervisors) {
+                    console.log('Processing new data structure with metadata, products, and supervisors');
+                    
+                    // Transform products to variants
+                    data.products.forEach(product => {
+                        if (product.variants) {
+                            product.variants.forEach(variant => {
+                                const transformedVariant = {
+                                    variant: `${product.id}-${variant.id}`,
+                                    "Product Name": `${product.name} ${variant.name}`,
+                                    cycleTime: variant.cycleTime || 0,
+                                    actualCycleTime: variant.actualCycleTime || variant.cycleTime || 0,
+                                    "Start Time": "07:30", // Default times
+                                    "End Time": "18:30",
+                                    dailyBoxTarget: variant.dailyTarget || 0,
+                                    currentBoxTotal: variant.production || 0,
+                                    hourlyTargets: [],
+                                    hourlyProduction: []
+                                };
+                                
+                                // Process hourly data if available
+                                if (variant.hourlyData && Array.isArray(variant.hourlyData)) {
+                                    variant.hourlyData.forEach(hour => {
+                                        // Add hourly target
+                                        transformedVariant.hourlyTargets.push({
+                                            hour: hour.time,
+                                            target: hour.target || 0
+                                        });
+                                        
+                                        // Add hourly production
+                                        transformedVariant.hourlyProduction.push({
+                                            hour: hour.time,
+                                            production: hour.actual || 0
+                                        });
+                                    });
+                                }
+                                
+                                transformedData.variants.push(transformedVariant);
+                            });
+                        }
+                    });
+                    
+                    // Process supervisors
+                    data.personnel.supervisors.forEach(supervisor => {
+                        const transformedSupervisor = {
+                            name: supervisor.name,
+                            variants: {}
+                        };
+                        
+                        // Process assignments
+                        if (supervisor.assignments && Array.isArray(supervisor.assignments)) {
+                            supervisor.assignments.forEach(assignment => {
+                                const productId = assignment.productId;
+                                const variantId = assignment.variantId;
+                                
+                                if (productId && variantId) {
+                                    const fullVariantId = `${productId}-${variantId}`;
+                                    
+                                    transformedSupervisor.variants[fullVariantId] = {
+                                        variantStartTime: assignment.startTime || "07:30",
+                                        variantEndTime: assignment.endTime || "18:30",
+                                        dailyTarget: assignment.target || 0,
+                                        currentTotal: assignment.actual || 0,
+                                        variance: (assignment.actual || 0) - (assignment.target || 0),
+                                        percentage: assignment.progress || 0
+                                    };
+                                }
+                            });
+                        }
+                        
+                        transformedData.supervisors.push(transformedSupervisor);
+                    });
+                    
+                } else if (data.variants && Array.isArray(data.variants)) {
+                    console.log('Processing legacy data structure with variants array');
+                    // Legacy format - copy as is
+                    transformedData.variants = [...data.variants];
+                    
+                    // Check if supervisors exist in legacy format
+                    if (data.supervisors && Array.isArray(data.supervisors)) {
+                        transformedData.supervisors = [...data.supervisors];
+                    }
+                }
+                
+                console.log('Transformed data:', transformedData);
+                
+                return transformedData;
             },
             
             /**
@@ -1210,9 +1299,96 @@ body {
              * Updates the dashboard with current data
              */
             updateDashboard() {
+                console.log('Updating dashboard with filter:', selectedFilterType, selectedFilterValue);
+                
+                // Handle filtering
+                this.updateCurrentSelection();
+                
+                // Update UI elements
                 this.updateSupervisorInfo();
                 this.updateTotalsDisplay();
                 this.updateCharts();
+            },
+            
+            /**
+             * Updates the current selection based on filter settings
+             */
+            updateCurrentSelection() {
+                // Reset current selection
+                currentProductVariants = [];
+                currentProduct = null;
+                currentSupervisor = null;
+                
+                console.log('Product-Supervisor Groups:', productSupervisorGroups);
+                console.log('Selected Filter:', selectedFilterType, selectedFilterValue);
+                
+                // If no filter value is selected, show nothing
+                if (selectedFilterValue === 'all') {
+                    return;
+                }
+                
+                if (selectedFilterType === 'supervisor') {
+                    // Find the supervisor group
+                    const supervisorGroups = Object.values(productSupervisorGroups)
+                        .filter(group => group.supervisor === selectedFilterValue);
+                    
+                    console.log('Found supervisor groups:', supervisorGroups);
+                    
+                    if (supervisorGroups.length > 0) {
+                        currentSupervisor = selectedFilterValue;
+                        
+                        // If there's only one product for this supervisor, select it
+                        if (supervisorGroups.length === 1) {
+                            const group = supervisorGroups[0];
+                            currentProduct = group.product;
+                            currentProductVariants = [...group.variants];
+                        }
+                    }
+                } else if (selectedFilterType === 'product') {
+                    // Find all groups for this product
+                    const productGroups = Object.values(productSupervisorGroups)
+                        .filter(group => group.product === selectedFilterValue);
+                    
+                    console.log('Found product groups:', productGroups);
+                    
+                    if (productGroups.length > 0) {
+                        currentProduct = selectedFilterValue;
+                        
+                        // If there's only one supervisor for this product, select them
+                        if (productGroups.length === 1) {
+                            const group = productGroups[0];
+                            currentSupervisor = group.supervisor;
+                            currentProductVariants = [...group.variants];
+                        } else {
+                            // Combine variants from all supervisors for this product
+                            currentProductVariants = productGroups.flatMap(group => group.variants);
+                        }
+                    }
+                } else if (selectedFilterType === 'variant') {
+                    // Find the variant
+                    const variantData = productionData.variants.find(v => v.variant === selectedFilterValue);
+                    
+                    if (variantData) {
+                        // Find which product and supervisor this variant belongs to
+                        for (const groupKey in productSupervisorGroups) {
+                            const group = productSupervisorGroups[groupKey];
+                            const variantInGroup = group.variants.some(v => v.variant === selectedFilterValue);
+                            
+                            if (variantInGroup) {
+                                currentProduct = group.product;
+                                currentSupervisor = group.supervisor;
+                                currentProductVariants = [variantData];
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                console.log('Current selection:', {
+                    supervisor: currentSupervisor,
+                    product: currentProduct,
+                    variants: currentProductVariants
+                });
             },
             
             /**
@@ -1309,14 +1485,173 @@ body {
              * Updates the variant sequence display
              */
             updateVariantSequence() {
-                // Implementation would go here
+                const variantSequenceEl = document.getElementById('variant-sequence');
+                if (!variantSequenceEl) return;
+                
+                // Clear previous content
+                variantSequenceEl.innerHTML = '';
+                
+                if (!currentProductVariants || currentProductVariants.length === 0) {
+                    variantSequenceEl.innerHTML = '<div class="loading">No variants available</div>';
+                    return;
+                }
+                
+                // Get current time for status calculation
+                const now = new Date();
+                const currentHours = now.getHours();
+                const currentMinutes = now.getMinutes();
+                const currentTimeMinutes = currentHours * 60 + currentMinutes;
+                
+                // Sort variants by start time
+                const sortedVariants = [...currentProductVariants].sort((a, b) => {
+                    const startTimeA = a["Start Time"] || "07:30";
+                    const startTimeB = b["Start Time"] || "07:30";
+                    
+                    const [hoursA, minutesA] = startTimeA.split(':').map(Number);
+                    const [hoursB, minutesB] = startTimeB.split(':').map(Number);
+                    
+                    return (hoursA * 60 + minutesA) - (hoursB * 60 + minutesB);
+                });
+                
+                // Create variant sequence
+                sortedVariants.forEach((variant, index) => {
+                    const startTime = variant["Start Time"] || "07:30";
+                    const endTime = variant["End Time"] || "18:30";
+                    
+                    const [startHours, startMinutes] = startTime.split(':').map(Number);
+                    const [endHours, endMinutes] = endTime.split(':').map(Number);
+                    
+                    const startTimeMinutes = startHours * 60 + startMinutes;
+                    const endTimeMinutes = endHours * 60 + endMinutes;
+                    
+                    // Determine status
+                    let status = 'upcoming';
+                    if (currentTimeMinutes >= endTimeMinutes) {
+                        status = 'completed';
+                    } else if (currentTimeMinutes >= startTimeMinutes) {
+                        status = 'current';
+                    }
+                    
+                    // Create variant item
+                    const variantItem = document.createElement('div');
+                    variantItem.className = `variant-item ${status}`;
+                    
+                    // Get variant name - use Product Name or variant ID
+                    const variantName = variant["Product Name"] || variant.variant;
+                    // Extract just the variant part if it's a compound name
+                    const displayName = variantName.includes(' ') ? 
+                        variantName.split(' ').slice(1).join(' ') : 
+                        variantName.includes('-') ? 
+                            variantName.split('-').pop() : 
+                            variantName;
+                    
+                    variantItem.innerHTML = `
+                        <span>${displayName}</span>
+                        <span class="variant-time">${startTime} - ${endTime}</span>
+                        <span class="variant-status">${status.toUpperCase()}</span>
+                    `;
+                    
+                    variantSequenceEl.appendChild(variantItem);
+                    
+                    // Add arrow if not the last item
+                    if (index < sortedVariants.length - 1) {
+                        const arrow = document.createElement('div');
+                        arrow.className = 'arrow-right';
+                        arrow.textContent = '→';
+                        variantSequenceEl.appendChild(arrow);
+                    }
+                });
             },
             
             /**
              * Updates the totals display with production statistics
              */
             updateTotalsDisplay() {
-                // Implementation would go here
+                const totalsDisplayEl = document.getElementById('totals-display');
+                if (!totalsDisplayEl) return;
+                
+                // Clear previous content
+                totalsDisplayEl.innerHTML = '';
+                
+                if (!currentProductVariants || currentProductVariants.length === 0) {
+                    totalsDisplayEl.innerHTML = '<div class="loading">No production data available</div>';
+                    return;
+                }
+                
+                // Calculate totals
+                let totalProduction = 0;
+                let totalTarget = 0;
+                let totalPercentage = 0;
+                let totalVariance = 0;
+                let hourlyRate = 0;
+                let cycleTime = 0;
+                let actualCycleTime = 0;
+                let variantCount = 0;
+                
+                currentProductVariants.forEach(variant => {
+                    const production = variant.currentBoxTotal || 0;
+                    const target = variant.dailyBoxTarget || 0;
+                    
+                    totalProduction += production;
+                    totalTarget += target;
+                    
+                    // If variant has cycle time, include it in average
+                    if (variant.cycleTime) {
+                        cycleTime += variant.cycleTime;
+                        variantCount++;
+                    }
+                    
+                    // If variant has actual cycle time, include it
+                    if (variant.actualCycleTime) {
+                        actualCycleTime += variant.actualCycleTime;
+                    }
+                    
+                    // Calculate hourly rate from hourly targets if available
+                    if (variant.hourlyTargets && variant.hourlyTargets.length > 0) {
+                        const hourTargets = variant.hourlyTargets.map(h => h.target);
+                        const avgHourlyTarget = hourTargets.reduce((a, b) => a + b, 0) / hourTargets.length;
+                        hourlyRate += avgHourlyTarget;
+                    }
+                });
+                
+                // Calculate percentage and variance
+                totalPercentage = totalTarget > 0 ? Math.round((totalProduction / totalTarget) * 100) : 0;
+                totalVariance = totalProduction - totalTarget;
+                
+                // Average cycle time
+                cycleTime = variantCount > 0 ? cycleTime / variantCount : 0;
+                actualCycleTime = variantCount > 0 ? actualCycleTime / variantCount : cycleTime;
+                
+                // Create total items
+                const productionItem = document.createElement('div');
+                productionItem.className = 'total-item';
+                productionItem.innerHTML = `
+                    <div class="total-label">Total Production <span class="total-percentage">${totalPercentage}%</span></div>
+                    <div class="total-value current-value">${totalProduction.toLocaleString()}</div>
+                    <div class="total-subvalue">Target: <span class="target-value">${totalTarget.toLocaleString()}</span></div>
+                    <div class="total-subvalue">Variance: ${totalVariance.toLocaleString()}</div>
+                `;
+                
+                const hourlyItem = document.createElement('div');
+                hourlyItem.className = 'total-item';
+                hourlyItem.innerHTML = `
+                    <div class="total-label">Hourly Rate</div>
+                    <div class="total-value total-hourly">${Math.round(hourlyRate).toLocaleString()}</div>
+                    <div class="total-subvalue">Units per hour</div>
+                `;
+                
+                const cycleTimeItem = document.createElement('div');
+                cycleTimeItem.className = 'total-item';
+                cycleTimeItem.innerHTML = `
+                    <div class="total-label">Cycle Time</div>
+                    <div class="total-value total-hourly">${actualCycleTime.toFixed(2)}s</div>
+                    <div class="total-subvalue">Target: ${cycleTime.toFixed(2)}s</div>
+                `;
+                
+                // Add items to display
+                totalsDisplayEl.appendChild(productionItem);
+                totalsDisplayEl.appendChild(hourlyItem);
+                totalsDisplayEl.appendChild(cycleTimeItem);
             },
             
             /**
