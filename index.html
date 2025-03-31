@@ -1669,24 +1669,33 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
             return endTotalMinutes - startTotalMinutes;
         }
 
-        function extractProductFromVariant(variantName) {
-            // Simple product extraction - assumes format "ProductName VariantName"
-            const parts = variantName.split(' ');
-            
-            // Handle different formats
-            if (parts.length === 1) return variantName; // No space, use as is
-            if (parts.length === 2) return parts[0]; // Simple "Product Variant"
-            
-            // For more complex formats, try to find a pattern
-            // Example: "LEVO XL1150SCi" -> "LEVO XL"
-            const match = variantName.match(/^([A-Za-z\s]+)[\d]/);
-            if (match && match[1]) {
-                return match[1].trim();
-            }
-            
-            // Fallback: use first word
-            return parts[0];
+        function extractProductFromVariant(variantId) {
+    // Check if the variant uses the new ProductId-VariantName format (e.g., "Scalpel-Assembly-PARC11NS")
+    if (variantId.includes('-')) {
+        // For new format, get the product part (everything before the last dash)
+        const lastDashIndex = variantId.lastIndexOf('-');
+        if (lastDashIndex > 0) {
+            return variantId.substring(0, lastDashIndex);
         }
+    }
+
+    // Fallback to original method for older formats
+    const parts = variantId.split(' ');
+    
+    // Handle different formats
+    if (parts.length === 1) return variantId; // No space, use as is
+    if (parts.length === 2) return parts[0]; // Simple "Product Variant"
+    
+    // For more complex formats, try to find a pattern
+    // Example: "LEVO XL1150SCi" -> "LEVO XL"
+    const match = variantId.match(/^([A-Za-z\s]+)[\d]/);
+    if (match && match[1]) {
+        return match[1].trim();
+    }
+    
+    // Fallback: use first word
+    return parts[0];
+}
         // Add to fetchProductionData function after data is loaded
 async function fetchProductionData() {
     try {
@@ -1696,55 +1705,39 @@ async function fetchProductionData() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const data = await response.json();
         
-        // Check if data has the new structure
-        if (data.metadata && data.products && Array.isArray(data.products) && data.personnel && data.personnel.supervisors) {
-            // Transform new data structure to match the old structure
-            const transformedData = transformDataFormat(data);
+        // Check if data has the expected structure - any valid JSON structure should now be handled
+        if (!data) {
+            throw new Error('Empty data received from data.json');
+        }
+        
+        // Transform data regardless of structure - our transformer will handle the format
+        const transformedData = transformDataFormat(data);
+        
+        // Validate transformed data has the required structure for the dashboard
+        if (!transformedData.variants || !Array.isArray(transformedData.variants) || 
+            !transformedData.supervisors || !Array.isArray(transformedData.supervisors)) {
+            throw new Error('Failed to transform data into the required format');
+        }
+        
+        if (!lastUpdateTime || lastUpdateTime !== transformedData.timestamp) {
+            productionData = transformedData;
+            lastUpdateTime = transformedData.timestamp;
             
-            if (!lastUpdateTime || lastUpdateTime !== transformedData.timestamp) {
-                productionData = transformedData;
-                lastUpdateTime = transformedData.timestamp;
-                
-                // Update only the footer timestamp
-                document.getElementById('last-update2').textContent = 'Last updated: ' + transformedData.timestamp;
-                
-                // Process product-supervisor groups from the transformed data
-                processProductSupervisorGroups();
-                
-                // Load saved supervisor selections or initialize all selected
-                if (selectedSupervisors.length === 0) {
-                    selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
-                    loadSelectedSupervisors(); // Load any saved preferences
-                }
-                
-                updateFilterValueDropdown();
-                updateDashboard();
-                updateHourDropdown();
+            // Update only the footer timestamp
+            document.getElementById('last-update2').textContent = 'Last updated: ' + transformedData.timestamp;
+            
+            // Process product-supervisor groups from the transformed data
+            processProductSupervisorGroups();
+            
+            // Load saved supervisor selections or initialize all selected
+            if (selectedSupervisors.length === 0) {
+                selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
+                loadSelectedSupervisors(); // Load any saved preferences
             }
-        } else if (!data.variants || !Array.isArray(data.variants) || !data.supervisors || !Array.isArray(data.supervisors)) {
-            throw new Error('Invalid data structure in data.json');
-        } else {
-            // Old data structure, use as is
-            if (!lastUpdateTime || lastUpdateTime !== data.timestamp) {
-                productionData = data;
-                lastUpdateTime = data.timestamp;
-                
-                // Update only the footer timestamp
-                document.getElementById('last-update2').textContent = 'Last updated: ' + data.timestamp;
-                
-                // Process product-supervisor groups from the new data
-                processProductSupervisorGroups();
-                
-                // Load saved supervisor selections or initialize all selected
-                if (selectedSupervisors.length === 0) {
-                    selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
-                    loadSelectedSupervisors(); // Load any saved preferences
-                }
-                
-                updateFilterValueDropdown();
-                updateDashboard();
-                updateHourDropdown();
-            }
+            
+            updateFilterValueDropdown();
+            updateDashboard();
+            updateHourDropdown();
         }
         
         isLoading = false;
@@ -1763,40 +1756,40 @@ function transformDataFormat(newData) {
         timestamp: newData.metadata.timestamp || new Date().toISOString()
     };
     
-    // Transform products data to variants
-    if (newData.products && Array.isArray(newData.products)) {
-        newData.products.forEach(product => {
-            // Create a variant object for each product
-            const variant = {
-                variant: product.id,
-                "Product Name": product.name,
-                cycleTime: product.cycleTime,
-                "Start Time": product.shiftRef === "overtime" ? "07:30" : "07:30", // Default times based on shift
-                "End Time": product.shiftRef === "overtime" ? "18:30" : "16:30",
-                dailyBoxTarget: product.targets.boxes,
-                currentBoxTotal: product.production.boxes,
+    // Transform variants data directly (variants are now a top-level array)
+    if (newData.variants && Array.isArray(newData.variants)) {
+        newData.variants.forEach(variant => {
+            // Create a variant object for each entry
+            const transformedVariant = {
+                variant: variant.id,
+                "Product Name": variant.fullName || variant.name,
+                cycleTime: variant.cycleTime,
+                "Start Time": variant.shiftRef === "overtime" ? "07:30" : "07:30", // Default times based on shift
+                "End Time": variant.shiftRef === "overtime" ? "18:30" : "16:30",
+                dailyBoxTarget: variant.targets.boxes,
+                currentBoxTotal: variant.production.boxes,
                 hourlyTargets: [],
                 hourlyProduction: []
             };
             
             // Add hourly targets and production data
-            if (product.timeline && product.timeline.byHour) {
-                product.timeline.byHour.forEach(hour => {
+            if (variant.timeline && variant.timeline.byHour) {
+                variant.timeline.byHour.forEach(hour => {
                     // Add hourly target
-                    variant.hourlyTargets.push({
+                    transformedVariant.hourlyTargets.push({
                         hour: hour.hour,
                         target: hour.target
                     });
                     
                     // Add hourly production
-                    variant.hourlyProduction.push({
+                    transformedVariant.hourlyProduction.push({
                         hour: hour.hour,
                         production: hour.actual
                     });
                 });
             }
             
-            transformedData.variants.push(variant);
+            transformedData.variants.push(transformedVariant);
         });
     }
     
@@ -1811,11 +1804,27 @@ function transformDataFormat(newData) {
             // Process assignments to create variants data
             if (supervisor.assignments && Array.isArray(supervisor.assignments)) {
                 supervisor.assignments.forEach(assignment => {
-                    const productId = assignment.productId;
-                    const product = newData.products.find(p => p.id === productId);
+                    // Find the matching variant based on variantId or by combining productId and variantName
+                    let variantId = assignment.variantId;
                     
-                    if (product) {
-                        transformedSupervisor.variants[productId] = {
+                    // If variantId is missing, try to construct it from productId and variantName
+                    if (!variantId && assignment.productId) {
+                        // Check if the variantId might be in the format "ProductId-VariantName"
+                        const possibleVariantId = `${assignment.productId}-${assignment.variantName.replace(/\s+/g, '')}`;
+                        const matchingVariant = newData.variants.find(v => v.id === possibleVariantId);
+                        if (matchingVariant) {
+                            variantId = matchingVariant.id;
+                        } else {
+                            // Find any variant with matching productId if direct match not found
+                            const productVariants = newData.variants.filter(v => v.productId === assignment.productId);
+                            if (productVariants.length > 0) {
+                                variantId = productVariants[0].id; // Take the first matching variant
+                            }
+                        }
+                    }
+                    
+                    if (variantId) {
+                        transformedSupervisor.variants[variantId] = {
                             variantStartTime: assignment.startTime,
                             variantEndTime: assignment.endTime,
                             dailyTarget: assignment.target,
