@@ -1106,16 +1106,32 @@ function initDashboard() {
 
         // Add this function to initialize the supervisor selection UI
 function initSupervisorSelection() {
-    const selectBtn = document.getElementById('supervisor-select-btn');
+    const selectBtn = document.getElementById('supervisor-filter-btn');
+    if (!selectBtn) {
+        console.error('supervisor-filter-btn not found in DOM');
+        return; // Exit the function if the button doesn't exist
+    }
+    
     const modal = document.getElementById('supervisor-select-modal');
+    if (!modal) {
+        console.error('supervisor-select-modal not found in DOM');
+        return;
+    }
+    
     const closeBtn = document.querySelector('.supervisor-select-close');
     const applyBtn = document.getElementById('apply-supervisor-selection');
     const selectAllBtn = document.getElementById('select-all-supervisors');
     const deselectAllBtn = document.getElementById('deselect-all-supervisors');
     
+    // Check that all elements exist before adding event listeners
+    if (!closeBtn || !applyBtn || !selectAllBtn || !deselectAllBtn) {
+        console.error('One or more supervisor selection elements not found in DOM');
+        return;
+    }
+    
     // Open modal when button is clicked
     selectBtn.addEventListener('click', function() {
-        updateSupervisorCheckboxes();
+        updateSupervisorFilter(); // Updated function name
         modal.style.display = 'block';
     });
     
@@ -1154,8 +1170,8 @@ function initSupervisorSelection() {
     });
     
     // Initialize with all supervisors selected
-    if (productionData && productionData.supervisors) {
-        selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
+    if (productionData && productionData.personnel && productionData.personnel.supervisors) {
+        selectedSupervisors = productionData.personnel.supervisors.map(supervisor => supervisor.id);
     }
 }
 
@@ -1222,11 +1238,15 @@ function applySupervisorSelection() {
     localStorage.setItem('selectedSupervisors', JSON.stringify(selectedSupervisors));
     
     // Update the selection button style based on whether filtering is active
-    supervisorFilterActive = selectedSupervisors.length < productionData.supervisors.length;
-    const selectBtn = document.getElementById('supervisor-select-btn');
+    const supervisorFilterActive = productionData.personnel && productionData.personnel.supervisors ? 
+        selectedSupervisors.length < productionData.personnel.supervisors.length : false;
+    
+    const selectBtn = document.getElementById('supervisor-filter-btn');
+    if (!selectBtn) return;
     
     if (supervisorFilterActive) {
-        selectBtn.textContent = `Supervisors (${selectedSupervisors.length}/${productionData.supervisors.length})`;
+        const totalSupervisors = productionData.personnel?.supervisors?.length || 0;
+        selectBtn.textContent = `Supervisors (${selectedSupervisors.length}/${totalSupervisors})`;
         selectBtn.classList.add('filtered');
     } else {
         selectBtn.textContent = 'Select Supervisors';
@@ -2995,6 +3015,80 @@ function updateHourlyChart() {
                     checkboxContainer.appendChild(checkboxDiv);
                 });
             }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the dashboard
+            initializeDashboard();
+            
+            // Set the facility name from metadata
+            const facilityNameElement = document.getElementById('facility-name');
+            if (facilityNameElement) {
+                fetch(DATA_URL)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.metadata && data.metadata.facility) {
+                            facilityNameElement.textContent = data.metadata.facility;
+                        }
+                    })
+                    .catch(error => console.error('Failed to load facility name:', error));
+            }
+            
+            // Update date and time
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Set up event listeners for filter controls if they exist
+            const filterTypeSelect = document.getElementById('filter-type-select');
+            if (filterTypeSelect) {
+                filterTypeSelect.addEventListener('change', changeFilterType);
+            }
+            
+            const filterValueSelect = document.getElementById('filter-value-select');
+            if (filterValueSelect) {
+                filterValueSelect.addEventListener('change', changeFilterValue);
+            }
+            
+            const hourRangeSelect = document.getElementById('hour-range-select');
+            if (hourRangeSelect) {
+                hourRangeSelect.addEventListener('change', changeHourRange);
+            }
+            
+            const supervisorFilterBtn = document.getElementById('supervisor-filter-btn');
+            if (supervisorFilterBtn) {
+                supervisorFilterBtn.addEventListener('click', openSupervisorFilter);
+            }
+            
+            const toggleFullscreenBtn = document.getElementById('toggle-fullscreen-btn');
+            if (toggleFullscreenBtn) {
+                toggleFullscreenBtn.addEventListener('click', toggleFullscreen);
+            }
+            
+            // Set up refresh interval
+            setInterval(fetchProductionData, REFRESH_INTERVAL);
+        });
+
+        function openSupervisorFilter() {
+            const modal = document.getElementById('supervisor-select-modal');
+            if (modal) {
+                updateSupervisorFilter();
+                modal.style.display = 'block';
+            }
+        }
+
+        function changeFilterType() {
+            selectedFilterType = this.value;
+            updateFilterValueDropdown();
+        }
+
+        function changeFilterValue() {
+            selectedFilterValue = this.value;
+            updateDashboard();
+        }
+
+        function changeHourRange() {
+            selectedHour = this.value;
+            // Update hour-specific chart if needed
         }
     </script>
 </body>
