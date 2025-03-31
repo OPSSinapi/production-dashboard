@@ -968,7 +968,7 @@ body {
                     <div class="chart">
                         <div class="chart-title" id="cumulative-chart-title">Loading...</div>
                         <div class="chart-area">
-                            <div class="line-chart" id="cumulative-chart"></div>
+                            <canvas class="line-chart" id="cumulative-chart"></canvas>
                             <div class="legend">
                                 <div class="legend-item">
                                     <div class="legend-color production-color"></div>
@@ -994,7 +994,7 @@ body {
                             </div>
                         </div>
                         <div class="chart-area">
-                            <div class="bar-chart" id="hourly-chart"></div>
+                            <canvas class="bar-chart" id="hourly-chart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -1067,8 +1067,11 @@ body {
                     // Transform data format if needed
                     const transformedData = this.transformDataFormat(data);
                     
-                    // Only update if the timestamp has changed
-                    if (!lastUpdateTime || lastUpdateTime !== transformedData.timestamp) {
+                    // Check if this is the first load
+                    const isFirstLoad = !lastUpdateTime;
+                    
+                    // Only update if the timestamp has changed or it's the first load
+                    if (isFirstLoad || lastUpdateTime !== transformedData.timestamp) {
                         productionData = transformedData;
                         lastUpdateTime = transformedData.timestamp;
                         
@@ -1081,11 +1084,20 @@ body {
                         // Initialize or update UI components
                         if (selectedSupervisors.length === 0) {
                             selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
+                            loadSelectedSupervisors();
                         }
                         
                         // Update UI components
                         UIModule.updateFilterValueDropdown();
                         UIModule.updateDashboard();
+                        
+                        // If this is the first load, initialize the charts
+                        if (isFirstLoad) {
+                            // Short delay to ensure DOM is ready
+                            setTimeout(() => {
+                                ChartModule.initCharts();
+                            }, 300);
+                        }
                     }
                     
                     isLoading = false;
@@ -1532,8 +1544,11 @@ body {
              * Initializes charts
              */
             initCharts() {
-                this.setupCumulativeChart();
-                this.setupHourlyChart();
+                // Use setTimeout to ensure the DOM is fully rendered
+                setTimeout(() => {
+                    this.setupCumulativeChart();
+                    this.setupHourlyChart();
+                }, 100);
             },
             
             /**
@@ -1541,108 +1556,115 @@ body {
              */
             setupCumulativeChart() {
                 const ctx = document.getElementById('cumulative-chart');
-                if (!ctx) return;
+                if (!ctx) {
+                    console.error('Cannot find cumulative chart canvas element');
+                    return;
+                }
                 
                 // Destroy existing chart if it exists
                 if (this.cumulativeChart) {
                     this.cumulativeChart.destroy();
                 }
                 
-                // Create new chart
-                this.cumulativeChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: [],
-                        datasets: [
-                            {
-                                label: 'Production',
-                                data: [],
-                                borderColor: 'var(--production-color)',
-                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                                borderWidth: 3,
-                                tension: 0.2,
-                                fill: true
-                            },
-                            {
-                                label: 'Target',
-                                data: [],
-                                borderColor: 'var(--target-color)',
-                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                                borderWidth: 3,
-                                tension: 0.2,
-                                fill: true
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            intersect: false,
-                            mode: 'index'
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                enabled: true,
-                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                titleFont: {
-                                    size: 16
+                try {
+                    // Create new chart
+                    this.cumulativeChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: [],
+                            datasets: [
+                                {
+                                    label: 'Production',
+                                    data: [],
+                                    borderColor: 'var(--production-color)',
+                                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                    borderWidth: 3,
+                                    tension: 0.2,
+                                    fill: true
                                 },
-                                bodyFont: {
-                                    size: 14
-                                },
-                                padding: 12,
-                                displayColors: true
-                            }
+                                {
+                                    label: 'Target',
+                                    data: [],
+                                    borderColor: 'var(--target-color)',
+                                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                    borderWidth: 3,
+                                    tension: 0.2,
+                                    fill: true
+                                }
+                            ]
                         },
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Time',
-                                    font: {
-                                        size: 16,
-                                        weight: 'bold'
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    enabled: true,
+                                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                    titleFont: {
+                                        size: 16
                                     },
-                                    padding: {top: 10, bottom: 0}
-                                },
-                                ticks: {
-                                    font: {
+                                    bodyFont: {
                                         size: 14
-                                    }
-                                },
-                                grid: {
-                                    display: true,
-                                    color: 'rgba(0, 0, 0, 0.05)'
+                                    },
+                                    padding: 12,
+                                    displayColors: true
                                 }
                             },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Units',
-                                    font: {
-                                        size: 16,
-                                        weight: 'bold'
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Time',
+                                        font: {
+                                            size: 16,
+                                            weight: 'bold'
+                                        },
+                                        padding: {top: 10, bottom: 0}
                                     },
-                                    padding: {top: 0, bottom: 10}
-                                },
-                                ticks: {
-                                    font: {
-                                        size: 14
+                                    ticks: {
+                                        font: {
+                                            size: 14
+                                        }
+                                    },
+                                    grid: {
+                                        display: true,
+                                        color: 'rgba(0, 0, 0, 0.05)'
                                     }
                                 },
-                                grid: {
-                                    display: true,
-                                    color: 'rgba(0, 0, 0, 0.05)'
-                                },
-                                beginAtZero: true
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Units',
+                                        font: {
+                                            size: 16,
+                                            weight: 'bold'
+                                        },
+                                        padding: {top: 0, bottom: 10}
+                                    },
+                                    ticks: {
+                                        font: {
+                                            size: 14
+                                        }
+                                    },
+                                    grid: {
+                                        display: true,
+                                        color: 'rgba(0, 0, 0, 0.05)'
+                                    },
+                                    beginAtZero: true
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                } catch (error) {
+                    console.error('Error initializing cumulative chart:', error);
+                }
             },
             
             /**
@@ -1650,99 +1672,106 @@ body {
              */
             setupHourlyChart() {
                 const ctx = document.getElementById('hourly-chart');
-                if (!ctx) return;
+                if (!ctx) {
+                    console.error('Cannot find hourly chart canvas element');
+                    return;
+                }
                 
                 // Destroy existing chart if it exists
                 if (this.hourlyChart) {
                     this.hourlyChart.destroy();
                 }
                 
-                // Create new chart
-                this.hourlyChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: [],
-                        datasets: [
-                            {
-                                label: 'Production',
-                                data: [],
-                                backgroundColor: 'var(--production-color)',
-                                borderColor: 'var(--production-color)',
-                                borderWidth: 1
-                            },
-                            {
-                                label: 'Target',
-                                data: [],
-                                backgroundColor: 'var(--target-color)',
-                                borderColor: 'var(--target-color)',
-                                borderWidth: 1
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                enabled: true,
-                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                titleFont: {
-                                    size: 16
+                try {
+                    // Create new chart
+                    this.hourlyChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: [],
+                            datasets: [
+                                {
+                                    label: 'Production',
+                                    data: [],
+                                    backgroundColor: 'var(--production-color)',
+                                    borderColor: 'var(--production-color)',
+                                    borderWidth: 1
                                 },
-                                bodyFont: {
-                                    size: 14
-                                },
-                                padding: 12,
-                                displayColors: true
-                            }
+                                {
+                                    label: 'Target',
+                                    data: [],
+                                    backgroundColor: 'var(--target-color)',
+                                    borderColor: 'var(--target-color)',
+                                    borderWidth: 1
+                                }
+                            ]
                         },
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Hour',
-                                    font: {
-                                        size: 16,
-                                        weight: 'bold'
-                                    },
-                                    padding: {top: 10, bottom: 0}
-                                },
-                                ticks: {
-                                    font: {
-                                        size: 14
-                                    }
-                                },
-                                grid: {
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
                                     display: false
+                                },
+                                tooltip: {
+                                    enabled: true,
+                                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                    titleFont: {
+                                        size: 16
+                                    },
+                                    bodyFont: {
+                                        size: 14
+                                    },
+                                    padding: 12,
+                                    displayColors: true
                                 }
                             },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Units',
-                                    font: {
-                                        size: 16,
-                                        weight: 'bold'
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Hour',
+                                        font: {
+                                            size: 16,
+                                            weight: 'bold'
+                                        },
+                                        padding: {top: 10, bottom: 0}
                                     },
-                                    padding: {top: 0, bottom: 10}
-                                },
-                                ticks: {
-                                    font: {
-                                        size: 14
+                                    ticks: {
+                                        font: {
+                                            size: 14
+                                        }
+                                    },
+                                    grid: {
+                                        display: false
                                     }
                                 },
-                                grid: {
-                                    display: true,
-                                    color: 'rgba(0, 0, 0, 0.05)'
-                                },
-                                beginAtZero: true
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Units',
+                                        font: {
+                                            size: 16,
+                                            weight: 'bold'
+                                        },
+                                        padding: {top: 0, bottom: 10}
+                                    },
+                                    ticks: {
+                                        font: {
+                                            size: 14
+                                        }
+                                    },
+                                    grid: {
+                                        display: true,
+                                        color: 'rgba(0, 0, 0, 0.05)'
+                                    },
+                                    beginAtZero: true
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                } catch (error) {
+                    console.error('Error initializing hourly chart:', error);
+                }
             },
             
             /**
@@ -1811,6 +1840,8 @@ body {
          * Initializes the dashboard application
          */
         function initDashboard() {
+            console.log('Initializing dashboard...');
+            
             // Initialize UI elements
             UIModule.updateDateTime();
             setInterval(UIModule.updateDateTime, 1000);
@@ -1826,10 +1857,13 @@ body {
                 UIModule.updateDashboard();
             });
             
-            document.getElementById('hour-range-select').addEventListener('change', function() {
-                selectedHour = this.value;
-                UIModule.updateHourlyChart();
-            });
+            const hourRangeSelect = document.getElementById('hour-range-select');
+            if (hourRangeSelect) {
+                hourRangeSelect.addEventListener('change', function() {
+                    selectedHour = this.value;
+                    UIModule.updateHourlyChart();
+                });
+            }
             
             // Set up fullscreen event listeners
             document.addEventListener('fullscreenchange', handleFullscreenChange);
@@ -1840,14 +1874,13 @@ body {
             // Initialize supervisor selection
             initSupervisorSelection();
             
-            // Initialize charts
-            ChartModule.initCharts();
-            
-            // Fetch initial data
+            // Fetch initial data - chart initialization happens in the fetchProductionData function
             DataModule.fetchProductionData();
             
             // Set up data refresh intervals
             setInterval(() => DataModule.fetchProductionData(), UPDATE_INTERVAL);
+            
+            console.log('Dashboard initialization complete.');
         }
         
         /**
