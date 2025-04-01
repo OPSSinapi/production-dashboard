@@ -1,13 +1,114 @@
 {
   "metadata": {
-    "timestamp": "2025-04-01T08:04:26.228Z",
+    "timestamp": "2025-04-01T08:09:26.207Z",
     "date": "2025-04-01",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "overtime",
+      "startTime": "07:30",
+      "endTime": "18:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:40"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:10"
+        },
+        {
+          "type": "otTea",
+          "startTime": "17:45",
+          "endTime": "18:00"
+        }
+      ],
+      "availableWorkHours": 10
+    }
+  ],
+  "production": [
+    {
+      "id": "SCD-XL1000SCP",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SCP",
+        "name": "XL1000SCP",
+        "fullName": "SCD XL1000SCP",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 750
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 122,
+        "daily": 1224,
+        "boxes": 102
+      },
+      "actual": {
+        "total": 48,
+        "boxes": 4,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 25032754,
+          "quantity": 48,
+          "boxes": 4
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 48,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 1224,
+          "progress": 4
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 48,
+          "cumTarget": 122,
+          "cumActual": 48,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 48,
+        "totalTarget": 1224,
+        "progress": 4
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 48,
+        "totalTarget": 1224,
+        "progress": 4,
+        "variants": [
+          "SCD-XL1000SCP"
+        ]
+      }
+    ]
   }
 }
