@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-01T09:49:27.929Z",
+    "timestamp": "2025-04-01T09:54:27.424Z",
     "date": "2025-04-01",
     "facility": "Main Plant"
   },
@@ -60,7 +60,7 @@
         "fullName": "LEVO XL2200S",
         "cycleTime": 97.06,
         "devicesPerBox": 12,
-        "actualCycleTime": 1000
+        "actualCycleTime": 750
       },
       "shiftId": "overtime",
       "targets": {
@@ -69,26 +69,31 @@
         "boxes": 30
       },
       "actual": {
-        "total": 36,
-        "boxes": 3,
-        "progress": 10
+        "total": 48,
+        "boxes": 4,
+        "progress": 13
       },
       "batches": [
         {
           "id": 25033157,
           "quantity": 36,
           "boxes": 3
+        },
+        {
+          "id": 25040102,
+          "quantity": 12,
+          "boxes": 1
         }
       ],
       "supervisors": [
         {
           "id": "Siyabonga",
           "name": "Siyabonga",
-          "production": 36,
+          "production": 48,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 370,
-          "progress": 10
+          "progress": 13
         }
       ],
       "timeline": [
@@ -117,9 +122,9 @@
         {
           "hour": "10:30",
           "target": 33,
-          "actual": 12,
+          "actual": 24,
           "cumTarget": 107,
-          "cumActual": 36,
+          "cumActual": 48,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -376,7 +381,7 @@
         "fullName": "Scalpel Assembly PARC11NS",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 36
+        "actualCycleTime": 8
       },
       "shiftId": "overtime",
       "targets": {
@@ -402,9 +407,9 @@
           "name": "Nosi",
           "production": 1000,
           "startTime": "07:30",
-          "endTime": "18:30",
-          "target": 15789,
-          "progress": 6
+          "endTime": "09:47",
+          "target": 3605,
+          "progress": 28
         }
       ],
       "timeline": [
@@ -432,14 +437,93 @@
         },
         {
           "hour": "10:30",
-          "target": 1447,
+          "target": 447,
           "actual": 1000,
-          "cumTarget": 4603,
+          "cumTarget": 3603,
           "cumActual": 1000,
+          "transitionTarget": 447,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 17
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-Assembly-PARC11S",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PARC11S",
+        "name": "PARC11S",
+        "fullName": "Scalpel Assembly PARC11S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 28
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 1578,
+        "daily": 15789,
+        "boxes": 31
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 2,
+        "progress": 6
+      },
+      "batches": [
+        {
+          "id": 25033158,
+          "quantity": 1000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 1000,
+          "startTime": "09:47",
+          "endTime": "18:30",
+          "target": 12184,
+          "progress": 8
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 55
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1131,
+          "actual": 2000,
+          "cumTarget": 4287,
+          "cumActual": 2000,
+          "transitionTarget": 1131,
+          "previousVariant": "Scalpel-Assembly-PARC11NS",
+          "previousVariantMinutes": 17,
+          "currentVariantMinutes": 43
         }
       ]
     }
@@ -449,9 +533,9 @@
       {
         "id": "LEVO",
         "name": "LEVO",
-        "totalProduction": 36,
+        "totalProduction": 48,
         "totalTarget": 370,
-        "progress": 10
+        "progress": 13
       },
       {
         "id": "SCD",
@@ -470,8 +554,8 @@
       {
         "id": "Scalpel-Assembly",
         "name": "Scalpel Assembly",
-        "totalProduction": 1000,
-        "totalTarget": 15789,
+        "totalProduction": 2000,
+        "totalTarget": 31578,
         "progress": 6
       }
     ],
@@ -509,9 +593,9 @@
       {
         "id": "Siyabonga",
         "name": "Siyabonga",
-        "totalProduction": 36,
+        "totalProduction": 48,
         "totalTarget": 370,
-        "progress": 10,
+        "progress": 13,
         "variants": [
           "LEVO-XL2200S"
         ]
@@ -519,11 +603,12 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 1000,
+        "totalProduction": 2000,
         "totalTarget": 15789,
-        "progress": 6,
+        "progress": 13,
         "variants": [
-          "Scalpel-Assembly-PARC11NS"
+          "Scalpel-Assembly-PARC11NS",
+          "Scalpel-Assembly-PARC11S"
         ]
       }
     ]
