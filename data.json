@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-03T11:39:24.891Z",
+    "timestamp": "2025-04-03T11:44:24.916Z",
     "date": "2025-04-03",
     "facility": "Main Plant"
   },
@@ -464,7 +464,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 28.13,
         "devicesPerBox": 20,
-        "actualCycleTime": 86
+        "actualCycleTime": 82
       },
       "shiftId": "overtime",
       "targets": {
@@ -473,26 +473,26 @@
         "boxes": 63
       },
       "actual": {
-        "total": 420,
-        "boxes": 21,
-        "progress": 33
+        "total": 440,
+        "boxes": 22,
+        "progress": 34
       },
       "batches": [
         {
           "id": 25040205,
-          "quantity": 420,
-          "boxes": 21
+          "quantity": 440,
+          "boxes": 22
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 420,
+          "production": 440,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1279,
-          "progress": 33
+          "progress": 34
         }
       ],
       "timeline": [
@@ -543,9 +543,9 @@
         {
           "hour": "12:30",
           "target": 127,
-          "actual": 0,
+          "actual": 20,
           "cumTarget": 604,
-          "cumActual": 420,
+          "cumActual": 440,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -647,6 +647,107 @@
           "actual": 0,
           "cumTarget": 7496,
           "cumActual": 3000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-Packaging-PAHS15S",
+      "product": {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging"
+      },
+      "variant": {
+        "id": "PAHS15S",
+        "name": "PAHS15S",
+        "fullName": "Scalpel Packaging PAHS15S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 36
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 1578,
+        "daily": 15789,
+        "boxes": 31
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 1,
+        "progress": 6
+      },
+      "batches": [
+        {
+          "id": 25040206,
+          "quantity": 1000,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 1000,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 15789,
+          "progress": 6
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1447,
+          "actual": 0,
+          "cumTarget": 4603,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 1315,
+          "actual": 0,
+          "cumTarget": 5918,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 50
+        },
+        {
+          "hour": "12:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 7496,
+          "cumActual": 1000,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -775,16 +876,16 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 420,
+        "totalProduction": 440,
         "totalTarget": 1279,
-        "progress": 33
+        "progress": 34
       },
       {
         "id": "Scalpel-Packaging",
         "name": "Scalpel Packaging",
-        "totalProduction": 3000,
-        "totalTarget": 15789,
-        "progress": 19
+        "totalProduction": 4000,
+        "totalTarget": 31578,
+        "progress": 13
       },
       {
         "id": "Scalpel-Assembly",
@@ -819,19 +920,20 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 5000,
-        "totalTarget": 15789,
-        "progress": 32,
+        "totalProduction": 6000,
+        "totalTarget": 31578,
+        "progress": 19,
         "variants": [
-          "Scalpel-Assembly-PAMC10S"
+          "Scalpel-Assembly-PAMC10S",
+          "Scalpel-Packaging-PAHS15S"
         ]
       },
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 420,
+        "totalProduction": 440,
         "totalTarget": 1279,
-        "progress": 33,
+        "progress": 34,
         "variants": [
           "SUM-500V2"
         ]
