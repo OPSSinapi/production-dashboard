@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-03T08:19:29.130Z",
+    "timestamp": "2025-04-03T08:24:24.890Z",
     "date": "2025-04-03",
     "facility": "Main Plant"
   },
@@ -49,6 +49,63 @@
   ],
   "production": [
     {
+      "id": "SCD-XL1000S",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000S",
+        "name": "XL1000S",
+        "fullName": "SCD XL1000S",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 2750
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 122,
+        "daily": 1224,
+        "boxes": 102
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 25040308,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 12,
+          "startTime": "08:20",
+          "endTime": "18:30",
+          "target": 1122,
+          "progress": 1
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 20,
+          "actual": 60,
+          "cumTarget": 20,
+          "cumActual": 60,
+          "transitionTarget": 20,
+          "previousVariant": "SCD-XL1000SCP",
+          "previousVariantMinutes": 50,
+          "currentVariantMinutes": 10
+        }
+      ]
+    },
+    {
       "id": "SCD-XL1000SCP",
       "product": {
         "id": "SCD",
@@ -60,7 +117,7 @@
         "fullName": "SCD XL1000SCP",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 750
+        "actualCycleTime": 63
       },
       "shiftId": "overtime",
       "targets": {
@@ -86,22 +143,22 @@
           "name": "Apelele",
           "production": 48,
           "startTime": "07:30",
-          "endTime": "18:30",
-          "target": 1224,
-          "progress": 4
+          "endTime": "08:20",
+          "target": 102,
+          "progress": 47
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
-          "target": 122,
+          "target": 102,
           "actual": 48,
-          "cumTarget": 122,
+          "cumTarget": 102,
           "cumActual": 48,
-          "transitionTarget": 0,
+          "transitionTarget": 102,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
+          "currentVariantMinutes": 50
         }
       ]
     },
@@ -117,7 +174,7 @@
         "fullName": "SCD XL2000S",
         "cycleTime": 117.86,
         "devicesPerBox": 6,
-        "actualCycleTime": 1650
+        "actualCycleTime": 1238
       },
       "shiftId": "standard",
       "targets": {
@@ -126,35 +183,35 @@
         "boxes": 41
       },
       "actual": {
-        "total": 18,
-        "boxes": 3,
-        "progress": 7
+        "total": 24,
+        "boxes": 4,
+        "progress": 10
       },
       "batches": [
         {
           "id": 25032755,
-          "quantity": 18,
-          "boxes": 3
+          "quantity": 24,
+          "boxes": 4
         }
       ],
       "supervisors": [
         {
           "id": "Mvokwe",
           "name": "Mvokwe",
-          "production": 18,
+          "production": 24,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 251,
-          "progress": 7
+          "progress": 10
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 30,
-          "actual": 18,
+          "actual": 24,
           "cumTarget": 30,
-          "cumActual": 18,
+          "cumActual": 24,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -282,9 +339,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 66,
-        "totalTarget": 1475,
-        "progress": 4
+        "totalProduction": 84,
+        "totalTarget": 2699,
+        "progress": 3
       },
       {
         "id": "SUM",
@@ -305,9 +362,9 @@
       {
         "id": "Mvokwe",
         "name": "Mvokwe",
-        "totalProduction": 18,
+        "totalProduction": 24,
         "totalTarget": 251,
-        "progress": 7,
+        "progress": 10,
         "variants": [
           "SCD-XL2000S"
         ]
@@ -315,11 +372,12 @@
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 48,
+        "totalProduction": 60,
         "totalTarget": 1224,
-        "progress": 4,
+        "progress": 5,
         "variants": [
-          "SCD-XL1000SCP"
+          "SCD-XL1000SCP",
+          "SCD-XL1000S"
         ]
       },
       {
