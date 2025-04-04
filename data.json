@@ -1,13 +1,241 @@
 {
   "metadata": {
-    "timestamp": "2025-04-04T07:44:27.742Z",
+    "timestamp": "2025-04-04T07:49:24.857Z",
     "date": "2025-04-04",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "14:45",
+          "endTime": "15:00"
+        },
+        {
+          "type": "lunch",
+          "startTime": "12:00",
+          "endTime": "12:30"
+        }
+      ],
+      "availableWorkHours": 7
+    }
+  ],
+  "production": [
+    {
+      "id": "PopUp-Y001NVM.2",
+      "product": {
+        "id": "PopUp",
+        "name": "PopUp"
+      },
+      "variant": {
+        "id": "Y001NVM.2",
+        "name": "Y001NVM.2",
+        "fullName": "PopUp Y001NVM.2",
+        "cycleTime": 59.4,
+        "devicesPerBox": 100,
+        "actualCycleTime": 243
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 60,
+        "daily": 424,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 24
+      },
+      "batches": [
+        {
+          "id": 25040311,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 100,
+          "startTime": "07:45",
+          "endTime": "15:15",
+          "target": 409,
+          "progress": 24
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 60,
+          "actual": 100,
+          "cumTarget": 60,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "SCD-XL1000S",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000S",
+        "name": "XL1000S",
+        "fullName": "SCD XL1000S",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 525
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 122,
+        "daily": 918,
+        "boxes": 76
+      },
+      "actual": {
+        "total": 48,
+        "boxes": 4,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25040308,
+          "quantity": 48,
+          "boxes": 4
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 48,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 856,
+          "progress": 6
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 48,
+          "cumTarget": 122,
+          "cumActual": 48,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "SCD-XL2000S",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL2000S",
+        "name": "XL2000S",
+        "fullName": "SCD XL2000S",
+        "cycleTime": 117.86,
+        "devicesPerBox": 6,
+        "actualCycleTime": 2025
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 30,
+        "daily": 213,
+        "boxes": 35
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 2,
+        "progress": 6
+      },
+      "batches": [
+        {
+          "id": 25032755,
+          "quantity": 12,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 12,
+          "startTime": "07:45",
+          "endTime": "15:15",
+          "target": 206,
+          "progress": 6
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 30,
+          "actual": 12,
+          "cumTarget": 30,
+          "cumActual": 12,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 100,
+        "totalTarget": 424,
+        "progress": 24
+      },
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 60,
+        "totalTarget": 1131,
+        "progress": 5
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 48,
+        "totalTarget": 856,
+        "progress": 6,
+        "variants": [
+          "SCD-XL1000S"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 112,
+        "totalTarget": 615,
+        "progress": 18,
+        "variants": [
+          "PopUp-Y001NVM.2",
+          "SCD-XL2000S"
+        ]
+      }
+    ]
   }
 }
