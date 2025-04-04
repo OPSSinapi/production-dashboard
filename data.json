@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-04T07:49:24.857Z",
+    "timestamp": "2025-04-04T07:54:25.246Z",
     "date": "2025-04-04",
     "facility": "Main Plant"
   },
@@ -22,6 +22,29 @@
         }
       ],
       "availableWorkHours": 7
+    },
+    {
+      "id": "overtime",
+      "startTime": "07:30",
+      "endTime": "17:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "16:15",
+          "endTime": "16:30"
+        },
+        {
+          "type": "lunch",
+          "startTime": "12:00",
+          "endTime": "12:30"
+        },
+        {
+          "type": "otTea",
+          "startTime": "16:30",
+          "endTime": "16:45"
+        }
+      ],
+      "availableWorkHours": 8.5
     }
   ],
   "production": [
@@ -195,6 +218,63 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "SUM-500V2",
+      "product": {
+        "id": "SUM",
+        "name": "SUM"
+      },
+      "variant": {
+        "id": "500V2",
+        "name": "500V2",
+        "fullName": "SUM SUM500V2",
+        "cycleTime": 28.13,
+        "devicesPerBox": 20,
+        "actualCycleTime": 1530
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 127,
+        "daily": 1087,
+        "boxes": 54
+      },
+      "actual": {
+        "total": 20,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25040205,
+          "quantity": 20,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 20,
+          "startTime": "07:30",
+          "endTime": "17:00",
+          "target": 1087,
+          "progress": 2
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 127,
+          "actual": 20,
+          "cumTarget": 127,
+          "cumActual": 20,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -212,6 +292,13 @@
         "totalProduction": 60,
         "totalTarget": 1131,
         "progress": 5
+      },
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 20,
+        "totalTarget": 1087,
+        "progress": 2
       }
     ],
     "supervisors": [
@@ -234,6 +321,16 @@
         "variants": [
           "PopUp-Y001NVM.2",
           "SCD-XL2000S"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 20,
+        "totalTarget": 1087,
+        "progress": 2,
+        "variants": [
+          "SUM-500V2"
         ]
       }
     ]
