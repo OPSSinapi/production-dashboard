@@ -1,13 +1,109 @@
 {
   "metadata": {
-    "timestamp": "2025-04-07T08:04:25.625Z",
+    "timestamp": "2025-04-07T08:09:25.209Z",
     "date": "2025-04-07",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:40"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:10"
+        }
+      ],
+      "availableWorkHours": 8.25
+    }
+  ],
+  "production": [
+    {
+      "id": "SCD-XL2000S",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL2000S",
+        "name": "XL2000S",
+        "fullName": "SCD XL2000S",
+        "cycleTime": 117.86,
+        "devicesPerBox": 6,
+        "actualCycleTime": 2475
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 30,
+        "daily": 251,
+        "boxes": 41
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 2,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25032755,
+          "quantity": 12,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 12,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 251,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 30,
+          "actual": 12,
+          "cumTarget": 30,
+          "cumActual": 12,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "totalTarget": 251,
+        "progress": 5
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 12,
+        "totalTarget": 251,
+        "progress": 5,
+        "variants": [
+          "SCD-XL2000S"
+        ]
+      }
+    ]
   }
 }
