@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-10T08:34:26.809Z",
+    "timestamp": "2025-04-10T08:39:26.130Z",
     "date": "2025-04-10",
     "facility": "Main Plant"
   },
@@ -27,6 +27,24 @@
         }
       ],
       "availableWorkHours": 10
+    },
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:40"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:10"
+        }
+      ],
+      "availableWorkHours": 8.25
     }
   ],
   "production": [
@@ -42,7 +60,7 @@
         "fullName": "SCD XL1000SC",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 333
+        "actualCycleTime": 300
       },
       "shiftId": "overtime",
       "targets": {
@@ -51,26 +69,26 @@
         "boxes": 102
       },
       "actual": {
-        "total": 108,
-        "boxes": 9,
-        "progress": 9
+        "total": 120,
+        "boxes": 10,
+        "progress": 10
       },
       "batches": [
         {
           "id": 25040924,
-          "quantity": 108,
-          "boxes": 9
+          "quantity": 120,
+          "boxes": 10
         }
       ],
       "supervisors": [
         {
           "id": "Apelele",
           "name": "Apelele",
-          "production": 108,
+          "production": 120,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1224,
-          "progress": 9
+          "progress": 10
         }
       ],
       "timeline": [
@@ -88,9 +106,9 @@
         {
           "hour": "09:30",
           "target": 122,
-          "actual": 0,
+          "actual": 12,
           "cumTarget": 244,
-          "cumActual": 108,
+          "cumActual": 120,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -167,6 +185,74 @@
       ]
     },
     {
+      "id": "SCD-XL2000S",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL2000S",
+        "name": "XL2000S",
+        "fullName": "SCD XL2000S",
+        "cycleTime": 117.86,
+        "devicesPerBox": 6,
+        "actualCycleTime": 4950
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 30,
+        "daily": 251,
+        "boxes": 41
+      },
+      "actual": {
+        "total": 6,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25040819,
+          "quantity": 6,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 6,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 251,
+          "progress": 2
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 30,
+          "actual": 0,
+          "cumTarget": 30,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 30,
+          "actual": 6,
+          "cumTarget": 60,
+          "cumActual": 6,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "SUM-500V2",
       "product": {
         "id": "SUM",
@@ -178,7 +264,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 28.13,
         "devicesPerBox": 20,
-        "actualCycleTime": 450
+        "actualCycleTime": 360
       },
       "shiftId": "overtime",
       "targets": {
@@ -187,26 +273,26 @@
         "boxes": 63
       },
       "actual": {
-        "total": 80,
-        "boxes": 4,
-        "progress": 6
+        "total": 100,
+        "boxes": 5,
+        "progress": 8
       },
       "batches": [
         {
           "id": 25040921,
-          "quantity": 80,
-          "boxes": 4
+          "quantity": 100,
+          "boxes": 5
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 80,
+          "production": 100,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1279,
-          "progress": 6
+          "progress": 8
         }
       ],
       "timeline": [
@@ -224,9 +310,77 @@
         {
           "hour": "09:30",
           "target": 127,
-          "actual": 20,
+          "actual": 40,
           "cumTarget": 254,
-          "cumActual": 80,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-Packaging-PARC11S",
+      "product": {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging"
+      },
+      "variant": {
+        "id": "PARC11S",
+        "name": "PARC11S",
+        "fullName": "Scalpel Packaging PARC11S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 12
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 1578,
+        "daily": 15789,
+        "boxes": 31
+      },
+      "actual": {
+        "total": 3000,
+        "boxes": 3,
+        "progress": 19
+      },
+      "batches": [
+        {
+          "id": 25040923,
+          "quantity": 3000,
+          "boxes": 3
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 3000,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 15789,
+          "progress": 19
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 3000,
+          "cumTarget": 3156,
+          "cumActual": 3000,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -240,8 +394,8 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 108,
-        "totalTarget": 1224,
+        "totalProduction": 126,
+        "totalTarget": 1475,
         "progress": 9
       },
       {
@@ -254,9 +408,16 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 80,
+        "totalProduction": 100,
         "totalTarget": 1279,
-        "progress": 6
+        "progress": 8
+      },
+      {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging",
+        "totalProduction": 3000,
+        "totalTarget": 15789,
+        "progress": 19
       }
     ],
     "supervisors": [
@@ -273,9 +434,9 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 80,
+        "totalProduction": 100,
         "totalTarget": 1279,
-        "progress": 6,
+        "progress": 8,
         "variants": [
           "SUM-500V2"
         ]
@@ -283,11 +444,31 @@
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 108,
+        "totalProduction": 120,
         "totalTarget": 1224,
-        "progress": 9,
+        "progress": 10,
         "variants": [
           "SCD-XL1000SC"
+        ]
+      },
+      {
+        "id": "Nosi",
+        "name": "Nosi",
+        "totalProduction": 3000,
+        "totalTarget": 15789,
+        "progress": 19,
+        "variants": [
+          "Scalpel-Packaging-PARC11S"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 6,
+        "totalTarget": 251,
+        "progress": 2,
+        "variants": [
+          "SCD-XL2000S"
         ]
       }
     ]
