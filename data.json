@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-11T08:19:00.599Z",
+    "timestamp": "2025-04-11T08:19:59.596Z",
     "date": "2025-04-11",
     "facility": "Main Plant"
   },
@@ -60,7 +60,7 @@
         "fullName": "SCD XL1000SC",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 1238
+        "actualCycleTime": 619
       },
       "shiftId": "standard",
       "targets": {
@@ -69,34 +69,91 @@
         "boxes": 76
       },
       "actual": {
-        "total": 24,
-        "boxes": 2,
-        "progress": 3
+        "total": 48,
+        "boxes": 4,
+        "progress": 5
       },
       "batches": [
         {
           "id": 25040924,
-          "quantity": 24,
-          "boxes": 2
+          "quantity": 48,
+          "boxes": 4
         }
       ],
       "supervisors": [
         {
           "id": "Apelele",
           "name": "Apelele",
-          "production": 24,
+          "production": 48,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 1009,
-          "progress": 2
+          "progress": 5
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 122,
-          "actual": 24,
+          "actual": 48,
           "cumTarget": 122,
+          "cumActual": 48,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "LEVO-XL2200S",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL2200S",
+        "name": "XL2200S",
+        "fullName": "LEVO XL2200S",
+        "cycleTime": 97.06,
+        "devicesPerBox": 12,
+        "actualCycleTime": 1238
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 37,
+        "daily": 278,
+        "boxes": 23
+      },
+      "actual": {
+        "total": 24,
+        "boxes": 2,
+        "progress": 9
+      },
+      "batches": [
+        {
+          "id": 25041027,
+          "quantity": 24,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 24,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 305,
+          "progress": 8
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 37,
+          "actual": 24,
+          "cumTarget": 37,
           "cumActual": 24,
           "transitionTarget": 0,
           "previousVariant": null,
@@ -168,9 +225,16 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 24,
+        "totalProduction": 48,
         "totalTarget": 918,
-        "progress": 3
+        "progress": 5
+      },
+      {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 24,
+        "totalTarget": 278,
+        "progress": 9
       },
       {
         "id": "SUM",
@@ -184,9 +248,9 @@
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 24,
+        "totalProduction": 48,
         "totalTarget": 1009,
-        "progress": 2,
+        "progress": 5,
         "variants": [
           "SCD-XL1000SC"
         ]
@@ -199,6 +263,16 @@
         "progress": 2,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 24,
+        "totalTarget": 305,
+        "progress": 8,
+        "variants": [
+          "LEVO-XL2200S"
         ]
       }
     ]
