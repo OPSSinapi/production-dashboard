@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-14T08:18:02.921Z",
+    "timestamp": "2025-04-14T08:19:00.293Z",
     "date": "2025-04-14",
     "facility": "Main Plant"
   },
@@ -161,6 +161,63 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "SUM-500V2",
+      "product": {
+        "id": "SUM",
+        "name": "SUM"
+      },
+      "variant": {
+        "id": "500V2",
+        "name": "500V2",
+        "fullName": "SUM SUM500V2",
+        "cycleTime": 28.13,
+        "devicesPerBox": 20,
+        "actualCycleTime": 900
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 127,
+        "daily": 1279,
+        "boxes": 63
+      },
+      "actual": {
+        "total": 40,
+        "boxes": 2,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 25041431,
+          "quantity": 40,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Luthando",
+          "name": "Luthando",
+          "production": 40,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 1279,
+          "progress": 3
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 127,
+          "actual": 40,
+          "cumTarget": 127,
+          "cumActual": 40,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -178,6 +235,13 @@
         "totalProduction": 12,
         "totalTarget": 305,
         "progress": 4
+      },
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 40,
+        "totalTarget": 1279,
+        "progress": 3
       }
     ],
     "supervisors": [
@@ -199,6 +263,16 @@
         "progress": 4,
         "variants": [
           "LEVO-XL2200S"
+        ]
+      },
+      {
+        "id": "Luthando",
+        "name": "Luthando",
+        "totalProduction": 40,
+        "totalTarget": 1279,
+        "progress": 3,
+        "variants": [
+          "SUM-500V2"
         ]
       }
     ]
