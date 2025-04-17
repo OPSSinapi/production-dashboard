@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-17T10:43:59.322Z",
+    "timestamp": "2025-04-17T10:45:00.423Z",
     "date": "2025-04-17",
     "facility": "Main Plant"
   },
@@ -240,7 +240,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 28.13,
         "devicesPerBox": 20,
-        "actualCycleTime": 112
+        "actualCycleTime": 104
       },
       "shiftId": "standard",
       "targets": {
@@ -249,26 +249,26 @@
         "boxes": 52
       },
       "actual": {
-        "total": 260,
-        "boxes": 13,
-        "progress": 25
+        "total": 280,
+        "boxes": 14,
+        "progress": 27
       },
       "batches": [
         {
           "id": 25041637,
-          "quantity": 260,
-          "boxes": 13
+          "quantity": 280,
+          "boxes": 14
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 260,
+          "production": 280,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 1034,
-          "progress": 25
+          "progress": 27
         }
       ],
       "timeline": [
@@ -308,9 +308,9 @@
         {
           "hour": "11:30",
           "target": 95,
-          "actual": 20,
+          "actual": 40,
           "cumTarget": 466,
-          "cumActual": 260,
+          "cumActual": 280,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -401,6 +401,96 @@
           "actual": 0,
           "cumTarget": 220,
           "cumActual": 175,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-Assembly-PARC11S",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PARC11S",
+        "name": "PARC11S",
+        "fullName": "Scalpel Assembly PARC11S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 18
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 1578,
+        "daily": 15789,
+        "boxes": 15
+      },
+      "actual": {
+        "total": 2000,
+        "boxes": 2,
+        "progress": 13
+      },
+      "batches": [
+        {
+          "id": 25040923,
+          "quantity": 2000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Ayanda",
+          "name": "Ayanda",
+          "production": 2000,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 15394,
+          "progress": 13
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1447,
+          "actual": 0,
+          "cumTarget": 4603,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 1184,
+          "actual": 2000,
+          "cumTarget": 5787,
+          "cumActual": 2000,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -518,9 +608,9 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 260,
+        "totalProduction": 280,
         "totalTarget": 1055,
-        "progress": 25
+        "progress": 27
       },
       {
         "id": "UBT",
@@ -528,6 +618,13 @@
         "totalProduction": 175,
         "totalTarget": 500,
         "progress": 35
+      },
+      {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly",
+        "totalProduction": 2000,
+        "totalTarget": 15789,
+        "progress": 13
       },
       {
         "id": "Scalpel-Packaging",
@@ -551,9 +648,9 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 260,
+        "totalProduction": 280,
         "totalTarget": 1034,
-        "progress": 25,
+        "progress": 27,
         "variants": [
           "SUM-500V2"
         ]
@@ -586,6 +683,16 @@
         "progress": 36,
         "variants": [
           "UBT-"
+        ]
+      },
+      {
+        "id": "Ayanda",
+        "name": "Ayanda",
+        "totalProduction": 2000,
+        "totalTarget": 15394,
+        "progress": 13,
+        "variants": [
+          "Scalpel-Assembly-PARC11S"
         ]
       }
     ]
