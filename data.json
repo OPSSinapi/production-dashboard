@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-22T09:02:02.528Z",
+    "timestamp": "2025-04-22T09:03:03.642Z",
     "date": "2025-04-22",
     "facility": "Main Plant"
   },
@@ -319,6 +319,74 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "Scalpel-Assembly-PARC15S",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PARC15S",
+        "name": "PARC15S",
+        "fullName": "Scalpel Assembly PARC15S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 30
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 1578,
+        "daily": 15789,
+        "boxes": 15
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 1,
+        "progress": 6
+      },
+      "batches": [
+        {
+          "id": 25041741,
+          "quantity": 1000,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 1000,
+          "startTime": "09:00",
+          "endTime": "18:30",
+          "target": 13026,
+          "progress": 8
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 3156,
+          "cumActual": 1000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -350,6 +418,13 @@
         "totalProduction": 500,
         "totalTarget": 15789,
         "progress": 3
+      },
+      {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly",
+        "totalProduction": 1000,
+        "totalTarget": 15789,
+        "progress": 6
       }
     ],
     "supervisors": [
@@ -386,11 +461,12 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 500,
-        "totalTarget": 15394,
-        "progress": 3,
+        "totalProduction": 1500,
+        "totalTarget": 28420,
+        "progress": 5,
         "variants": [
-          "Scalpel-Packaging-PARC11S"
+          "Scalpel-Packaging-PARC11S",
+          "Scalpel-Assembly-PARC15S"
         ]
       }
     ]
