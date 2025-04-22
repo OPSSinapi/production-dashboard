@@ -1,10 +1,33 @@
 {
   "metadata": {
-    "timestamp": "2025-04-22T08:15:01.022Z",
+    "timestamp": "2025-04-22T08:15:59.074Z",
     "date": "2025-04-22",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "overtime",
+      "startTime": "07:30",
+      "endTime": "18:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "17:40",
+          "endTime": "18:00"
+        }
+      ],
+      "availableWorkHours": 10
+    },
     {
       "id": "standard",
       "startTime": "07:30",
@@ -25,6 +48,63 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL1000SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SC",
+        "name": "XL1000SC",
+        "fullName": "SCD XL1000SC",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 975
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 122,
+        "daily": 1224,
+        "boxes": 102
+      },
+      "actual": {
+        "total": 36,
+        "boxes": 3,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 25041635,
+          "quantity": 36,
+          "boxes": 3
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 36,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 1193,
+          "progress": 3
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 36,
+          "cumTarget": 122,
+          "cumActual": 36,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SUM-500V2",
       "product": {
@@ -86,6 +166,13 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 36,
+        "totalTarget": 1224,
+        "progress": 3
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 40,
@@ -102,6 +189,16 @@
         "progress": 4,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 36,
+        "totalTarget": 1193,
+        "progress": 3,
+        "variants": [
+          "SCD-XL1000SC"
         ]
       }
     ]
