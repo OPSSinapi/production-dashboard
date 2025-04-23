@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-23T08:08:00.233Z",
+    "timestamp": "2025-04-23T08:08:59.715Z",
     "date": "2025-04-23",
     "facility": "Main Plant"
   },
@@ -30,6 +30,63 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL1000SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SC",
+        "name": "XL1000SC",
+        "fullName": "SCD XL1000SC",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 2925
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 122,
+        "daily": 1224,
+        "boxes": 102
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 25041635,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 12,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 1193,
+          "progress": 1
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 12,
+          "cumTarget": 122,
+          "cumActual": 12,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XL2000SD",
       "product": {
@@ -93,9 +150,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 12,
-        "totalTarget": 247,
-        "progress": 5
+        "totalProduction": 24,
+        "totalTarget": 1471,
+        "progress": 2
       }
     ],
     "supervisors": [
@@ -107,6 +164,16 @@
         "progress": 5,
         "variants": [
           "SCD-XL2000SD"
+        ]
+      },
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 12,
+        "totalTarget": 1193,
+        "progress": 1,
+        "variants": [
+          "SCD-XL1000SC"
         ]
       }
     ]
