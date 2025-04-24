@@ -2664,13 +2664,13 @@ function renderCumulativeChart(group) {
     svg.appendChild(targetLineGroup);
 }
 
-        // Function to render the hourly chart
+       // Function to render the hourly chart
 function renderHourlyChart(group) {
     const chartContainer = document.getElementById('hourly-chart');
     chartContainer.innerHTML = '';
     
     if (!currentProductVariants || currentProductVariants.length === 0) {
-        chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
+        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available</div>';
         return;
     }
     
@@ -2681,8 +2681,6 @@ function renderHourlyChart(group) {
     const hourStr = currentMinute < 30 ? 
         `${currentHour.toString().padStart(2, '0')}:30` : 
         `${(currentHour + 1).toString().padStart(2, '0')}:30`;
-    
-    document.getElementById('hourly-chart-title').textContent = `${hourStr} HOUR PRODUCTION`;
     
     // Find all variants active during this hour
     const activeVariants = [];
@@ -2704,15 +2702,7 @@ function renderHourlyChart(group) {
         
         if (!startTimeStr || !endTimeStr) return;
         
-        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-        
-        const startTimeMinutes = startHour * 60 + startMinute;
-        const endTimeMinutes = endHour * 60 + endMinute;
-        
         // Check if this hour falls within this variant's window
-        // For the current hour's targets and production, we need to look for the appropriate data
-        // The key is that we need to find data for the current hour, not just any hour
         if (variant.hourlyTargets && variant.hourlyProduction) {
             const targetItem = variant.hourlyTargets.find(item => item.hour === hourStr);
             const productionItem = variant.hourlyProduction.find(item => item.hour === hourStr);
@@ -2734,27 +2724,46 @@ function renderHourlyChart(group) {
     
     // If no variants are active during this hour, show message
     if (activeVariants.length === 0) {
-        chartContainer.innerHTML = '<div style="text-align:center;padding:20px;">No variants active during this hour</div>';
+        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No variants active during this hour</div>';
         return;
     }
     
-    // Draw hourly chart
-    const svgWidth = chartContainer.clientWidth || 600;
-    const svgHeight = chartContainer.clientHeight || 370;
-    const padding = commonChartPadding;
+    // Get chart dimensions based on container
+    const chartArea = chartContainer.closest('.chart-area');
+    const svgWidth = chartArea.clientWidth;
+    const svgHeight = chartArea.clientHeight;
+    
+    // Check if dimensions are valid
+    if (svgWidth <= 0 || svgHeight <= 0) {
+        // Try again later if dimensions are not ready
+        setTimeout(() => renderHourlyChart(group), 100);
+        return;
+    }
+    
+    // Calculate padding based on container size
+    const padding = {
+        top: Math.max(10, Math.floor(svgHeight * 0.05)),
+        right: Math.max(10, Math.floor(svgWidth * 0.05)),
+        bottom: Math.max(30, Math.floor(svgHeight * 0.15)),
+        left: Math.max(40, Math.floor(svgWidth * 0.12))
+    };
+    
+    // Calculate chart dimensions
     const chartWidth = svgWidth - padding.left - padding.right;
     const chartHeight = svgHeight - padding.top - padding.bottom;
     
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', svgWidth);
-    svg.setAttribute('height', svgHeight);
-    svg.style.display = 'block';
-    svg.style.margin = '0 auto';
-    chartContainer.appendChild(svg);
-    
+    // Find max value with 20% buffer
     const maxValue = Math.max(hourlyData.production, hourlyData.target, 1) * 1.2;
     
-    // Add grid with larger fonts
+    // Create SVG element with responsive size
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    chartContainer.appendChild(svg);
+    
+    // Add grid lines
     const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     for (let i = 0; i <= 4; i++) {
         const y = padding.top + (chartHeight * i / 4);
@@ -2768,56 +2777,55 @@ function renderHourlyChart(group) {
         gridGroup.appendChild(line);
         
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', padding.left - 15);
-        text.setAttribute('y', y + 6);
+        text.setAttribute('x', padding.left - 10);
+        text.setAttribute('y', y + 5);
         text.setAttribute('text-anchor', 'end');
-        text.setAttribute('font-size', '16');
-        text.setAttribute('class', 'chart-tick-label');
+        text.setAttribute('font-size', isFullscreen ? '14' : '12');
         text.setAttribute('fill', '#666');
         text.textContent = Math.round(maxValue * (4 - i) / 4);
         gridGroup.appendChild(text);
     }
     
-    // Add y-axis title with larger font
+    // Add y-axis title
     const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    yAxisTitle.setAttribute('x', padding.left - 50);
+    yAxisTitle.setAttribute('x', padding.left - 35);
     yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
     yAxisTitle.setAttribute('text-anchor', 'middle');
-    yAxisTitle.setAttribute('font-size', '18');
-    yAxisTitle.setAttribute('class', 'chart-axis-label');
+    yAxisTitle.setAttribute('font-size', isFullscreen ? '16' : '14');
     yAxisTitle.setAttribute('font-weight', 'bold');
     yAxisTitle.setAttribute('fill', '#666');
-    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 50}, ${padding.top + chartHeight / 2})`);
+    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 35}, ${padding.top + chartHeight / 2})`);
     yAxisTitle.textContent = 'Units';
     gridGroup.appendChild(yAxisTitle);
     
     // Add axes
-    const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    vLine.setAttribute('x1', padding.left);
-    vLine.setAttribute('y1', padding.top);
-    vLine.setAttribute('x2', padding.left);
-    vLine.setAttribute('y2', svgHeight - padding.bottom);
-    vLine.setAttribute('stroke', '#666');
-    vLine.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(vLine);
+    const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    yAxis.setAttribute('x1', padding.left);
+    yAxis.setAttribute('y1', padding.top);
+    yAxis.setAttribute('x2', padding.left);
+    yAxis.setAttribute('y2', svgHeight - padding.bottom);
+    yAxis.setAttribute('stroke', '#666');
+    yAxis.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(yAxis);
     
-    const xAxisLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    xAxisLine.setAttribute('x1', padding.left);
-    xAxisLine.setAttribute('y1', svgHeight - padding.bottom);
-    xAxisLine.setAttribute('x2', svgWidth - padding.right);
-    xAxisLine.setAttribute('y2', svgHeight - padding.bottom);
-    xAxisLine.setAttribute('stroke', '#666');
-    xAxisLine.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(xAxisLine);
+    const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    xAxis.setAttribute('x1', padding.left);
+    xAxis.setAttribute('y1', svgHeight - padding.bottom);
+    xAxis.setAttribute('x2', svgWidth - padding.right);
+    xAxis.setAttribute('y2', svgHeight - padding.bottom);
+    xAxis.setAttribute('stroke', '#666');
+    xAxis.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(xAxis);
+    
     svg.appendChild(gridGroup);
     
-    // Draw bars
-    const barWidth = 80;
-    const barSpacing = 60;
-    const startX = svgWidth / 2 - barWidth - barSpacing / 2;
+    // Calculate responsive bar dimensions
+    const barWidth = Math.min(Math.floor(chartWidth * 0.2), 80);
+    const barSpacing = Math.min(Math.floor(chartWidth * 0.15), 60);
+    const startX = padding.left + (chartWidth - (barWidth * 2 + barSpacing)) / 2;
     
-    // Production bar
-    const productionBarHeight = (hourlyData.production / maxValue) * chartHeight;
+    // Draw bars with rounded corners
+    const productionBarHeight = Math.max(1, (hourlyData.production / maxValue) * chartHeight);
     const productionBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     productionBar.setAttribute('x', startX);
     productionBar.setAttribute('y', padding.top + chartHeight - productionBarHeight);
@@ -2827,8 +2835,7 @@ function renderHourlyChart(group) {
     productionBar.setAttribute('rx', '5');
     svg.appendChild(productionBar);
     
-    // Target bar
-    const targetBarHeight = (hourlyData.target / maxValue) * chartHeight;
+    const targetBarHeight = Math.max(1, (hourlyData.target / maxValue) * chartHeight);
     const targetBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     targetBar.setAttribute('x', startX + barWidth + barSpacing);
     targetBar.setAttribute('y', padding.top + chartHeight - targetBarHeight);
@@ -2838,36 +2845,33 @@ function renderHourlyChart(group) {
     targetBar.setAttribute('rx', '5');
     svg.appendChild(targetBar);
     
-    // Add production value text with larger font
+    // Add values above bars
     const productionValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     productionValueText.setAttribute('x', startX + barWidth / 2);
-    productionValueText.setAttribute('y', padding.top + chartHeight - productionBarHeight - 20);
+    productionValueText.setAttribute('y', padding.top + chartHeight - productionBarHeight - 10);
     productionValueText.setAttribute('text-anchor', 'middle');
-    productionValueText.setAttribute('font-size', '22');
-    productionValueText.setAttribute('class', 'chart-data-label');
-    productionValueText.setAttribute('font-weight', '600');
+    productionValueText.setAttribute('font-size', isFullscreen ? '18' : '16');
+    productionValueText.setAttribute('font-weight', 'bold');
     productionValueText.setAttribute('fill', 'var(--production-color)');
     productionValueText.textContent = hourlyData.production;
     svg.appendChild(productionValueText);
     
-    // Add target value text with larger font
     const targetValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     targetValueText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
-    targetValueText.setAttribute('y', padding.top + chartHeight - targetBarHeight - 20);
+    targetValueText.setAttribute('y', padding.top + chartHeight - targetBarHeight - 10);
     targetValueText.setAttribute('text-anchor', 'middle');
-    targetValueText.setAttribute('font-size', '22');
-    targetValueText.setAttribute('class', 'chart-data-label');
-    targetValueText.setAttribute('font-weight', '600');
+    targetValueText.setAttribute('font-size', isFullscreen ? '18' : '16');
+    targetValueText.setAttribute('font-weight', 'bold');
     targetValueText.setAttribute('fill', 'var(--target-color)');
     targetValueText.textContent = hourlyData.target;
     svg.appendChild(targetValueText);
     
-    // Add labels with larger font
+    // Add labels below bars
     const productionLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     productionLabelText.setAttribute('x', startX + barWidth / 2);
-    productionLabelText.setAttribute('y', svgHeight - padding.bottom + 35);
+    productionLabelText.setAttribute('y', svgHeight - padding.bottom + 20);
     productionLabelText.setAttribute('text-anchor', 'middle');
-    productionLabelText.setAttribute('font-size', '18');
+    productionLabelText.setAttribute('font-size', isFullscreen ? '16' : '14');
     productionLabelText.setAttribute('font-weight', '500');
     productionLabelText.setAttribute('fill', 'var(--production-color)');
     productionLabelText.textContent = 'ACTUAL';
@@ -2875,31 +2879,21 @@ function renderHourlyChart(group) {
     
     const targetLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     targetLabelText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
-    targetLabelText.setAttribute('y', svgHeight - padding.bottom + 35);
+    targetLabelText.setAttribute('y', svgHeight - padding.bottom + 20);
     targetLabelText.setAttribute('text-anchor', 'middle');
-    targetLabelText.setAttribute('font-size', '18');
+    targetLabelText.setAttribute('font-size', isFullscreen ? '16' : '14');
     targetLabelText.setAttribute('font-weight', '500');
     targetLabelText.setAttribute('fill', 'var(--target-color)');
     targetLabelText.textContent = 'TARGET';
     svg.appendChild(targetLabelText);
     
-    // X axis line
-    const xAxisLine2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    xAxisLine2.setAttribute('x1', padding.left);
-    xAxisLine2.setAttribute('y1', padding.top + chartHeight);
-    xAxisLine2.setAttribute('x2', svgWidth - padding.right);
-    xAxisLine2.setAttribute('y2', padding.top + chartHeight);
-    xAxisLine2.setAttribute('stroke', '#666');
-    xAxisLine2.setAttribute('stroke-width', '1.5');
-    svg.appendChild(xAxisLine2);
-    
-    // Add active variants list with larger font
+    // Add active variants info (if multiple variants)
     if (activeVariants.length > 1) {
         const activeVariantsText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         activeVariantsText.setAttribute('x', svgWidth / 2);
-        activeVariantsText.setAttribute('y', padding.top + chartHeight + 60);
+        activeVariantsText.setAttribute('y', svgHeight - 10);
         activeVariantsText.setAttribute('text-anchor', 'middle');
-        activeVariantsText.setAttribute('font-size', '16');
+        activeVariantsText.setAttribute('font-size', isFullscreen ? '14' : '12');
         activeVariantsText.setAttribute('fill', '#666');
         
         const variantNames = activeVariants.map(v => {
@@ -2920,112 +2914,37 @@ function renderHourlyChart(group) {
         }
         svg.appendChild(activeVariantsText);
     }
+    
+    // Draw status indicators for current hour
+    const hourStatus = hourlyData.production >= hourlyData.target ? 'met' : 'missed';
+    const statusIndicator = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    statusIndicator.setAttribute('x', svgWidth / 2);
+    statusIndicator.setAttribute('y', padding.top + 30);
+    statusIndicator.setAttribute('text-anchor', 'middle');
+    statusIndicator.setAttribute('font-size', isFullscreen ? '24' : '20');
+    statusIndicator.setAttribute('font-weight', 'bold');
+    
+    if (hourStatus === 'met') {
+        statusIndicator.setAttribute('fill', '#0d9488'); // Green for met
+        statusIndicator.textContent = 'Target Met ✓';
+    } else {
+        statusIndicator.setAttribute('fill', '#e11d48'); // Red for missed
+        statusIndicator.textContent = 'Target Missed ✗';
+    }
+    
+    svg.appendChild(statusIndicator);
 }
 
-        // Function to render hourly targets
-        function renderHourlyTargets(group) {
-            const container = document.getElementById('hourly-targets-grid');
-            container.innerHTML = '';
-            
-            // Get all hourly targets and production for this product group
-            const hourlyData = new Map();
-            const now = new Date();
-            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-            
-            // Combine hourly data from all variants
-            group.variants.forEach(variant => {
-                // Get variant time window
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                if (!supervisorVariant) return;
-                
-                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-                
-                if (!startTimeStr || !endTimeStr) return;
-                
-                // Process hourly targets and production
-                if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets) &&
-                    variant.hourlyProduction && Array.isArray(variant.hourlyProduction)) {
-                    
-                    // Create a map of hour -> {target, production}
-                    const hours = new Set([
-                        ...variant.hourlyTargets.map(h => h.hour),
-                        ...variant.hourlyProduction.map(h => h.hour)
-                    ]);
-                    
-                    hours.forEach(hour => {
-                        const target = variant.hourlyTargets.find(h => h.hour === hour)?.target || 0;
-                        const production = variant.hourlyProduction.find(h => h.hour === hour)?.production || 0;
-                        
-                        if (!hourlyData.has(hour)) {
-                            hourlyData.set(hour, { target, production });
-                        } else {
-                            const existing = hourlyData.get(hour);
-                            hourlyData.set(hour, {
-                                target: existing.target + target,
-                                production: existing.production + production
-                            });
-                        }
-                    });
-                }
-            });
-            
-            // Sort hours
-            const sortedHours = Array.from(hourlyData.keys()).sort((a, b) => {
-                const [hourA, minuteA] = a.split(':').map(Number);
-                const [hourB, minuteB] = b.split(':').map(Number);
-                return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-            });
-            
-            // Create hourly target items
-            sortedHours.forEach(hour => {
-                const data = hourlyData.get(hour);
-                const [hourVal, minuteVal] = hour.split(':').map(Number);
-                const hourMinutes = hourVal * 60 + minuteVal;
-                
-                // Determine status
-                let status;
-                let statusSymbol;
-                
-                if (currentTimeMinutes < hourMinutes - 30) {
-                    // Upcoming hour
-                    status = 'status-upcoming';
-                    statusSymbol = '';
-                } else if (currentTimeMinutes >= hourMinutes + 30) {
-                    // Past hour - check if target was met
-                    if (data.production >= data.target) {
-                        status = 'status-met';
-                        statusSymbol = '✓';
-                    } else {
-                        status = 'status-missed';
-                        statusSymbol = '✗';
-                    }
-                } else {
-                    // Current hour
-                    status = 'status-current';
-                    statusSymbol = 'NOW';
-                }
-                
-                // Create hourly target item
-                const item = document.createElement('div');
-                item.className = `hourly-target-item ${status}`;
-                
-                const timeElement = document.createElement('div');
-                timeElement.className = 'hourly-target-time';
-                timeElement.textContent = hour;
-                
-                const statusElement = document.createElement('div');
-                statusElement.className = 'hourly-target-status';
-                statusElement.textContent = statusSymbol;
-                
-                item.appendChild(timeElement);
-                item.appendChild(statusElement);
-                container.appendChild(item);
-            });
-        }
+// Initialize the dashboard when DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initDashboard);
 
-        // Initialize the dashboard when the window loads
-        window.onload = initDashboard;
+// Make sure we cleanup on page unload
+window.addEventListener('beforeunload', function() {
+    // Clear all intervals to prevent memory leaks
+    if (cycleInterval) clearInterval(cycleInterval);
+    if (chartRotationInterval) clearInterval(chartRotationInterval);
+    if (countdownInterval) clearInterval(countdownInterval);
+});
     </script>
 </body>
 </html>
