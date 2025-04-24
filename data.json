@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-24T10:12:59.163Z",
+    "timestamp": "2025-04-24T10:13:59.207Z",
     "date": "2025-04-24",
     "facility": "Main Plant"
   },
@@ -374,6 +374,85 @@
       ]
     },
     {
+      "id": "Scalpel-Assembly-PAMS15NS",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PAMS15NS",
+        "name": "PAMS15NS",
+        "fullName": "Scalpel Assembly PAMS15NS",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 6
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 1578,
+        "daily": 15789,
+        "boxes": 15
+      },
+      "actual": {
+        "total": 4000,
+        "boxes": 4,
+        "progress": 25
+      },
+      "batches": [
+        {
+          "id": 25042350,
+          "quantity": 4000,
+          "boxes": 4
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 4000,
+          "startTime": "10:12",
+          "endTime": "18:30",
+          "target": 11131,
+          "progress": 36
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1447,
+          "actual": 4000,
+          "cumTarget": 4603,
+          "cumActual": 4000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ]
+    },
+    {
       "id": "Scalpel-Packaging-PARC15S",
       "product": {
         "id": "Scalpel-Packaging",
@@ -470,6 +549,13 @@
         "progress": 20
       },
       {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly",
+        "totalProduction": 4000,
+        "totalTarget": 15789,
+        "progress": 25
+      },
+      {
         "id": "Scalpel-Packaging",
         "name": "Scalpel Packaging",
         "totalProduction": 3000,
@@ -503,11 +589,12 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 3000,
-        "totalTarget": 15394,
-        "progress": 19,
+        "totalProduction": 7000,
+        "totalTarget": 26525,
+        "progress": 26,
         "variants": [
-          "Scalpel-Packaging-PARC15S"
+          "Scalpel-Packaging-PARC15S",
+          "Scalpel-Assembly-PAMS15NS"
         ]
       },
       {
