@@ -982,43 +982,42 @@ body {
             }, CHART_ROTATION_INTERVAL);
         }
         
-        // Show specific chart
-        function showChart(chartType) {
-            const cumulativeChart = document.getElementById('cumulative-chart');
-            const hourlyChart = document.getElementById('hourly-chart');
-            const chartTitle = document.getElementById('chart-title');
-            const navDots = document.querySelectorAll('.chart-nav-dot');
-            
-            // Update nav dots
-            navDots.forEach(dot => {
-                if (dot.getAttribute('data-chart') === chartType) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
-                }
-            });
-            
-            if (chartType === 'cumulative') {
-                currentChartIndex = 0;
-                cumulativeChart.classList.remove('hidden');
-                hourlyChart.classList.add('hidden');
-                chartTitle.textContent = "TODAY'S PRODUCTION PROGRESS";
-            } else {
-                currentChartIndex = 1;
-                cumulativeChart.classList.add('hidden');
-                hourlyChart.classList.remove('hidden');
-                
-                // Get current hour for hourly chart title
-                const now = new Date();
-                const currentHour = now.getHours();
-                const currentMinute = now.getMinutes();
-                const hourStr = currentMinute < 30 ? 
-                    `${currentHour.toString().padStart(2, '0')}:30` : 
-                    `${(currentHour + 1).toString().padStart(2, '0')}:30`;
-                
-                chartTitle.textContent = `${hourStr} HOUR PRODUCTION`;
-            }
+       // Show specific chart
+function showChart(chartType) {
+    const cumulativeChart = document.getElementById('cumulative-chart');
+    const hourlyChart = document.getElementById('hourly-chart');
+    const chartTitle = document.getElementById('chart-title');
+    const navDots = document.querySelectorAll('.chart-nav-dot');
+    
+    // Update nav dots
+    navDots.forEach(dot => {
+        if (dot.getAttribute('data-chart') === chartType) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
         }
+    });
+    
+    if (chartType === 'cumulative') {
+        currentChartIndex = 0;
+        cumulativeChart.classList.remove('hidden');
+        hourlyChart.classList.add('hidden');
+        chartTitle.textContent = "TODAY'S PRODUCTION PROGRESS";
+    } else {
+        currentChartIndex = 1;
+        cumulativeChart.classList.add('hidden');
+        hourlyChart.classList.remove('hidden');
+        
+        // Get current hour for hourly chart title
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const displayHour = currentMinute < 30 ? currentHour : currentHour + 1;
+        const hourStr = `${displayHour.toString().padStart(2, '0')}:30`;
+        
+        chartTitle.textContent = `CURRENT HOUR: ${hourStr} PRODUCTION`;
+    }
+}
 
         // Function to update viewport dimensions
         function updateViewportDimensions() {
@@ -2170,13 +2169,21 @@ function renderHourlyChart(group) {
     const chartContainer = document.getElementById('hourly-chart');
     chartContainer.innerHTML = '';
     
-    // Collect all hours across all variants
-    const allHoursSet = new Set();
-    const hourlyProductionMap = new Map(); // Map to store production by hour
-    const hourlyTargetMap = new Map();     // Map to store targets by hour
-    const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
+    // Get current time to determine current hour period
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
     
-    // Process each variant and collect unique hours
+    // Determine the current hour period (e.g. if it's 15:15, use the 14:30-15:30 period)
+    const currentPeriodHour = currentMinute < 30 ? currentHour : currentHour + 1;
+    const currentPeriodMinute = 30;
+    const currentPeriodStr = `${currentPeriodHour.toString().padStart(2, '0')}:${currentPeriodMinute.toString().padStart(2, '0')}`;
+    
+    // Initialize maps for the current hour period only
+    const hourlyProductionMap = new Map();
+    const hourlyTargetMap = new Map();
+    
+    // Process each variant and collect data only for current hour period
     group.variants.forEach(variant => {
         // Get variant time window
         const supervisorVariant = group.supervisorData.variants[variant.variant];
@@ -2193,10 +2200,10 @@ function renderHourlyChart(group) {
         const startTimeMinutes = startHour * 60 + startMinute;
         const endTimeMinutes = endHour * 60 + endMinute;
         
-        // Collect hourly production data
+        // Collect hourly production data only for current period
         if (variant.hourlyProduction) {
             variant.hourlyProduction.forEach(item => {
-                if (!item.hour) return;
+                if (!item.hour || item.hour !== currentPeriodStr) return;
                 
                 const [itemHour, itemMinute] = item.hour.split(':').map(Number);
                 const itemTimeMinutes = itemHour * 60 + itemMinute;
@@ -2207,16 +2214,14 @@ function renderHourlyChart(group) {
                         hourlyProductionMap.set(item.hour, 0);
                     }
                     hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
-                    
-                    allHoursSet.add(item.hour);
                 }
             });
         }
         
-        // Collect hourly target data
+        // Collect hourly target data only for current period
         if (variant.hourlyTargets) {
             variant.hourlyTargets.forEach(item => {
-                if (!item.hour) return;
+                if (!item.hour || item.hour !== currentPeriodStr) return;
                 
                 const [itemHour, itemMinute] = item.hour.split(':').map(Number);
                 const itemTimeMinutes = itemHour * 60 + itemMinute;
@@ -2227,22 +2232,16 @@ function renderHourlyChart(group) {
                         hourlyTargetMap.set(item.hour, 0);
                     }
                     hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
-                    
-                    allHoursSet.add(item.hour);
                 }
             });
         }
     });
     
-    // Convert to sorted array of hours
-    const sortedHours = Array.from(allHoursSet).sort((a, b) => {
-        const [hourA, minuteA] = a.split(':').map(Number);
-        const [hourB, minuteB] = b.split(':').map(Number);
-        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-    });
+    // We only show the current hour period
+    const sortedHours = [currentPeriodStr];
     
-    if (sortedHours.length === 0) {
-        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available</div>';
+    if (hourlyProductionMap.size === 0 && hourlyTargetMap.size === 0) {
+        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available for current hour period</div>';
         return;
     }
     
@@ -2262,7 +2261,7 @@ function renderHourlyChart(group) {
     const padding = {
         top: Math.max(10, Math.floor(svgHeight * 0.05)),
         right: Math.max(10, Math.floor(svgWidth * 0.05)),
-        bottom: Math.max(50, Math.floor(svgHeight * 0.18)), // Increased bottom padding for status indicators
+        bottom: Math.max(50, Math.floor(svgHeight * 0.1)), // Reduced bottom padding as we don't have status indicators
         left: Math.max(40, Math.floor(svgWidth * 0.12))
     };
     
@@ -2272,8 +2271,8 @@ function renderHourlyChart(group) {
     
     // Find max value for chart scaling (with 10% buffer)
     const maxValue = Math.max(
-        ...Array.from(hourlyProductionMap.values()),
-        ...Array.from(hourlyTargetMap.values())
+        hourlyProductionMap.get(currentPeriodStr) || 0,
+        hourlyTargetMap.get(currentPeriodStr) || 0
     ) * 1.1 || 100; // Default to 100 if no values
     
     // Create SVG element
@@ -2340,148 +2339,99 @@ function renderHourlyChart(group) {
     
     svg.appendChild(gridGroup);
     
-    // Get current time for status indicators
-    const now = new Date();
-    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-    
-    // Calculate bar width based on number of hours and spacing
-    const barCount = sortedHours.length;
-    const barSpacing = Math.min(20, chartWidth * 0.02);
-    const barGroupWidth = (chartWidth / barCount) - barSpacing;
+    // Calculate bar width for single hour period (centered in chart)
+    const barGroupWidth = chartWidth * 0.3; // Use 30% of chart width
     const barWidth = barGroupWidth * 0.42; // Each bar takes 42% of group width
     
-    // Add X-axis ticks, labels and status indicators
+    // Add X-axis label for current hour period
     const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    sortedHours.forEach((hour, index) => {
-        const x = padding.left + (index * (barGroupWidth + barSpacing)) + (barGroupWidth / 2);
-        const y = svgHeight - padding.bottom + 20;
-        
-        // Add tick mark
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        tick.setAttribute('x1', x);
-        tick.setAttribute('y1', svgHeight - padding.bottom);
-        tick.setAttribute('x2', x);
-        tick.setAttribute('y2', svgHeight - padding.bottom + 5);
-        tick.setAttribute('stroke', '#666');
-        tick.setAttribute('stroke-width', '1.5');
-        xLabelsGroup.appendChild(tick);
-        
-        // Add hour label
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', x);
-        text.setAttribute('y', y);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('fill', '#666');
-        text.textContent = hour;
-        xLabelsGroup.appendChild(text);
-        
-        // Determine hour status
-        const [hourVal, minuteVal] = hour.split(':').map(Number);
-        const hourTimeMinutes = hourVal * 60 + minuteVal;
-        const hourProduction = hourlyProductionMap.get(hour) || 0;
-        const hourTarget = hourlyTargetMap.get(hour) || 0;
-        
-        let status = 'upcoming';
-        if (currentTimeMinutes > hourTimeMinutes + 30) {
-            status = hourProduction >= hourTarget ? 'met' : 'missed';
-        } else if (currentTimeMinutes >= hourTimeMinutes - 30 && currentTimeMinutes <= hourTimeMinutes + 30) {
-            status = 'current';
-        }
-        
-        hourlyStatusMap.set(hour, status);
-        
-        // Add status indicator below the hour label
-        let statusSymbol = '';
-        let fillColor = '#94a3b8'; // Default gray
-        
-        if (status === 'met') {
-            statusSymbol = '✓';
-            fillColor = '#0d9488'; // Green for met
-        } else if (status === 'missed') {
-            statusSymbol = '✗';
-            fillColor = '#e11d48'; // Red for missed
-        } else if (status === 'current') {
-            statusSymbol = '●';
-            fillColor = '#ca8a04'; // Yellow for current
-        }
-        
-        if (statusSymbol) {
-            const statusText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            statusText.setAttribute('x', x);
-            statusText.setAttribute('y', y + 20);
-            statusText.setAttribute('text-anchor', 'middle');
-            statusText.setAttribute('font-size', isFullscreen ? '18' : '16');
-            statusText.setAttribute('font-weight', 'bold');
-            statusText.setAttribute('fill', fillColor);
-            statusText.textContent = statusSymbol;
-            xLabelsGroup.appendChild(statusText);
-        }
-    });
+    const x = padding.left + chartWidth / 2; // Center of chart
+    const y = svgHeight - padding.bottom + 20;
+    
+    // Add tick mark
+    const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    tick.setAttribute('x1', x);
+    tick.setAttribute('y1', svgHeight - padding.bottom);
+    tick.setAttribute('x2', x);
+    tick.setAttribute('y2', svgHeight - padding.bottom + 5);
+    tick.setAttribute('stroke', '#666');
+    tick.setAttribute('stroke-width', '1.5');
+    xLabelsGroup.appendChild(tick);
+    
+    // Add hour label
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', x);
+    text.setAttribute('y', y);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('font-size', isFullscreen ? '16' : '14');
+    text.setAttribute('font-weight', 'bold');
+    text.setAttribute('fill', '#666');
+    text.textContent = currentPeriodStr;
+    xLabelsGroup.appendChild(text);
+    
     svg.appendChild(xLabelsGroup);
     
-    // Create bar charts for each hour
+    // Create bar charts for current hour period only
     const barsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     
-    sortedHours.forEach((hour, index) => {
-        const barGroupX = padding.left + (index * (barGroupWidth + barSpacing));
-        
-        // Production bar (left bar in the group)
-        const productionValue = hourlyProductionMap.get(hour) || 0;
-        const productionHeight = (productionValue / maxValue) * chartHeight;
-        const productionY = svgHeight - padding.bottom - productionHeight;
-        
-        const productionBarX = barGroupX + (barGroupWidth * 0.08); // 8% offset from left
-        
-        const productionBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        productionBar.setAttribute('x', productionBarX);
-        productionBar.setAttribute('y', productionY);
-        productionBar.setAttribute('width', barWidth);
-        productionBar.setAttribute('height', productionHeight);
-        productionBar.setAttribute('rx', '2'); // Rounded corners
-        productionBar.setAttribute('ry', '2');
-        productionBar.setAttribute('fill', 'var(--production-color)');
-        barsGroup.appendChild(productionBar);
-        
-        // Production value label
-        const productionLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        productionLabel.setAttribute('x', productionBarX + (barWidth / 2));
-        productionLabel.setAttribute('y', productionY - 5);
-        productionLabel.setAttribute('text-anchor', 'middle');
-        productionLabel.setAttribute('font-size', isFullscreen ? '14' : '12');
-        productionLabel.setAttribute('font-weight', 'bold');
-        productionLabel.setAttribute('fill', 'var(--production-color)');
-        productionLabel.textContent = productionValue;
-        barsGroup.appendChild(productionLabel);
-        
-        // Target bar (right bar in the group)
-        const targetValue = hourlyTargetMap.get(hour) || 0;
-        const targetHeight = (targetValue / maxValue) * chartHeight;
-        const targetY = svgHeight - padding.bottom - targetHeight;
-        
-        const targetBarX = barGroupX + (barGroupWidth * 0.5); // 50% offset from left
-        
-        const targetBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        targetBar.setAttribute('x', targetBarX);
-        targetBar.setAttribute('y', targetY);
-        targetBar.setAttribute('width', barWidth);
-        targetBar.setAttribute('height', targetHeight);
-        targetBar.setAttribute('rx', '2'); // Rounded corners
-        targetBar.setAttribute('ry', '2');
-        targetBar.setAttribute('fill', 'var(--target-color)');
-        barsGroup.appendChild(targetBar);
-        
-        // Target value label
-        const targetLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        targetLabel.setAttribute('x', targetBarX + (barWidth / 2));
-        targetLabel.setAttribute('y', targetY - 5);
-        targetLabel.setAttribute('text-anchor', 'middle');
-        targetLabel.setAttribute('font-size', isFullscreen ? '14' : '12');
-        targetLabel.setAttribute('font-weight', 'bold');
-        targetLabel.setAttribute('fill', 'var(--target-color)');
-        targetLabel.textContent = targetValue;
-        barsGroup.appendChild(targetLabel);
-    });
+    // Calculate center position for the bar group
+    const barGroupX = padding.left + (chartWidth - barGroupWidth) / 2;
+    
+    // Production bar (left bar in the group)
+    const productionValue = hourlyProductionMap.get(currentPeriodStr) || 0;
+    const productionHeight = (productionValue / maxValue) * chartHeight;
+    const productionY = svgHeight - padding.bottom - productionHeight;
+    
+    const productionBarX = barGroupX + (barGroupWidth * 0.08); // 8% offset from left
+    
+    const productionBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    productionBar.setAttribute('x', productionBarX);
+    productionBar.setAttribute('y', productionY);
+    productionBar.setAttribute('width', barWidth);
+    productionBar.setAttribute('height', productionHeight);
+    productionBar.setAttribute('rx', '2'); // Rounded corners
+    productionBar.setAttribute('ry', '2');
+    productionBar.setAttribute('fill', 'var(--production-color)');
+    barsGroup.appendChild(productionBar);
+    
+    // Production value label
+    const productionLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    productionLabel.setAttribute('x', productionBarX + (barWidth / 2));
+    productionLabel.setAttribute('y', productionY - 5);
+    productionLabel.setAttribute('text-anchor', 'middle');
+    productionLabel.setAttribute('font-size', isFullscreen ? '14' : '12');
+    productionLabel.setAttribute('font-weight', 'bold');
+    productionLabel.setAttribute('fill', 'var(--production-color)');
+    productionLabel.textContent = productionValue;
+    barsGroup.appendChild(productionLabel);
+    
+    // Target bar (right bar in the group)
+    const targetValue = hourlyTargetMap.get(currentPeriodStr) || 0;
+    const targetHeight = (targetValue / maxValue) * chartHeight;
+    const targetY = svgHeight - padding.bottom - targetHeight;
+    
+    const targetBarX = barGroupX + (barGroupWidth * 0.5); // 50% offset from left
+    
+    const targetBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    targetBar.setAttribute('x', targetBarX);
+    targetBar.setAttribute('y', targetY);
+    targetBar.setAttribute('width', barWidth);
+    targetBar.setAttribute('height', targetHeight);
+    targetBar.setAttribute('rx', '2'); // Rounded corners
+    targetBar.setAttribute('ry', '2');
+    targetBar.setAttribute('fill', 'var(--target-color)');
+    barsGroup.appendChild(targetBar);
+    
+    // Target value label
+    const targetLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    targetLabel.setAttribute('x', targetBarX + (barWidth / 2));
+    targetLabel.setAttribute('y', targetY - 5);
+    targetLabel.setAttribute('text-anchor', 'middle');
+    targetLabel.setAttribute('font-size', isFullscreen ? '14' : '12');
+    targetLabel.setAttribute('font-weight', 'bold');
+    targetLabel.setAttribute('fill', 'var(--target-color)');
+    targetLabel.textContent = targetValue;
+    barsGroup.appendChild(targetLabel);
     
     svg.appendChild(barsGroup);
     
