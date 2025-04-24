@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sinapi Secondary Production Dashboard</title>
+    <link rel="icon" href="data:,">
     <!-- Add Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <style>
@@ -838,6 +839,14 @@ body {
                     <div class="chart-nav-dot" data-chart="hourly"></div>
                 </div>
             </div>
+            
+            <!-- Hourly Targets Section -->
+            <div class="hourly-targets-section">
+                <div class="hourly-targets-title">HOURLY TARGETS</div>
+                <div id="hourly-targets-grid" class="hourly-targets-grid">
+                    <!-- Hourly target items will be added dynamically -->
+                </div>
+            </div>
         </div>
         
         <!-- Footer -->
@@ -881,6 +890,8 @@ body {
         let countdownInterval = null;
         let commonChartPadding = { top: 20, right: 30, bottom: 50, left: 70 };
         let isFullscreen = false;
+        let cycleInterval = null; // For cycling between supervisors
+        let cycleIndex = 0; // To track the current supervisor index
         
         // Variables for product-supervisor grouping
         let productSupervisorGroups = {};
@@ -1670,33 +1681,50 @@ body {
         }
 
         // Function to show loading or error message
-        function showLoadingOrError(message) {
-            const supervisorName = document.getElementById('supervisor-name');
-            const productName = document.getElementById('product-name');
-            const variantSequence = document.getElementById('variant-sequence');
-            
-            supervisorName.textContent = 'SUPERVISOR: Loading...';
-            productName.textContent = 'PRODUCT: Loading...';
-            variantSequence.innerHTML = '<div class="loading">Loading variants...</div>';
-            
-            // Clear the metrics
-            document.getElementById('current-units').textContent = '0';
-            document.getElementById('target-units').textContent = '0';
-            document.getElementById('progress-percentage').textContent = '0%';
-            document.getElementById('current-boxes').textContent = '0';
-            document.getElementById('target-boxes').textContent = '0';
-            document.getElementById('actual-cycle-time').textContent = '0';
-            document.getElementById('target-cycle-time').textContent = '0';
-            
-            // Clear the charts
-            document.getElementById('cumulative-chart').innerHTML = 
-                `<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;">${message}</div>`;
-            document.getElementById('hourly-chart').innerHTML = 
-                `<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;">${message}</div>`;
-            
-            // Clear hourly targets
-            document.getElementById('hourly-targets-grid').innerHTML = '';
-        }
+function showLoadingOrError(message) {
+    const supervisorName = document.getElementById('supervisor-name');
+    const productName = document.getElementById('product-name');
+    const variantSequence = document.getElementById('variant-sequence');
+    
+    if (supervisorName) supervisorName.textContent = 'SUPERVISOR: Loading...';
+    if (productName) productName.textContent = 'PRODUCT: Loading...';
+    if (variantSequence) variantSequence.innerHTML = '<div class="loading">Loading variants...</div>';
+    
+    // Clear the metrics - add null checks for all elements
+    const elementIds = [
+        'current-units', 'target-units', 'progress-percentage', 
+        'current-boxes', 'target-boxes', 'actual-cycle-time', 'target-cycle-time'
+    ];
+    
+    elementIds.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = '0';
+    });
+    
+    // Set progress percentage specifically
+    const progressElement = document.getElementById('progress-percentage');
+    if (progressElement) progressElement.textContent = '0%';
+    
+    // Clear the charts
+    const cumulativeChart = document.getElementById('cumulative-chart');
+    const hourlyChart = document.getElementById('hourly-chart');
+    
+    if (cumulativeChart) {
+        cumulativeChart.innerHTML = 
+            `<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;">${message}</div>`;
+    }
+    
+    if (hourlyChart) {
+        hourlyChart.innerHTML = 
+            `<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;">${message}</div>`;
+    }
+    
+    // Check if hourly-targets-grid exists before trying to clear it
+    const hourlyTargetsGrid = document.getElementById('hourly-targets-grid');
+    if (hourlyTargetsGrid) {
+        hourlyTargetsGrid.innerHTML = '';
+    }
+}
 
         // Function to update date and time
         function updateDateTime() {
@@ -2933,6 +2961,93 @@ function renderHourlyChart(group) {
     }
     
     svg.appendChild(statusIndicator);
+}
+
+        // Function to render hourly targets
+function renderHourlyTargets(group) {
+    const hourlyTargetsGrid = document.getElementById('hourly-targets-grid');
+    
+    // Return if element doesn't exist
+    if (!hourlyTargetsGrid) return;
+    
+    // Clear existing content
+    hourlyTargetsGrid.innerHTML = '';
+    
+    if (!currentProductVariants || currentProductVariants.length === 0) {
+        hourlyTargetsGrid.innerHTML = '<div class="no-data">No hourly targets available</div>';
+        return;
+    }
+    
+    // Get current time
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    
+    // Collect all hourly targets from active variants
+    const hourlyTargetsMap = new Map();
+    
+    currentProductVariants.forEach(variant => {
+        if (variant.hourlyTargets) {
+            variant.hourlyTargets.forEach(hourTarget => {
+                const hour = hourTarget.hour;
+                if (!hourlyTargetsMap.has(hour)) {
+                    hourlyTargetsMap.set(hour, {
+                        target: 0,
+                        production: 0
+                    });
+                }
+                
+                hourlyTargetsMap.get(hour).target += hourTarget.target;
+                
+                // Find the corresponding production data
+                if (variant.hourlyProduction) {
+                    const prodItem = variant.hourlyProduction.find(p => p.hour === hour);
+                    if (prodItem) {
+                        hourlyTargetsMap.get(hour).production += prodItem.production;
+                    }
+                }
+            });
+        }
+    });
+    
+    // Convert to sorted array
+    const sortedHours = Array.from(hourlyTargetsMap.keys()).sort((a, b) => {
+        const [hourA, minuteA] = a.split(':').map(Number);
+        const [hourB, minuteB] = b.split(':').map(Number);
+        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
+    });
+    
+    // Create hourly target items
+    sortedHours.forEach(hour => {
+        const data = hourlyTargetsMap.get(hour);
+        const [hourVal, minuteVal] = hour.split(':').map(Number);
+        const hourTimeMinutes = hourVal * 60 + minuteVal;
+        const currentTimeMinutes = currentHour * 60 + currentMinute;
+        
+        // Determine status
+        let status = 'upcoming';
+        if (currentTimeMinutes > hourTimeMinutes + 30) {
+            status = data.production >= data.target ? 'met' : 'missed';
+        } else if (currentTimeMinutes >= hourTimeMinutes - 30 && currentTimeMinutes <= hourTimeMinutes + 30) {
+            status = 'current';
+        }
+        
+        // Create hourly target item
+        const item = document.createElement('div');
+        item.className = `hourly-target-item status-${status}`;
+        
+        const timeElement = document.createElement('div');
+        timeElement.className = 'hourly-target-time';
+        timeElement.textContent = hour;
+        item.appendChild(timeElement);
+        
+        const statusElement = document.createElement('div');
+        statusElement.className = 'hourly-target-status';
+        statusElement.textContent = status === 'met' ? '✓' : status === 'missed' ? '✗' : '';
+        item.appendChild(statusElement);
+        
+        hourlyTargetsGrid.appendChild(item);
+    });
 }
 
 // Initialize the dashboard when DOM is fully loaded
