@@ -53,7 +53,7 @@ body {
     transition: background-color 0.5s ease;
 }
 
-/* Fullscreen Mode */
+/* Improved Fullscreen Mode CSS */
 .fullscreen-mode {
     display: flex !important;
     flex-direction: column !important;
@@ -64,7 +64,9 @@ body {
     margin: 0 !important;
     box-sizing: border-box !important;
     background-color: var(--light-color) !important;
+    overflow: hidden !important; /* Prevent scrolling within the dashboard */
 }
+
 
 /* Ensure content grows properly in fullscreen mode */
 .fullscreen-mode .content {
@@ -72,42 +74,105 @@ body {
     display: flex !important;
     flex-direction: column !important;
     min-height: 0 !important; /* Important for nested flex containers */
+    overflow: hidden !important;
 }
 
-/* Adjustments for elements in fullscreen mode */
+/* Adjustments for elements in fullscreen mode - scale better for larger screens */
 .fullscreen-mode .supervisor-color-banner {
-    height: 10px !important;
-    margin-bottom: 2px !important;
+    height: min(10px, 1vh) !important;
+    margin-bottom: min(2px, 0.2vh) !important;
 }
 
 .fullscreen-mode .header {
-    margin-bottom: 5px !important;
-    padding-bottom: 5px !important;
+    margin-bottom: min(5px, 0.5vh) !important;
+    padding-bottom: min(5px, 0.5vh) !important;
 }
 
 .fullscreen-mode .legend-section {
-    margin-bottom: 10px !important;
-    padding: 10px !important;
+    margin-bottom: min(10px, 1vh) !important;
+    padding: min(10px, 1vh) !important;
 }
 
 .fullscreen-mode .top-row {
-    margin-bottom: 10px !important;
+    margin-bottom: min(10px, 1vh) !important;
+    flex-shrink: 0 !important;
 }
 
 .fullscreen-mode .charts-row {
     flex: 1 !important;
     min-height: 0 !important; /* Critical for flex sizing */
-    margin-bottom: 10px !important;
+    margin-bottom: min(10px, 1vh) !important;
+    overflow: hidden !important;
 }
 
 .fullscreen-mode .chart {
     min-height: 0 !important; /* Allow chart to shrink if needed */
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.fullscreen-mode .chart-area {
+    flex: 1 !important;
+    min-height: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.fullscreen-mode .chart-title {
+    margin-bottom: min(10px, 1vh) !important;
 }
 
 .fullscreen-mode .hourly-targets-section {
-    margin-bottom: 5px !important;
-    max-height: 100px !important; /* Keep the hourly targets from growing too large */
+    margin-bottom: min(5px, 0.5vh) !important;
+    max-height: min(100px, 15vh) !important; /* Make it relative to viewport height */
     overflow: visible !important;
+    flex-shrink: 0 !important;
+}
+
+/* Make SVG charts responsive in fullscreen */
+.fullscreen-mode svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Simulated fullscreen mode (fallback) */
+.simulated-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999 !important;
+    background-color: var(--light-color) !important;
+}
+
+/* Improved chart rendering in fullscreen */
+.fullscreen-mode .chart-area svg {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Further optimize for very large screens */
+@media screen and (min-width: 2560px) {
+    .fullscreen-mode .hourly-target-item {
+        width: 100px !important;
+        height: 75px !important;
+    }
+    
+    .fullscreen-mode .hourly-target-time {
+        font-size: min(1.4rem, 1.5vw) !important;
+    }
+    
+    .fullscreen-mode .hourly-target-status {
+        font-size: min(1.5rem, 1.6vw) !important;
+    }
+    
+    .fullscreen-mode .chart-title {
+        font-size: min(2rem, 2vw) !important;
+    }
 }
 
 /* Color banner at top */
@@ -896,42 +961,165 @@ body {
             }
         }
 
-        function handleFullscreenChange() {
-            const dashboard = document.querySelector('.dashboard-container');
-            const fullscreenButton = document.querySelector('.fullscreen-button');
-            const chartsRow = document.querySelector('.charts-row');
+        // Replace the existing handleFullscreenChange function with this improved version
+function handleFullscreenChange() {
+    const dashboard = document.querySelector('.dashboard-container');
+    const fullscreenButton = document.querySelector('.fullscreen-button');
+    const chartsRow = document.querySelector('.charts-row');
+    const content = document.querySelector('.content');
 
-            if (!document.fullscreenElement && !document.webkitFullscreenElement && 
-                !document.mozFullScreenElement && !document.msFullscreenElement) {
-                dashboard.classList.remove('fullscreen-mode');
-                isFullscreen = false;
-                fullscreenButton.textContent = 'Fullscreen';
-                
-                // Reset chart heights when exiting fullscreen
-                chartsRow.style.height = '360px';
-            } else {
-                // Dynamically set chart heights in fullscreen
-                const viewportHeight = window.innerHeight;
-                const headerHeight = document.querySelector('.header').offsetHeight || 0;
-                const legendHeight = document.querySelector('.legend-section').offsetHeight || 0;
-                const topRowHeight = document.querySelector('.top-row').offsetHeight || 0;
-                const hourlyTargetsHeight = 100; // Fixed height for hourly targets
-                const footerHeight = document.querySelector('.footer').offsetHeight || 0;
-                const margins = 50; // Account for various margins/paddings
-                
-                // Calculate available height for charts
-                const availableHeight = viewportHeight - headerHeight - legendHeight - 
-                                       topRowHeight - hourlyTargetsHeight - footerHeight - margins;
-                
-                // Set chart container height to available space
-                if (availableHeight > 200) { // Ensure minimum reasonable height
-                    chartsRow.style.height = `${availableHeight}px`;
-                }
-            }
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && 
+        !document.mozFullScreenElement && !document.msFullscreenElement) {
+        // Exiting fullscreen
+        dashboard.classList.remove('fullscreen-mode');
+        isFullscreen = false;
+        fullscreenButton.textContent = 'Fullscreen';
+        
+        // Reset chart heights when exiting fullscreen
+        chartsRow.style.height = '360px';
+        
+        // Reset any inline styles that might have been applied
+        content.style.height = '';
+        document.body.style.overflow = '';
+    } else {
+        // Entering fullscreen - force layout calculation before measuring
+        dashboard.classList.add('fullscreen-mode');
+        isFullscreen = true;
+        fullscreenButton.textContent = 'Exit Fullscreen';
+        
+        // Prevent scrolling in fullscreen
+        document.body.style.overflow = 'hidden';
+        
+        // Use a more reliable approach to calculate available space
+        resizeFullscreenElements();
+    }
 
-            // Redraw as needed
-            setTimeout(updateDashboard, 100);
+    // Redraw charts after a slight delay to ensure layout is complete
+    setTimeout(updateDashboard, 250);
+}
+
+// New function to handle resizing in fullscreen mode
+function resizeFullscreenElements() {
+    if (!isFullscreen) return;
+    
+    const dashboard = document.querySelector('.dashboard-container');
+    const content = document.querySelector('.content');
+    const chartsRow = document.querySelector('.charts-row');
+    const header = document.querySelector('.header');
+    const legendSection = document.querySelector('.legend-section');
+    const topRow = document.querySelector('.top-row');
+    const hourlyTargetsSection = document.querySelector('.hourly-targets-section');
+    const footer = document.querySelector('.footer');
+    
+    // Get actual measured heights instead of offsetHeight which can be unreliable
+    const viewportHeight = window.innerHeight;
+    const headerHeight = header.getBoundingClientRect().height;
+    const legendHeight = legendSection.getBoundingClientRect().height;
+    const topRowHeight = topRow.getBoundingClientRect().height;
+    const hourlyTargetsHeight = Math.min(hourlyTargetsSection.scrollHeight, viewportHeight * 0.15); // Max 15% of viewport
+    const footerHeight = footer.getBoundingClientRect().height;
+    
+    // Dynamic margin calculation based on screen size
+    const margins = Math.max(20, Math.min(50, viewportHeight * 0.03)); // Between 20px and 50px, or 3% of viewport height
+    
+    // Calculate available height for charts
+    const availableHeight = viewportHeight - headerHeight - legendHeight - 
+                           topRowHeight - hourlyTargetsHeight - footerHeight - margins;
+    
+    // Set chart container height to available space with a minimum
+    if (availableHeight > 200) {
+        chartsRow.style.height = `${Math.floor(availableHeight)}px`;
+        
+        // Also ensure the hourly targets section doesn't take too much space
+        hourlyTargetsSection.style.maxHeight = `${Math.floor(hourlyTargetsHeight)}px`;
+    }
+    
+    // Set content height to fill available space
+    content.style.height = `${viewportHeight - headerHeight - footerHeight - margins}px`;
+}
+
+// Add event listener for window resize in fullscreen mode
+window.addEventListener('resize', function() {
+    if (isFullscreen) {
+        resizeFullscreenElements();
+        // Redraw charts after resize
+        setTimeout(updateDashboard, 100);
+    }
+});
+
+// Replace the existing toggleFullscreen function with this improved version
+function toggleFullscreen() {
+    const dashboard = document.querySelector('.dashboard-container');
+    const fullscreenButton = document.querySelector('.fullscreen-button');
+
+    if (!document.fullscreenElement && !document.mozFullScreenElement && 
+        !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        // Apply fullscreen class before entering fullscreen mode
+        dashboard.classList.add('fullscreen-mode');
+        isFullscreen = true;
+        fullscreenButton.textContent = 'Exit Fullscreen';
+
+        // Request fullscreen with proper error handling
+        try {
+            if (dashboard.requestFullscreen) dashboard.requestFullscreen();
+            else if (dashboard.msRequestFullscreen) dashboard.msRequestFullscreen();
+            else if (dashboard.mozRequestFullScreen) dashboard.mozRequestFullScreen();
+            else if (dashboard.webkitRequestFullscreen) dashboard.webkitRequestFullscreen();
+        } catch (err) {
+            console.error('Error attempting to enable fullscreen:', err);
+            // Fallback for browsers that block fullscreen without user gesture
+            simulateFullscreen();
         }
+    } else {
+        try {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.msExitFullscreen) document.msExitFullscreen();
+            else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        } catch (err) {
+            console.error('Error attempting to exit fullscreen:', err);
+            // Manually exit our simulated fullscreen
+            exitSimulatedFullscreen();
+        }
+    }
+}
+
+// New functions to handle browsers that don't support fullscreen API
+function simulateFullscreen() {
+    const dashboard = document.querySelector('.dashboard-container');
+    dashboard.classList.add('simulated-fullscreen');
+    document.body.style.overflow = 'hidden';
+    dashboard.style.position = 'fixed';
+    dashboard.style.top = '0';
+    dashboard.style.left = '0';
+    dashboard.style.width = '100vw';
+    dashboard.style.height = '100vh';
+    dashboard.style.zIndex = '9999';
+    
+    resizeFullscreenElements();
+    setTimeout(updateDashboard, 250);
+}
+
+function exitSimulatedFullscreen() {
+    const dashboard = document.querySelector('.dashboard-container');
+    dashboard.classList.remove('simulated-fullscreen');
+    dashboard.classList.remove('fullscreen-mode');
+    document.body.style.overflow = '';
+    dashboard.style.position = '';
+    dashboard.style.top = '';
+    dashboard.style.left = '';
+    dashboard.style.width = '';
+    dashboard.style.height = '';
+    dashboard.style.zIndex = '';
+    
+    isFullscreen = false;
+    document.querySelector('.fullscreen-button').textContent = 'Fullscreen';
+    
+    // Reset chart heights
+    document.querySelector('.charts-row').style.height = '360px';
+    
+    setTimeout(updateDashboard, 250);
+}
 
         // Function to initialize the supervisor selection UI
         function initSupervisorSelection() {
