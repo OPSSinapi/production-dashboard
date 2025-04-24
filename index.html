@@ -2021,6 +2021,283 @@ function showLoadingOrError(message) {
             });
         }
 
+
+        // Function to render the cumulative production chart
+function renderCumulativeChart(group) {
+    const chartContainer = document.getElementById('cumulative-chart');
+    if (!chartContainer) return;
+    
+    // Clear existing chart if any
+    chartContainer.innerHTML = '';
+    
+    // Create canvas for the chart
+    const canvas = document.createElement('canvas');
+    canvas.width = chartContainer.clientWidth;
+    canvas.height = chartContainer.clientHeight;
+    chartContainer.appendChild(canvas);
+    
+    // Prepare data for the chart
+    const labels = [];
+    const actualData = [];
+    const targetData = [];
+    
+    // Use the first variant as a baseline for time slots
+    if (group.variants.length > 0) {
+        const variant = group.variants[0];
+        if (variant.hourlyProduction && variant.hourlyTargets) {
+            // Combine hourly data from all variants
+            let cumulativeActual = 0;
+            let cumulativeTarget = 0;
+            
+            // Get unique hours across all variants
+            const allHours = new Set();
+            group.variants.forEach(v => {
+                if (v.hourlyProduction) {
+                    v.hourlyProduction.forEach(h => allHours.add(h.hour));
+                }
+            });
+            
+            // Sort hours chronologically
+            const sortedHours = Array.from(allHours).sort((a, b) => {
+                const [hoursA, minutesA] = a.split(':').map(Number);
+                const [hoursB, minutesB] = b.split(':').map(Number);
+                return (hoursA * 60 + minutesA) - (hoursB * 60 + minutesB);
+            });
+            
+            // Create datasets for each hour
+            sortedHours.forEach(hour => {
+                labels.push(hour);
+                
+                // Sum up production and targets across variants for this hour
+                let hourActual = 0;
+                let hourTarget = 0;
+                
+                group.variants.forEach(v => {
+                    // Check if this variant has data for this hour
+                    if (v.hourlyProduction) {
+                        const production = v.hourlyProduction.find(h => h.hour === hour);
+                        if (production) {
+                            hourActual += production.production;
+                        }
+                    }
+                    
+                    if (v.hourlyTargets) {
+                        const target = v.hourlyTargets.find(h => h.hour === hour);
+                        if (target) {
+                            hourTarget += target.target;
+                        }
+                    }
+                });
+                
+                // Calculate cumulative values
+                cumulativeActual += hourActual;
+                cumulativeTarget += hourTarget;
+                
+                actualData.push(cumulativeActual);
+                targetData.push(cumulativeTarget);
+            });
+        }
+    }
+    
+    // Create the chart
+    new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Production',
+                    data: actualData,
+                    borderColor: 'var(--production-color)',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.1
+                },
+                {
+                    label: 'Target',
+                    data: targetData,
+                    borderColor: 'var(--target-color)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Function to render the hourly production chart
+function renderHourlyChart(group) {
+    const chartContainer = document.getElementById('hourly-chart');
+    if (!chartContainer) return;
+    
+    // Clear existing chart if any
+    chartContainer.innerHTML = '';
+    
+    // Create canvas for the chart
+    const canvas = document.createElement('canvas');
+    canvas.width = chartContainer.clientWidth;
+    canvas.height = chartContainer.clientHeight;
+    chartContainer.appendChild(canvas);
+    
+    // Prepare data for the chart
+    const labels = [];
+    const actualData = [];
+    const targetData = [];
+    
+    // Use the first variant as a baseline for time slots
+    if (group.variants.length > 0) {
+        const variant = group.variants[0];
+        if (variant.hourlyProduction && variant.hourlyTargets) {
+            // Get unique hours across all variants
+            const allHours = new Set();
+            group.variants.forEach(v => {
+                if (v.hourlyProduction) {
+                    v.hourlyProduction.forEach(h => allHours.add(h.hour));
+                }
+            });
+            
+            // Sort hours chronologically
+            const sortedHours = Array.from(allHours).sort((a, b) => {
+                const [hoursA, minutesA] = a.split(':').map(Number);
+                const [hoursB, minutesB] = b.split(':').map(Number);
+                return (hoursA * 60 + minutesA) - (hoursB * 60 + minutesB);
+            });
+            
+            // Create datasets for each hour
+            sortedHours.forEach(hour => {
+                labels.push(hour);
+                
+                // Sum up production and targets across variants for this hour
+                let hourActual = 0;
+                let hourTarget = 0;
+                
+                group.variants.forEach(v => {
+                    // Check if this variant has data for this hour
+                    if (v.hourlyProduction) {
+                        const production = v.hourlyProduction.find(h => h.hour === hour);
+                        if (production) {
+                            hourActual += production.production;
+                        }
+                    }
+                    
+                    if (v.hourlyTargets) {
+                        const target = v.hourlyTargets.find(h => h.hour === hour);
+                        if (target) {
+                            hourTarget += target.target;
+                        }
+                    }
+                });
+                
+                actualData.push(hourActual);
+                targetData.push(hourTarget);
+            });
+        }
+    }
+    
+    // Create the chart
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Production',
+                    data: actualData,
+                    backgroundColor: 'var(--production-color)',
+                    borderColor: 'var(--production-color)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Target',
+                    data: targetData,
+                    backgroundColor: 'var(--target-color)',
+                    borderColor: 'var(--target-color)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+        
         // Function to display a group
         function displayGroup(group) {
             // Set current product and supervisor
