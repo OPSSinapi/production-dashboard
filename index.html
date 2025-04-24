@@ -1807,8 +1807,7 @@ body {
             document.getElementById('target-cycle-time').textContent = avgCycleTime;
         }
 
-       // Function to calculate actual cycle time
-function calculateActualCycleTime(variants) {
+       function calculateActualCycleTime(variants) {
     // Check if any variant has actualCycleTime - if so, use weighted average of those values
     const variantsWithActualCycleTime = variants.filter(v => v.actualCycleTime !== undefined && v.actualCycleTime !== null);
     
@@ -1844,12 +1843,6 @@ function calculateActualCycleTime(variants) {
     }
     
     // Fall back to original calculation if no actualCycleTime is available
-    // Get current time to calculate elapsed time
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const currentTimeMinutes = currentHour * 60 + currentMinute;
-    
     let totalProduction = 0;
     let totalElapsedWorkingTime = 0;
     
@@ -1861,25 +1854,47 @@ function calculateActualCycleTime(variants) {
             if (supervisorVariant.currentTotal && supervisorVariant.currentTotal > 0) {
                 const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
                 
-                if (startTimeStr) {
-                    const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
-                    const startTotalMinutes = startHours * 60 + startMinutes;
+                if (startTimeStr && variant.timeline && variant.timeline.length > 0) {
+                    // Find the last hour with non-zero production
+                    const hoursWithProduction = variant.timeline
+                        .filter(h => h.actual > 0)
+                        .sort((a, b) => {
+                            const [hourA, minuteA] = a.hour.split(':').map(Number);
+                            const [hourB, minuteB] = b.hour.split(':').map(Number);
+                            return (hourB * 60 + minuteB) - (hourA * 60 + minuteA); // Sort descending
+                        });
                     
-                    // Calculate elapsed time in minutes (from start until now)
-                    let elapsedMinutes = currentTimeMinutes - startTotalMinutes;
-                    if (elapsedMinutes < 0) {
-                        elapsedMinutes += 24 * 60; // Handle case where start was yesterday
+                    if (hoursWithProduction.length > 0) {
+                        // Get the latest hour with non-zero production
+                        const lastProductionHourData = hoursWithProduction[0];
+                        const [lastHours, lastMinutes] = lastProductionHourData.hour.split(':').map(Number);
+                        const lastTotalMinutes = lastHours * 60 + lastMinutes;
+                        
+                        const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
+                        const startTotalMinutes = startHours * 60 + startMinutes;
+                        
+                        // Calculate elapsed time in minutes (from start until last production hour)
+                        let elapsedMinutes = lastTotalMinutes - startTotalMinutes;
+                        if (elapsedMinutes < 0) {
+                            elapsedMinutes += 24 * 60; // Handle case where start was yesterday
+                        }
+                        
+                        // Create a date object for the last production hour to calculate break times
+                        const now = new Date();
+                        const lastProductionTime = new Date(now);
+                        lastProductionTime.setHours(lastHours);
+                        lastProductionTime.setMinutes(lastMinutes);
+                        
+                        // Calculate elapsed break time
+                        const elapsedBreakMinutes = calculateElapsedBreakMinutes(variant, startTimeStr, lastProductionTime);
+                        
+                        // Calculate actual working time
+                        const workingMinutes = elapsedMinutes - elapsedBreakMinutes;
+                        
+                        // Add to totals
+                        totalProduction += supervisorVariant.currentTotal;
+                        totalElapsedWorkingTime += workingMinutes * 60; // Convert to seconds
                     }
-                    
-                    // Calculate elapsed break time
-                    const elapsedBreakMinutes = calculateElapsedBreakMinutes(variant, startTimeStr, now);
-                    
-                    // Calculate actual working time
-                    const workingMinutes = elapsedMinutes - elapsedBreakMinutes;
-                    
-                    // Add to totals
-                    totalProduction += supervisorVariant.currentTotal;
-                    totalElapsedWorkingTime += workingMinutes * 60; // Convert to seconds
                 }
             }
         }
@@ -1890,7 +1905,7 @@ function calculateActualCycleTime(variants) {
     // Calculate overall cycle time
     return Math.round(totalElapsedWorkingTime / totalProduction);
 }
-
+        
 // Helper function to calculate elapsed break minutes
 function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
     let totalElapsedBreakMinutes = 0;
