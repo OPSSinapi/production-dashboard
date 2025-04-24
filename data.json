@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-24T09:35:14.496Z",
+    "timestamp": "2025-04-24T09:35:59.975Z",
     "date": "2025-04-24",
     "facility": "Main Plant"
   },
@@ -27,6 +27,24 @@
         }
       ],
       "availableWorkHours": 10
+    },
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.25
     }
   ],
   "production": [
@@ -102,6 +120,85 @@
           "actual": 0,
           "cumTarget": 356,
           "cumActual": 84,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ]
+    },
+    {
+      "id": "PopUp-Y001NVM.2",
+      "product": {
+        "id": "PopUp",
+        "name": "PopUp"
+      },
+      "variant": {
+        "id": "Y001NVM.2",
+        "name": "Y001NVM.2",
+        "fullName": "PopUp Y001NVM.2",
+        "cycleTime": 59.4,
+        "devicesPerBox": 100,
+        "actualCycleTime": 217
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 60,
+        "daily": 500,
+        "boxes": 5
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 20
+      },
+      "batches": [
+        {
+          "id": 25042245,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 100,
+          "startTime": "09:33",
+          "endTime": "16:30",
+          "target": 365,
+          "progress": 27
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 60,
+          "actual": 0,
+          "cumTarget": 60,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 60,
+          "actual": 0,
+          "cumTarget": 120,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 55,
+          "actual": 100,
+          "cumTarget": 175,
+          "cumActual": 100,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -278,6 +375,13 @@
         "progress": 8
       },
       {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 100,
+        "totalTarget": 500,
+        "progress": 20
+      },
+      {
         "id": "Scalpel-Packaging",
         "name": "Scalpel Packaging",
         "totalProduction": 3000,
@@ -289,11 +393,12 @@
       {
         "id": "Mvokwe",
         "name": "Mvokwe",
-        "totalProduction": 36,
-        "totalTarget": 241,
-        "progress": 15,
+        "totalProduction": 136,
+        "totalTarget": 606,
+        "progress": 22,
         "variants": [
-          "SCD-XL2000SD"
+          "SCD-XL2000SD",
+          "PopUp-Y001NVM.2"
         ]
       },
       {
