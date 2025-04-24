@@ -2166,137 +2166,836 @@ function renderCumulativeChart(group) {
     });
 }
 
-// Function to render the hourly production chart
 function renderHourlyChart(group) {
     const chartContainer = document.getElementById('hourly-chart');
-    if (!chartContainer) return;
-    
-    // Clear existing chart if any
     chartContainer.innerHTML = '';
     
-    // Create canvas for the chart
-    const canvas = document.createElement('canvas');
-    canvas.width = chartContainer.clientWidth;
-    canvas.height = chartContainer.clientHeight;
-    chartContainer.appendChild(canvas);
+    // Collect all hours across all variants
+    const allHoursSet = new Set();
+    const hourlyProductionMap = new Map(); // Map to store production by hour
+    const hourlyTargetMap = new Map();     // Map to store targets by hour
+    const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
     
-    // Prepare data for the chart
-    const labels = [];
-    const actualData = [];
-    const targetData = [];
-    
-    // Use the first variant as a baseline for time slots
-    if (group.variants.length > 0) {
-        const variant = group.variants[0];
-        if (variant.hourlyProduction && variant.hourlyTargets) {
-            // Get unique hours across all variants
-            const allHours = new Set();
-            group.variants.forEach(v => {
-                if (v.hourlyProduction) {
-                    v.hourlyProduction.forEach(h => allHours.add(h.hour));
-                }
-            });
-            
-            // Sort hours chronologically
-            const sortedHours = Array.from(allHours).sort((a, b) => {
-                const [hoursA, minutesA] = a.split(':').map(Number);
-                const [hoursB, minutesB] = b.split(':').map(Number);
-                return (hoursA * 60 + minutesA) - (hoursB * 60 + minutesB);
-            });
-            
-            // Create datasets for each hour
-            sortedHours.forEach(hour => {
-                labels.push(hour);
+    // Process each variant and collect unique hours
+    group.variants.forEach(variant => {
+        // Get variant time window
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        if (!supervisorVariant) return;
+        
+        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+        
+        if (!startTimeStr || !endTimeStr) return;
+        
+        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+        
+        const startTimeMinutes = startHour * 60 + startMinute;
+        const endTimeMinutes = endHour * 60 + endMinute;
+        
+        // Collect hourly production data
+        if (variant.hourlyProduction) {
+            variant.hourlyProduction.forEach(item => {
+                if (!item.hour) return;
                 
-                // Sum up production and targets across variants for this hour
-                let hourActual = 0;
-                let hourTarget = 0;
+                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
                 
-                group.variants.forEach(v => {
-                    // Check if this variant has data for this hour
-                    if (v.hourlyProduction) {
-                        const production = v.hourlyProduction.find(h => h.hour === hour);
-                        if (production) {
-                            hourActual += production.production;
-                        }
+                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    // Add to hourly production map
+                    if (!hourlyProductionMap.has(item.hour)) {
+                        hourlyProductionMap.set(item.hour, 0);
                     }
+                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
                     
-                    if (v.hourlyTargets) {
-                        const target = v.hourlyTargets.find(h => h.hour === hour);
-                        if (target) {
-                            hourTarget += target.target;
-                        }
-                    }
-                });
-                
-                actualData.push(hourActual);
-                targetData.push(hourTarget);
+                    allHoursSet.add(item.hour);
+                }
             });
         }
+        
+        // Collect hourly target data
+        if (variant.hourlyTargets) {
+            variant.hourlyTargets.forEach(item => {
+                if (!item.hour) return;
+                
+                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
+                
+                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    // Add to hourly target map
+                    if (!hourlyTargetMap.has(item.hour)) {
+                        hourlyTargetMap.set(item.hour, 0);
+                    }
+                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
+                    
+                    allHoursSet.add(item.hour);
+                }
+            });
+        }
+    });
+    
+    // Convert to sorted array of hours
+    const sortedHours = Array.from(allHoursSet).sort((a, b) => {
+        const [hourA, minuteA] = a.split(':').map(Number);
+        const [hourB, minuteB] = b.split(':').map(Number);
+        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
+    });
+    
+    if (sortedHours.length === 0) {
+        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available</div>';
+        return;
     }
     
-    // Create the chart
-    new Chart(canvas, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Production',
-                    data: actualData,
-                    backgroundColor: 'var(--production-color)',
-                    borderColor: 'var(--production-color)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Target',
-                    data: targetData,
-                    backgroundColor: 'var(--target-color)',
-                    borderColor: 'var(--target-color)',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false
-                }
-            },
-            scales: {
-                x: {
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    },
-                    ticks: {
-                        font: {
-                            size: 12,
-                            weight: 'bold'
-                        }
+    // Get chart dimensions based on container
+    const chartArea = chartContainer.closest('.chart-area');
+    const svgWidth = chartArea.clientWidth;
+    const svgHeight = chartArea.clientHeight;
+    
+    // Check if dimensions are valid
+    if (svgWidth <= 0 || svgHeight <= 0) {
+        // Try again later if dimensions are not ready
+        setTimeout(() => renderHourlyChart(group), 100);
+        return;
+    }
+    
+    // Calculate padding based on container size for responsive design
+    const padding = {
+        top: Math.max(10, Math.floor(svgHeight * 0.05)),
+        right: Math.max(10, Math.floor(svgWidth * 0.05)),
+        bottom: Math.max(50, Math.floor(svgHeight * 0.18)), // Increased bottom padding for status indicators
+        left: Math.max(40, Math.floor(svgWidth * 0.12))
+    };
+    
+    // Calculate chart dimensions
+    const chartWidth = svgWidth - padding.left - padding.right;
+    const chartHeight = svgHeight - padding.top - padding.bottom;
+    
+    // Find max value for chart scaling (with 10% buffer)
+    const maxValue = Math.max(
+        ...Array.from(hourlyProductionMap.values()),
+        ...Array.from(hourlyTargetMap.values())
+    ) * 1.1 || 100; // Default to 100 if no values
+    
+    // Create SVG element
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    chartContainer.appendChild(svg);
+    
+    // Add grid lines
+    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartHeight * i / 4);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', padding.left);
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', svgWidth - padding.right);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', '#ddd');
+        line.setAttribute('stroke-width', '1');
+        gridGroup.appendChild(line);
+        
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', padding.left - 10);
+        text.setAttribute('y', y + 5);
+        text.setAttribute('text-anchor', 'end');
+        text.setAttribute('font-size', isFullscreen ? '14' : '12');
+        text.setAttribute('fill', '#666');
+        text.textContent = Math.round(maxValue * (4 - i) / 4);
+        gridGroup.appendChild(text);
+    }
+    
+    // Add y-axis title
+    const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    yAxisTitle.setAttribute('x', padding.left - 35);
+    yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
+    yAxisTitle.setAttribute('text-anchor', 'middle');
+    yAxisTitle.setAttribute('font-size', isFullscreen ? '16' : '14');
+    yAxisTitle.setAttribute('font-weight', 'bold');
+    yAxisTitle.setAttribute('fill', '#666');
+    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 35}, ${padding.top + chartHeight / 2})`);
+    yAxisTitle.textContent = 'Units per Hour';
+    gridGroup.appendChild(yAxisTitle);
+    
+    // Add axes
+    const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    yAxis.setAttribute('x1', padding.left);
+    yAxis.setAttribute('y1', padding.top);
+    yAxis.setAttribute('x2', padding.left);
+    yAxis.setAttribute('y2', svgHeight - padding.bottom);
+    yAxis.setAttribute('stroke', '#666');
+    yAxis.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(yAxis);
+    
+    const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    xAxis.setAttribute('x1', padding.left);
+    xAxis.setAttribute('y1', svgHeight - padding.bottom);
+    xAxis.setAttribute('x2', svgWidth - padding.right);
+    xAxis.setAttribute('y2', svgHeight - padding.bottom);
+    xAxis.setAttribute('stroke', '#666');
+    xAxis.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(xAxis);
+    
+    svg.appendChild(gridGroup);
+    
+    // Get current time for status indicators
+    const now = new Date();
+    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+    
+    // Calculate bar width based on number of hours and spacing
+    const barCount = sortedHours.length;
+    const barSpacing = Math.min(20, chartWidth * 0.02);
+    const barGroupWidth = (chartWidth / barCount) - barSpacing;
+    const barWidth = barGroupWidth * 0.42; // Each bar takes 42% of group width
+    
+    // Add X-axis ticks, labels and status indicators
+    const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    sortedHours.forEach((hour, index) => {
+        const x = padding.left + (index * (barGroupWidth + barSpacing)) + (barGroupWidth / 2);
+        const y = svgHeight - padding.bottom + 20;
+        
+        // Add tick mark
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        tick.setAttribute('x1', x);
+        tick.setAttribute('y1', svgHeight - padding.bottom);
+        tick.setAttribute('x2', x);
+        tick.setAttribute('y2', svgHeight - padding.bottom + 5);
+        tick.setAttribute('stroke', '#666');
+        tick.setAttribute('stroke-width', '1.5');
+        xLabelsGroup.appendChild(tick);
+        
+        // Add hour label
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x);
+        text.setAttribute('y', y);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', isFullscreen ? '14' : '12');
+        text.setAttribute('fill', '#666');
+        text.textContent = hour;
+        xLabelsGroup.appendChild(text);
+        
+        // Determine hour status
+        const [hourVal, minuteVal] = hour.split(':').map(Number);
+        const hourTimeMinutes = hourVal * 60 + minuteVal;
+        const hourProduction = hourlyProductionMap.get(hour) || 0;
+        const hourTarget = hourlyTargetMap.get(hour) || 0;
+        
+        let status = 'upcoming';
+        if (currentTimeMinutes > hourTimeMinutes + 30) {
+            status = hourProduction >= hourTarget ? 'met' : 'missed';
+        } else if (currentTimeMinutes >= hourTimeMinutes - 30 && currentTimeMinutes <= hourTimeMinutes + 30) {
+            status = 'current';
+        }
+        
+        hourlyStatusMap.set(hour, status);
+        
+        // Add status indicator below the hour label
+        let statusSymbol = '';
+        let fillColor = '#94a3b8'; // Default gray
+        
+        if (status === 'met') {
+            statusSymbol = '✓';
+            fillColor = '#0d9488'; // Green for met
+        } else if (status === 'missed') {
+            statusSymbol = '✗';
+            fillColor = '#e11d48'; // Red for missed
+        } else if (status === 'current') {
+            statusSymbol = '●';
+            fillColor = '#ca8a04'; // Yellow for current
+        }
+        
+        if (statusSymbol) {
+            const statusText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            statusText.setAttribute('x', x);
+            statusText.setAttribute('y', y + 20);
+            statusText.setAttribute('text-anchor', 'middle');
+            statusText.setAttribute('font-size', isFullscreen ? '18' : '16');
+            statusText.setAttribute('font-weight', 'bold');
+            statusText.setAttribute('fill', fillColor);
+            statusText.textContent = statusSymbol;
+            xLabelsGroup.appendChild(statusText);
+        }
+    });
+    svg.appendChild(xLabelsGroup);
+    
+    // Create bar charts for each hour
+    const barsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    
+    sortedHours.forEach((hour, index) => {
+        const barGroupX = padding.left + (index * (barGroupWidth + barSpacing));
+        
+        // Production bar (left bar in the group)
+        const productionValue = hourlyProductionMap.get(hour) || 0;
+        const productionHeight = (productionValue / maxValue) * chartHeight;
+        const productionY = svgHeight - padding.bottom - productionHeight;
+        
+        const productionBarX = barGroupX + (barGroupWidth * 0.08); // 8% offset from left
+        
+        const productionBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        productionBar.setAttribute('x', productionBarX);
+        productionBar.setAttribute('y', productionY);
+        productionBar.setAttribute('width', barWidth);
+        productionBar.setAttribute('height', productionHeight);
+        productionBar.setAttribute('rx', '2'); // Rounded corners
+        productionBar.setAttribute('ry', '2');
+        productionBar.setAttribute('fill', 'var(--production-color)');
+        barsGroup.appendChild(productionBar);
+        
+        // Production value label
+        const productionLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        productionLabel.setAttribute('x', productionBarX + (barWidth / 2));
+        productionLabel.setAttribute('y', productionY - 5);
+        productionLabel.setAttribute('text-anchor', 'middle');
+        productionLabel.setAttribute('font-size', isFullscreen ? '14' : '12');
+        productionLabel.setAttribute('font-weight', 'bold');
+        productionLabel.setAttribute('fill', 'var(--production-color)');
+        productionLabel.textContent = productionValue;
+        barsGroup.appendChild(productionLabel);
+        
+        // Target bar (right bar in the group)
+        const targetValue = hourlyTargetMap.get(hour) || 0;
+        const targetHeight = (targetValue / maxValue) * chartHeight;
+        const targetY = svgHeight - padding.bottom - targetHeight;
+        
+        const targetBarX = barGroupX + (barGroupWidth * 0.5); // 50% offset from left
+        
+        const targetBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        targetBar.setAttribute('x', targetBarX);
+        targetBar.setAttribute('y', targetY);
+        targetBar.setAttribute('width', barWidth);
+        targetBar.setAttribute('height', targetHeight);
+        targetBar.setAttribute('rx', '2'); // Rounded corners
+        targetBar.setAttribute('ry', '2');
+        targetBar.setAttribute('fill', 'var(--target-color)');
+        barsGroup.appendChild(targetBar);
+        
+        // Target value label
+        const targetLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        targetLabel.setAttribute('x', targetBarX + (barWidth / 2));
+        targetLabel.setAttribute('y', targetY - 5);
+        targetLabel.setAttribute('text-anchor', 'middle');
+        targetLabel.setAttribute('font-size', isFullscreen ? '14' : '12');
+        targetLabel.setAttribute('font-weight', 'bold');
+        targetLabel.setAttribute('fill', 'var(--target-color)');
+        targetLabel.textContent = targetValue;
+        barsGroup.appendChild(targetLabel);
+    });
+    
+    svg.appendChild(barsGroup);
+    
+    // Add legend
+    const legendGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    
+    // Production legend
+    const prodLegendRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    prodLegendRect.setAttribute('x', padding.left);
+    prodLegendRect.setAttribute('y', padding.top - 25);
+    prodLegendRect.setAttribute('width', 12);
+    prodLegendRect.setAttribute('height', 12);
+    prodLegendRect.setAttribute('fill', 'var(--production-color)');
+    legendGroup.appendChild(prodLegendRect);
+    
+    const prodLegendText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    prodLegendText.setAttribute('x', padding.left + 18);
+    prodLegendText.setAttribute('y', padding.top - 15);
+    prodLegendText.setAttribute('font-size', isFullscreen ? '14' : '12');
+    prodLegendText.setAttribute('fill', '#666');
+    prodLegendText.textContent = 'Production';
+    legendGroup.appendChild(prodLegendText);
+    
+    // Target legend
+    const targetLegendRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    targetLegendRect.setAttribute('x', padding.left + 100);
+    targetLegendRect.setAttribute('y', padding.top - 25);
+    targetLegendRect.setAttribute('width', 12);
+    targetLegendRect.setAttribute('height', 12);
+    targetLegendRect.setAttribute('fill', 'var(--target-color)');
+    legendGroup.appendChild(targetLegendRect);
+    
+    const targetLegendText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    targetLegendText.setAttribute('x', padding.left + 118);
+    targetLegendText.setAttribute('y', padding.top - 15);
+    targetLegendText.setAttribute('font-size', isFullscreen ? '14' : '12');
+    targetLegendText.setAttribute('fill', '#666');
+    targetLegendText.textContent = 'Target';
+    legendGroup.appendChild(targetLegendText);
+    
+    svg.appendChild(legendGroup);
+}
+
+         // Completely redesigned chart rendering for better cross-device compatibility
+function renderCumulativeChart(group) {
+    const chartContainer = document.getElementById('cumulative-chart');
+    chartContainer.innerHTML = '';
+    
+    // Collect all hours across all variants
+    const allHoursSet = new Set();
+    const hourlyProductionMap = new Map(); // Map to store production by hour
+    const hourlyTargetMap = new Map();     // Map to store targets by hour
+    const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
+    
+    // Process each variant and collect unique hours
+    group.variants.forEach(variant => {
+        // Get variant time window
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        if (!supervisorVariant) return;
+        
+        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+        
+        if (!startTimeStr || !endTimeStr) return;
+        
+        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+        
+        const startTimeMinutes = startHour * 60 + startMinute;
+        const endTimeMinutes = endHour * 60 + endMinute;
+        
+        // Collect hourly production data
+        if (variant.hourlyProduction) {
+            variant.hourlyProduction.forEach(item => {
+                if (!item.hour) return;
+                
+                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
+                
+                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    // Add to hourly production map
+                    if (!hourlyProductionMap.has(item.hour)) {
+                        hourlyProductionMap.set(item.hour, 0);
                     }
-                },
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    },
-                    ticks: {
-                        font: {
-                            size: 12,
-                            weight: 'bold'
-                        }
+                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
+                    
+                    allHoursSet.add(item.hour);
+                }
+            });
+        }
+        
+        // Collect hourly target data
+        if (variant.hourlyTargets) {
+            variant.hourlyTargets.forEach(item => {
+                if (!item.hour) return;
+                
+                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
+                
+                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    // Add to hourly target map
+                    if (!hourlyTargetMap.has(item.hour)) {
+                        hourlyTargetMap.set(item.hour, 0);
                     }
+                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
+                    
+                    allHoursSet.add(item.hour);
+                }
+            });
+        }
+    });
+    
+    // Convert to sorted array of hours
+    const sortedHours = Array.from(allHoursSet).sort((a, b) => {
+        const [hourA, minuteA] = a.split(':').map(Number);
+        const [hourB, minuteB] = b.split(':').map(Number);
+        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
+    });
+    
+    if (sortedHours.length === 0) {
+        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available</div>';
+        return;
+    }
+    
+    // Build cumulative data arrays
+    const cumulativeData = [];
+    let runningProductionTotal = 0;
+    let runningTargetTotal = 0;
+    
+    // Generate time-based data points
+    sortedHours.forEach(hour => {
+        const hourProduction = hourlyProductionMap.get(hour) || 0;
+        const hourTarget = hourlyTargetMap.get(hour) || 0;
+        
+        // Add to running totals
+        runningProductionTotal += hourProduction;
+        runningTargetTotal += hourTarget;
+        
+        const [hourVal, minuteVal] = hour.split(':').map(Number);
+        const timeMinutes = hourVal * 60 + minuteVal;
+        
+        cumulativeData.push({
+            hour: hour,
+            production: runningProductionTotal,
+            target: runningTargetTotal,
+            timeMinutes: timeMinutes
+        });
+        
+        // Determine status for each hour
+        const now = new Date();
+        const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+        
+        // Only evaluate completed hours
+        if (currentTimeMinutes >= timeMinutes + 30) {
+            hourlyStatusMap.set(hour, hourProduction >= hourTarget ? 'met' : 'missed');
+        } else if (currentTimeMinutes >= timeMinutes - 30 && currentTimeMinutes < timeMinutes + 30) {
+            hourlyStatusMap.set(hour, 'current');
+        } else {
+            hourlyStatusMap.set(hour, 'upcoming');
+        }
+    });
+    
+    // Filter data to only show up to current time plus buffer
+    const now = new Date();
+    const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
+    const currentTimePlusBuffer = currentMinuteOfDay + 30;
+    
+    const filteredData = cumulativeData.filter(item => item.timeMinutes <= currentTimePlusBuffer);
+    
+    if (filteredData.length === 0) {
+        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available for current time period</div>';
+        return;
+    }
+    
+    // Get chart dimensions based on container
+    const chartArea = chartContainer.closest('.chart-area');
+    const svgWidth = chartArea.clientWidth;
+    const svgHeight = chartArea.clientHeight;
+    
+    // Check if dimensions are valid
+    if (svgWidth <= 0 || svgHeight <= 0) {
+        // Try again later if dimensions are not ready
+        setTimeout(() => renderCumulativeChart(group), 100);
+        return;
+    }
+    
+    // Calculate padding based on container size for responsive design
+    const padding = {
+        top: Math.max(10, Math.floor(svgHeight * 0.05)),
+        right: Math.max(10, Math.floor(svgWidth * 0.05)),
+        bottom: Math.max(50, Math.floor(svgHeight * 0.18)), // Increased bottom padding for status indicators
+        left: Math.max(40, Math.floor(svgWidth * 0.12))
+    };
+    
+    // Calculate chart dimensions
+    const chartWidth = svgWidth - padding.left - padding.right;
+    const chartHeight = svgHeight - padding.top - padding.bottom;
+    
+    // Find max value for chart scaling (with 10% buffer)
+    const maxValue = Math.max(
+        ...filteredData.map(item => Math.max(item.target || 0, item.production || 0))
+    ) * 1.1;
+    
+    // Create SVG element
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    chartContainer.appendChild(svg);
+    
+    // Add grid lines
+    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartHeight * i / 4);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', padding.left);
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', svgWidth - padding.right);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', '#ddd');
+        line.setAttribute('stroke-width', '1');
+        gridGroup.appendChild(line);
+        
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', padding.left - 10);
+        text.setAttribute('y', y + 5);
+        text.setAttribute('text-anchor', 'end');
+        text.setAttribute('font-size', isFullscreen ? '14' : '12');
+        text.setAttribute('fill', '#666');
+        text.textContent = Math.round(maxValue * (4 - i) / 4);
+        gridGroup.appendChild(text);
+    }
+    
+    // Add y-axis title
+    const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    yAxisTitle.setAttribute('x', padding.left - 35);
+    yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
+    yAxisTitle.setAttribute('text-anchor', 'middle');
+    yAxisTitle.setAttribute('font-size', isFullscreen ? '16' : '14');
+    yAxisTitle.setAttribute('font-weight', 'bold');
+    yAxisTitle.setAttribute('fill', '#666');
+    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 35}, ${padding.top + chartHeight / 2})`);
+    yAxisTitle.textContent = 'Units';
+    gridGroup.appendChild(yAxisTitle);
+    
+    // Add axes
+    const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    yAxis.setAttribute('x1', padding.left);
+    yAxis.setAttribute('y1', padding.top);
+    yAxis.setAttribute('x2', padding.left);
+    yAxis.setAttribute('y2', svgHeight - padding.bottom);
+    yAxis.setAttribute('stroke', '#666');
+    yAxis.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(yAxis);
+    
+    const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    xAxis.setAttribute('x1', padding.left);
+    xAxis.setAttribute('y1', svgHeight - padding.bottom);
+    xAxis.setAttribute('x2', svgWidth - padding.right);
+    xAxis.setAttribute('y2', svgHeight - padding.bottom);
+    xAxis.setAttribute('stroke', '#666');
+    xAxis.setAttribute('stroke-width', '1.5');
+    gridGroup.appendChild(xAxis);
+    
+    svg.appendChild(gridGroup);
+    
+    // Find earliest start time and latest end time across all variants
+    let earliestStartMinutes = 24 * 60; // Initialize to end of day
+    let latestEndMinutes = 0;
+
+    group.variants.forEach(variant => {
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        if (supervisorVariant) {
+            const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+            const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+            
+            if (startTimeStr && endTimeStr) {
+                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+                const startTimeMinutes = startHour * 60 + startMinute;
+                
+                if (startTimeMinutes < earliestStartMinutes) {
+                    earliestStartMinutes = startTimeMinutes;
+                }
+                
+                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                const endTimeMinutes = endHour * 60 + endMinute;
+                
+                if (endTimeMinutes > latestEndMinutes) {
+                    latestEndMinutes = endTimeMinutes;
                 }
             }
         }
     });
+
+    // Format the start time for display (first tick)
+    const startTimeHour = Math.floor(earliestStartMinutes / 60);
+    const startTimeMinute = earliestStartMinutes % 60;
+    const startTimeFormatted = `${startTimeHour.toString().padStart(2, '0')}:${startTimeMinute.toString().padStart(2, '0')}`;
+
+    // Generate hourly intervals from start time to current time
+    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+    const endTimeMinutes = Math.min(latestEndMinutes, currentTimeMinutes + 60); // Show up to 1 hour ahead
+
+    // Create time ticks
+    const allHours = [];
+    
+    // Add the start time as the first tick
+    allHours.push(startTimeFormatted);
+    
+    // Calculate the first full hour after start time
+    const firstFullHourMinutes = Math.ceil(earliestStartMinutes / 60) * 60 + 30;
+    
+    // Then add standard hour markers (8:30, 9:30, etc.)
+    for (let minutes = firstFullHourMinutes; minutes <= endTimeMinutes; minutes += 60) {
+        const hour = Math.floor(minutes / 60);
+        const formattedHour = `${hour.toString().padStart(2, '0')}:30`;
+        allHours.push(formattedHour);
+    }
+
+    // Add X-axis ticks, labels and status indicators
+    const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    allHours.forEach((hour, index) => {
+        const x = padding.left + (chartWidth * index / (allHours.length - 1 || 1));
+        const y = svgHeight - padding.bottom + 20;
+        
+        // Add tick mark
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        tick.setAttribute('x1', x);
+        tick.setAttribute('y1', svgHeight - padding.bottom);
+        tick.setAttribute('x2', x);
+        tick.setAttribute('y2', svgHeight - padding.bottom + 5);
+        tick.setAttribute('stroke', '#666');
+        tick.setAttribute('stroke-width', '1.5');
+        xLabelsGroup.appendChild(tick);
+        
+        // Add hour label
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x);
+        text.setAttribute('y', y);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', isFullscreen ? '14' : '12');
+        text.setAttribute('fill', '#666');
+        text.textContent = hour;
+        xLabelsGroup.appendChild(text);
+        
+        // Add status indicator below the hour label
+        const status = hourlyStatusMap.get(hour);
+        if (status) {
+            let statusSymbol = '';
+            let fillColor = '#94a3b8'; // Default gray
+            
+            if (status === 'met') {
+                statusSymbol = '✓';
+                fillColor = '#0d9488'; // Green for met
+            } else if (status === 'missed') {
+                statusSymbol = '✗';
+                fillColor = '#e11d48'; // Red for missed
+            } else if (status === 'current') {
+                statusSymbol = '●';
+                fillColor = '#ca8a04'; // Yellow for current
+            }
+            
+            if (statusSymbol) {
+                const statusText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                statusText.setAttribute('x', x);
+                statusText.setAttribute('y', y + 20);
+                statusText.setAttribute('text-anchor', 'middle');
+                statusText.setAttribute('font-size', isFullscreen ? '18' : '16');
+                statusText.setAttribute('font-weight', 'bold');
+                statusText.setAttribute('fill', fillColor);
+                statusText.textContent = statusSymbol;
+                xLabelsGroup.appendChild(statusText);
+            }
+        }
+    });
+    svg.appendChild(xLabelsGroup);
+    
+    // Draw production line - starting from the first tick (start time) with zero production
+    const productionLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    
+    // Start with a point at zero (at the start time)
+    let productionPathD = `M ${padding.left} ${padding.top + chartHeight}`;
+    const productionPoints = [{
+        x: padding.left,
+        y: padding.top + chartHeight,
+        production: 0,
+        hour: startTimeFormatted
+    }];
+    
+    // Get data points for production line with proper cumulative totals
+    filteredData.forEach((dataPoint) => {
+        // Find the x position based on the hour
+        const hourIndex = allHours.indexOf(dataPoint.hour);
+        let x;
+        if (hourIndex >= 0) {
+            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
+        } else {
+            // If hour not in allHours, interpolate
+            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
+                          ((endTimeMinutes - earliestStartMinutes) || 1);
+            x = padding.left + (chartWidth * timeRatio);
+        }
+        
+        const y = padding.top + chartHeight - (chartHeight * (dataPoint.production / maxValue));
+        
+        productionPoints.push({ 
+            x, 
+            y, 
+            production: dataPoint.production, 
+            hour: dataPoint.hour 
+        });
+        productionPathD += ` L ${x} ${y}`;
+    });
+    
+    // Add production line
+    const productionPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    productionPath.setAttribute('d', productionPathD);
+    productionPath.setAttribute('stroke', 'var(--production-color)');
+    productionPath.setAttribute('stroke-width', '3');
+    productionPath.setAttribute('fill', 'none');
+    productionLineGroup.appendChild(productionPath);
+    
+    // Add production points and labels
+    productionPoints.forEach(point => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', point.x);
+        circle.setAttribute('cy', point.y);
+        circle.setAttribute('r', isFullscreen ? '5' : '4');
+        circle.setAttribute('fill', 'var(--production-color)');
+        productionLineGroup.appendChild(circle);
+        
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', point.x);
+        text.setAttribute('y', point.y - 8);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', isFullscreen ? '14' : '12');
+        text.setAttribute('font-weight', 'bold');
+        text.setAttribute('fill', 'var(--production-color)');
+        text.textContent = point.production;
+        productionLineGroup.appendChild(text);
+    });
+    svg.appendChild(productionLineGroup);
+    
+    // Draw target line - starting from the first tick (start time) with zero target
+    const targetLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    
+    // Start with a point at zero (at the start time)
+    let targetPathD = `M ${padding.left} ${padding.top + chartHeight}`;
+    const targetPoints = [{
+        x: padding.left,
+        y: padding.top + chartHeight,
+        target: 0,
+        hour: startTimeFormatted
+    }];
+    
+    // Get data points for target line with proper cumulative totals
+    filteredData.forEach((dataPoint) => {
+        // Find the x position based on the hour
+        const hourIndex = allHours.indexOf(dataPoint.hour);
+        let x;
+        if (hourIndex >= 0) {
+            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
+        } else {
+            // If hour not in allHours, interpolate
+            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
+                          ((endTimeMinutes - earliestStartMinutes) || 1);
+            x = padding.left + (chartWidth * timeRatio);
+        }
+        
+        const y = padding.top + chartHeight - (chartHeight * (dataPoint.target / maxValue));
+        
+        targetPoints.push({ 
+            x, 
+            y, 
+            target: dataPoint.target, 
+            hour: dataPoint.hour 
+        });
+        targetPathD += ` L ${x} ${y}`;
+    });
+    
+    // Add target line
+    const targetPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    targetPath.setAttribute('d', targetPathD);
+    targetPath.setAttribute('stroke', 'var(--target-color)');
+    targetPath.setAttribute('stroke-width', '3');
+    targetPath.setAttribute('fill', 'none');
+    targetLineGroup.appendChild(targetPath);
+    
+    // Add target points and labels
+    targetPoints.forEach(point => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', point.x);
+        circle.setAttribute('cy', point.y);
+        circle.setAttribute('r', isFullscreen ? '5' : '4');
+        circle.setAttribute('fill', 'var(--target-color)');
+        targetLineGroup.appendChild(circle);
+        
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', point.x);
+        text.setAttribute('y', point.y - 8);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', isFullscreen ? '14' : '12');
+        text.setAttribute('font-weight', 'bold');
+        text.setAttribute('fill', 'var(--target-color)');
+        text.textContent = point.target;
+        targetLineGroup.appendChild(text);
+    });
+    svg.appendChild(targetLineGroup);
 }
+Improve
+Explain
+Improving Fullscreen Functionality Across Devices - Claude
+Syntax Error in Production Dashboard - Claude
         
         // Function to display a group
         function displayGroup(group) {
