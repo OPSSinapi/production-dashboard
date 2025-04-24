@@ -7,7 +7,7 @@
     <!-- Add Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <style>
-       :root {
+        :root {
     --primary-color: #2c3e50;
     --secondary-color: #3B82F6;
     --success-color: #10B981;
@@ -53,17 +53,61 @@ body {
     transition: background-color 0.5s ease;
 }
 
+/* Fullscreen Mode */
 .fullscreen-mode {
-    display: grid;
-    grid-template-rows: auto auto auto 1fr auto;
+    display: flex !important;
+    flex-direction: column !important;
     padding: 8px !important;
     height: 100vh !important;
     width: 100vw !important;
     max-width: 100% !important;
     margin: 0 !important;
-    overflow: hidden !important;
-    box-sizing: border-box;
-    background-color: var(--light-color) !important; /* Add this line */
+    box-sizing: border-box !important;
+    background-color: var(--light-color) !important;
+}
+
+/* Ensure content grows properly in fullscreen mode */
+.fullscreen-mode .content {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important; /* Important for nested flex containers */
+}
+
+/* Adjustments for elements in fullscreen mode */
+.fullscreen-mode .supervisor-color-banner {
+    height: 10px !important;
+    margin-bottom: 2px !important;
+}
+
+.fullscreen-mode .header {
+    margin-bottom: 5px !important;
+    padding-bottom: 5px !important;
+}
+
+.fullscreen-mode .legend-section {
+    margin-bottom: 10px !important;
+    padding: 10px !important;
+}
+
+.fullscreen-mode .top-row {
+    margin-bottom: 10px !important;
+}
+
+.fullscreen-mode .charts-row {
+    flex: 1 !important;
+    min-height: 0 !important; /* Critical for flex sizing */
+    margin-bottom: 10px !important;
+}
+
+.fullscreen-mode .chart {
+    min-height: 0 !important; /* Allow chart to shrink if needed */
+}
+
+.fullscreen-mode .hourly-targets-section {
+    margin-bottom: 5px !important;
+    max-height: 100px !important; /* Keep the hourly targets from growing too large */
+    overflow: visible !important;
 }
 
 /* Color banner at top */
@@ -191,6 +235,14 @@ body {
     font-weight: 500;
 }
 
+/* Content container */
+.content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
 /* Top row with supervisor and metrics */
 .top-row {
     display: flex;
@@ -199,7 +251,7 @@ body {
     width: 100%;
 }
 
-        /* Supervisor info panel */
+/* Supervisor info panel */
 .supervisor-panel {
     flex: 0 0 450px;
     background-color: var(--supervisor-mvokwe);
@@ -314,6 +366,8 @@ body {
     margin-bottom: 20px;
     width: 100%;
     height: 360px;
+    flex: 1;
+    min-height: 300px; /* Minimum height when not fullscreen */
 }
 
 .chart {
@@ -421,7 +475,7 @@ body {
     text-align: left;
 }
 
-        /* Supervisor Selection Modal */
+/* Supervisor Selection Modal */
 .supervisor-select-modal {
     display: none;
     position: fixed;
@@ -665,74 +719,77 @@ body {
             </div>
             <div class="current-hour-info" id="current-hour-info">CURRENT HOUR: --:-- (-- MIN LEFT)</div>
         </div>
-
-        <!-- Top Row: Supervisor + Metrics -->
-        <div class="top-row">
-            <!-- Supervisor Panel -->
-            <div class="supervisor-panel">
-                <div class="supervisor-name" id="supervisor-name">SUPERVISOR: Loading...</div>
-                <div class="product-name" id="product-name">PRODUCT: Loading...</div>
+        
+        <!-- Content wrapper for flex layout in fullscreen -->
+        <div class="content">
+            <!-- Top Row: Supervisor + Metrics -->
+            <div class="top-row">
+                <!-- Supervisor Panel -->
+                <div class="supervisor-panel">
+                    <div class="supervisor-name" id="supervisor-name">SUPERVISOR: Loading...</div>
+                    <div class="product-name" id="product-name">PRODUCT: Loading...</div>
+                    
+                    <div class="variant-sequence" id="variant-sequence">
+                        <div class="loading">Loading variants...</div>
+                    </div>
+                </div>
                 
-                <div class="variant-sequence" id="variant-sequence">
-                    <div class="loading">Loading variants...</div>
+                <!-- Metrics Container -->
+                <div class="metrics-container">
+                    <!-- Units (renamed from Progress) -->
+                    <div class="metric-card">
+                        <div class="metric-title">UNITS</div>
+                        <div class="metric-value">
+                            <span class="current-value" id="current-units">0</span>/<span class="target-value" id="target-units">0</span>
+                        </div>
+                        <div class="metric-subvalue" id="progress-percentage">0%</div>
+                    </div>
+                    
+                    <!-- Boxes - NEXT TO UNITS -->
+                    <div class="metric-card">
+                        <div class="metric-title">BOXES</div>
+                        <div class="metric-value">
+                            <span class="current-value" id="current-boxes">0</span>/<span class="target-value" id="target-boxes">0</span>
+                        </div>
+                        <div class="metric-subvalue">completed</div>
+                    </div>
+                    
+                    <!-- Cycle Time -->
+                    <div class="metric-card">
+                        <div class="metric-title">CYCLE TIME</div>
+                        <div class="metric-value">
+                            <span class="current-value" id="actual-cycle-time">0</span>/<span class="target-value" id="target-cycle-time">0</span>
+                        </div>
+                        <div class="metric-subvalue">seconds</div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Metrics Container -->
-            <div class="metrics-container">
-                <!-- Units (renamed from Progress) -->
-                <div class="metric-card">
-                    <div class="metric-title">UNITS</div>
-                    <div class="metric-value">
-                        <span class="current-value" id="current-units">0</span>/<span class="target-value" id="target-units">0</span>
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <!-- Cumulative Chart -->
+                <div class="chart">
+                    <div class="chart-title" id="cumulative-chart-title">TODAY'S PRODUCTION PROGRESS</div>
+                    <div class="chart-area">
+                        <div class="line-chart" id="cumulative-chart"></div>
                     </div>
-                    <div class="metric-subvalue" id="progress-percentage">0%</div>
                 </div>
                 
-                <!-- Boxes - NEXT TO UNITS -->
-                <div class="metric-card">
-                    <div class="metric-title">BOXES</div>
-                    <div class="metric-value">
-                        <span class="current-value" id="current-boxes">0</span>/<span class="target-value" id="target-boxes">0</span>
+                <!-- Current Hour Chart -->
+                <div class="chart">
+                    <div class="chart-title" id="hourly-chart-title">12:30 HOUR PRODUCTION</div>
+                    <div class="chart-area">
+                        <div class="bar-chart" id="hourly-chart"></div>
                     </div>
-                    <div class="metric-subvalue">completed</div>
-                </div>
-                
-                <!-- Cycle Time -->
-                <div class="metric-card">
-                    <div class="metric-title">CYCLE TIME</div>
-                    <div class="metric-value">
-                        <span class="current-value" id="actual-cycle-time">0</span>/<span class="target-value" id="target-cycle-time">0</span>
-                    </div>
-                    <div class="metric-subvalue">seconds</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Charts Row -->
-        <div class="charts-row">
-            <!-- Cumulative Chart -->
-            <div class="chart">
-                <div class="chart-title" id="cumulative-chart-title">TODAY'S PRODUCTION PROGRESS</div>
-                <div class="chart-area">
-                    <div class="line-chart" id="cumulative-chart"></div>
                 </div>
             </div>
             
-            <!-- Current Hour Chart -->
-            <div class="chart">
-                <div class="chart-title" id="hourly-chart-title">12:30 HOUR PRODUCTION</div>
-                <div class="chart-area">
-                    <div class="bar-chart" id="hourly-chart"></div>
+            <!-- Hourly Targets Section - REDESIGNED -->
+            <div class="hourly-targets-section">
+                <div class="hourly-targets-title">HOURLY TARGETS</div>
+                <div class="hourly-targets-grid" id="hourly-targets-grid">
+                    <!-- Will be populated dynamically -->
                 </div>
-            </div>
-        </div>
-        
-        <!-- Hourly Targets Section - REDESIGNED -->
-        <div class="hourly-targets-section">
-            <div class="hourly-targets-title">HOURLY TARGETS</div>
-            <div class="hourly-targets-grid" id="hourly-targets-grid">
-                <!-- Will be populated dynamically -->
             </div>
         </div>
         
@@ -842,12 +899,34 @@ body {
         function handleFullscreenChange() {
             const dashboard = document.querySelector('.dashboard-container');
             const fullscreenButton = document.querySelector('.fullscreen-button');
+            const chartsRow = document.querySelector('.charts-row');
 
             if (!document.fullscreenElement && !document.webkitFullscreenElement && 
                 !document.mozFullScreenElement && !document.msFullscreenElement) {
                 dashboard.classList.remove('fullscreen-mode');
                 isFullscreen = false;
                 fullscreenButton.textContent = 'Fullscreen';
+                
+                // Reset chart heights when exiting fullscreen
+                chartsRow.style.height = '360px';
+            } else {
+                // Dynamically set chart heights in fullscreen
+                const viewportHeight = window.innerHeight;
+                const headerHeight = document.querySelector('.header').offsetHeight || 0;
+                const legendHeight = document.querySelector('.legend-section').offsetHeight || 0;
+                const topRowHeight = document.querySelector('.top-row').offsetHeight || 0;
+                const hourlyTargetsHeight = 100; // Fixed height for hourly targets
+                const footerHeight = document.querySelector('.footer').offsetHeight || 0;
+                const margins = 50; // Account for various margins/paddings
+                
+                // Calculate available height for charts
+                const availableHeight = viewportHeight - headerHeight - legendHeight - 
+                                       topRowHeight - hourlyTargetsHeight - footerHeight - margins;
+                
+                // Set chart container height to available space
+                if (availableHeight > 200) { // Ensure minimum reasonable height
+                    chartsRow.style.height = `${availableHeight}px`;
+                }
             }
 
             // Redraw as needed
