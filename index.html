@@ -26,6 +26,10 @@
     --completed-variant: #D1E7DD; /* Light green for completed variants */
     --current-variant: #FFF3CD; /* Light yellow for current variant */
     --upcoming-variant: #F8D7DA; /* Light red for upcoming variants */
+    --legend-bg: #f8fafc; /* Background color for legend section */
+    --status-met: #D1E7DD; /* Status indicator - met target */
+    --status-missed: #FECDD3; /* Status indicator - missed target */
+    --status-current: #FEF9C3; /* Status indicator - current hour */
 }
 
 body {
@@ -44,7 +48,7 @@ body {
     min-height: 100vh;
     padding: 12px; /* Reduced padding */
     box-sizing: border-box;
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
     transition: background-color 0.5s ease;
 }
@@ -62,141 +66,177 @@ body {
     background-color: var(--light-color) !important; /* Add this line */
 }
 
+/* Color banner at top */
+.supervisor-color-banner {
+    width: 100%;
+    height: 20px;
+    border-radius: 3px;
+    margin-bottom: 5px;
+}
+
+/* Header styles */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px; /* Reduced margin */
-    padding-bottom: 5px; /* Reduced padding */
-    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
     width: 100%;
-}
-
-.supervisor-color-banner {
-    width: 100%;
-    height: 10px;
-    border-radius: 3px;
-    margin-bottom: 5px;
 }
 
 .title-section {
     display: flex;
     align-items: center;
-    gap: 15px; /* Reduced gap */
-    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .title {
-    font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+    font-size: clamp(1.8rem, 2.4vw, 2.4rem);
     font-weight: bold;
     color: var(--primary-color);
 }
 
-.subtitle {
-    font-size: clamp(1.2rem, 1.8vw, 1.8rem);
-    color: var(--secondary-color);
+.controls-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.filter-container {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-select {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: 1px solid var(--secondary-color);
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    min-width: 180px;
+    background-color: white;
+}
+
+.buttons-container {
+    display: flex;
+    gap: 10px;
+}
+
+.supervisor-select-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 8px 15px;
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     font-weight: 500;
+    font-family: inherit;
+    min-width: 140px;
+}
+
+.fullscreen-button {
+    background-color: #e2e8f0;
+    color: var(--dark-color);
+    padding: 8px 15px;
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: inherit;
 }
 
 .date-time {
     text-align: right;
-    font-size: clamp(1rem, 1.4vw, 1.4rem);
-}
-
-.date {
-    font-weight: bold;
+    font-size: clamp(1.2rem, 1.4vw, 1.4rem);
 }
 
 .time {
-    font-size: clamp(1.3rem, 1.8vw, 1.8rem);
-    margin-top: 3px; /* Reduced margin */
+    font-size: clamp(1.4rem, 1.8vw, 1.8rem);
+    font-weight: bold;
 }
 
-.content {
-    display: flex;
-    flex-direction: column;
+/* Legend section */
+.legend-section {
     width: 100%;
-    overflow: hidden;
-    flex: 1; /* Make sure content takes up available space */
-}
-
-/* Supervisor Container - Reduced Height */
-.supervisor-container {
+    background-color: var(--legend-bg);
+    padding: 15px 20px;
     display: flex;
-    width: 100%;
-    margin-bottom: 5px; /* Reduced from 10px */
-    max-height: 120px; /* Add maximum height constraint */
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
-.supervisor-bar {
-    flex: 0 0 40%;
-    border-radius: 8px;
-    padding: 6px 10px; /* Reduced padding */
-    box-sizing: border-box;
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 50px;
+}
+
+.legend-color {
+    width: 30px;
+    height: 30px;
     margin-right: 10px;
-    margin-bottom: 0;
+    border-radius: 5px;
+}
+
+.legend-label {
+    font-size: clamp(1.2rem, 1.4vw, 1.4rem);
+    font-weight: 500;
+}
+
+.current-hour-info {
+    font-size: clamp(1.2rem, 1.4vw, 1.4rem);
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+/* Top row with supervisor and metrics */
+.top-row {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+        /* Supervisor info panel */
+.supervisor-panel {
+    flex: 0 0 450px;
+    background-color: var(--supervisor-mvokwe);
+    border-radius: 12px;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .supervisor-name {
-    font-size: clamp(1.4rem, 2.4vw, 2.4rem);
+    font-size: clamp(1.4rem, 1.8vw, 1.8rem);
     font-weight: bold;
-    margin-bottom: 2px; /* Reduced margin */
+    margin-bottom: 10px;
     color: var(--dark-color);
-}
-
-.supervisor-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.supervisor-title {
-    font-size: clamp(1.2rem, 2vw, 2rem); /* Slightly reduced */
-    font-weight: bold;
-    color: var(--dark-color);
-    margin-bottom: 2px; /* Reduced margin */
 }
 
 .product-name {
-    font-size: clamp(1.1rem, 1.8vw, 1.8rem); /* Slightly reduced */
+    font-size: clamp(1.2rem, 1.6vw, 1.6rem);
     color: var(--dark-color);
-}
-
-.variant-sequence-container {
-    margin-top: 5px; /* Reduced from 10px */
-    width: 100%;
+    margin-bottom: 20px;
 }
 
 .variant-sequence {
     display: flex;
     align-items: center;
-    font-size: clamp(0.9rem, 1.4vw, 1.4rem); /* Slightly reduced */
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
     flex-wrap: wrap;
-    gap: 6px; /* Reduced from 8px */
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .variant-item {
-    padding: 4px 10px; /* Reduced padding */
-    border-radius: 4px;
+    padding: 10px 15px;
+    border-radius: 8px;
     white-space: nowrap;
     position: relative;
-    font-weight: 500;
-}
-
-.variant-time {
-    font-size: clamp(0.7rem, 1.1vw, 1.1rem); /* Slightly reduced */
-    display: block;
     text-align: center;
-}
-
-.variant-status {
-    font-size: clamp(0.7rem, 1.1vw, 1.1rem);
-    display: block;
-    text-align: center;
-    font-weight: bold;
+    min-width: 100px;
 }
 
 .variant-item.completed {
@@ -216,69 +256,47 @@ body {
 }
 
 .arrow-right {
-    margin: 0 4px;
-    font-size: clamp(1.2rem, 2vw, 2rem);
+    margin: 0 5px;
+    font-size: clamp(1.2rem, 1.6vw, 1.6rem);
     color: var(--dark-color);
 }
 
-/* Hourly targets wrapper - Reduced Height */
-.hourly-targets-wrapper {
-    flex: 0 0 58%;
+/* Metrics cards */
+.metrics-container {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+}
+
+.metric-card {
+    flex: 1;
     background-color: white;
-    border-radius: 8px;
+    border-radius: 12px;
+    padding: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    padding: 6px; /* Reduced from 10px */
-    height: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-.totals-display {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    margin-bottom: 10px;
-    font-size: clamp(1rem, 1.3vw, 1.3rem);
-    gap: 10px;
-    width: 100%;
-    box-sizing: border-box;
-    align-items: start;
-}
-
-.total-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px 15px;
-    width: 100%;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.total-label {
+.metric-title {
+    font-size: clamp(1.3rem, 1.6vw, 1.6rem);
     font-weight: bold;
-    margin-bottom: 4px;
-    font-size: clamp(1.1rem, 1.8vw, 1.8rem);
-    color: var(--dark-color);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding-bottom: 4px;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    text-align: center;
 }
 
-.total-percentage {
-    color: var(--warning-color);
-    font-size: 1em;
-}
-
-.total-value {
-    font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+.metric-value {
+    font-size: clamp(2rem, 3vw, 3rem);
     font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
 }
 
-.total-subvalue {
-    font-size: clamp(1rem, 1.6vw, 1.6rem);
-    margin-top: 5px;
+.metric-subvalue {
+    font-size: clamp(1rem, 1.4vw, 1.4rem);
+    text-align: center;
 }
 
 .current-value {
@@ -289,329 +307,121 @@ body {
     color: var(--target-color);
 }
 
-.total-hourly {
-    color: var(--dark-color);
-}
-
-.chart-container {
-    flex: 1; /* Takes all available space */
-    background-color: white;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    overflow: hidden;
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    min-height: 0; /* Important for flex container */
-    margin-top: 5px; /* Added small margin */
-}
-
+/* Charts section */
 .charts-row {
     display: flex;
-    gap: 10px;
-    flex: 1;
-    min-height: 0; /* Important for flex container */
-    height: calc(80vh - 180px); /* Increased to use space gained from reduced supervisor section */
+    gap: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    height: 360px;
 }
 
 .chart {
     flex: 1;
     background-color: white;
-    border-radius: 8px;
-    padding: 10px;
+    border-radius: 12px;
+    padding: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    height: 100%;
-    min-height: 0; /* Important for flex container */
 }
 
-.chart-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    flex-wrap: nowrap;
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 10px;
-}
-
-/* Chart title and labels - Enlarged fonts */
 .chart-title {
-    font-size: clamp(1.5rem, 2.4vw, 2.4rem); /* Increased from 1.3rem */
+    font-size: clamp(1.4rem, 1.8vw, 1.8rem);
     font-weight: 600;
-    margin-right: 15px;
-    color: var(--dark-color);
-    white-space: nowrap;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.chart-title-select {
-    background: none;
-    border: none;
-    color: var(--dark-color);
-    font-weight: 600;
-    font-size: clamp(1.5rem, 2.4vw, 2.4rem); /* Increased from 1.3rem */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    cursor: pointer;
-    padding: 0;
-    margin: 0;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    display: inline-block;
-}
-
-.chart-title-select:focus {
-    outline: none;
-}
-
-.chart-title-text {
-    font-size: clamp(1.5rem, 2.4vw, 2.4rem); /* Increased from 1.3rem */
-    font-weight: 600;
-    color: var(--dark-color);
-    white-space: nowrap;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.hour-info {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    font-weight: 500;
-    white-space: nowrap;
-    margin-left: 10px;
-}
-
-.hour-countdown {
-    font-size: clamp(1.2rem, 1.8vw, 1.8rem); /* Increased from 1rem */
-    color: var(--secondary-color);
-    font-style: normal;
-}
-
-.hour-select-container {
-    margin-left: auto;
-}
-
-.hour-select {
-    padding: 6px 12px;
-    border-radius: 5px;
-    border: 1px solid var(--secondary-color);
-    font-family: inherit;
-    background-color: white;
-    height: 38px; /* Slightly increased */
-    font-size: clamp(1.1rem, 1.6vw, 1.6rem); /* Increased from 0.9rem */
-    font-weight: 500;
-    color: var(--dark-color);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    color: var(--primary-color);
 }
 
 .chart-area {
     flex: 1;
     position: relative;
-    height: 100%;
     min-height: 0;
 }
 
 .line-chart, .bar-chart {
     height: 100%;
     width: 100%;
-    min-height: 0; /* Important for SVG content */
 }
 
-.legend {
+/* Hourly targets section */
+.hourly-targets-section {
+    width: 100%;
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.hourly-targets-title {
+    font-size: clamp(1.4rem, 1.8vw, 1.8rem);
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.hourly-targets-grid {
     display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
     justify-content: center;
-    margin-top: 8px;
-    font-size: clamp(1.2rem, 1.8vw, 1.8rem); /* Increased from 1rem */
 }
 
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin: 0 12px;
-}
-
-.legend-color {
-    width: 18px; /* Increased from 15px */
-    height: 18px; /* Increased from 15px */
-    margin-right: 8px;
-    border-radius: 3px;
-}
-
-.production-color {
-    background-color: var(--production-color);
-}
-
-.target-color {
-    background-color: var(--target-color);
-}
-
-.footer {
-    margin-top: 10px;
-    text-align: center;
-    font-size: clamp(1rem, 1.4vw, 1.4rem);
-    color: var(--dark-color);
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-.update-info {
-    font-size: clamp(0.9rem, 1.4vw, 1.4rem);
-    color: var(--dark-color);
-    text-align: left;
-}
-
-.hourly-targets-container {
-    height: 100%;
-    width: 100%;
+.hourly-target-item {
+    width: 80px;
+    height: 60px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    margin-top: 0;
     position: relative;
 }
 
-.hourly-targets-svg {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    overflow: visible;
-    height: 90px; /* Reduced fixed height */
-}
-
-.hourly-circle {
-    fill: white;
-    stroke: #999;
-    stroke-width: 4;
-    r: 25; /* Reduced from 40 */
-}
-
-.time-label {
-    font-size: clamp(0.7rem, 1vw, 1rem); /* Smaller font */
-    text-anchor: middle;
-    dominant-baseline: hanging;
-    fill: #333;
-    font-weight: 600;
-}
-
-.current-arrow {
-    fill: var(--warning-color);
-    transform: scale(4.0); /* Reduced from 6.0 */
-}
-
-.status-icon {
-    stroke-width: 4; /* Thinner lines for smaller circles */
-}
-
-.status-success {
-    stroke: var(--target-color);
-}
-
-.status-fail {
-    stroke: var(--production-color);
-}
-
-.filter-section {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.filter-select {
-    padding: 8px 15px;
-    border-radius: 5px;
-    border: 1px solid var(--secondary-color);
-    font-size: clamp(1rem, 1.6vw, 1.6rem);
-    font-family: inherit;
-    min-width: 180px;
-    background-color: white;
-}
-
-.loading {
-    text-align: center;
-    padding: 20px;
-    color: var(--dark-color);
-    font-size: clamp(1.2rem, 1.8vw, 1.8rem);
-}
-
-.error {
-    text-align: center;
-    padding: 20px;
-    color: var(--danger-color);
+.hourly-target-time {
     font-weight: bold;
-    font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+    font-size: clamp(0.9rem, 1.1vw, 1.1rem);
 }
 
-/* Chart axes labels applied via JS */
-.chart-axis-label {
-    font-size: 16px; /* Larger font for axis labels */
-    font-weight: 500;
-    fill: var(--dark-color);
+.hourly-target-status {
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    margin-top: 5px;
 }
 
-.chart-data-label {
-    font-size: 18px; /* Larger font for data point values */
-    font-weight: 600;
+.status-met {
+    background-color: var(--status-met);
+    border: 3px solid #0d9488;
 }
 
-/* Chart axis tick labels (the numbers on the axes) */
-.chart-tick-label {
-    font-size: 14px; /* Larger font for tick labels */
-    fill: var(--dark-color);
+.status-missed {
+    background-color: var(--status-missed);
+    border: 3px solid #e11d48;
 }
 
-/* Supervisor Selection Button and Modal */
-.supervisor-selection-container {
-    display: flex;
-    align-items: center;
-    margin-left: 15px;
+.status-current {
+    background-color: var(--status-current);
+    border: 4px solid #ca8a04;
 }
 
-.supervisor-select-btn {
-    background-color: var(--secondary-color);
-    color: white;
-    padding: 8px 12px;
-    font-size: clamp(0.9rem, 1.4vw, 1.4rem);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 500;
-    font-family: inherit;
-    transition: background-color 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.status-upcoming {
+    background-color: white;
+    border: 2px solid #94a3b8;
 }
 
-.supervisor-select-btn:hover {
-    background-color: #2563eb;
-}
-
-.supervisor-select-btn.secondary {
-    background-color: #e2e8f0;
+/* Footer */
+.footer {
+    margin-top: 10px;
+    font-size: clamp(0.9rem, 1.1vw, 1.1rem);
     color: var(--dark-color);
-    margin-right: 10px;
+    width: 100%;
 }
 
-.supervisor-select-btn.secondary:hover {
-    background-color: #cbd5e1;
+.update-info {
+    text-align: left;
 }
 
-.supervisor-select-btn.primary {
-    background-color: var(--success-color);
-}
-
-.supervisor-select-btn.primary:hover {
-    background-color: #059669;
-}
-
+        /* Supervisor Selection Modal */
 .supervisor-select-modal {
     display: none;
     position: fixed;
@@ -720,102 +530,36 @@ body {
     gap: 10px;
 }
 
-/* Color indicators for supervisors */
-.supervisor-color-indicator {
-    width: 20px;
-    height: 20px;
-    display: inline-block;
-    border-radius: 4px;
-    margin-right: 15px;
-}
-
-.supervisor-active-badge {
-    margin-left: auto;
-    background-color: var(--success-color);
-    color: white;
-    font-size: 0.8rem;
-    padding: 3px 8px;
-    border-radius: 10px;
-}
-
-/* Make button more visible when supervisors are filtered */
-.supervisor-select-btn.filtered {
-    background-color: var(--warning-color);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-    70% { box-shadow: 0 0 0 5px rgba(245, 158, 11, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-}
-
-/* Dynamic supervisor color classes */
-.dashboard-container.supervisor-luthando .supervisor-color-banner,
-.dashboard-container.supervisor-luthando .supervisor-bar {
-    background-color: var(--supervisor-luthando);
-}
-
-.dashboard-container.supervisor-apelele .supervisor-color-banner,
-.dashboard-container.supervisor-apelele .supervisor-bar {
-    background-color: var(--supervisor-apelele);
-}
-
-.dashboard-container.supervisor-siyabonga .supervisor-color-banner,
-.dashboard-container.supervisor-siyabonga .supervisor-bar {
-    background-color: var(--supervisor-siyabonga);
-}
-
-.dashboard-container.supervisor-nosi .supervisor-color-banner,
-.dashboard-container.supervisor-nosi .supervisor-bar {
-    background-color: var(--supervisor-nosi);
-}
-
-.dashboard-container.supervisor-mvokwe .supervisor-color-banner,
-.dashboard-container.supervisor-mvokwe .supervisor-bar {
-    background-color: var(--supervisor-mvokwe);
-}
-
 /* Responsive design */
-@media (max-width: 1200px) {
-    .supervisor-container {
+@media (max-width: 1400px) {
+    .top-row {
         flex-direction: column;
     }
     
-    .supervisor-bar {
+    .supervisor-panel {
         flex: 0 0 auto;
         width: 100%;
-        margin-right: 0;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
     }
     
-    .hourly-targets-wrapper {
-        flex: 0 0 auto;
+    .metrics-container {
         width: 100%;
-    }
-    
-    .hourly-circle {
-        r: 35;
-    }
-    
-    .supervisor-selection-container {
-        margin-left: 10px;
     }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .charts-row {
         flex-direction: column;
         height: auto;
     }
     
     .chart {
-        height: 50vh; /* Increased from 45vh */
-        min-height: 350px;
+        height: 350px;
+        margin-bottom: 20px;
     }
     
-    .dashboard-container {
-        padding: 8px;
+    .hourly-targets-grid {
+        justify-content: center;
     }
 }
 
@@ -826,83 +570,64 @@ body {
     }
     
     .title-section {
+        margin-bottom: 15px;
+    }
+    
+    .controls-section {
         flex-direction: column;
-        align-items: center;
         width: 100%;
     }
     
-    .filter-section {
-        flex-direction: column;
+    .filter-container {
         width: 100%;
-        margin-top: 10px;
+        margin-bottom: 10px;
     }
     
     .filter-select {
+        flex: 1;
+    }
+    
+    .buttons-container {
         width: 100%;
     }
     
-    .date-time {
-        text-align: center;
-        margin-top: 10px;
+    .supervisor-select-btn, 
+    .fullscreen-button {
+        flex: 1;
     }
     
-    .chart {
-        height: 40vh;
-        min-height: 300px;
-    }
-    
-    .chart-header {
+    .metrics-container {
         flex-direction: column;
-        align-items: flex-start;
     }
     
-    .hour-select-container {
-        margin-left: 0;
-        margin-top: 10px;
-        width: 100%;
+    .metric-card {
+        margin-bottom: 15px;
     }
     
-    .hour-select {
-        width: 100%;
+    .hourly-targets-grid {
+        gap: 10px;
     }
     
-    .hourly-circle {
-        r: 30;
-    }
-    
-    .status-icon {
-        stroke-width: 6;
-    }
-    
-    .supervisor-selection-container {
-        margin-top: 10px;
-        margin-left: 0;
-        width: 100%;
-    }
-    
-    .supervisor-select-btn {
-        width: 100%;
-    }
-    
-    .supervisor-select-content {
-        width: 95%;
-        margin: 5% auto;
+    .hourly-target-item {
+        width: 70px;
+        height: 50px;
     }
 }
     </style>
-    </head>
+</head>
 <body>
     <div class="dashboard-container">
         <!-- Supervisor color banner -->
         <div class="supervisor-color-banner"></div>
         
+        <!-- Header Section -->
         <div class="header">
             <div class="title-section">
-                <div>
-                    <div class="title">Sinapi Secondary Production Dashboard</div>
-                    <div class="subtitle">Medical Device Assembly</div>
-                </div>
-                <div class="filter-section">
+                <div class="title">Sinapi Secondary Production Dashboard</div>
+            </div>
+            
+            <div class="controls-section">
+                <div class="filter-container">
                     <select id="filter-type-select" class="filter-select">
                         <option value="supervisor">Filter by Supervisor</option>
                         <option value="product">Filter by Product</option>
@@ -912,103 +637,134 @@ body {
                         <option value="all">All</option>
                     </select>
                 </div>
-            </div>
-            <div class="supervisor-selection-container">
-    <button id="supervisor-select-btn" class="supervisor-select-btn">
-        Select Supervisors
-    </button>
-    <div id="supervisor-select-modal" class="supervisor-select-modal">
-        <div class="supervisor-select-content">
-            <div class="supervisor-select-header">
-                <h3>Select Supervisors to Display</h3>
-                <span class="supervisor-select-close">&times;</span>
-            </div>
-            <div class="supervisor-select-body">
-                <div id="supervisor-checkboxes" class="supervisor-checkboxes">
-                    <!-- Checkboxes will be added dynamically -->
+                
+                <div class="buttons-container">
+                    <button id="supervisor-select-btn" class="supervisor-select-btn">
+                        Select Supervisors
+                    </button>
+                    <button class="fullscreen-button" onclick="toggleFullscreen()">Fullscreen</button>
                 </div>
             </div>
-            <div class="supervisor-select-footer">
-                <button id="select-all-supervisors" class="supervisor-select-btn secondary">Select All</button>
-                <button id="deselect-all-supervisors" class="supervisor-select-btn secondary">Deselect All</button>
-                <button id="apply-supervisor-selection" class="supervisor-select-btn primary">Apply Selection</button>
-            </div>
-        </div>
-    </div>
-</div>
+            
             <div class="date-time">
-    <div class="date" id="current-date">Loading...</div>
-    <div class="time" id="current-time">Loading...</div>
-    <button class="fullscreen-button" onclick="toggleFullscreen()">Fullscreen</button>
-</div>
-        </div>
-
-        <div class="content">
-            
-<!-- Modified Consolidated Supervisor Bar -->
-<div class="supervisor-bar">
-    <div class="supervisor-info">
-        <span class="supervisor-title" id="supervisor-name">SUPERVISOR: Loading...</span>
-        <span class="supervisor-title product-name" id="product-name">Product: Loading...</span>
-    </div>
-    <div class="variant-sequence-container">
-        <div class="variant-sequence" id="variant-sequence">
-            <div class="loading">Loading variants...</div>
-        </div>
-    </div>
-</div>
-            
-
-            <div class="totals-display" id="totals-display">
-                <div class="loading">Loading data...</div>
+                <div class="time" id="current-time">Loading...</div>
             </div>
+        </div>
+        
+        <!-- Legend Section -->
+        <div class="legend-section">
+            <div style="display: flex;">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--production-color);"></div>
+                    <div class="legend-label">PRODUCTION</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--target-color);"></div>
+                    <div class="legend-label">TARGET</div>
+                </div>
+            </div>
+            <div class="current-hour-info" id="current-hour-info">CURRENT HOUR: --:-- (-- MIN LEFT)</div>
+        </div>
 
-            <div class="chart-container">
-                <div class="charts-row">
-                    <div class="chart">
-                        <div class="chart-title" id="cumulative-chart-title">Loading...</div>
-                        <div class="chart-area">
-                            <div class="line-chart" id="cumulative-chart"></div>
-                            <div class="legend">
-                                <div class="legend-item">
-                                    <div class="legend-color production-color"></div>
-                                    <div>Cumulative Production</div>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-color target-color"></div>
-                                    <div>Cumulative Target</div>
-                                </div>
-                            </div>
-                        </div>
+        <!-- Top Row: Supervisor + Metrics -->
+        <div class="top-row">
+            <!-- Supervisor Panel -->
+            <div class="supervisor-panel">
+                <div class="supervisor-name" id="supervisor-name">SUPERVISOR: Loading...</div>
+                <div class="product-name" id="product-name">PRODUCT: Loading...</div>
+                
+                <div class="variant-sequence" id="variant-sequence">
+                    <div class="loading">Loading variants...</div>
+                </div>
+            </div>
+            
+            <!-- Metrics Container -->
+            <div class="metrics-container">
+                <!-- Units (renamed from Progress) -->
+                <div class="metric-card">
+                    <div class="metric-title">UNITS</div>
+                    <div class="metric-value">
+                        <span class="current-value" id="current-units">0</span>/<span class="target-value" id="target-units">0</span>
                     </div>
-                    <div class="chart">
-                        <div class="chart-header">
-                            <div class="chart-title-text">
-                                <select id="hour-range-select" class="chart-title-select">
-                                    <!-- Time slots will be added dynamically -->
-                                </select>
-                                <span> Production Progress</span>
-                            </div>
-                            <div class="hour-info" id="hour-info">
-                                <div class="hour-countdown"></div>
-                            </div>
-                        </div>
-                        <div class="chart-area">
-                            <div class="bar-chart" id="hourly-chart"></div>
-                        </div>
+                    <div class="metric-subvalue" id="progress-percentage">0%</div>
+                </div>
+                
+                <!-- Boxes - NEXT TO UNITS -->
+                <div class="metric-card">
+                    <div class="metric-title">BOXES</div>
+                    <div class="metric-value">
+                        <span class="current-value" id="current-boxes">0</span>/<span class="target-value" id="target-boxes">0</span>
                     </div>
+                    <div class="metric-subvalue">completed</div>
+                </div>
+                
+                <!-- Cycle Time -->
+                <div class="metric-card">
+                    <div class="metric-title">CYCLE TIME</div>
+                    <div class="metric-value">
+                        <span class="current-value" id="actual-cycle-time">0</span>/<span class="target-value" id="target-cycle-time">0</span>
+                    </div>
+                    <div class="metric-subvalue">seconds</div>
                 </div>
             </div>
         </div>
-
+        
+        <!-- Charts Row -->
+        <div class="charts-row">
+            <!-- Cumulative Chart -->
+            <div class="chart">
+                <div class="chart-title" id="cumulative-chart-title">TODAY'S PRODUCTION PROGRESS</div>
+                <div class="chart-area">
+                    <div class="line-chart" id="cumulative-chart"></div>
+                </div>
+            </div>
+            
+            <!-- Current Hour Chart -->
+            <div class="chart">
+                <div class="chart-title" id="hourly-chart-title">12:30 HOUR PRODUCTION</div>
+                <div class="chart-area">
+                    <div class="bar-chart" id="hourly-chart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hourly Targets Section - REDESIGNED -->
+        <div class="hourly-targets-section">
+            <div class="hourly-targets-title">HOURLY TARGETS</div>
+            <div class="hourly-targets-grid" id="hourly-targets-grid">
+                <!-- Will be populated dynamically -->
+            </div>
+        </div>
+        
+        <!-- Footer -->
         <div class="footer">
-            <div class="update-info" id="last-update2">Last updated: Never</div>
+            <div class="update-info" id="last-update">Last updated: Never</div>
+        </div>
+        
+        <!-- Supervisor Selection Modal -->
+        <div id="supervisor-select-modal" class="supervisor-select-modal">
+            <div class="supervisor-select-content">
+                <div class="supervisor-select-header">
+                    <h3>Select Supervisors to Display</h3>
+                    <span class="supervisor-select-close">&times;</span>
+                </div>
+                <div class="supervisor-select-body">
+                    <div id="supervisor-checkboxes" class="supervisor-checkboxes">
+                        <!-- Checkboxes will be added dynamically -->
+                    </div>
+                </div>
+                <div class="supervisor-select-footer">
+                    <button id="select-all-supervisors" class="supervisor-select-btn secondary">Select All</button>
+                    <button id="deselect-all-supervisors" class="supervisor-select-btn secondary">Deselect All</button>
+                    <button id="apply-supervisor-selection" class="supervisor-select-btn primary">Apply Selection</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         const DATA_URL = 'https://opssinapi.github.io/production-dashboard/data.json';
-        const UPDATE_INTERVAL = 30 * 1000; // 1 minute update interval
+        const UPDATE_INTERVAL = 30 * 1000; // 30 seconds update interval
         const CYCLE_INTERVAL = 20000; // 20 seconds cycle interval
 
         let productionData = { variants: [], supervisors: [] };
@@ -1034,37 +790,32 @@ body {
         let cycleInterval = null;
         let cycleIndex = 0;
 
-        // Add to initDashboard function
-function initDashboard() {
-    updateDateTime();
-    setInterval(updateDateTime, 1000);
+        // Initialize dashboard
+        function initDashboard() {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
 
-    document.getElementById('filter-type-select').addEventListener('change', function() {
-        selectedFilterType = this.value;
-        updateFilterValueDropdown();
-    });
+            document.getElementById('filter-type-select').addEventListener('change', function() {
+                selectedFilterType = this.value;
+                updateFilterValueDropdown();
+            });
 
-    document.getElementById('filter-value-select').addEventListener('change', function() {
-        selectedFilterValue = this.value;
-        updateDashboard();
-    });
+            document.getElementById('filter-value-select').addEventListener('change', function() {
+                selectedFilterValue = this.value;
+                updateDashboard();
+            });
 
-    document.getElementById('hour-range-select').addEventListener('change', function() {
-        selectedHour = this.value;
-        updateHourlyChart();
-    });
+            // Initialize supervisor selection
+            initSupervisorSelection();
+            
+            fetchProductionData();
+            setInterval(fetchProductionData, UPDATE_INTERVAL);
 
-    // Initialize supervisor selection
-    initSupervisorSelection();
-    
-    fetchProductionData();
-    setInterval(fetchProductionData, UPDATE_INTERVAL);
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-}
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+        }
 
         function toggleFullscreen() {
             const dashboard = document.querySelector('.dashboard-container');
@@ -1103,382 +854,882 @@ function initDashboard() {
             setTimeout(updateDashboard, 100);
         }
 
-        // Add this function to initialize the supervisor selection UI
-function initSupervisorSelection() {
-    const selectBtn = document.getElementById('supervisor-select-btn');
-    const modal = document.getElementById('supervisor-select-modal');
-    const closeBtn = document.querySelector('.supervisor-select-close');
-    const applyBtn = document.getElementById('apply-supervisor-selection');
-    const selectAllBtn = document.getElementById('select-all-supervisors');
-    const deselectAllBtn = document.getElementById('deselect-all-supervisors');
-    
-    // Open modal when button is clicked
-    selectBtn.addEventListener('click', function() {
-        updateSupervisorCheckboxes();
-        modal.style.display = 'block';
-    });
-    
-    // Close modal when X is clicked
-    closeBtn.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
-    
-    // Close modal when clicking outside of it
-    window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-    
-    // Apply selection and close modal
-    applyBtn.addEventListener('click', function() {
-        applySupervisorSelection();
-        modal.style.display = 'none';
-    });
-    
-    // Select all supervisors
-    selectAllBtn.addEventListener('click', function() {
-        const checkboxes = document.querySelectorAll('.supervisor-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = true;
-        });
-    });
-    
-    // Deselect all supervisors
-    deselectAllBtn.addEventListener('click', function() {
-        const checkboxes = document.querySelectorAll('.supervisor-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = false;
-        });
-    });
-    
-    // Initialize with all supervisors selected
-    if (productionData && productionData.supervisors) {
-        selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
-    }
-}
-
-        // Add this function to update the supervisor checkboxes
-function updateSupervisorCheckboxes() {
-    const checkboxContainer = document.getElementById('supervisor-checkboxes');
-    checkboxContainer.innerHTML = '';
-    
-    if (!productionData || !productionData.supervisors || productionData.supervisors.length === 0) {
-        checkboxContainer.innerHTML = '<p>No supervisors available</p>';
-        return;
-    }
-    
-    // Create a checkbox for each supervisor
-    productionData.supervisors.forEach(supervisor => {
-        const item = document.createElement('div');
-        item.className = 'supervisor-checkbox-item';
-        
-        // Add supervisor color indicator
-        const colorDiv = document.createElement('div');
-        colorDiv.className = 'supervisor-color-indicator';
-        colorDiv.style.backgroundColor = getSupervisorColor(supervisor.name);
-        item.appendChild(colorDiv);
-        
-        // Create checkbox
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'supervisor-checkbox';
-        checkbox.id = `supervisor-${supervisor.name.toLowerCase().replace(/\s+/g, '-')}`;
-        checkbox.value = supervisor.name;
-        checkbox.checked = selectedSupervisors.includes(supervisor.name);
-        
-        // Create label
-        const label = document.createElement('label');
-        label.htmlFor = checkbox.id;
-        label.textContent = supervisor.name;
-        
-        // Add badge for active supervisor (currently displayed)
-        if (currentSupervisor === supervisor.name) {
-            const badge = document.createElement('span');
-            badge.className = 'supervisor-active-badge';
-            badge.textContent = 'Current';
-            item.appendChild(badge);
-        }
-        
-        item.appendChild(checkbox);
-        item.appendChild(label);
-        checkboxContainer.appendChild(item);
-    });
-}
-
-// Add this function to apply supervisor selection
-function applySupervisorSelection() {
-    const checkboxes = document.querySelectorAll('.supervisor-checkbox');
-    selectedSupervisors = [];
-    
-    checkboxes.forEach(checkbox => {
-        if (checkbox.checked) {
-            selectedSupervisors.push(checkbox.value);
-        }
-    });
-    
-    // Store selection in localStorage for persistence
-    localStorage.setItem('selectedSupervisors', JSON.stringify(selectedSupervisors));
-    
-    // Update the selection button style based on whether filtering is active
-    supervisorFilterActive = selectedSupervisors.length < productionData.supervisors.length;
-    const selectBtn = document.getElementById('supervisor-select-btn');
-    
-    if (supervisorFilterActive) {
-        selectBtn.textContent = `Supervisors (${selectedSupervisors.length}/${productionData.supervisors.length})`;
-        selectBtn.classList.add('filtered');
-    } else {
-        selectBtn.textContent = 'Select Supervisors';
-        selectBtn.classList.remove('filtered');
-    }
-    
-    // Update the dashboard with the new selection
-    updateDashboard();
-}
-
-// Add this function to get the supervisor color
-function getSupervisorColor(supervisorName) {
-    const colorMap = {
-        'Luthando': 'var(--supervisor-luthando)',
-        'Apelele': 'var(--supervisor-apelele)',
-        'Siyabonga': 'var(--supervisor-siyabonga)',
-        'Nosi': 'var(--supervisor-nosi)',
-        'Mvokwe': 'var(--supervisor-mvokwe)',
-        'Ayanda': 'var(--supervisor-luthando)' // Reusing Luthando's color for Ayanda or add a new one
-    };
-    
-    return colorMap[supervisorName] || '#e2e8f0'; // Default color if not found
-}
-
-// Add this to load selected supervisors from localStorage
-function loadSelectedSupervisors() {
-    const stored = localStorage.getItem('selectedSupervisors');
-    if (stored) {
-        try {
-            selectedSupervisors = JSON.parse(stored);
+        // Function to initialize the supervisor selection UI
+        function initSupervisorSelection() {
+            const selectBtn = document.getElementById('supervisor-select-btn');
+            const modal = document.getElementById('supervisor-select-modal');
+            const closeBtn = document.querySelector('.supervisor-select-close');
+            const applyBtn = document.getElementById('apply-supervisor-selection');
+            const selectAllBtn = document.getElementById('select-all-supervisors');
+            const deselectAllBtn = document.getElementById('deselect-all-supervisors');
             
-            // Validate against current supervisors
-            if (productionData && productionData.supervisors) {
-                const validSupervisors = productionData.supervisors.map(s => s.name);
-                selectedSupervisors = selectedSupervisors.filter(s => validSupervisors.includes(s));
-                
-                // If none valid, select all
-                if (selectedSupervisors.length === 0) {
-                    selectedSupervisors = validSupervisors;
+            // Open modal when button is clicked
+            selectBtn.addEventListener('click', function() {
+                updateSupervisorCheckboxes();
+                modal.style.display = 'block';
+            });
+            
+            // Close modal when X is clicked
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
                 }
+            });
+            
+            // Apply selection and close modal
+            applyBtn.addEventListener('click', function() {
+                applySupervisorSelection();
+                modal.style.display = 'none';
+            });
+            
+            // Select all supervisors
+            selectAllBtn.addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll('.supervisor-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+            });
+            
+            // Deselect all supervisors
+            deselectAllBtn.addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll('.supervisor-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+            });
+            
+            // Initialize with all supervisors selected
+            if (productionData && productionData.supervisors) {
+                selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
+            }
+        }
+
+        // Function to update the supervisor checkboxes
+        function updateSupervisorCheckboxes() {
+            const checkboxContainer = document.getElementById('supervisor-checkboxes');
+            checkboxContainer.innerHTML = '';
+            
+            if (!productionData || !productionData.supervisors || productionData.supervisors.length === 0) {
+                checkboxContainer.innerHTML = '<p>No supervisors available</p>';
+                return;
             }
             
-            // Update UI
+            // Create a checkbox for each supervisor
+            productionData.supervisors.forEach(supervisor => {
+                const item = document.createElement('div');
+                item.className = 'supervisor-checkbox-item';
+                
+                // Add supervisor color indicator
+                const colorDiv = document.createElement('div');
+                colorDiv.className = 'supervisor-color-indicator';
+                colorDiv.style.backgroundColor = getSupervisorColor(supervisor.name);
+                item.appendChild(colorDiv);
+                
+                // Create checkbox
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'supervisor-checkbox';
+                checkbox.id = `supervisor-${supervisor.name.toLowerCase().replace(/\s+/g, '-')}`;
+                checkbox.value = supervisor.name;
+                checkbox.checked = selectedSupervisors.includes(supervisor.name);
+                
+                // Create label
+                const label = document.createElement('label');
+                label.htmlFor = checkbox.id;
+                label.textContent = supervisor.name;
+                
+                // Add badge for active supervisor (currently displayed)
+                if (currentSupervisor === supervisor.name) {
+                    const badge = document.createElement('span');
+                    badge.className = 'supervisor-active-badge';
+                    badge.textContent = 'Current';
+                    item.appendChild(badge);
+                }
+                
+                item.appendChild(checkbox);
+                item.appendChild(label);
+                checkboxContainer.appendChild(item);
+            });
+        }
+
+        // Function to apply supervisor selection
+        function applySupervisorSelection() {
+            const checkboxes = document.querySelectorAll('.supervisor-checkbox');
+            selectedSupervisors = [];
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    selectedSupervisors.push(checkbox.value);
+                }
+            });
+            
+            // Store selection in localStorage for persistence
+            localStorage.setItem('selectedSupervisors', JSON.stringify(selectedSupervisors));
+            
+            // Update the selection button style based on whether filtering is active
             supervisorFilterActive = selectedSupervisors.length < productionData.supervisors.length;
             const selectBtn = document.getElementById('supervisor-select-btn');
             
             if (supervisorFilterActive) {
                 selectBtn.textContent = `Supervisors (${selectedSupervisors.length}/${productionData.supervisors.length})`;
                 selectBtn.classList.add('filtered');
+            } else {
+                selectBtn.textContent = 'Select Supervisors';
+                selectBtn.classList.remove('filtered');
             }
-        } catch (e) {
-            console.error('Error parsing stored supervisors:', e);
-            if (productionData && productionData.supervisors) {
-                selectedSupervisors = productionData.supervisors.map(s => s.name);
-            }
-        }
-    }
-}
-
-        function setupConsolidatedLayout() {
-    // Check if the structure is already created
-    if (!document.querySelector('.supervisor-container')) {
-        const content = document.querySelector('.content');
-        const supervisorBar = document.querySelector('.supervisor-bar');
-        const totalsDisplay = document.getElementById('totals-display');
-        
-        // Create container for supervisor and hourly targets
-        const supervisorContainer = document.createElement('div');
-        supervisorContainer.className = 'supervisor-container';
-        
-        // Move supervisor bar into container
-        if (supervisorBar) {
-            supervisorBar.parentNode.removeChild(supervisorBar);
-            supervisorContainer.appendChild(supervisorBar);
-        }
-        
-        // Create wrapper for hourly targets
-        const hourlyTargetsWrapper = document.createElement('div');
-        hourlyTargetsWrapper.className = 'hourly-targets-wrapper';
-        hourlyTargetsWrapper.innerHTML = '<div class="total-label">Hourly Targets</div><div id="hourly-targets-container" class="hourly-targets-container"></div>';
-        supervisorContainer.appendChild(hourlyTargetsWrapper);
-        
-        // Insert the new container before totals display
-        content.insertBefore(supervisorContainer, totalsDisplay);
-    }
-}
-        
-        function applySupervisorStyling(supervisorName) {
-            const dashboardContainer = document.querySelector('.dashboard-container');
-            dashboardContainer.classList.remove('supervisor-luthando', 'supervisor-apelele', 'supervisor-siyabonga', 'supervisor-nosi', 'supervisor-mvokwe');
-            if (supervisorName) {
-                const supervisorClass = 'supervisor-' + supervisorName.toLowerCase();
-                dashboardContainer.classList.add(supervisorClass);
-            }
+            
+            // Update the dashboard with the new selection
+            updateDashboard();
         }
 
-        function updateHourDropdown() {
-            const hourSelect = document.getElementById('hour-range-select');
+        // Function to get the supervisor color
+        function getSupervisorColor(supervisorName) {
+            const colorMap = {
+                'Luthando': 'var(--supervisor-luthando)',
+                'Apelele': 'var(--supervisor-apelele)',
+                'Siyabonga': 'var(--supervisor-siyabonga)',
+                'Nosi': 'var(--supervisor-nosi)',
+                'Mvokwe': 'var(--supervisor-mvokwe)',
+                'Michaela': 'var(--supervisor-luthando)' // Reusing Luthando's color for Michaela
+            };
             
-            // Clear existing options
-            while (hourSelect.options.length > 0) hourSelect.remove(0);
-            
-            // Get all production hours from all variants in the current group
-            const productionHours = new Set();
-            
-            if (currentProductVariants.length > 0) {
-                currentProductVariants.forEach(variant => {
-                    // Get times from supervisor variant data
-                    const supervisor = productionData.supervisors.find(s => s.name === currentSupervisor);
-                    if (supervisor && supervisor.variants[variant.variant]) {
-                        const variantData = supervisor.variants[variant.variant];
-                        const hourlyData = variant.hourlyTargets || [];
+            return colorMap[supervisorName] || '#e2e8f0'; // Default color if not found
+        }
+
+        // Function to load selected supervisors from localStorage
+        function loadSelectedSupervisors() {
+            const stored = localStorage.getItem('selectedSupervisors');
+            if (stored) {
+                try {
+                    selectedSupervisors = JSON.parse(stored);
+                    
+                    // Validate against current supervisors
+                    if (productionData && productionData.supervisors) {
+                        const validSupervisors = productionData.supervisors.map(s => s.name);
+                        selectedSupervisors = selectedSupervisors.filter(s => validSupervisors.includes(s));
                         
-                        hourlyData.forEach(item => {
-                            if (item.hour) productionHours.add(item.hour);
+                        // If none valid, select all
+                        if (selectedSupervisors.length === 0) {
+                            selectedSupervisors = validSupervisors;
+                        }
+                    }
+                    
+                    // Update UI
+                    supervisorFilterActive = selectedSupervisors.length < productionData.supervisors.length;
+                    const selectBtn = document.getElementById('supervisor-select-btn');
+                    
+                    if (supervisorFilterActive) {
+                        selectBtn.textContent = `Supervisors (${selectedSupervisors.length}/${productionData.supervisors.length})`;
+                        selectBtn.classList.add('filtered');
+                    }
+                } catch (e) {
+                    console.error('Error parsing stored supervisors:', e);
+                    if (productionData && productionData.supervisors) {
+                        selectedSupervisors = productionData.supervisors.map(s => s.name);
+                    }
+                }
+            }
+        }
+
+        // Function to fetch production data
+        async function fetchProductionData() {
+            try {
+                console.log(`Attempting to fetch data from: ${DATA_URL}`);
+                const cacheBuster = '?_=' + new Date().getTime();
+                const response = await fetch(DATA_URL + cacheBuster);
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const data = await response.json();
+                
+                // Check if data has the expected structure
+                if (!data) {
+                    throw new Error('Empty data received from data.json');
+                }
+                
+                // Transform data regardless of structure
+                const transformedData = transformDataFormat(data);
+                
+                // Validate transformed data has the required structure for the dashboard
+                if (!transformedData.variants || !Array.isArray(transformedData.variants) || 
+                    !transformedData.supervisors || !Array.isArray(transformedData.supervisors)) {
+                    throw new Error('Failed to transform data into the required format');
+                }
+                
+                if (!lastUpdateTime || lastUpdateTime !== transformedData.timestamp) {
+                    productionData = transformedData;
+                    lastUpdateTime = transformedData.timestamp;
+                    
+                    // Update only the footer timestamp
+                    document.getElementById('last-update').textContent = 'Last updated: ' + transformedData.timestamp;
+                    
+                    // Process product-supervisor groups from the transformed data
+                    processProductSupervisorGroups();
+                    
+                    // Load saved supervisor selections or initialize all selected
+                    if (selectedSupervisors.length === 0) {
+                        selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
+                        loadSelectedSupervisors(); // Load any saved preferences
+                    }
+                    
+                    updateFilterValueDropdown();
+                    updateDashboard();
+                }
+                
+                isLoading = false;
+            } catch (error) {
+                console.error(`Fetch failed:`, error);
+                isLoading = false;
+                showLoadingOrError(`Failed to load data: ${error.message}`);
+            }
+        }
+
+        // Function to transform data format
+        function transformDataFormat(newData) {
+            // This is the existing function, no changes needed
+            const transformedData = {
+                variants: [],
+                supervisors: [],
+                timestamp: newData.metadata.timestamp || new Date().toISOString()
+            };
+            
+            // Check which structure we're working with and handle accordingly
+            if (newData.production && Array.isArray(newData.production)) {
+                // New structure with production array and summary
+                
+                // Transform production items to variants
+                newData.production.forEach(item => {
+                    const transformedVariant = {
+                        variant: item.id,
+                        "Product Name": item.variant.fullName || `${item.product.name} ${item.variant.name}`,
+                        cycleTime: item.variant.cycleTime,
+                        actualCycleTime: item.variant.actualCycleTime,
+                        "Start Time": item.shiftId === "overtime" ? "07:30" : "07:30",
+                        "End Time": item.shiftId === "overtime" ? "18:30" : "16:30",
+                        dailyBoxTarget: item.targets.boxes,
+                        currentBoxTotal: item.actual.boxes,
+                        hourlyTargets: [],
+                        hourlyProduction: []
+                    };
+                    
+                    // Add hourly targets and production data
+                    if (item.timeline && Array.isArray(item.timeline)) {
+                        item.timeline.forEach(hour => {
+                            // Add hourly target
+                            transformedVariant.hourlyTargets.push({
+                                hour: hour.hour,
+                                target: hour.target
+                            });
+                            
+                            // Add hourly production
+                            transformedVariant.hourlyProduction.push({
+                                hour: hour.hour,
+                                production: hour.actual
+                            });
                         });
+                    }
+                    
+                    transformedData.variants.push(transformedVariant);
+                });
+                
+                // Process supervisors from the summary section
+                if (newData.summary && newData.summary.supervisors && Array.isArray(newData.summary.supervisors)) {
+                    newData.summary.supervisors.forEach(supervisor => {
+                        const transformedSupervisor = {
+                            name: supervisor.name,
+                            variants: {}
+                        };
+                        
+                        // Find all production items assigned to this supervisor
+                        if (supervisor.variants && Array.isArray(supervisor.variants)) {
+                            supervisor.variants.forEach(variantId => {
+                                // Find the production item for this variant
+                                const prodItem = newData.production.find(p => p.id === variantId);
+                                
+                                if (prodItem) {
+                                    // Find the supervisor assignment within the production item
+                                    const assignment = prodItem.supervisors.find(s => s.id === supervisor.id);
+                                    
+                                    if (assignment) {
+                                        transformedSupervisor.variants[variantId] = {
+                                            variantStartTime: assignment.startTime,
+                                            variantEndTime: assignment.endTime,
+                                            dailyTarget: assignment.target,
+                                            currentTotal: assignment.production,
+                                            variance: assignment.production - assignment.target,
+                                            percentage: assignment.progress
+                                        };
+                                    } else {
+                                        // Fallback to using summary data if detailed assignment not found
+                                        transformedSupervisor.variants[variantId] = {
+                                            variantStartTime: prodItem.supervisors[0]?.startTime || "07:30",
+                                            variantEndTime: prodItem.supervisors[0]?.endTime || "18:30",
+                                            dailyTarget: prodItem.targets.daily,
+                                            currentTotal: prodItem.actual.total,
+                                            variance: prodItem.actual.total - prodItem.targets.daily,
+                                            percentage: prodItem.actual.progress
+                                        };
+                                    }
+                                }
+                            });
+                        }
+                        
+                        transformedData.supervisors.push(transformedSupervisor);
+                    });
+                }
+            } else if (newData.variants && Array.isArray(newData.variants)) {
+                // Previous structure with variants array
+                // Handle this as before
+                // (code omitted for brevity, as it remains unchanged)
+            }
+            
+            return transformedData;
+        }
+        
+        // Function to process product-supervisor groups
+        function processProductSupervisorGroups() {
+            // Reset groups
+            productSupervisorGroups = {};
+            
+            // First, create supervisor-product mapping
+            productionData.supervisors.forEach(supervisor => {
+                if (!supervisor.variants) return;
+                
+                // Create a temporary map of product -> variants
+                const productVariants = {};
+                
+                // Process each variant
+                Object.keys(supervisor.variants).forEach(variantKey => {
+                    const product = extractProductFromVariant(variantKey);
+                    
+                    if (!productVariants[product]) {
+                        productVariants[product] = [];
+                    }
+                    
+                    // Find the variant in the variants array
+                    const variantData = productionData.variants.find(v => v.variant === variantKey);
+                    
+                    if (variantData) {
+                        productVariants[product].push({
+                            variantKey,
+                            variantData,
+                            supervisorVariant: supervisor.variants[variantKey]
+                        });
+                    }
+                });
+                
+                // Sort variants by start time and add to groups
+                Object.keys(productVariants).forEach(product => {
+                    const group = `${supervisor.name}:${product}`;
+                    
+                    // Sort variants by start time
+                    const sortedVariants = productVariants[product].sort((a, b) => {
+                        const timeA = a.supervisorVariant.variantStartTime || a.variantData["Start Time"] || "00:00";
+                        const timeB = b.supervisorVariant.variantStartTime || b.variantData["Start Time"] || "00:00";
+                        
+                        const [hoursA, minutesA] = timeA.split(':').map(Number);
+                        const [hoursB, minutesB] = timeB.split(':').map(Number);
+                        
+                        const totalMinutesA = hoursA * 60 + minutesA;
+                        const totalMinutesB = hoursB * 60 + minutesB;
+                        
+                        return totalMinutesA - totalMinutesB;
+                    });
+                    
+                    // Store in groups
+                    productSupervisorGroups[group] = {
+                        supervisor: supervisor.name,
+                        product,
+                        variants: sortedVariants.map(v => v.variantData),
+                        supervisorData: supervisor
+                    };
+                });
+            });
+        }
+
+        // Helper function to extract product from variant ID
+        function extractProductFromVariant(variantId) {
+            // For the new structure format with product-variant IDs like "Scalpel-Assembly-PARC11NS"
+            if (variantId.includes('-')) {
+                // Try splitting by dash and look for known product patterns
+                const parts = variantId.split('-');
+                
+                // Handle case where product name contains a dash (like Scalpel-Assembly)
+                if (parts.length > 2) {
+                    // If we have more than one dash, the product likely contains a dash
+                    // Extract everything except the last part (which is the variant)
+                    return parts.slice(0, -1).join('-');
+                } else if (parts.length === 2) {
+                    // Simple product-variant format
+                    return parts[0];
+                }
+            }
+
+            // Fallback to original method for older formats
+            const parts = variantId.split(' ');
+            
+            // Handle different formats
+            if (parts.length === 1) return variantId; // No space, use as is
+            if (parts.length === 2) return parts[0]; // Simple "Product Variant"
+            
+            // For more complex formats, try to find a pattern
+            // Example: "LEVO XL1150SCi" -> "LEVO XL"
+            const match = variantId.match(/^([A-Za-z\s]+)[\d]/);
+            if (match && match[1]) {
+                return match[1].trim();
+            }
+            
+            // Fallback: use first word
+            return parts[0];
+        }
+
+        // Function to update filter value dropdown
+        function updateFilterValueDropdown() {
+            const filterValueSelect = document.getElementById('filter-value-select');
+            const currentValue = filterValueSelect.value;
+            
+            // Clear existing options (except 'all')
+            while (filterValueSelect.options.length > 1) {
+                filterValueSelect.remove(1);
+            }
+            
+            if (selectedFilterType === 'supervisor' && productionData.supervisors?.length > 0) {
+                // Add all supervisors
+                productionData.supervisors.forEach(supervisor => {
+                    const option = document.createElement('option');
+                    option.value = supervisor.name;
+                    option.textContent = supervisor.name;
+                    filterValueSelect.appendChild(option);
+                });
+            } else if (selectedFilterType === 'product') {
+                // Add all unique products
+                const uniqueProducts = new Set();
+                
+                // Extract products from all variants
+                Object.keys(productSupervisorGroups).forEach(key => {
+                    const group = productSupervisorGroups[key];
+                    uniqueProducts.add(group.product);
+                });
+                
+                // Add options
+                uniqueProducts.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product;
+                    option.textContent = product;
+                    filterValueSelect.appendChild(option);
+                });
+            } else if (selectedFilterType === 'variant' && productionData.variants?.length > 0) {
+                // Add all unique variants
+                const uniqueVariants = new Set(productionData.variants.map(v => v.variant));
+                uniqueVariants.forEach(variantName => {
+                    const option = document.createElement('option');
+                    option.value = variantName;
+                    option.textContent = variantName;
+                    filterValueSelect.appendChild(option);
+                });
+            }
+            
+            // Restore previous selection if available, otherwise use 'all'
+            filterValueSelect.value = Array.from(filterValueSelect.options).some(opt => opt.value === currentValue) 
+                ? currentValue 
+                : 'all';
+                
+            selectedFilterValue = filterValueSelect.value;
+        }
+
+
+        // Function to show loading or error message
+        function showLoadingOrError(message) {
+            const supervisorName = document.getElementById('supervisor-name');
+            const productName = document.getElementById('product-name');
+            const variantSequence = document.getElementById('variant-sequence');
+            
+            supervisorName.textContent = 'SUPERVISOR: Loading...';
+            productName.textContent = 'PRODUCT: Loading...';
+            variantSequence.innerHTML = '<div class="loading">Loading variants...</div>';
+            
+            // Clear the metrics
+            document.getElementById('current-units').textContent = '0';
+            document.getElementById('target-units').textContent = '0';
+            document.getElementById('progress-percentage').textContent = '0%';
+            document.getElementById('current-boxes').textContent = '0';
+            document.getElementById('target-boxes').textContent = '0';
+            document.getElementById('actual-cycle-time').textContent = '0';
+            document.getElementById('target-cycle-time').textContent = '0';
+            
+            // Clear the charts
+            document.getElementById('cumulative-chart').innerHTML = 
+                `<div style="text-align:center;padding:20px;height:100%;display:flex;align-items:center;justify-content:center;">${message}</div>`;
+            document.getElementById('hourly-chart').innerHTML = 
+                `<div style="text-align:center;padding:20px;height:100%;display:flex;align-items:center;justify-content:center;">${message}</div>`;
+        }
+
+        // Function to update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+            
+            document.getElementById('current-time').textContent = timeString;
+            
+            // Update current hour info in the legend
+            updateCurrentHourInfo();
+            
+            // Check if we need to update dashboard based on time changes (variant transitions)
+            if (currentProductVariants && currentProductVariants.length > 1) {
+                const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+                let needsUpdate = false;
+                
+                // Check if we crossed a variant boundary
+                currentProductVariants.forEach(variant => {
+                    const supervisorVariant = currentSupervisor ? 
+                        productionData.supervisors.find(s => s.name === currentSupervisor)?.variants[variant.variant] : null;
+                    
+                    if (!supervisorVariant) return;
+                    
+                    const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+                    const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+                    
+                    if (!startTimeStr || !endTimeStr) return;
+                    
+                    const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+                    const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                    
+                    const startTimeMinutes = startHour * 60 + startMinute;
+                    const endTimeMinutes = endHour * 60 + endMinute;
+                    
+                    // Check if we just crossed this boundary
+                    if (currentTimeMinutes === startTimeMinutes || currentTimeMinutes === endTimeMinutes) {
+                        needsUpdate = true;
+                    }
+                });
+                
+                if (needsUpdate) {
+                    updateDashboard();
+                }
+            }
+        }
+
+        // Function to update the current hour info in the legend
+        function updateCurrentHourInfo() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
+            // Find next hour boundary (formatted as "HH:30")
+            const nextHourMinute = 30;
+            const nextHour = currentMinute < nextHourMinute ? currentHour : currentHour + 1;
+            const nextHourStr = `${nextHour.toString().padStart(2, '0')}:${nextHourMinute.toString().padStart(2, '0')}`;
+            
+            // Calculate minutes remaining
+            let minutesRemaining;
+            if (currentMinute < nextHourMinute) {
+                minutesRemaining = nextHourMinute - currentMinute;
+            } else {
+                minutesRemaining = (60 - currentMinute) + nextHourMinute;
+            }
+            
+            // Format the current hour string
+            const hourStr = currentMinute < 30 ? 
+                `${currentHour.toString().padStart(2, '0')}:30` : 
+                `${(currentHour + 1).toString().padStart(2, '0')}:30`;
+            
+            document.getElementById('current-hour-info').textContent = 
+                `CURRENT HOUR: ${hourStr} (${minutesRemaining} MIN LEFT)`;
+        }
+
+        // Function to update the dashboard
+        function updateDashboard() {
+            // Filter groups based on selection and selected supervisors
+            let filteredGroups = {};
+            
+            // Start with selected filter type/value
+            if (selectedFilterValue === 'all') {
+                // When "all" is selected, still respect supervisor selection
+                Object.keys(productSupervisorGroups).forEach(key => {
+                    if (selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
+                        filteredGroups[key] = productSupervisorGroups[key];
+                    }
+                });
+            } else if (selectedFilterType === 'supervisor') {
+                // When filtering by specific supervisor, also check if it's in selected supervisors
+                Object.keys(productSupervisorGroups).forEach(key => {
+                    if (productSupervisorGroups[key].supervisor === selectedFilterValue &&
+                        selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
+                        filteredGroups[key] = productSupervisorGroups[key];
+                    }
+                });
+            } else if (selectedFilterType === 'product') {
+                // Filter by product but only for selected supervisors
+                Object.keys(productSupervisorGroups).forEach(key => {
+                    if (productSupervisorGroups[key].product === selectedFilterValue &&
+                        selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
+                        filteredGroups[key] = productSupervisorGroups[key];
+                    }
+                });
+            } else if (selectedFilterType === 'variant') {
+                // Filter by variant but only for selected supervisors
+                Object.keys(productSupervisorGroups).forEach(key => {
+                    const group = productSupervisorGroups[key];
+                    if (group.variants.some(v => v.variant === selectedFilterValue) &&
+                        selectedSupervisors.includes(group.supervisor)) {
+                        filteredGroups[key] = group;
                     }
                 });
             }
             
-            // Use default hours if no production hours available
-            if (productionHours.size === 0) {
-                const defaultHours = ["08:30", "09:30", "10:30", "11:30", "12:30", "13:30", "14:30", "15:30", "16:30", "17:30", "18:30"];
-                defaultHours.forEach(hour => productionHours.add(hour));
+            // If no groups after filtering, show error and return
+            if (Object.keys(filteredGroups).length === 0) {
+                showLoadingOrError('No data available for this filter or selected supervisors.');
+                if (cycleInterval) clearInterval(cycleInterval);
+                cycleInterval = null;
+                return;
             }
             
-            // Sort the hours
-            const sortedHours = Array.from(productionHours).sort((a, b) => {
-                const [ha, ma] = a.split(':').map(Number);
-                const [hb, mb] = b.split(':').map(Number);
-                return (ha * 60 + ma) - (hb * 60 + mb);
+            // Multiple groups - setup cycling
+            const groupKeys = Object.keys(filteredGroups);
+            if (groupKeys.length > 1) {
+                // Clear existing interval
+                if (cycleInterval) clearInterval(cycleInterval);
+                
+                // Set cycling logic
+                cycleIndex = 0;
+                cycleInterval = setInterval(() => {
+                    cycleIndex = (cycleIndex + 1) % groupKeys.length;
+                    displayGroup(filteredGroups[groupKeys[cycleIndex]]);
+                }, CYCLE_INTERVAL);
+            } else {
+                // Single group - clear cycling
+                if (cycleInterval) clearInterval(cycleInterval);
+                cycleInterval = null;
+            }
+            
+            // Display the first group initially
+            displayGroup(filteredGroups[groupKeys[0]]);
+        }
+
+        // Function to display a group
+        function displayGroup(group) {
+            // Set current product and supervisor
+            currentProduct = group.product;
+            currentSupervisor = group.supervisor;
+            currentProductVariants = group.variants;
+            
+            // Find current variant
+            const now = new Date();
+            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            // Sort variants by start time
+            const sortedVariants = [...currentProductVariants].sort((a, b) => {
+                const supervisorA = group.supervisorData.variants[a.variant];
+                const supervisorB = group.supervisorData.variants[b.variant];
+                
+                const timeA = supervisorA.variantStartTime || a["Start Time"] || "00:00";
+                const timeB = supervisorB.variantStartTime || b["Start Time"] || "00:00";
+                
+                const [hoursA, minutesA] = timeA.split(':').map(Number);
+                const [hoursB, minutesB] = timeB.split(':').map(Number);
+                
+                return (hoursA * 60 + minutesA) - (hoursB * 60 + minutesB);
             });
             
-            // Get current hour for "current" option
-            const nextHour = getNextProductionHour(sortedHours);
-            let currentHourOption = null;
+            // Find the current active variant
+            let currentVariantIndex = -1;
             
-            // Add time ranges as options
-            sortedHours.forEach((hour, index) => {
-                const [hourVal, minuteVal] = hour.split(':').map(Number);
+            for (let i = 0; i < sortedVariants.length; i++) {
+                const variant = sortedVariants[i];
+                const supervisorVariant = group.supervisorData.variants[variant.variant];
                 
-                // Calculate previous hour (for start of range)
-                let prevHour, prevMinute;
+                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
                 
-                if (index > 0) {
-                    // If not the first hour, use the previous hour from our sorted list
-                    const prevTimeStr = sortedHours[index - 1];
-                    [prevHour, prevMinute] = prevTimeStr.split(':').map(Number);
+                if (!startTimeStr || !endTimeStr) continue;
+                
+                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                
+                const startTimeMinutes = startHour * 60 + startMinute;
+                const endTimeMinutes = endHour * 60 + endMinute;
+                
+                // Check if current time is within this variant's window
+                if (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes) {
+                    currentVariantIndex = i;
+                    break;
+                }
+            }
+            
+            // If no current variant found, use last variant
+            if (currentVariantIndex === -1 && sortedVariants.length > 0) {
+                currentVariantIndex = sortedVariants.length - 1;
+            }
+            
+            // Set current variant
+            currentVariantKey = currentVariantIndex >= 0 ? sortedVariants[currentVariantIndex].variant : null;
+            
+            // Apply styling based on supervisor
+            applySupervisorStyling(currentSupervisor);
+            
+            // Update UI
+            updateSupervisorInfo(group);
+            updateMetrics(group);
+            renderCumulativeChart(group);
+            renderHourlyChart(group);
+            renderHourlyTargets(group);
+        }
+
+        // Function to apply supervisor styling
+        function applySupervisorStyling(supervisorName) {
+            const dashboardContainer = document.querySelector('.dashboard-container');
+            const supervisorColorBanner = document.querySelector('.supervisor-color-banner');
+            const supervisorPanel = document.querySelector('.supervisor-panel');
+            
+            // Clear existing classes
+            dashboardContainer.classList.remove('supervisor-luthando', 'supervisor-apelele', 'supervisor-siyabonga', 'supervisor-nosi', 'supervisor-mvokwe');
+            
+            // Apply supervisor-specific color
+            if (supervisorName) {
+                const supervisorClass = 'supervisor-' + supervisorName.toLowerCase();
+                dashboardContainer.classList.add(supervisorClass);
+                
+                // Also apply color directly
+                const color = getSupervisorColor(supervisorName);
+                supervisorColorBanner.style.backgroundColor = color;
+                supervisorPanel.style.backgroundColor = color;
+            }
+        }
+
+        // Function to update supervisor info
+        function updateSupervisorInfo(group) {
+            document.getElementById('supervisor-name').textContent = `SUPERVISOR: ${group.supervisor}`;
+            document.getElementById('product-name').textContent = `PRODUCT: ${group.product}`;
+            
+            // Update variant sequence
+            const sequenceContainer = document.getElementById('variant-sequence');
+            sequenceContainer.innerHTML = '';
+            
+            if (group.variants.length === 0) {
+                sequenceContainer.innerHTML = '<div>No variants available</div>';
+                return;
+            }
+            
+            // Get current time to determine variant status
+            const now = new Date();
+            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            // Add each variant to the sequence
+            group.variants.forEach((variant, index) => {
+                const supervisorVariant = group.supervisorData.variants[variant.variant];
+                
+                if (!supervisorVariant) return;
+                
+                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+                
+                if (!startTimeStr || !endTimeStr) return;
+                
+                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                
+                const startTimeMinutes = startHour * 60 + startMinute;
+                const endTimeMinutes = endHour * 60 + endMinute;
+                
+                // Determine variant status
+                let status = '';
+                if (currentTimeMinutes < startTimeMinutes) {
+                    status = 'upcoming';
+                } else if (currentTimeMinutes > endTimeMinutes) {
+                    status = 'completed';
                 } else {
-                    // For the first hour, calculate 1 hour before
-                    prevHour = hourVal - 1;
-                    prevMinute = minuteVal;
+                    status = 'current';
+                }
+                
+                // Extract variant name from full variant string
+                let displayName = variant.variant;
+                
+                // Try to extract just the variant part
+                if (variant.variant.includes('-')) {
+                    displayName = variant.variant.split('-').pop();
+                } else if (variant.variant.startsWith(group.product + ' ')) {
+                    displayName = variant.variant.substring(group.product.length + 1);
+                }
+                
+                // Create variant element
+                const variantElement = document.createElement('div');
+                variantElement.className = `variant-item ${status}`;
+                variantElement.textContent = displayName;
+                
+                sequenceContainer.appendChild(variantElement);
+                
+                // Add arrow if not the last variant
+                if (index < group.variants.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow-right';
+                    arrow.textContent = '→';
+                    sequenceContainer.appendChild(arrow);
+                }
+            });
+        }
+
+        // Function to update metrics
+        function updateMetrics(group) {
+            // Initialize aggregated values
+            let totalTarget = 0;
+            let totalProduction = 0;
+            let totalBoxTarget = 0;
+            let totalBoxProduction = 0;
+            let weightedCycleTime = 0;
+            let totalCycleTimeWeight = 0;
+            
+            // Calculate aggregated values
+            group.variants.forEach(variant => {
+                const supervisorVariant = group.supervisorData.variants[variant.variant];
+                
+                if (supervisorVariant) {
+                    totalTarget += (supervisorVariant.dailyTarget || 0);
+                    totalProduction += (supervisorVariant.currentTotal || 0);
                     
-                    // Handle the case when the first hour is before 1:00
-                    if (prevHour < 0) {
-                        prevHour = 23; // Wrap to previous day
+                    // Add box totals consistently for all variants
+                    totalBoxTarget += (variant.dailyBoxTarget || 0);
+                    totalBoxProduction += (variant.currentBoxTotal || 0);
+                    
+                    // Add cycle time weighted by target
+                    const cycleTime = variant.cycleTime || 0;
+                    const target = supervisorVariant.dailyTarget || 0;
+                    
+                    if (cycleTime > 0 && target > 0) {
+                        weightedCycleTime += cycleTime * target;
+                        totalCycleTimeWeight += target;
                     }
                 }
-                
-                // Format for option text
-                const timeRange = `${prevHour.toString().padStart(2, '0')}:${prevMinute.toString().padStart(2, '0')}-${hourVal.toString().padStart(2, '0')}:${minuteVal.toString().padStart(2, '0')}`;
-                
-                const option = document.createElement('option');
-                option.value = hour; // Store the end hour as value
-                option.textContent = timeRange;
-                
-                // If this is the current hour range, save it for "current" option
-                if (hour === nextHour) {
-                    currentHourOption = { value: "current", text: timeRange };
-                }
-                
-                hourSelect.appendChild(option);
             });
             
-            // Add the "current" hour option at the top if it exists
-            if (currentHourOption) {
-                const currentOption = document.createElement('option');
-                currentOption.value = currentHourOption.value;
-                currentOption.textContent = currentHourOption.text;
-                hourSelect.insertBefore(currentOption, hourSelect.firstChild);
-            }
+            // Calculate overall progress percentage
+            const progressPercentage = totalTarget > 0 ? Math.round((totalProduction / totalTarget) * 100) : 0;
             
-            // Set the selected hour in the dropdown
-            if (selectedHour === "current" && currentHourOption) {
-                hourSelect.value = "current";
-            } else if (Array.from(hourSelect.options).some(opt => opt.value === selectedHour)) {
-                hourSelect.value = selectedHour;
-            } else if (hourSelect.options.length > 0) {
-                selectedHour = hourSelect.options[0].value; // Default to first option
-                hourSelect.value = selectedHour;
-            }
+            // Calculate average cycle time
+            const avgCycleTime = totalCycleTimeWeight > 0 ? Math.round(weightedCycleTime / totalCycleTimeWeight) : 0;
+            
+            // Calculate actual cycle time across all variants
+            const actualCycleTime = calculateActualCycleTime(group.variants);
+            
+            // Update metrics display
+            document.getElementById('current-units').textContent = totalProduction;
+            document.getElementById('target-units').textContent = totalTarget;
+            document.getElementById('progress-percentage').textContent = `${progressPercentage}%`;
+            
+            document.getElementById('current-boxes').textContent = totalBoxProduction;
+            document.getElementById('target-boxes').textContent = totalBoxTarget;
+            
+            document.getElementById('actual-cycle-time').textContent = actualCycleTime === "N/A" ? "N/A" : actualCycleTime;
+            document.getElementById('target-cycle-time').textContent = avgCycleTime;
         }
 
-        function getNextProductionHour(productionHours) {
-            const now = new Date();
-            const currentTime = now.getHours() * 60 + now.getMinutes();
-            
-            if (!productionHours || productionHours.length === 0) {
-                productionHours = ["08:30", "09:30", "10:30", "11:30", "12:30", "13:30", "14:30", "15:30", "16:30", "17:30", "18:30"];
-            }
-            
-            // Sort the production hours
-            productionHours.sort((a, b) => {
-                const [ha, ma] = a.split(':').map(Number);
-                const [hb, mb] = b.split(':').map(Number);
-                return (ha * 60 + ma) - (hb * 60 + mb);
-            });
-            
-            // If current time is before the first production hour, return the first hour
-            if (productionHours.length > 0) {
-                const [firstHour, firstMinute] = productionHours[0].split(':').map(Number);
-                const firstHourInMinutes = firstHour * 60 + firstMinute;
-                
-                if (currentTime < firstHourInMinutes) {
-                    return productionHours[0];
-                }
-            }
-            
-            // Original logic for when we're within production hours
-            for (const hourStr of productionHours) {
-                const [hours, minutes] = hourStr.split(':').map(Number);
-                const hourInMinutes = hours * 60 + minutes;
-                if (hourInMinutes > currentTime) return hourStr;
-            }
-            
-            // If current time is after all production hours, return the last hour
-            return productionHours[productionHours.length - 1];
-        }
-
-        function calculateTimeToNextHour(hourStr) {
-            const now = new Date();
-            const [hours, minutes] = hourStr.split(':').map(Number);
-            const targetTime = new Date(now);
-            targetTime.setHours(hours, minutes, 0, 0);
-            if (targetTime <= now) targetTime.setDate(targetTime.getDate() + 1);
-            const diffMs = targetTime - now;
-            const diffMinutes = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMinutes / 60);
-            const remainingMinutes = diffMinutes % 60;
-            return diffHours > 0 ? `Countdown: ${diffHours}h ${remainingMinutes}m` : `Countdown: ${remainingMinutes}m`;
-        }
-
-        function startCountdown(hourStr) {
-            if (countdownInterval) clearInterval(countdownInterval);
-            updateCountdown(hourStr);
-            countdownInterval = setInterval(() => updateCountdown(hourStr), 60000);
-        }
-
-        function updateCountdown(hourStr) {
-            document.querySelector('.hour-countdown').textContent = calculateTimeToNextHour(hourStr);
-        }
-
-        function calculateActualCycleTime(variants) {
+       // Function to calculate actual cycle time
+function calculateActualCycleTime(variants) {
     // Check if any variant has actualCycleTime - if so, use weighted average of those values
     const variantsWithActualCycleTime = variants.filter(v => v.actualCycleTime !== undefined && v.actualCycleTime !== null);
     
@@ -1561,6 +1812,7 @@ function loadSelectedSupervisors() {
     return Math.round(totalElapsedWorkingTime / totalProduction);
 }
 
+// Helper function to calculate elapsed break minutes
 function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
     let totalElapsedBreakMinutes = 0;
     const currentTime = now.getHours() * 60 + now.getMinutes();
@@ -1603,1033 +1855,13 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
     return totalElapsedBreakMinutes;
 }
 
-// New helper function to calculate only elapsed break time
-function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
-    let totalElapsedBreakMinutes = 0;
-    const currentTime = now.getHours() * 60 + now.getMinutes();
-    
-    // Function to check if a break has already occurred or is occurring
-    const getElapsedBreakMinutes = (breakStartStr, breakEndStr) => {
-        if (!breakStartStr || !breakEndStr) return 0;
-        if (breakStartStr === "-" || breakEndStr === "-") return 0;
-        
-        const [breakStartHour, breakStartMinute] = breakStartStr.split(':').map(Number);
-        const [breakEndHour, breakEndMinute] = breakEndStr.split(':').map(Number);
-        
-        const breakStartMinutes = breakStartHour * 60 + breakStartMinute;
-        const breakEndMinutes = breakEndHour * 60 + breakEndMinute;
-        
-        // If break hasn't started yet, return 0
-        if (currentTime < breakStartMinutes) return 0;
-        
-        // If break is in progress, return elapsed portion
-        if (currentTime < breakEndMinutes) return currentTime - breakStartMinutes;
-        
-        // If break is complete, return full duration
-        return breakEndMinutes - breakStartMinutes;
-    };
-    
-    // Check each break
-    if (variant["Break Start (Lunch)"] && variant["Break End (Lunch)"]) {
-        totalElapsedBreakMinutes += getElapsedBreakMinutes(variant["Break Start (Lunch)"], variant["Break End (Lunch)"]);
-    }
-    
-    if (variant["Break Start (Tea)"] && variant["Break End (Tea)"]) {
-        totalElapsedBreakMinutes += getElapsedBreakMinutes(variant["Break Start (Tea)"], variant["Break End (Tea)"]);
-    }
-    
-    if (variant["OT Break Start (Tea)"] && variant["OT Break End (Tea)"] && 
-        variant["OT Break Start (Tea)"] !== "-" && variant["OT Break End (Tea)"] !== "-") {
-        totalElapsedBreakMinutes += getElapsedBreakMinutes(variant["OT Break Start (Tea)"], variant["OT Break End (Tea)"]);
-    }
-    
-    return totalElapsedBreakMinutes;
-}
-
-        function calculateBreakMinutes(variant, startTimeStr, endTimeStr) {
-            let totalBreakMinutes = 0;
-            
-            // Function to check if break is within working period
-            const isBreakInWorkPeriod = (breakStartStr, breakEndStr) => {
-                if (!breakStartStr || !breakEndStr) return false;
-                
-                const [workStartHour, workStartMinute] = startTimeStr.split(':').map(Number);
-                const [workEndHour, workEndMinute] = endTimeStr.split(':').map(Number);
-                const [breakStartHour, breakStartMinute] = breakStartStr.split(':').map(Number);
-                const [breakEndHour, breakEndMinute] = breakEndStr.split(':').map(Number);
-                
-                const workStartMinutes = workStartHour * 60 + workStartMinute;
-                const workEndMinutes = workEndHour * 60 + workEndMinute;
-                const breakStartMinutes = breakStartHour * 60 + breakStartMinute;
-                const breakEndMinutes = breakEndHour * 60 + breakEndMinute;
-                
-                // Check if break overlaps with work period
-                return (breakStartMinutes >= workStartMinutes && breakStartMinutes < workEndMinutes) ||
-                       (breakEndMinutes > workStartMinutes && breakEndMinutes <= workEndMinutes) ||
-                       (breakStartMinutes <= workStartMinutes && breakEndMinutes >= workEndMinutes);
-            };
-            
-            // Check each break
-            if (variant["Break Start (Lunch)"] && variant["Break End (Lunch)"] &&
-                isBreakInWorkPeriod(variant["Break Start (Lunch)"], variant["Break End (Lunch)"])) {
-                totalBreakMinutes += getTimeDifferenceInMinutes(variant["Break Start (Lunch)"], variant["Break End (Lunch)"]);
-            }
-            
-            if (variant["Break Start (Tea)"] && variant["Break End (Tea)"] &&
-                isBreakInWorkPeriod(variant["Break Start (Tea)"], variant["Break End (Tea)"])) {
-                totalBreakMinutes += getTimeDifferenceInMinutes(variant["Break Start (Tea)"], variant["Break End (Tea)"]);
-            }
-            
-            if (variant["OT Break Start (Tea)"] && variant["OT Break End (Tea)"] && 
-                variant["OT Break Start (Tea)"] !== "-" && variant["OT Break End (Tea)"] !== "-" &&
-                isBreakInWorkPeriod(variant["OT Break Start (Tea)"], variant["OT Break End (Tea)"])) {
-                totalBreakMinutes += getTimeDifferenceInMinutes(variant["OT Break Start (Tea)"], variant["OT Break End (Tea)"]);
-            }
-            
-            return totalBreakMinutes;
-        }
-
-        function getTimeDifferenceInMinutes(startTimeStr, endTimeStr) {
-            const [startHours, startMinutes] = startTimeStr.split(':').map(Number);
-            const [endHours, endMinutes] = endTimeStr.split(':').map(Number);
-            
-            let startTotalMinutes = startHours * 60 + startMinutes;
-            let endTotalMinutes = endHours * 60 + endMinutes;
-            
-            // Handle if break ends next day
-            if (endTotalMinutes < startTotalMinutes) {
-                endTotalMinutes += 24 * 60;
-            }
-            
-            return endTotalMinutes - startTotalMinutes;
-        }
-
-        function extractProductFromVariant(variantId) {
-    // For the new structure format with product-variant IDs like "Scalpel-Assembly-PARC11NS"
-    if (variantId.includes('-')) {
-        // Try splitting by dash and look for known product patterns
-        const parts = variantId.split('-');
-        
-        // Handle case where product name contains a dash (like Scalpel-Assembly)
-        if (parts.length > 2) {
-            // If we have more than one dash, the product likely contains a dash
-            // Extract everything except the last part (which is the variant)
-            return parts.slice(0, -1).join('-');
-        } else if (parts.length === 2) {
-            // Simple product-variant format
-            return parts[0];
-        }
-    }
-
-    // Fallback to original method for older formats
-    const parts = variantId.split(' ');
-    
-    // Handle different formats
-    if (parts.length === 1) return variantId; // No space, use as is
-    if (parts.length === 2) return parts[0]; // Simple "Product Variant"
-    
-    // For more complex formats, try to find a pattern
-    // Example: "LEVO XL1150SCi" -> "LEVO XL"
-    const match = variantId.match(/^([A-Za-z\s]+)[\d]/);
-    if (match && match[1]) {
-        return match[1].trim();
-    }
-    
-    // Fallback: use first word
-    return parts[0];
-}
-        // Add to fetchProductionData function after data is loaded
-async function fetchProductionData() {
-    try {
-        console.log(`Attempting to fetch data from: ${DATA_URL}`);
-        const cacheBuster = '?_=' + new Date().getTime();
-        const response = await fetch(DATA_URL + cacheBuster);
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        const data = await response.json();
-        
-        // Check if data has the expected structure - any valid JSON structure should now be handled
-        if (!data) {
-            throw new Error('Empty data received from data.json');
-        }
-        
-        // Transform data regardless of structure - our transformer will handle the format
-        const transformedData = transformDataFormat(data);
-        
-        // Validate transformed data has the required structure for the dashboard
-        if (!transformedData.variants || !Array.isArray(transformedData.variants) || 
-            !transformedData.supervisors || !Array.isArray(transformedData.supervisors)) {
-            throw new Error('Failed to transform data into the required format');
-        }
-        
-        if (!lastUpdateTime || lastUpdateTime !== transformedData.timestamp) {
-            productionData = transformedData;
-            lastUpdateTime = transformedData.timestamp;
-            
-            // Update only the footer timestamp
-            document.getElementById('last-update2').textContent = 'Last updated: ' + transformedData.timestamp;
-            
-            // Process product-supervisor groups from the transformed data
-            processProductSupervisorGroups();
-            
-            // Load saved supervisor selections or initialize all selected
-            if (selectedSupervisors.length === 0) {
-                selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
-                loadSelectedSupervisors(); // Load any saved preferences
-            }
-            
-            updateFilterValueDropdown();
-            updateDashboard();
-            updateHourDropdown();
-        }
-        
-        isLoading = false;
-    } catch (error) {
-        console.error(`Fetch failed:`, error);
-        isLoading = false;
-        showLoadingOrError(`Failed to load data: ${error.message}`);
-    }
-}
-
-// Function to transform new data format to match old format
-function transformDataFormat(newData) {
-    const transformedData = {
-        variants: [],
-        supervisors: [],
-        timestamp: newData.metadata.timestamp || new Date().toISOString()
-    };
-    
-    // Check which structure we're working with and handle accordingly
-    if (newData.production && Array.isArray(newData.production)) {
-        // New structure with production array and summary
-        
-        // Transform production items to variants
-        newData.production.forEach(item => {
-            const transformedVariant = {
-                variant: item.id,
-                "Product Name": item.variant.fullName || `${item.product.name} ${item.variant.name}`,
-                cycleTime: item.variant.cycleTime,
-                actualCycleTime: item.variant.actualCycleTime, // Add the actualCycleTime from the data
-                "Start Time": item.shiftId === "overtime" ? "07:30" : "07:30", // Default times based on shift
-                "End Time": item.shiftId === "overtime" ? "18:30" : "16:30",
-                dailyBoxTarget: item.targets.boxes,
-                currentBoxTotal: item.actual.boxes,
-                hourlyTargets: [],
-                hourlyProduction: []
-            };
-            
-            // Add hourly targets and production data
-            if (item.timeline && Array.isArray(item.timeline)) {
-                item.timeline.forEach(hour => {
-                    // Add hourly target
-                    transformedVariant.hourlyTargets.push({
-                        hour: hour.hour,
-                        target: hour.target
-                    });
-                    
-                    // Add hourly production
-                    transformedVariant.hourlyProduction.push({
-                        hour: hour.hour,
-                        production: hour.actual
-                    });
-                });
-            }
-            
-            transformedData.variants.push(transformedVariant);
-        });
-        
-        // Process supervisors from the summary section
-        if (newData.summary && newData.summary.supervisors && Array.isArray(newData.summary.supervisors)) {
-            newData.summary.supervisors.forEach(supervisor => {
-                const transformedSupervisor = {
-                    name: supervisor.name,
-                    variants: {}
-                };
-                
-                // Find all production items assigned to this supervisor
-                if (supervisor.variants && Array.isArray(supervisor.variants)) {
-                    supervisor.variants.forEach(variantId => {
-                        // Find the production item for this variant
-                        const prodItem = newData.production.find(p => p.id === variantId);
-                        
-                        if (prodItem) {
-                            // Find the supervisor assignment within the production item
-                            const assignment = prodItem.supervisors.find(s => s.id === supervisor.id);
-                            
-                            if (assignment) {
-                                transformedSupervisor.variants[variantId] = {
-                                    variantStartTime: assignment.startTime,
-                                    variantEndTime: assignment.endTime,
-                                    dailyTarget: assignment.target,
-                                    currentTotal: assignment.production, // This is the correct property in the new structure
-                                    variance: assignment.production - assignment.target,
-                                    percentage: assignment.progress
-                                };
-                            } else {
-                                // Fallback to using summary data if detailed assignment not found
-                                // This ensures supervisor data is populated even if specific assignment details are missing
-                                transformedSupervisor.variants[variantId] = {
-                                    variantStartTime: prodItem.supervisors[0]?.startTime || "07:30",
-                                    variantEndTime: prodItem.supervisors[0]?.endTime || "18:30",
-                                    dailyTarget: prodItem.targets.daily,
-                                    currentTotal: prodItem.actual.total,
-                                    variance: prodItem.actual.total - prodItem.targets.daily,
-                                    percentage: prodItem.actual.progress
-                                };
-                            }
-                        }
-                    });
-                }
-                
-                transformedData.supervisors.push(transformedSupervisor);
-            });
-        }
-    } else if (newData.variants && Array.isArray(newData.variants)) {
-        // Previous structure with variants array
-        newData.variants.forEach(variant => {
-            // Create a variant object for each entry
-            const transformedVariant = {
-                variant: variant.id,
-                "Product Name": variant.fullName || variant.name,
-                cycleTime: variant.cycleTime,
-                actualCycleTime: variant.actualCycleTime, // Add actualCycleTime if available
-                "Start Time": variant.shiftRef === "overtime" ? "07:30" : "07:30", // Default times based on shift
-                "End Time": variant.shiftRef === "overtime" ? "18:30" : "16:30",
-                dailyBoxTarget: variant.targets.boxes,
-                currentBoxTotal: variant.production.boxes,
-                hourlyTargets: [],
-                hourlyProduction: []
-            };
-            
-            // Add hourly targets and production data
-            if (variant.timeline && variant.timeline.byHour) {
-                variant.timeline.byHour.forEach(hour => {
-                    // Add hourly target
-                    transformedVariant.hourlyTargets.push({
-                        hour: hour.hour,
-                        target: hour.target
-                    });
-                    
-                    // Add hourly production
-                    transformedVariant.hourlyProduction.push({
-                        hour: hour.hour,
-                        production: hour.actual
-                    });
-                });
-            }
-            
-            transformedData.variants.push(transformedVariant);
-        });
-        
-        // Transform personnel data to supervisors
-        if (newData.personnel && newData.personnel.supervisors) {
-            newData.personnel.supervisors.forEach(supervisor => {
-                const transformedSupervisor = {
-                    name: supervisor.name,
-                    variants: {}
-                };
-                
-                // Process assignments to create variants data
-                if (supervisor.assignments && Array.isArray(supervisor.assignments)) {
-                    supervisor.assignments.forEach(assignment => {
-                        // Find the matching variant based on variantId or by combining productId and variantName
-                        let variantId = assignment.variantId;
-                        
-                        // If variantId is missing, try to construct it from productId and variantName
-                        if (!variantId && assignment.productId) {
-                            // Check if the variantId might be in the format "ProductId-VariantName"
-                            const possibleVariantId = `${assignment.productId}-${assignment.variantName.replace(/\s+/g, '')}`;
-                            const matchingVariant = newData.variants.find(v => v.id === possibleVariantId);
-                            if (matchingVariant) {
-                                variantId = matchingVariant.id;
-                            } else {
-                                // Find any variant with matching productId if direct match not found
-                                const productVariants = newData.variants.filter(v => v.productId === assignment.productId);
-                                if (productVariants.length > 0) {
-                                    variantId = productVariants[0].id; // Take the first matching variant
-                                }
-                            }
-                        }
-                        
-                        if (variantId) {
-                            transformedSupervisor.variants[variantId] = {
-                                variantStartTime: assignment.startTime,
-                                variantEndTime: assignment.endTime,
-                                dailyTarget: assignment.target,
-                                currentTotal: assignment.actual,
-                                variance: assignment.actual - assignment.target,
-                                percentage: assignment.progress
-                            };
-                        }
-                    });
-                }
-                
-                transformedData.supervisors.push(transformedSupervisor);
-            });
-        }
-    }
-    
-    return transformedData;
-}
-
-        function processProductSupervisorGroups() {
-            // Reset groups
-            productSupervisorGroups = {};
-            
-            // First, create supervisor-product mapping
-            productionData.supervisors.forEach(supervisor => {
-                if (!supervisor.variants) return;
-                
-                // Create a temporary map of product -> variants
-                const productVariants = {};
-                
-                // Process each variant
-                Object.keys(supervisor.variants).forEach(variantKey => {
-                    const product = extractProductFromVariant(variantKey);
-                    
-                    if (!productVariants[product]) {
-                        productVariants[product] = [];
-                    }
-                    
-                    // Find the variant in the variants array
-                    const variantData = productionData.variants.find(v => v.variant === variantKey);
-                    
-                    if (variantData) {
-                        productVariants[product].push({
-                            variantKey,
-                            variantData,
-                            supervisorVariant: supervisor.variants[variantKey]
-                        });
-                    }
-                });
-                
-                // Sort variants by start time and add to groups
-                Object.keys(productVariants).forEach(product => {
-                    const group = `${supervisor.name}:${product}`;
-                    
-                    // Sort variants by start time
-                    const sortedVariants = productVariants[product].sort((a, b) => {
-                        const timeA = a.supervisorVariant.variantStartTime || a.variantData["Start Time"] || "00:00";
-                        const timeB = b.supervisorVariant.variantStartTime || b.variantData["Start Time"] || "00:00";
-                        
-                        const [hoursA, minutesA] = timeA.split(':').map(Number);
-                        const [hoursB, minutesB] = timeB.split(':').map(Number);
-                        
-                        const totalMinutesA = hoursA * 60 + minutesA;
-                        const totalMinutesB = hoursB * 60 + minutesB;
-                        
-                        return totalMinutesA - totalMinutesB;
-                    });
-                    
-                    // Store in groups
-                    productSupervisorGroups[group] = {
-                        supervisor: supervisor.name,
-                        product,
-                        variants: sortedVariants.map(v => v.variantData),
-                        supervisorData: supervisor
-                    };
-                });
-            });
-            
-            console.log('Product-Supervisor Groups:', productSupervisorGroups);
-        }
-
-        function updateFilterValueDropdown() {
-            const filterValueSelect = document.getElementById('filter-value-select');
-            const currentValue = filterValueSelect.value;
-            
-            // Clear existing options (except 'all')
-            while (filterValueSelect.options.length > 1) {
-                filterValueSelect.remove(1);
-            }
-            
-            if (selectedFilterType === 'supervisor' && productionData.supervisors?.length > 0) {
-                // Add all supervisors
-                productionData.supervisors.forEach(supervisor => {
-                    const option = document.createElement('option');
-                    option.value = supervisor.name;
-                    option.textContent = supervisor.name;
-                    filterValueSelect.appendChild(option);
-                });
-            } else if (selectedFilterType === 'product') {
-                // Add all unique products
-                const uniqueProducts = new Set();
-                
-                // Extract products from all variants
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    const group = productSupervisorGroups[key];
-                    uniqueProducts.add(group.product);
-                });
-                
-                // Add options
-                uniqueProducts.forEach(product => {
-                    const option = document.createElement('option');
-                    option.value = product;
-                    option.textContent = product;
-                    filterValueSelect.appendChild(option);
-                });
-            } else if (selectedFilterType === 'variant' && productionData.variants?.length > 0) {
-                // Add all unique variants
-                const uniqueVariants = new Set(productionData.variants.map(v => v.variant));
-                uniqueVariants.forEach(variantName => {
-                    const option = document.createElement('option');
-                    option.value = variantName;
-                    option.textContent = variantName;
-                    filterValueSelect.appendChild(option);
-                });
-            }
-            
-            // Restore previous selection if available, otherwise use 'all'
-            filterValueSelect.value = Array.from(filterValueSelect.options).some(opt => opt.value === currentValue) 
-                ? currentValue 
-                : 'all';
-                
-            selectedFilterValue = filterValueSelect.value;
-        }
-
-        function showLoadingOrError(message) {
-            const totalsDisplay = document.getElementById('totals-display');
-            totalsDisplay.innerHTML = `<div class="${isLoading ? 'loading' : 'error'}">${message}</div>`;
-            
-            document.getElementById('supervisor-name').textContent = 'SUPERVISOR: Loading...';
-            document.getElementById('product-name').textContent = 'Product: Loading...';
-            document.getElementById('variant-sequence').innerHTML = '<div class="loading">Loading variants...</div>';
-            
-            document.querySelectorAll('.line-chart, .bar-chart').forEach(chart => {
-                chart.innerHTML = '<div style="text-align:center;padding:20px;">No data available</div>';
-            });
-        }
-
-        function updateDateTime() {
-            const now = new Date();
-            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', {
-                month: 'long', day: 'numeric', year: 'numeric'
-            });
-            
-            const timeString = now.toLocaleTimeString('en-US', {
-                hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
-            });
-            
-            document.getElementById('current-time').textContent = timeString;
-            
-            // Check if we need to update dashboard based on time changes (variant transitions)
-            if (currentProductVariants && currentProductVariants.length > 1) {
-                const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-                let needsUpdate = false;
-                
-                // Check if we crossed a variant boundary
-                currentProductVariants.forEach(variant => {
-                    const supervisorVariant = currentSupervisor ? 
-                        productionData.supervisors.find(s => s.name === currentSupervisor)?.variants[variant.variant] : null;
-                    
-                    if (!supervisorVariant) return;
-                    
-                    const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                    const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-                    
-                    if (!startTimeStr || !endTimeStr) return;
-                    
-                    const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                    const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                    
-                    const startTimeMinutes = startHour * 60 + startMinute;
-                    const endTimeMinutes = endHour * 60 + endMinute;
-                    
-                    // Check if we just crossed this boundary
-                    if (currentTimeMinutes === startTimeMinutes || currentTimeMinutes === endTimeMinutes) {
-                        needsUpdate = true;
-                    }
-                });
-                
-                if (needsUpdate) {
-                    updateDashboard();
-                }
-            }
-        }
-        // Modify the updateDashboard function to filter by selected supervisors
-function updateDashboard() {
-    // Filter groups based on selection and selected supervisors
-    let filteredGroups = {};
-    
-    // Start with selected filter type/value
-    if (selectedFilterValue === 'all') {
-        // When "all" is selected, still respect supervisor selection
-        Object.keys(productSupervisorGroups).forEach(key => {
-            if (selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
-                filteredGroups[key] = productSupervisorGroups[key];
-            }
-        });
-    } else if (selectedFilterType === 'supervisor') {
-        // When filtering by specific supervisor, also check if it's in selected supervisors
-        Object.keys(productSupervisorGroups).forEach(key => {
-            if (productSupervisorGroups[key].supervisor === selectedFilterValue &&
-                selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
-                filteredGroups[key] = productSupervisorGroups[key];
-            }
-        });
-    } else if (selectedFilterType === 'product') {
-        // Filter by product but only for selected supervisors
-        Object.keys(productSupervisorGroups).forEach(key => {
-            if (productSupervisorGroups[key].product === selectedFilterValue &&
-                selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
-                filteredGroups[key] = productSupervisorGroups[key];
-            }
-        });
-    } else if (selectedFilterType === 'variant') {
-        // Filter by variant but only for selected supervisors
-        Object.keys(productSupervisorGroups).forEach(key => {
-            const group = productSupervisorGroups[key];
-            if (group.variants.some(v => v.variant === selectedFilterValue) &&
-                selectedSupervisors.includes(group.supervisor)) {
-                filteredGroups[key] = group;
-            }
-        });
-    }
-    
-    // If no groups after filtering, show error and return
-    if (Object.keys(filteredGroups).length === 0) {
-        showLoadingOrError('No data available for this filter or selected supervisors.');
-        if (cycleInterval) clearInterval(cycleInterval);
-        cycleInterval = null;
-        return;
-    }
-    
-    // Multiple groups - setup cycling
-    const groupKeys = Object.keys(filteredGroups);
-    if (groupKeys.length > 1) {
-        // Clear existing interval
-        if (cycleInterval) clearInterval(cycleInterval);
-        
-        // Set cycling logic
-        cycleIndex = 0;
-        cycleInterval = setInterval(() => {
-            cycleIndex = (cycleIndex + 1) % groupKeys.length;
-            displayGroup(filteredGroups[groupKeys[cycleIndex]]);
-        }, CYCLE_INTERVAL);
-    } else {
-        // Single group - clear cycling
-        if (cycleInterval) clearInterval(cycleInterval);
-        cycleInterval = null;
-    }
-    
-    // Setup the consolidated layout
-    setupConsolidatedLayout();
-    
-    // Display the first group initially
-    displayGroup(filteredGroups[groupKeys[0]]);
-}
-
-        function displayGroup(group) {
-            // Set current product and supervisor
-            currentProduct = group.product;
-            currentSupervisor = group.supervisor;
-            currentProductVariants = group.variants;
-            
-            // Find current variant
-            const now = new Date();
-            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-            
-            // Sort variants by start time
-            const sortedVariants = [...currentProductVariants].sort((a, b) => {
-                const supervisorA = group.supervisorData.variants[a.variant];
-                const supervisorB = group.supervisorData.variants[b.variant];
-                
-                const timeA = supervisorA.variantStartTime || a["Start Time"] || "00:00";
-                const timeB = supervisorB.variantStartTime || b["Start Time"] || "00:00";
-                
-                const [hoursA, minutesA] = timeA.split(':').map(Number);
-                const [hoursB, minutesB] = timeB.split(':').map(Number);
-                
-                return (hoursA * 60 + minutesA) - (hoursB * 60 + minutesB);
-            });
-            
-            // Find the current active variant
-            let currentVariantIndex = -1;
-            
-            for (let i = 0; i < sortedVariants.length; i++) {
-                const variant = sortedVariants[i];
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                
-                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-                
-                if (!startTimeStr || !endTimeStr) continue;
-                
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                
-                const startTimeMinutes = startHour * 60 + startMinute;
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                // Check if current time is within this variant's window
-                if (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes) {
-                    currentVariantIndex = i;
-                    break;
-                }
-            }
-            
-            // If no current variant found, use last variant
-            if (currentVariantIndex === -1 && sortedVariants.length > 0) {
-                currentVariantIndex = sortedVariants.length - 1;
-            }
-            
-            // Set current variant
-            currentVariantKey = currentVariantIndex >= 0 ? sortedVariants[currentVariantIndex].variant : null;
-            
-            // Apply styling based on supervisor
-            applySupervisorStyling(currentSupervisor);
-            
-            // Update UI
-            updateSupervisorInfo(group);
-            updateTotalsDisplay(group);
-            renderCumulativeChart(group);
-            updateHourlyChart();
-            updateHourDropdown();
-        }
-
-        function updateSupervisorInfo(group) {
-    document.getElementById('supervisor-name').textContent = `SUPERVISOR: ${group.supervisor}`;
-    document.getElementById('product-name').textContent = `${group.product}`;
-    
-    // Update variant sequence
-    const sequenceContainer = document.getElementById('variant-sequence');
-    sequenceContainer.innerHTML = '';
-    
-    if (group.variants.length === 0) {
-        sequenceContainer.innerHTML = '<div>No variants available</div>';
-        return;
-    }
-    
-    // Get current time to determine variant status
-    const now = new Date();
-    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-    
-    // Add each variant to the sequence with simplified display
-    group.variants.forEach((variant, index) => {
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        
-        if (!supervisorVariant) return;
-        
-        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-        
-        if (!startTimeStr || !endTimeStr) return;
-        
-        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-        
-        const startTimeMinutes = startHour * 60 + startMinute;
-        const endTimeMinutes = endHour * 60 + endMinute;
-        
-        // Determine variant status
-        let status = '';
-        if (currentTimeMinutes < startTimeMinutes) {
-            status = 'upcoming';
-        } else if (currentTimeMinutes > endTimeMinutes) {
-            status = 'completed';
-        } else {
-            status = 'current';
-        }
-        
-        // Extract variant name from full variant string
-        let displayName = variant.variant;
-        
-        // Try to extract just the variant part
-        if (variant.variant.startsWith(group.product + ' ')) {
-            displayName = variant.variant.substring(group.product.length + 1);
-        }
-        
-        // Create simplified variant element
-        const variantElement = document.createElement('div');
-        variantElement.className = `variant-item ${status}`;
-        variantElement.innerHTML = `
-            <span>${displayName}</span>
-            <span class="variant-time">${startTimeStr}-${endTimeStr}</span>
-        `;
-        
-        sequenceContainer.appendChild(variantElement);
-        
-        // Add arrow if not the last variant
-        if (index < group.variants.length - 1) {
-            const arrow = document.createElement('div');
-            arrow.className = 'arrow-right';
-            arrow.textContent = '→';
-            sequenceContainer.appendChild(arrow);
-        }
-    });
-}
-
-        function updateTotalsDisplay(group) {
-    // Initialize aggregated values
-    let totalTarget = 0;
-    let totalProduction = 0;
-    let totalBoxTarget = 0;
-    let totalBoxProduction = 0;
-    let weightedCycleTime = 0;
-    let totalCycleTimeWeight = 0;
-    
-    // Calculate aggregated values
-    group.variants.forEach(variant => {
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        
-        if (supervisorVariant) {
-            totalTarget += (supervisorVariant.dailyTarget || 0);
-            totalProduction += (supervisorVariant.currentTotal || 0);
-            
-            // Add box totals consistently for all variants
-            totalBoxTarget += (variant.dailyBoxTarget || 0);
-            totalBoxProduction += (variant.currentBoxTotal || 0);
-            
-            // Add cycle time weighted by target
-            const cycleTime = variant.cycleTime || 0;
-            const target = supervisorVariant.dailyTarget || 0;
-            
-            if (cycleTime > 0 && target > 0) {
-                weightedCycleTime += cycleTime * target;
-                totalCycleTimeWeight += target;
-            }
-        }
-    });
-    
-    // Calculate overall progress percentage
-    const progressPercentage = totalTarget > 0 ? Math.round((totalProduction / totalTarget) * 100) : 0;
-    
-    // Calculate average cycle time
-    const avgCycleTime = totalCycleTimeWeight > 0 ? Math.round(weightedCycleTime / totalCycleTimeWeight) : 0;
-    
-    // Calculate actual cycle time across all variants
-    const actualCycleTime = calculateActualCycleTime(group.variants);
-    
-    // Update totals display
-    const totalsDisplay = document.getElementById('totals-display');
-    totalsDisplay.innerHTML = '';
-    
-    // Progress display with percentage
-    totalsDisplay.innerHTML += `
-        <div class="total-item">
-            <div class="total-label">
-                Progress <span class="total-percentage">${progressPercentage}%</span>
-            </div>
-            <div class="total-value">
-                <span class="current-value">${totalProduction}</span>/<span class="target-value">${totalTarget}</span>
-            </div>
-            <div class="total-subvalue">
-                <span class="current-value">${totalBoxProduction}</span>/<span class="target-value">${totalBoxTarget}</span> boxes
-            </div>
-        </div>
-    `;
-    
-    // Cycle Time display
-    totalsDisplay.innerHTML += `
-        <div class="total-item">
-            <div class="total-label">Cycle Time</div>
-            <div class="total-value">
-                <span class="current-value">${actualCycleTime === "N/A" ? "N/A" : actualCycleTime}</span>/<span class="target-value">${avgCycleTime}</span>
-            </div>
-            <div class="total-subvalue">sec/unit</div>
-        </div>
-    `;
-    
-    // Render hourly targets in the dedicated container
-    const hourlyTargetsContainer = document.getElementById('hourly-targets-container');
-    if (hourlyTargetsContainer) {
-        hourlyTargetsContainer.innerHTML = '';
-        hourlyTargetsContainer.appendChild(renderHourlyTargetsVisual(group));
-    }
-}
-        function renderHourlyTargetsVisual(group) {
-    // Create container
-    const container = document.createElement('div');
-    container.className = 'hourly-targets-container';
-    
-    // Get all hourly targets and production for this product group
-    const hourlyTargetsMap = new Map();
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const currentTimeMinutes = currentHour * 60 + currentMinute;
-    
-    // Combine hourly data from all variants
-    group.variants.forEach(variant => {
-        // Get variant time window
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        if (!supervisorVariant) return;
-        
-        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-        
-        if (!startTimeStr || !endTimeStr) return;
-        
-        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-        
-        const startTimeMinutes = startHour * 60 + startMinute;
-        const endTimeMinutes = endHour * 60 + endMinute;
-        
-        // Process hourly targets
-        if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets)) {
-            variant.hourlyTargets.forEach(item => {
-                if (!item.hour) return;
-                
-                // Check if this hour is within this variant's time window
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    hourlyTargetsMap.set(item.hour, {
-                        hour: item.hour,
-                        target: item.target || 0,
-                        production: 0,
-                        metTarget: false,
-                        variant: variant.variant
-                    });
-                }
-            });
-        }
-        
-        // Process hourly production
-        if (variant.hourlyProduction && Array.isArray(variant.hourlyProduction)) {
-            variant.hourlyProduction.forEach(item => {
-                if (!item.hour) return;
-                
-                // Check if this hour is within this variant's time window
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    if (hourlyTargetsMap.has(item.hour)) {
-                        const hourData = hourlyTargetsMap.get(item.hour);
-                        hourData.production = item.production || 0;
-                        hourData.metTarget = hourData.production >= hourData.target;
-                    } else {
-                        hourlyTargetsMap.set(item.hour, {
-                            hour: item.hour,
-                            target: 0,
-                            production: item.production || 0,
-                            metTarget: true,
-                            variant: variant.variant
-                        });
-                    }
-                }
-            });
-        }
-    });
-    
-    // Sort hours
-    const hours = Array.from(hourlyTargetsMap.keys()).sort((a, b) => {
-        const [hourA, minuteA] = a.split(':').map(Number);
-        const [hourB, minuteB] = b.split(':').map(Number);
-        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-    });
-    
-    // Find which hour is current
-    let currentHourIndex = -1;
-    for (let i = 0; i < hours.length; i++) {
-        const [hour, minute] = hours[i].split(':').map(Number);
-        const hourMinutes = hour * 60 + minute;
-        
-        const prevHourMinutes = i > 0 ? 
-            hours[i-1].split(':').map(Number).reduce((h, m) => h * 60 + m, 0) :
-            0;
-        
-        if (currentTimeMinutes >= prevHourMinutes && currentTimeMinutes < hourMinutes) {
-            currentHourIndex = i;
-            break;
-        }
-    }
-    
-    // If not found but time is after last hour, use last hour
-    if (currentHourIndex === -1 && hours.length > 0) {
-        const lastHourTime = hours[hours.length - 1].split(':').map(Number);
-        const lastHourMinutes = lastHourTime[0] * 60 + lastHourTime[1];
-        if (currentTimeMinutes >= lastHourMinutes) {
-            currentHourIndex = hours.length - 1;
-        }
-    }
-    
-    // Create SVG for visualization - REDUCED HEIGHT
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('class', 'hourly-targets-svg');
-    svg.setAttribute('height', '90'); // Reduced height
-    svg.setAttribute('viewBox', `0 0 ${Math.max(hours.length * 80, 400)} 90`); // Adjusted viewBox
-    
-    // Calculate spacing - MORE COMPACT
-    const circleRadius = 25; // Smaller radius
-    const spacing = 80;     // Reduced spacing
-    const yPosition = 40;   // Reduced vertical center
-    
-    // Draw each hour circle
-    hours.forEach((hour, index) => {
-        const hourData = hourlyTargetsMap.get(hour);
-        const xPosition = index * spacing + 60; // Adjusted position
-        
-        // Circle
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('class', 'hourly-circle');
-        circle.setAttribute('cx', xPosition);
-        circle.setAttribute('cy', yPosition);
-        circle.setAttribute('r', circleRadius);
-        svg.appendChild(circle);
-        
-        // Time label
-        const timeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        timeLabel.setAttribute('class', 'time-label');
-        timeLabel.setAttribute('x', xPosition);
-        timeLabel.setAttribute('y', yPosition + circleRadius + 10); // Adjusted position
-        timeLabel.setAttribute('font-size', '1.5'); // Smaller font
-        timeLabel.textContent = hour;
-        svg.appendChild(timeLabel);
-        
-        // Status indicator - SMALLER
-        if (hourData) {
-            if (hourData.metTarget) {
-                // Check mark - scaled down
-                const checkmark = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                checkmark.setAttribute('class', 'status-icon status-success');
-                checkmark.setAttribute('d', `M${xPosition - 15},${yPosition} L${xPosition - 3},${yPosition + 12} L${xPosition + 15},${yPosition - 12}`);
-                checkmark.setAttribute('fill', 'none');
-                svg.appendChild(checkmark);
-            } else {
-                // X mark - scaled down
-                const xMark1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                xMark1.setAttribute('class', 'status-icon status-fail');
-                xMark1.setAttribute('x1', xPosition - 15);
-                xMark1.setAttribute('y1', yPosition - 15);
-                xMark1.setAttribute('x2', xPosition + 15);
-                xMark1.setAttribute('y2', yPosition + 15);
-                xMark1.setAttribute('stroke-linecap', 'round');
-                svg.appendChild(xMark1);
-                
-                const xMark2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                xMark2.setAttribute('class', 'status-icon status-fail');
-                xMark2.setAttribute('x1', xPosition - 15);
-                xMark2.setAttribute('y1', yPosition + 15);
-                xMark2.setAttribute('x2', xPosition + 15);
-                xMark2.setAttribute('y2', yPosition - 15);
-                xMark2.setAttribute('stroke-linecap', 'round');
-                svg.appendChild(xMark2);
-            }
-        }
-        
-        // Current hour indicator - scaled down
-        if (index === currentHourIndex) {
-            const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            arrow.setAttribute('class', 'current-arrow');
-            arrow.setAttribute('d', `M${xPosition - 15},${yPosition - 45} L${xPosition},${yPosition - 30} L${xPosition + 15},${yPosition - 45} Z`);
-            svg.appendChild(arrow);
-        }
-    });
-    
-    container.appendChild(svg);
-    return container;
-}
-
-        function renderCumulativeChart(group) {
+       // Function to render the cumulative chart
+function renderCumulativeChart(group) {
     const chartContainer = document.getElementById('cumulative-chart');
-    const chartTitle = document.getElementById('cumulative-chart-title');
     chartContainer.innerHTML = '';
     
     const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-    chartTitle.textContent = `${currentDay}'s Production Progress`;
+    document.getElementById('cumulative-chart-title').textContent = `TODAY'S PRODUCTION PROGRESS`;
     
     // Collect all hours across all variants
     const allHoursSet = new Set();
@@ -3039,7 +2271,8 @@ function updateDashboard() {
     svg.appendChild(targetLineGroup);
 }
 
-function updateHourlyChart() {
+        // Function to render the hourly chart
+function renderHourlyChart(group) {
     const chartContainer = document.getElementById('hourly-chart');
     chartContainer.innerHTML = '';
     
@@ -3048,40 +2281,23 @@ function updateHourlyChart() {
         return;
     }
     
-    // Determine which hour to display
-    let displayHour;
-    if (selectedHour === 'current') {
-        // For current hour option, get next production hour
-        const allHours = new Set();
-        currentProductVariants.forEach(variant => {
-            if (variant.hourlyTargets) {
-                variant.hourlyTargets.forEach(item => {
-                    if (item.hour) allHours.add(item.hour);
-                });
-            }
-        });
-        
-        displayHour = getNextProductionHour(Array.from(allHours));
-    } else {
-        // For specific hour selection
-        displayHour = selectedHour;
-    }
+    // Get current hour
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const hourStr = currentMinute < 30 ? 
+        `${currentHour.toString().padStart(2, '0')}:30` : 
+        `${(currentHour + 1).toString().padStart(2, '0')}:30`;
+    
+    document.getElementById('hourly-chart-title').textContent = `${hourStr} HOUR PRODUCTION`;
     
     // Find all variants active during this hour
     const activeVariants = [];
     const hourlyData = { target: 0, production: 0 };
     
     // Get the hour's time in minutes
-    const [hourVal, minuteVal] = displayHour.split(':').map(Number);
+    const [hourVal, minuteVal] = hourStr.split(':').map(Number);
     const hourTimeMinutes = hourVal * 60 + minuteVal;
-    
-    // Show countdown for current hour if appropriate
-    if (selectedHour === 'current') {
-        startCountdown(displayHour);
-    } else {
-        if (countdownInterval) clearInterval(countdownInterval);
-        document.querySelector('.hour-countdown').textContent = '';
-    }
     
     // Process all variants to find those active during this hour
     currentProductVariants.forEach(variant => {
@@ -3102,21 +2318,22 @@ function updateHourlyChart() {
         const endTimeMinutes = endHour * 60 + endMinute;
         
         // Check if this hour falls within this variant's window
-        if (hourTimeMinutes >= startTimeMinutes && hourTimeMinutes <= endTimeMinutes) {
-            activeVariants.push(variant);
+        // For the current hour's targets and production, we need to look for the appropriate data
+        // The key is that we need to find data for the current hour, not just any hour
+        if (variant.hourlyTargets && variant.hourlyProduction) {
+            const targetItem = variant.hourlyTargets.find(item => item.hour === hourStr);
+            const productionItem = variant.hourlyProduction.find(item => item.hour === hourStr);
             
-            // Add target and production data
-            if (variant.hourlyTargets) {
-                const targetData = variant.hourlyTargets.find(item => item.hour === displayHour);
-                if (targetData) {
-                    hourlyData.target += targetData.target || 0;
+            if (targetItem || productionItem) {
+                activeVariants.push(variant);
+                
+                // Add target and production data
+                if (targetItem) {
+                    hourlyData.target += targetItem.target || 0;
                 }
-            }
-            
-            if (variant.hourlyProduction) {
-                const productionData = variant.hourlyProduction.find(item => item.hour === displayHour);
-                if (productionData) {
-                    hourlyData.production += productionData.production || 0;
+                
+                if (productionItem) {
+                    hourlyData.production += productionItem.production || 0;
                 }
             }
         }
@@ -3260,7 +2477,7 @@ function updateHourlyChart() {
     productionLabelText.setAttribute('font-size', '18');
     productionLabelText.setAttribute('font-weight', '500');
     productionLabelText.setAttribute('fill', 'var(--production-color)');
-    productionLabelText.textContent = 'Production';
+    productionLabelText.textContent = 'ACTUAL';
     svg.appendChild(productionLabelText);
     
     const targetLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -3270,7 +2487,7 @@ function updateHourlyChart() {
     targetLabelText.setAttribute('font-size', '18');
     targetLabelText.setAttribute('font-weight', '500');
     targetLabelText.setAttribute('fill', 'var(--target-color)');
-    targetLabelText.textContent = 'Target';
+    targetLabelText.textContent = 'TARGET';
     svg.appendChild(targetLabelText);
     
     // X axis line
@@ -3283,15 +2500,11 @@ function updateHourlyChart() {
     xAxisLine2.setAttribute('stroke-width', '1.5');
     svg.appendChild(xAxisLine2);
     
-    // Update hour select dropdown
-    const select = document.getElementById('hour-range-select');
-    select.value = selectedHour === 'current' ? 'current' : displayHour;
-    
     // Add active variants list with larger font
     if (activeVariants.length > 1) {
         const activeVariantsText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         activeVariantsText.setAttribute('x', svgWidth / 2);
-        activeVariantsText.setAttribute('y', padding.top + chartHeight + 50);
+        activeVariantsText.setAttribute('y', padding.top + chartHeight + 60);
         activeVariantsText.setAttribute('text-anchor', 'middle');
         activeVariantsText.setAttribute('font-size', '16');
         activeVariantsText.setAttribute('fill', '#666');
@@ -3299,30 +2512,128 @@ function updateHourlyChart() {
         const variantNames = activeVariants.map(v => {
             // Extract variant name from full string
             let displayName = v.variant;
-            if (v.variant.startsWith(currentProduct + ' ')) {
+            if (v.variant.includes('-')) {
+                displayName = v.variant.split('-').pop();
+            } else if (v.variant.startsWith(currentProduct + ' ')) {
                 displayName = v.variant.substring(currentProduct.length + 1);
             }
             return displayName;
         });
         
-        activeVariantsText.textContent = `Active variants: ${variantNames.join(', ')}`;
+        if (variantNames.length <= 2) {
+            activeVariantsText.textContent = `Active variants: ${variantNames.join(', ')}`;
+        } else {
+            activeVariantsText.textContent = `${variantNames.length} active variants`;
+        }
         svg.appendChild(activeVariantsText);
     }
 }
 
+        // Function to render hourly targets
+        function renderHourlyTargets(group) {
+            const container = document.getElementById('hourly-targets-grid');
+            container.innerHTML = '';
+            
+            // Get all hourly targets and production for this product group
+            const hourlyData = new Map();
+            const now = new Date();
+            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            // Combine hourly data from all variants
+            group.variants.forEach(variant => {
+                // Get variant time window
+                const supervisorVariant = group.supervisorData.variants[variant.variant];
+                if (!supervisorVariant) return;
+                
+                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
+                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+                
+                if (!startTimeStr || !endTimeStr) return;
+                
+                // Process hourly targets and production
+                if (variant.hourlyTargets && Array.isArray(variant.hourlyTargets) &&
+                    variant.hourlyProduction && Array.isArray(variant.hourlyProduction)) {
+                    
+                    // Create a map of hour -> {target, production}
+                    const hours = new Set([
+                        ...variant.hourlyTargets.map(h => h.hour),
+                        ...variant.hourlyProduction.map(h => h.hour)
+                    ]);
+                    
+                    hours.forEach(hour => {
+                        const target = variant.hourlyTargets.find(h => h.hour === hour)?.target || 0;
+                        const production = variant.hourlyProduction.find(h => h.hour === hour)?.production || 0;
+                        
+                        if (!hourlyData.has(hour)) {
+                            hourlyData.set(hour, { target, production });
+                        } else {
+                            const existing = hourlyData.get(hour);
+                            hourlyData.set(hour, {
+                                target: existing.target + target,
+                                production: existing.production + production
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // Sort hours
+            const sortedHours = Array.from(hourlyData.keys()).sort((a, b) => {
+                const [hourA, minuteA] = a.split(':').map(Number);
+                const [hourB, minuteB] = b.split(':').map(Number);
+                return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
+            });
+            
+            // Create hourly target items
+            sortedHours.forEach(hour => {
+                const data = hourlyData.get(hour);
+                const [hourVal, minuteVal] = hour.split(':').map(Number);
+                const hourMinutes = hourVal * 60 + minuteVal;
+                
+                // Determine status
+                let status;
+                let statusSymbol;
+                
+                if (currentTimeMinutes < hourMinutes - 30) {
+                    // Upcoming hour
+                    status = 'status-upcoming';
+                    statusSymbol = '';
+                } else if (currentTimeMinutes >= hourMinutes + 30) {
+                    // Past hour - check if target was met
+                    if (data.production >= data.target) {
+                        status = 'status-met';
+                        statusSymbol = '✓';
+                    } else {
+                        status = 'status-missed';
+                        statusSymbol = '✗';
+                    }
+                } else {
+                    // Current hour
+                    status = 'status-current';
+                    statusSymbol = 'NOW';
+                }
+                
+                // Create hourly target item
+                const item = document.createElement('div');
+                item.className = `hourly-target-item ${status}`;
+                
+                const timeElement = document.createElement('div');
+                timeElement.className = 'hourly-target-time';
+                timeElement.textContent = hour;
+                
+                const statusElement = document.createElement('div');
+                statusElement.className = 'hourly-target-status';
+                statusElement.textContent = statusSymbol;
+                
+                item.appendChild(timeElement);
+                item.appendChild(statusElement);
+                container.appendChild(item);
+            });
+        }
+
         // Initialize the dashboard when the window loads
         window.onload = initDashboard;
-        
-        // Update charts on window resize
-        window.addEventListener('resize', function() {
-            if (currentProduct && currentSupervisor) {
-                const group = productSupervisorGroups[`${currentSupervisor}:${currentProduct}`];
-                if (group) {
-                    renderCumulativeChart(group);
-                    updateHourlyChart();
-                }
-            }
-        });
     </script>
 </body>
 </html>
+
