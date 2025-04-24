@@ -48,7 +48,7 @@ html, body {
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial, Helvetica, sans-serif; /* More readable font for distance viewing */
     background-color: var(--light-color);
     color: var(--primary-color);
     transition: background-color 0.3s ease;
@@ -97,7 +97,7 @@ body {
 }
 
 .title {
-    font-size: clamp(1.2rem, 2vw, 2.4rem);
+    font-size: clamp(1.4rem, 2.2vw, 2.8rem); /* Increased font size */
     font-weight: bold;
     color: var(--primary-color);
     white-space: nowrap;
@@ -120,7 +120,7 @@ body {
     padding: clamp(0.25rem, 0.5vh, 0.5rem) clamp(0.5rem, 0.75vw, 0.75rem);
     border-radius: 5px;
     border: 1px solid var(--secondary-color);
-    font-size: clamp(0.75rem, 1vw, 1rem);
+    font-size: clamp(0.85rem, 1.1vw, 1.2rem); /* Increased font size */
     min-width: clamp(120px, 10vw, 180px);
     background-color: white;
 }
@@ -135,7 +135,7 @@ body {
     background-color: var(--secondary-color);
     color: white;
     padding: clamp(0.25rem, 0.5vh, 0.5rem) clamp(0.5rem, 0.75vw, 0.75rem);
-    font-size: clamp(0.75rem, 1vw, 1rem);
+    font-size: clamp(0.85rem, 1.1vw, 1.2rem); /* Increased font size */
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -153,7 +153,7 @@ body {
     background-color: #e2e8f0;
     color: var(--dark-color);
     padding: clamp(0.25rem, 0.5vh, 0.5rem) clamp(0.5rem, 0.75vw, 0.75rem);
-    font-size: clamp(0.75rem, 1vw, 1rem);
+    font-size: clamp(0.85rem, 1.1vw, 1.2rem); /* Increased font size */
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -172,7 +172,7 @@ body {
 }
 
 .time {
-    font-size: clamp(1rem, 1.5vw, 1.8rem);
+    font-size: clamp(1.2rem, 1.8vw, 2.2rem); /* Increased font size */
     font-weight: bold;
 }
 
@@ -203,28 +203,37 @@ body {
 }
 
 .legend-color {
-    width: clamp(1.25rem, 2vw, 2rem);
-    height: clamp(1.25rem, 2vw, 2rem);
+    width: clamp(1.5rem, 2.2vw, 2.5rem); /* Increased size */
+    height: clamp(1.5rem, 2.2vw, 2.5rem); /* Increased size */
     margin-right: clamp(0.25rem, 0.5vw, 0.5rem);
     border-radius: 5px;
 }
 
 .legend-label {
-    font-size: clamp(0.8rem, 1.25vw, 1.4rem);
-    font-weight: 500;
+    font-size: clamp(1rem, 1.4vw, 1.6rem); /* Increased font size */
+    font-weight: 700; /* Made bolder */
     white-space: nowrap;
 }
 
 .current-hour-info {
-    font-size: clamp(0.8rem, 1.25vw, 1.4rem);
+    font-size: clamp(1rem, 1.4vw, 1.6rem); /* Increased font size */
     color: var(--secondary-color);
-    font-weight: 500;
+    font-weight: 700; /* Made bolder */
     white-space: nowrap;
     text-align: right;
 }
 
 /* ===== CONTENT CONTAINER ===== */
 .content {
+    display: flex;
+    flex-direction: row; /* Changed to row layout */
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    gap: clamp(0.5rem, 1vh, 1rem);
+}
+
+.main-content {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -253,14 +262,14 @@ body {
 }
 
 .supervisor-name {
-    font-size: clamp(1rem, 1.5vw, 1.8rem);
+    font-size: clamp(1.2rem, 1.7vw, 2rem); /* Increased font size */
     font-weight: bold;
     margin-bottom: clamp(0.25rem, 0.5vh, 0.5rem);
     color: var(--dark-color);
 }
 
 .product-name {
-    font-size: clamp(0.9rem, 1.3vw, 1.6rem);
+    font-size: clamp(1.1rem, 1.5vw, 1.8rem); /* Increased font size */
     color: var(--dark-color);
     margin-bottom: clamp(0.5rem, 1vh, 1rem);
 }
@@ -268,7 +277,7 @@ body {
 .variant-sequence {
     display: flex;
     align-items: center;
-    font-size: clamp(0.75rem, 1vw, 1rem);
+    font-size: clamp(0.9rem, 1.2vw, 1.4rem); /* Increased font size */
     flex-wrap: wrap;
     gap: clamp(0.25rem, 0.5vw, 0.5rem);
     margin-top: auto;
@@ -301,7 +310,7 @@ body {
 
 .arrow-right {
     margin: 0 clamp(0.1rem, 0.25vw, 0.25rem);
-    font-size: clamp(0.9rem, 1.25vw, 1.5rem);
+    font-size: clamp(1.1rem, 1.45vw, 1.7rem); /* Increased font size */
     color: var(--dark-color);
 }
 
@@ -327,7 +336,7 @@ body {
 }
 
 .metric-title {
-    font-size: clamp(0.9rem, 1.3vw, 1.6rem);
+    font-size: clamp(1.1rem, 1.5vw, 1.8rem); /* Increased font size */
     font-weight: bold;
     margin-bottom: clamp(0.5rem, 0.75vh, 0.75rem);
     color: var(--primary-color);
@@ -335,14 +344,14 @@ body {
 }
 
 .metric-value {
-    font-size: clamp(1.5rem, 2.5vw, 3rem);
+    font-size: clamp(1.8rem, 2.8vw, 3.4rem); /* Increased font size */
     font-weight: bold;
     margin-bottom: clamp(0.25rem, 0.5vh, 0.5rem);
     text-align: center;
 }
 
 .metric-subvalue {
-    font-size: clamp(0.75rem, 1.1vw, 1.4rem);
+    font-size: clamp(0.9rem, 1.3vw, 1.6rem); /* Increased font size */
     text-align: center;
 }
 
@@ -370,7 +379,7 @@ body {
 }
 
 .chart-title {
-    font-size: clamp(1rem, 1.5vw, 1.8rem);
+    font-size: clamp(1.2rem, 1.7vw, 2rem); /* Increased font size */
     font-weight: 600;
     margin-bottom: clamp(0.5rem, 1vh, 1rem);
     color: var(--primary-color);
@@ -408,8 +417,8 @@ body {
 }
 
 .chart-nav-dot {
-    width: clamp(0.5rem, 1vw, 0.75rem);
-    height: clamp(0.5rem, 1vw, 0.75rem);
+    width: clamp(0.8rem, 1.3vw, 1.2rem); /* Increased size */
+    height: clamp(0.8rem, 1.3vw, 1.2rem); /* Increased size */
     border-radius: 50%;
     background-color: #cbd5e1;
     cursor: pointer;
@@ -421,88 +430,69 @@ body {
     transform: scale(1.2);
 }
 
-/* ===== HOURLY TARGETS SECTION ===== */
-.hourly-targets-section {
-    width: 100%;
+/* ===== BATCH INFO SECTION (NEW) ===== */
+.batch-info-section {
+    flex: 0 0 clamp(300px, 25vw, 500px);
     background-color: white;
     border-radius: 12px;
     padding: clamp(0.75rem, 1.5vh, 1.5rem);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    flex-shrink: 0;
-    max-height: clamp(120px, 15vh, 200px);
-    overflow-y: auto;
-    scrollbar-width: thin;
-}
-
-.hourly-targets-section::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-.hourly-targets-section::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-    border-radius: 3px;
-}
-
-.hourly-targets-title {
-    font-size: clamp(1rem, 1.5vw, 1.8rem);
-    font-weight: bold;
-    margin-bottom: clamp(0.5rem, 1vh, 1rem);
-    color: var(--primary-color);
-}
-
-.hourly-targets-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: clamp(0.5rem, 1vw, 1rem);
-    justify-content: center;
-}
-
-.hourly-target-item {
-    width: clamp(60px, 5vw, 80px);
-    height: clamp(45px, 4.5vh, 60px);
-    border-radius: 8px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+    overflow-y: auto;
+    max-height: 100%;
 }
 
-.hourly-target-time {
+.batch-info-title {
+    font-size: clamp(1.2rem, 1.7vw, 2rem); /* Large font size */
     font-weight: bold;
-    font-size: clamp(0.7rem, 0.9vw, 1.1rem);
+    margin-bottom: clamp(0.75rem, 1.5vh, 1.5rem);
+    color: var(--primary-color);
+    text-align: center;
 }
 
-.hourly-target-status {
-    font-size: clamp(0.75rem, 1vw, 1.2rem);
-    margin-top: clamp(0.15rem, 0.25vh, 0.25rem);
+.batch-info-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
-.status-met {
-    background-color: var(--status-met);
-    border: 3px solid #0d9488;
+.batch-info-table th {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: clamp(0.9rem, 1.3vw, 1.6rem); /* Increased font size */
+    padding: clamp(0.5rem, 1vh, 1rem) clamp(0.25rem, 0.5vw, 0.5rem);
+    text-align: left;
+    position: sticky;
+    top: 0;
 }
 
-.status-missed {
-    background-color: var(--status-missed);
-    border: 3px solid #e11d48;
+.batch-info-table td {
+    font-size: clamp(0.85rem, 1.2vw, 1.5rem); /* Increased font size */
+    padding: clamp(0.4rem, 0.8vh, 0.8rem) clamp(0.25rem, 0.5vw, 0.5rem);
+    border-bottom: 1px solid #e2e8f0;
 }
 
-.status-current {
-    background-color: var(--status-current);
-    border: 4px solid #ca8a04;
+.batch-info-table tr:nth-child(even) {
+    background-color: #f8fafc;
 }
 
-.status-upcoming {
-    background-color: white;
-    border: 2px solid #94a3b8;
+.batch-info-table tr:hover {
+    background-color: #e9f5fd;
+}
+
+.batch-info-table tr.current {
+    background-color: var(--current-variant);
+}
+
+.batch-number {
+    font-weight: bold;
 }
 
 /* ===== FOOTER ===== */
 .footer {
     margin-top: clamp(0.25rem, 0.5vh, 0.5rem);
-    font-size: clamp(0.7rem, 0.9vw, 0.9rem);
+    font-size: clamp(0.85rem, 1.1vw, 1.3rem); /* Increased font size */
     color: var(--dark-color);
     width: 100%;
     flex-shrink: 0;
@@ -562,13 +552,13 @@ body {
 
 .supervisor-select-header h3 {
     margin: 0;
-    font-size: clamp(1.1rem, 1.5vw, 1.5rem);
+    font-size: clamp(1.3rem, 1.7vw, 1.9rem); /* Increased font size */
     color: var(--dark-color);
 }
 
 .supervisor-select-close {
     color: #aaa;
-    font-size: clamp(1.5rem, 2vw, 2rem);
+    font-size: clamp(1.8rem, 2.5vw, 2.8rem); /* Increased font size */
     font-weight: bold;
     cursor: pointer;
     line-height: 1;
@@ -603,14 +593,14 @@ body {
 }
 
 .supervisor-checkbox-item input[type="checkbox"] {
-    width: clamp(16px, 1.5vw, 20px);
-    height: clamp(16px, 1.5vw, 20px);
+    width: clamp(18px, 1.7vw, 22px); /* Increased size */
+    height: clamp(18px, 1.7vw, 22px); /* Increased size */
     margin-right: clamp(0.5rem, 1vw, 1rem);
     cursor: pointer;
 }
 
 .supervisor-checkbox-item label {
-    font-size: clamp(0.9rem, 1.2vw, 1.2rem);
+    font-size: clamp(1.1rem, 1.4vw, 1.6rem); /* Increased font size */
     font-weight: 500;
     cursor: pointer;
     flex: 1;
@@ -628,34 +618,25 @@ body {
 /* ===== RESPONSIVE DESIGN - ADDITIONAL SCREEN SIZE OPTIMIZATIONS ===== */
 /* Special optimization for very large screens (TVs) */
 @media screen and (min-width: 2000px) {
-    .dashboard-container.fullscreen-mode .hourly-target-item {
-        width: clamp(80px, 6vw, 120px);
-        height: clamp(60px, 5vh, 90px);
+    .chart-title {
+        font-size: clamp(1.4rem, 2vw, 2.4rem);
     }
     
-    .dashboard-container.fullscreen-mode .hourly-target-time {
-        font-size: clamp(0.9rem, 1.1vw, 1.3rem);
+    .legend-label {
+        font-size: clamp(1.2rem, 1.6vw, 1.8rem);
     }
     
-    .dashboard-container.fullscreen-mode .hourly-target-status {
-        font-size: clamp(1rem, 1.2vw, 1.4rem);
-    }
-    
-    .dashboard-container.fullscreen-mode .chart-title {
-        font-size: clamp(1.2rem, 1.8vw, 2rem);
-    }
-    
-    .dashboard-container.fullscreen-mode .legend-label {
-        font-size: clamp(1rem, 1.4vw, 1.6rem);
-    }
-    
-    .dashboard-container.fullscreen-mode .current-hour-info {
-        font-size: clamp(1rem, 1.4vw, 1.6rem);
+    .current-hour-info {
+        font-size: clamp(1.2rem, 1.6vw, 1.8rem);
     }
 }
 
 /* For smaller screens */
 @media screen and (max-width: 1200px) {
+    .content {
+        flex-direction: column; /* Stack content on smaller screens */
+    }
+    
     .top-row {
         flex-direction: column;
     }
@@ -669,13 +650,10 @@ body {
         width: 100%;
     }
     
-    .charts-row {
-        flex-direction: column;
-        min-height: clamp(500px, 60vh, 700px);
-    }
-    
-    .chart {
-        min-height: clamp(250px, 30vh, 350px);
+    .batch-info-section {
+        flex: 0 0 auto;
+        width: 100%;
+        max-height: 300px; /* Limit height on smaller screens */
     }
 }
 
@@ -723,10 +701,6 @@ body {
     .legend-section {
         margin-bottom: clamp(0.25rem, 0.5vh, 0.5rem);
         padding: clamp(0.25rem, 0.5vh, 0.5rem) clamp(0.5rem, 1vw, 1rem);
-    }
-    
-    .hourly-targets-section {
-        max-height: clamp(80px, 20vh, 120px);
     }
 }
     </style>
@@ -782,70 +756,87 @@ body {
             <div class="current-hour-info" id="current-hour-info">CURRENT HOUR: --:-- (-- MIN LEFT)</div>
         </div>
         
-        <!-- Content wrapper for flex layout in fullscreen -->
+        <!-- Content wrapper for main and batch info -->
         <div class="content">
-            <!-- Top Row: Supervisor + Metrics -->
-            <div class="top-row">
-                <!-- Supervisor Panel -->
-                <div class="supervisor-panel">
-                    <div class="supervisor-name" id="supervisor-name">SUPERVISOR: Loading...</div>
-                    <div class="product-name" id="product-name">PRODUCT: Loading...</div>
+            <!-- Main content area -->
+            <div class="main-content">
+                <!-- Top Row: Supervisor + Metrics -->
+                <div class="top-row">
+                    <!-- Supervisor Panel -->
+                    <div class="supervisor-panel">
+                        <div class="supervisor-name" id="supervisor-name">SUPERVISOR: Loading...</div>
+                        <div class="product-name" id="product-name">PRODUCT: Loading...</div>
+                        
+                        <div class="variant-sequence" id="variant-sequence">
+                            <div class="loading">Loading variants...</div>
+                        </div>
+                    </div>
                     
-                    <div class="variant-sequence" id="variant-sequence">
-                        <div class="loading">Loading variants...</div>
+                    <!-- Metrics Container -->
+                    <div class="metrics-container">
+                        <!-- Units (renamed from Progress) -->
+                        <div class="metric-card">
+                            <div class="metric-title">UNITS</div>
+                            <div class="metric-value">
+                                <span class="current-value" id="current-units">0</span>/<span class="target-value" id="target-units">0</span>
+                            </div>
+                            <div class="metric-subvalue" id="progress-percentage">0%</div>
+                        </div>
+                        
+                        <!-- Boxes - NEXT TO UNITS -->
+                        <div class="metric-card">
+                            <div class="metric-title">BOXES</div>
+                            <div class="metric-value">
+                                <span class="current-value" id="current-boxes">0</span>/<span class="target-value" id="target-boxes">0</span>
+                            </div>
+                            <div class="metric-subvalue">completed</div>
+                        </div>
+                        
+                        <!-- Cycle Time -->
+                        <div class="metric-card">
+                            <div class="metric-title">CYCLE TIME</div>
+                            <div class="metric-value">
+                                <span class="current-value" id="actual-cycle-time">0</span>/<span class="target-value" id="target-cycle-time">0</span>
+                            </div>
+                            <div class="metric-subvalue">seconds</div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Metrics Container -->
-                <div class="metrics-container">
-                    <!-- Units (renamed from Progress) -->
-                    <div class="metric-card">
-                        <div class="metric-title">UNITS</div>
-                        <div class="metric-value">
-                            <span class="current-value" id="current-units">0</span>/<span class="target-value" id="target-units">0</span>
-                        </div>
-                        <div class="metric-subvalue" id="progress-percentage">0%</div>
+                <!-- Charts Container - With expanded height since hourly targets are removed -->
+                <div class="charts-container">
+                    <div class="chart-title" id="chart-title">Production Progress</div>
+                    <div class="chart-area">
+                        <div class="chart" id="cumulative-chart"></div>
+                        <div class="chart hidden" id="hourly-chart"></div>
                     </div>
-                    
-                    <!-- Boxes - NEXT TO UNITS -->
-                    <div class="metric-card">
-                        <div class="metric-title">BOXES</div>
-                        <div class="metric-value">
-                            <span class="current-value" id="current-boxes">0</span>/<span class="target-value" id="target-boxes">0</span>
-                        </div>
-                        <div class="metric-subvalue">completed</div>
-                    </div>
-                    
-                    <!-- Cycle Time -->
-                    <div class="metric-card">
-                        <div class="metric-title">CYCLE TIME</div>
-                        <div class="metric-value">
-                            <span class="current-value" id="actual-cycle-time">0</span>/<span class="target-value" id="target-cycle-time">0</span>
-                        </div>
-                        <div class="metric-subvalue">seconds</div>
+                    <div class="chart-nav">
+                        <div class="chart-nav-dot active" data-chart="cumulative"></div>
+                        <div class="chart-nav-dot" data-chart="hourly"></div>
                     </div>
                 </div>
             </div>
             
-            <!-- Charts Container - New single container for rotating charts -->
-            <div class="charts-container">
-                <div class="chart-title" id="chart-title">Production Progress</div>
-                <div class="chart-area">
-                    <div class="chart" id="cumulative-chart"></div>
-                    <div class="chart hidden" id="hourly-chart"></div>
-                </div>
-                <div class="chart-nav">
-                    <div class="chart-nav-dot active" data-chart="cumulative"></div>
-                    <div class="chart-nav-dot" data-chart="hourly"></div>
-                </div>
-            </div>
-            
-            <!-- Hourly Targets Section -->
-            <div class="hourly-targets-section">
-                <div class="hourly-targets-title">HOURLY TARGETS</div>
-                <div id="hourly-targets-grid" class="hourly-targets-grid">
-                    <!-- Hourly target items will be added dynamically -->
-                </div>
+            <!-- New Batch Information Panel -->
+            <div class="batch-info-section">
+                <div class="batch-info-title">BATCH INFORMATION</div>
+                <table class="batch-info-table" id="batch-info-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Variant</th>
+                            <th>Batch</th>
+                            <th>Units</th>
+                            <th>Boxes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="batch-info-tbody">
+                        <!-- Batch information will be populated dynamically -->
+                        <tr>
+                            <td colspan="5">Loading batch information...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         
@@ -911,7 +902,7 @@ body {
         let viewportWidth, viewportHeight, chartWidth, chartHeight;
 
         // Dashboard element references
-        let dashboardContainer, supervisorPanel, chartsRow, hourlyTargetsSection;
+        let dashboardContainer, supervisorPanel, chartsRow;
         let fullscreenButton;
 
         // Initialize dashboard
@@ -1403,6 +1394,9 @@ body {
                     productionData = transformedData;
                     lastUpdateTime = transformedData.timestamp;
                     
+                    // Store the original data for batch information
+                    productionData.originalData = data;
+                    
                     // Update only the footer timestamp
                     document.getElementById('last-update').textContent = 'Last updated: ' + transformedData.timestamp;
                     
@@ -1719,10 +1713,10 @@ function showLoadingOrError(message) {
             `<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;">${message}</div>`;
     }
     
-    // Check if hourly-targets-grid exists before trying to clear it
-    const hourlyTargetsGrid = document.getElementById('hourly-targets-grid');
-    if (hourlyTargetsGrid) {
-        hourlyTargetsGrid.innerHTML = '';
+    // Clear batch info table
+    const batchInfoTable = document.getElementById('batch-info-tbody');
+    if (batchInfoTable) {
+        batchInfoTable.innerHTML = `<tr><td colspan="5">${message}</td></tr>`;
     }
 }
 
@@ -1868,6 +1862,163 @@ function showLoadingOrError(message) {
             
             // Display the first group initially
             displayGroup(filteredGroups[groupKeys[0]]);
+            
+            // Update batch information table for all selected supervisors
+            updateBatchInfoTable(filteredGroups);
+        }
+
+        // NEW FUNCTION: Update batch information table
+        function updateBatchInfoTable(filteredGroups) {
+            const batchInfoTableBody = document.getElementById('batch-info-tbody');
+            
+            if (!batchInfoTableBody) return;
+            
+            // Clear existing content
+            batchInfoTableBody.innerHTML = '';
+            
+            // If no original data, show message
+            if (!productionData.originalData || !productionData.originalData.production) {
+                batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
+                return;
+            }
+            
+            // Create an array to hold all batch information from selected supervisors
+            const batchData = [];
+            
+            // Get current time to determine current variant
+            const now = new Date();
+            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            // Process each group's variants
+            Object.values(filteredGroups).forEach(group => {
+                // Get the supervisor's variants
+                const supervisorName = group.supervisor;
+                const supervisor = productionData.supervisors.find(s => s.name === supervisorName);
+                
+                if (!supervisor || !supervisor.variants) return;
+                
+                // For each variant assigned to this supervisor
+                Object.keys(supervisor.variants).forEach(variantKey => {
+                    // Find the original production data
+                    const productionItem = productionData.originalData.production.find(p => p.id === variantKey);
+                    
+                    if (!productionItem || !productionItem.batches) return;
+                    
+                    // Get variant details
+                    const productName = productionItem.product?.name || extractProductFromVariant(variantKey);
+                    const variantName = productionItem.variant?.name || variantKey.split('-').pop();
+                    
+                    // Check if this variant is currently active
+                    const supervisorVariant = supervisor.variants[variantKey];
+                    let isCurrentVariant = false;
+                    
+                    if (supervisorVariant) {
+                        const startTimeStr = supervisorVariant.variantStartTime || productionItem.supervisors[0]?.startTime;
+                        const endTimeStr = supervisorVariant.variantEndTime || productionItem.supervisors[0]?.endTime;
+                        
+                        if (startTimeStr && endTimeStr) {
+                            const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+                            const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                            
+                            const startTimeMinutes = startHour * 60 + startMinute;
+                            const endTimeMinutes = endHour * 60 + endMinute;
+                            
+                            // Check if current time is within this variant's window
+                            isCurrentVariant = (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes);
+                        }
+                    }
+                    
+                    // Process each batch
+                    productionItem.batches.forEach(batch => {
+                        batchData.push({
+                            product: productName,
+                            variant: variantName,
+                            batchId: batch.id,
+                            units: batch.quantity,
+                            boxes: batch.boxes,
+                            supervisor: supervisorName,
+                            isCurrent: isCurrentVariant
+                        });
+                    });
+                });
+            });
+            
+            // Sort batches by supervisor, then by product, then by variant
+            batchData.sort((a, b) => {
+                // First by supervisor
+                if (a.supervisor !== b.supervisor) {
+                    return a.supervisor.localeCompare(b.supervisor);
+                }
+                
+                // Then by product
+                if (a.product !== b.product) {
+                    return a.product.localeCompare(b.product);
+                }
+                
+                // Then by variant
+                return a.variant.localeCompare(b.variant);
+            });
+            
+            // Create table rows for each batch
+            if (batchData.length === 0) {
+                batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
+                return;
+            }
+            
+            let currentSupervisor = null;
+            
+            batchData.forEach(batch => {
+                // Add supervisor header if changed
+                if (batch.supervisor !== currentSupervisor) {
+                    currentSupervisor = batch.supervisor;
+                    
+                    const supervisorRow = document.createElement('tr');
+                    supervisorRow.style.backgroundColor = getSupervisorColor(batch.supervisor);
+                    
+                    const supervisorCell = document.createElement('td');
+                    supervisorCell.colSpan = 5;
+                    supervisorCell.style.fontWeight = 'bold';
+                    supervisorCell.style.fontSize = 'larger';
+                    supervisorCell.textContent = `Supervisor: ${batch.supervisor}`;
+                    
+                    supervisorRow.appendChild(supervisorCell);
+                    batchInfoTableBody.appendChild(supervisorRow);
+                }
+                
+                // Create batch row
+                const row = document.createElement('tr');
+                if (batch.isCurrent) {
+                    row.className = 'current';
+                }
+                
+                // Product cell
+                const productCell = document.createElement('td');
+                productCell.textContent = batch.product;
+                row.appendChild(productCell);
+                
+                // Variant cell
+                const variantCell = document.createElement('td');
+                variantCell.textContent = batch.variant;
+                row.appendChild(variantCell);
+                
+                // Batch ID cell
+                const batchCell = document.createElement('td');
+                batchCell.className = 'batch-number';
+                batchCell.textContent = batch.batchId;
+                row.appendChild(batchCell);
+                
+                // Units cell
+                const unitsCell = document.createElement('td');
+                unitsCell.textContent = batch.units;
+                row.appendChild(unitsCell);
+                
+                // Boxes cell
+                const boxesCell = document.createElement('td');
+                boxesCell.textContent = batch.boxes;
+                row.appendChild(boxesCell);
+                
+                batchInfoTableBody.appendChild(row);
+            });
         }
 
         // Function to display a group
@@ -1939,7 +2090,6 @@ function showLoadingOrError(message) {
             setTimeout(() => {
                 renderCumulativeChart(group);
                 renderHourlyChart(group);
-                renderHourlyTargets(group);
             }, 50);
         }
 
@@ -2172,6 +2322,7 @@ function showLoadingOrError(message) {
                     }
                 }
             }
+            }
         }
     });
     
@@ -2224,832 +2375,6 @@ function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
     return totalElapsedBreakMinutes;
 }
 
-       // Completely redesigned chart rendering for better cross-device compatibility
-function renderCumulativeChart(group) {
-    const chartContainer = document.getElementById('cumulative-chart');
-    chartContainer.innerHTML = '';
-    
-    // Collect all hours across all variants
-    const allHoursSet = new Set();
-    const hourlyProductionMap = new Map(); // Map to store production by hour
-    const hourlyTargetMap = new Map();     // Map to store targets by hour
-    const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
-    
-    // Process each variant and collect unique hours
-    group.variants.forEach(variant => {
-        // Get variant time window
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        if (!supervisorVariant) return;
-        
-        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-        
-        if (!startTimeStr || !endTimeStr) return;
-        
-        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-        
-        const startTimeMinutes = startHour * 60 + startMinute;
-        const endTimeMinutes = endHour * 60 + endMinute;
-        
-        // Collect hourly production data
-        if (variant.hourlyProduction) {
-            variant.hourlyProduction.forEach(item => {
-                if (!item.hour) return;
-                
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    // Add to hourly production map
-                    if (!hourlyProductionMap.has(item.hour)) {
-                        hourlyProductionMap.set(item.hour, 0);
-                    }
-                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
-                    
-                    allHoursSet.add(item.hour);
-                }
-            });
-        }
-        
-        // Collect hourly target data
-        if (variant.hourlyTargets) {
-            variant.hourlyTargets.forEach(item => {
-                if (!item.hour) return;
-                
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    // Add to hourly target map
-                    if (!hourlyTargetMap.has(item.hour)) {
-                        hourlyTargetMap.set(item.hour, 0);
-                    }
-                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
-                    
-                    allHoursSet.add(item.hour);
-                }
-            });
-        }
-    });
-    
-    // Convert to sorted array of hours
-    const sortedHours = Array.from(allHoursSet).sort((a, b) => {
-        const [hourA, minuteA] = a.split(':').map(Number);
-        const [hourB, minuteB] = b.split(':').map(Number);
-        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-    });
-    
-    if (sortedHours.length === 0) {
-        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available</div>';
-        return;
-    }
-    
-    // Build cumulative data arrays
-    const cumulativeData = [];
-    let runningProductionTotal = 0;
-    let runningTargetTotal = 0;
-    
-    // Generate time-based data points
-    sortedHours.forEach(hour => {
-        const hourProduction = hourlyProductionMap.get(hour) || 0;
-        const hourTarget = hourlyTargetMap.get(hour) || 0;
-        
-        // Add to running totals
-        runningProductionTotal += hourProduction;
-        runningTargetTotal += hourTarget;
-        
-        const [hourVal, minuteVal] = hour.split(':').map(Number);
-        const timeMinutes = hourVal * 60 + minuteVal;
-        
-        cumulativeData.push({
-            hour: hour,
-            production: runningProductionTotal,
-            target: runningTargetTotal,
-            timeMinutes: timeMinutes
-        });
-        
-        // Determine status for each hour
-        const now = new Date();
-        const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-        
-        // Only evaluate completed hours
-        if (currentTimeMinutes >= timeMinutes + 30) {
-            hourlyStatusMap.set(hour, hourProduction >= hourTarget ? 'met' : 'missed');
-        } else if (currentTimeMinutes >= timeMinutes - 30 && currentTimeMinutes < timeMinutes + 30) {
-            hourlyStatusMap.set(hour, 'current');
-        } else {
-            hourlyStatusMap.set(hour, 'upcoming');
-        }
-    });
-    
-    // Filter data to only show up to current time plus buffer
-    const now = new Date();
-    const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
-    const currentTimePlusBuffer = currentMinuteOfDay + 30;
-    
-    const filteredData = cumulativeData.filter(item => item.timeMinutes <= currentTimePlusBuffer);
-    
-    if (filteredData.length === 0) {
-        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available for current time period</div>';
-        return;
-    }
-    
-    // Get chart dimensions based on container
-    const chartArea = chartContainer.closest('.chart-area');
-    const svgWidth = chartArea.clientWidth;
-    const svgHeight = chartArea.clientHeight;
-    
-    // Check if dimensions are valid
-    if (svgWidth <= 0 || svgHeight <= 0) {
-        // Try again later if dimensions are not ready
-        setTimeout(() => renderCumulativeChart(group), 100);
-        return;
-    }
-    
-    // Calculate padding based on container size for responsive design
-    const padding = {
-        top: Math.max(10, Math.floor(svgHeight * 0.05)),
-        right: Math.max(10, Math.floor(svgWidth * 0.05)),
-        bottom: Math.max(50, Math.floor(svgHeight * 0.18)), // Increased bottom padding for status indicators
-        left: Math.max(40, Math.floor(svgWidth * 0.12))
-    };
-    
-    // Calculate chart dimensions
-    const chartWidth = svgWidth - padding.left - padding.right;
-    const chartHeight = svgHeight - padding.top - padding.bottom;
-    
-    // Find max value for chart scaling (with 10% buffer)
-    const maxValue = Math.max(
-        ...filteredData.map(item => Math.max(item.target || 0, item.production || 0))
-    ) * 1.1;
-    
-    // Create SVG element
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '100%');
-    svg.setAttribute('height', '100%');
-    svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
-    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-    chartContainer.appendChild(svg);
-    
-    // Add grid lines
-    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    for (let i = 0; i <= 4; i++) {
-        const y = padding.top + (chartHeight * i / 4);
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', padding.left);
-        line.setAttribute('y1', y);
-        line.setAttribute('x2', svgWidth - padding.right);
-        line.setAttribute('y2', y);
-        line.setAttribute('stroke', '#ddd');
-        line.setAttribute('stroke-width', '1');
-        gridGroup.appendChild(line);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', padding.left - 10);
-        text.setAttribute('y', y + 5);
-        text.setAttribute('text-anchor', 'end');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('fill', '#666');
-        text.textContent = Math.round(maxValue * (4 - i) / 4);
-        gridGroup.appendChild(text);
-    }
-    
-    // Add y-axis title
-    const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    yAxisTitle.setAttribute('x', padding.left - 35);
-    yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
-    yAxisTitle.setAttribute('text-anchor', 'middle');
-    yAxisTitle.setAttribute('font-size', isFullscreen ? '16' : '14');
-    yAxisTitle.setAttribute('font-weight', 'bold');
-    yAxisTitle.setAttribute('fill', '#666');
-    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 35}, ${padding.top + chartHeight / 2})`);
-    yAxisTitle.textContent = 'Units';
-    gridGroup.appendChild(yAxisTitle);
-    
-    // Add axes
-    const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    yAxis.setAttribute('x1', padding.left);
-    yAxis.setAttribute('y1', padding.top);
-    yAxis.setAttribute('x2', padding.left);
-    yAxis.setAttribute('y2', svgHeight - padding.bottom);
-    yAxis.setAttribute('stroke', '#666');
-    yAxis.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(yAxis);
-    
-    const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    xAxis.setAttribute('x1', padding.left);
-    xAxis.setAttribute('y1', svgHeight - padding.bottom);
-    xAxis.setAttribute('x2', svgWidth - padding.right);
-    xAxis.setAttribute('y2', svgHeight - padding.bottom);
-    xAxis.setAttribute('stroke', '#666');
-    xAxis.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(xAxis);
-    
-    svg.appendChild(gridGroup);
-    
-    // Find earliest start time and latest end time across all variants
-    let earliestStartMinutes = 24 * 60; // Initialize to end of day
-    let latestEndMinutes = 0;
-
-    group.variants.forEach(variant => {
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        if (supervisorVariant) {
-            const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-            const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-            
-            if (startTimeStr && endTimeStr) {
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const startTimeMinutes = startHour * 60 + startMinute;
-                
-                if (startTimeMinutes < earliestStartMinutes) {
-                    earliestStartMinutes = startTimeMinutes;
-                }
-                
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                if (endTimeMinutes > latestEndMinutes) {
-                    latestEndMinutes = endTimeMinutes;
-                }
-            }
-        }
-    });
-
-    // Format the start time for display (first tick)
-    const startTimeHour = Math.floor(earliestStartMinutes / 60);
-    const startTimeMinute = earliestStartMinutes % 60;
-    const startTimeFormatted = `${startTimeHour.toString().padStart(2, '0')}:${startTimeMinute.toString().padStart(2, '0')}`;
-
-    // Generate hourly intervals from start time to current time
-    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-    const endTimeMinutes = Math.min(latestEndMinutes, currentTimeMinutes + 60); // Show up to 1 hour ahead
-
-    // Create time ticks
-    const allHours = [];
-    
-    // Add the start time as the first tick
-    allHours.push(startTimeFormatted);
-    
-    // Calculate the first full hour after start time
-    const firstFullHourMinutes = Math.ceil(earliestStartMinutes / 60) * 60 + 30;
-    
-    // Then add standard hour markers (8:30, 9:30, etc.)
-    for (let minutes = firstFullHourMinutes; minutes <= endTimeMinutes; minutes += 60) {
-        const hour = Math.floor(minutes / 60);
-        const formattedHour = `${hour.toString().padStart(2, '0')}:30`;
-        allHours.push(formattedHour);
-    }
-
-    // Add X-axis ticks, labels and status indicators
-    const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    allHours.forEach((hour, index) => {
-        const x = padding.left + (chartWidth * index / (allHours.length - 1 || 1));
-        const y = svgHeight - padding.bottom + 20;
-        
-        // Add tick mark
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        tick.setAttribute('x1', x);
-        tick.setAttribute('y1', svgHeight - padding.bottom);
-        tick.setAttribute('x2', x);
-        tick.setAttribute('y2', svgHeight - padding.bottom + 5);
-        tick.setAttribute('stroke', '#666');
-        tick.setAttribute('stroke-width', '1.5');
-        xLabelsGroup.appendChild(tick);
-        
-        // Add hour label
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', x);
-        text.setAttribute('y', y);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('fill', '#666');
-        text.textContent = hour;
-        xLabelsGroup.appendChild(text);
-        
-        // Add status indicator below the hour label
-        const status = hourlyStatusMap.get(hour);
-        if (status) {
-            let statusSymbol = '';
-            let fillColor = '#94a3b8'; // Default gray
-            
-            if (status === 'met') {
-                statusSymbol = '✓';
-                fillColor = '#0d9488'; // Green for met
-            } else if (status === 'missed') {
-                statusSymbol = '✗';
-                fillColor = '#e11d48'; // Red for missed
-            } else if (status === 'current') {
-                statusSymbol = '●';
-                fillColor = '#ca8a04'; // Yellow for current
-            }
-            
-            if (statusSymbol) {
-                const statusText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                statusText.setAttribute('x', x);
-                statusText.setAttribute('y', y + 20);
-                statusText.setAttribute('text-anchor', 'middle');
-                statusText.setAttribute('font-size', isFullscreen ? '18' : '16');
-                statusText.setAttribute('font-weight', 'bold');
-                statusText.setAttribute('fill', fillColor);
-                statusText.textContent = statusSymbol;
-                xLabelsGroup.appendChild(statusText);
-            }
-        }
-    });
-    svg.appendChild(xLabelsGroup);
-    
-    // Draw production line - starting from the first tick (start time) with zero production
-    const productionLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    
-    // Start with a point at zero (at the start time)
-    let productionPathD = `M ${padding.left} ${padding.top + chartHeight}`;
-    const productionPoints = [{
-        x: padding.left,
-        y: padding.top + chartHeight,
-        production: 0,
-        hour: startTimeFormatted
-    }];
-    
-    // Get data points for production line with proper cumulative totals
-    filteredData.forEach((dataPoint) => {
-        // Find the x position based on the hour
-        const hourIndex = allHours.indexOf(dataPoint.hour);
-        let x;
-        if (hourIndex >= 0) {
-            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
-        } else {
-            // If hour not in allHours, interpolate
-            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
-                          ((endTimeMinutes - earliestStartMinutes) || 1);
-            x = padding.left + (chartWidth * timeRatio);
-        }
-        
-        const y = padding.top + chartHeight - (chartHeight * (dataPoint.production / maxValue));
-        
-        productionPoints.push({ 
-            x, 
-            y, 
-            production: dataPoint.production, 
-            hour: dataPoint.hour 
-        });
-        productionPathD += ` L ${x} ${y}`;
-    });
-    
-    // Add production line
-    const productionPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    productionPath.setAttribute('d', productionPathD);
-    productionPath.setAttribute('stroke', 'var(--production-color)');
-    productionPath.setAttribute('stroke-width', '3');
-    productionPath.setAttribute('fill', 'none');
-    productionLineGroup.appendChild(productionPath);
-    
-    // Add production points and labels
-    productionPoints.forEach(point => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', point.x);
-        circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', isFullscreen ? '5' : '4');
-        circle.setAttribute('fill', 'var(--production-color)');
-        productionLineGroup.appendChild(circle);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 8);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('font-weight', 'bold');
-        text.setAttribute('fill', 'var(--production-color)');
-        text.textContent = point.production;
-        productionLineGroup.appendChild(text);
-    });
-    svg.appendChild(productionLineGroup);
-    
-    // Draw target line - starting from the first tick (start time) with zero target
-    const targetLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    
-    // Start with a point at zero (at the start time)
-    let targetPathD = `M ${padding.left} ${padding.top + chartHeight}`;
-    const targetPoints = [{
-        x: padding.left,
-        y: padding.top + chartHeight,
-        target: 0,
-        hour: startTimeFormatted
-    }];
-    
-    // Get data points for target line with proper cumulative totals
-    filteredData.forEach((dataPoint) => {
-        // Find the x position based on the hour
-        const hourIndex = allHours.indexOf(dataPoint.hour);
-        let x;
-        if (hourIndex >= 0) {
-            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
-        } else {
-            // If hour not in allHours, interpolate
-            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
-                          ((endTimeMinutes - earliestStartMinutes) || 1);
-            x = padding.left + (chartWidth * timeRatio);
-        }
-        
-        const y = padding.top + chartHeight - (chartHeight * (dataPoint.target / maxValue));
-        
-        targetPoints.push({ 
-            x, 
-            y, 
-            target: dataPoint.target, 
-            hour: dataPoint.hour 
-        });
-        targetPathD += ` L ${x} ${y}`;
-    });
-    
-    // Add target line
-    const targetPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    targetPath.setAttribute('d', targetPathD);
-    targetPath.setAttribute('stroke', 'var(--target-color)');
-    targetPath.setAttribute('stroke-width', '3');
-    targetPath.setAttribute('fill', 'none');
-    targetLineGroup.appendChild(targetPath);
-    
-    // Add target points and labels
-    targetPoints.forEach(point => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', point.x);
-        circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', isFullscreen ? '5' : '4');
-        circle.setAttribute('fill', 'var(--target-color)');
-        targetLineGroup.appendChild(circle);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 8);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('font-weight', 'bold');
-        text.setAttribute('fill', 'var(--target-color)');
-        text.textContent = point.target;
-        targetLineGroup.appendChild(text);
-    });
-    svg.appendChild(targetLineGroup);
-}
-
-       // Function to render the hourly chart
-function renderHourlyChart(group) {
-    const chartContainer = document.getElementById('hourly-chart');
-    chartContainer.innerHTML = '';
-    
-    if (!currentProductVariants || currentProductVariants.length === 0) {
-        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available</div>';
-        return;
-    }
-    
-    // Get current hour
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const hourStr = currentMinute < 30 ? 
-        `${currentHour.toString().padStart(2, '0')}:30` : 
-        `${(currentHour + 1).toString().padStart(2, '0')}:30`;
-    
-    // Find all variants active during this hour
-    const activeVariants = [];
-    const hourlyData = { target: 0, production: 0 };
-    
-    // Get the hour's time in minutes
-    const [hourVal, minuteVal] = hourStr.split(':').map(Number);
-    const hourTimeMinutes = hourVal * 60 + minuteVal;
-    
-    // Process all variants to find those active during this hour
-    currentProductVariants.forEach(variant => {
-        const supervisorVariant = currentSupervisor ? 
-            productionData.supervisors.find(s => s.name === currentSupervisor)?.variants[variant.variant] : null;
-        
-        if (!supervisorVariant) return;
-        
-        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-        
-        if (!startTimeStr || !endTimeStr) return;
-        
-        // Check if this hour falls within this variant's window
-        if (variant.hourlyTargets && variant.hourlyProduction) {
-            const targetItem = variant.hourlyTargets.find(item => item.hour === hourStr);
-            const productionItem = variant.hourlyProduction.find(item => item.hour === hourStr);
-            
-            if (targetItem || productionItem) {
-                activeVariants.push(variant);
-                
-                // Add target and production data
-                if (targetItem) {
-                    hourlyData.target += targetItem.target || 0;
-                }
-                
-                if (productionItem) {
-                    hourlyData.production += productionItem.production || 0;
-                }
-            }
-        }
-    });
-    
-    // If no variants are active during this hour, show message
-    if (activeVariants.length === 0) {
-        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No variants active during this hour</div>';
-        return;
-    }
-    
-    // Get chart dimensions based on container
-    const chartArea = chartContainer.closest('.chart-area');
-    const svgWidth = chartArea.clientWidth;
-    const svgHeight = chartArea.clientHeight;
-    
-    // Check if dimensions are valid
-    if (svgWidth <= 0 || svgHeight <= 0) {
-        // Try again later if dimensions are not ready
-        setTimeout(() => renderHourlyChart(group), 100);
-        return;
-    }
-    
-    // Calculate padding based on container size
-    const padding = {
-        top: Math.max(10, Math.floor(svgHeight * 0.05)),
-        right: Math.max(10, Math.floor(svgWidth * 0.05)),
-        bottom: Math.max(30, Math.floor(svgHeight * 0.15)),
-        left: Math.max(40, Math.floor(svgWidth * 0.12))
-    };
-    
-    // Calculate chart dimensions
-    const chartWidth = svgWidth - padding.left - padding.right;
-    const chartHeight = svgHeight - padding.top - padding.bottom;
-    
-    // Find max value with 20% buffer
-    const maxValue = Math.max(hourlyData.production, hourlyData.target, 1) * 1.2;
-    
-    // Create SVG element with responsive size
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '100%');
-    svg.setAttribute('height', '100%');
-    svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
-    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-    chartContainer.appendChild(svg);
-    
-    // Add grid lines
-    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    for (let i = 0; i <= 4; i++) {
-        const y = padding.top + (chartHeight * i / 4);
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', padding.left);
-        line.setAttribute('y1', y);
-        line.setAttribute('x2', svgWidth - padding.right);
-        line.setAttribute('y2', y);
-        line.setAttribute('stroke', '#ddd');
-        line.setAttribute('stroke-width', '1');
-        gridGroup.appendChild(line);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', padding.left - 10);
-        text.setAttribute('y', y + 5);
-        text.setAttribute('text-anchor', 'end');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('fill', '#666');
-        text.textContent = Math.round(maxValue * (4 - i) / 4);
-        gridGroup.appendChild(text);
-    }
-    
-    // Add y-axis title
-    const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    yAxisTitle.setAttribute('x', padding.left - 35);
-    yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
-    yAxisTitle.setAttribute('text-anchor', 'middle');
-    yAxisTitle.setAttribute('font-size', isFullscreen ? '16' : '14');
-    yAxisTitle.setAttribute('font-weight', 'bold');
-    yAxisTitle.setAttribute('fill', '#666');
-    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 35}, ${padding.top + chartHeight / 2})`);
-    yAxisTitle.textContent = 'Units';
-    gridGroup.appendChild(yAxisTitle);
-    
-    // Add axes
-    const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    yAxis.setAttribute('x1', padding.left);
-    yAxis.setAttribute('y1', padding.top);
-    yAxis.setAttribute('x2', padding.left);
-    yAxis.setAttribute('y2', svgHeight - padding.bottom);
-    yAxis.setAttribute('stroke', '#666');
-    yAxis.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(yAxis);
-    
-    const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    xAxis.setAttribute('x1', padding.left);
-    xAxis.setAttribute('y1', svgHeight - padding.bottom);
-    xAxis.setAttribute('x2', svgWidth - padding.right);
-    xAxis.setAttribute('y2', svgHeight - padding.bottom);
-    xAxis.setAttribute('stroke', '#666');
-    xAxis.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(xAxis);
-    
-    svg.appendChild(gridGroup);
-    
-    // Calculate responsive bar dimensions
-    const barWidth = Math.min(Math.floor(chartWidth * 0.2), 80);
-    const barSpacing = Math.min(Math.floor(chartWidth * 0.15), 60);
-    const startX = padding.left + (chartWidth - (barWidth * 2 + barSpacing)) / 2;
-    
-    // Draw bars with rounded corners
-    const productionBarHeight = Math.max(1, (hourlyData.production / maxValue) * chartHeight);
-    const productionBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    productionBar.setAttribute('x', startX);
-    productionBar.setAttribute('y', padding.top + chartHeight - productionBarHeight);
-    productionBar.setAttribute('width', barWidth);
-    productionBar.setAttribute('height', productionBarHeight);
-    productionBar.setAttribute('fill', 'var(--production-color)');
-    productionBar.setAttribute('rx', '5');
-    svg.appendChild(productionBar);
-    
-    const targetBarHeight = Math.max(1, (hourlyData.target / maxValue) * chartHeight);
-    const targetBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    targetBar.setAttribute('x', startX + barWidth + barSpacing);
-    targetBar.setAttribute('y', padding.top + chartHeight - targetBarHeight);
-    targetBar.setAttribute('width', barWidth);
-    targetBar.setAttribute('height', targetBarHeight);
-    targetBar.setAttribute('fill', 'var(--target-color)');
-    targetBar.setAttribute('rx', '5');
-    svg.appendChild(targetBar);
-    
-    // Add values above bars
-    const productionValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    productionValueText.setAttribute('x', startX + barWidth / 2);
-    productionValueText.setAttribute('y', padding.top + chartHeight - productionBarHeight - 10);
-    productionValueText.setAttribute('text-anchor', 'middle');
-    productionValueText.setAttribute('font-size', isFullscreen ? '18' : '16');
-    productionValueText.setAttribute('font-weight', 'bold');
-    productionValueText.setAttribute('fill', 'var(--production-color)');
-    productionValueText.textContent = hourlyData.production;
-    svg.appendChild(productionValueText);
-    
-    const targetValueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    targetValueText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
-    targetValueText.setAttribute('y', padding.top + chartHeight - targetBarHeight - 10);
-    targetValueText.setAttribute('text-anchor', 'middle');
-    targetValueText.setAttribute('font-size', isFullscreen ? '18' : '16');
-    targetValueText.setAttribute('font-weight', 'bold');
-    targetValueText.setAttribute('fill', 'var(--target-color)');
-    targetValueText.textContent = hourlyData.target;
-    svg.appendChild(targetValueText);
-    
-    // Add labels below bars
-    const productionLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    productionLabelText.setAttribute('x', startX + barWidth / 2);
-    productionLabelText.setAttribute('y', svgHeight - padding.bottom + 20);
-    productionLabelText.setAttribute('text-anchor', 'middle');
-    productionLabelText.setAttribute('font-size', isFullscreen ? '16' : '14');
-    productionLabelText.setAttribute('font-weight', '500');
-    productionLabelText.setAttribute('fill', 'var(--production-color)');
-    productionLabelText.textContent = 'ACTUAL';
-    svg.appendChild(productionLabelText);
-    
-    const targetLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    targetLabelText.setAttribute('x', startX + barWidth + barSpacing + barWidth / 2);
-    targetLabelText.setAttribute('y', svgHeight - padding.bottom + 20);
-    targetLabelText.setAttribute('text-anchor', 'middle');
-    targetLabelText.setAttribute('font-size', isFullscreen ? '16' : '14');
-    targetLabelText.setAttribute('font-weight', '500');
-    targetLabelText.setAttribute('fill', 'var(--target-color)');
-    targetLabelText.textContent = 'TARGET';
-    svg.appendChild(targetLabelText);
-    
-    // Add active variants info (if multiple variants)
-    if (activeVariants.length > 1) {
-        const activeVariantsText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        activeVariantsText.setAttribute('x', svgWidth / 2);
-        activeVariantsText.setAttribute('y', svgHeight - 10);
-        activeVariantsText.setAttribute('text-anchor', 'middle');
-        activeVariantsText.setAttribute('font-size', isFullscreen ? '14' : '12');
-        activeVariantsText.setAttribute('fill', '#666');
-        
-        const variantNames = activeVariants.map(v => {
-            // Extract variant name from full string
-            let displayName = v.variant;
-            if (v.variant.includes('-')) {
-                displayName = v.variant.split('-').pop();
-            } else if (v.variant.startsWith(currentProduct + ' ')) {
-                displayName = v.variant.substring(currentProduct.length + 1);
-            }
-            return displayName;
-        });
-        
-        if (variantNames.length <= 2) {
-            activeVariantsText.textContent = `Active variants: ${variantNames.join(', ')}`;
-        } else {
-            activeVariantsText.textContent = `${variantNames.length} active variants`;
-        }
-        svg.appendChild(activeVariantsText);
-    }
-    
-    // Draw status indicators for current hour
-    const hourStatus = hourlyData.production >= hourlyData.target ? 'met' : 'missed';
-    const statusIndicator = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    statusIndicator.setAttribute('x', svgWidth / 2);
-    statusIndicator.setAttribute('y', padding.top + 30);
-    statusIndicator.setAttribute('text-anchor', 'middle');
-    statusIndicator.setAttribute('font-size', isFullscreen ? '24' : '20');
-    statusIndicator.setAttribute('font-weight', 'bold');
-    
-    if (hourStatus === 'met') {
-        statusIndicator.setAttribute('fill', '#0d9488'); // Green for met
-        statusIndicator.textContent = 'Target Met ✓';
-    } else {
-        statusIndicator.setAttribute('fill', '#e11d48'); // Red for missed
-        statusIndicator.textContent = 'Target Missed ✗';
-    }
-    
-    svg.appendChild(statusIndicator);
-}
-
-        // Function to render hourly targets
-function renderHourlyTargets(group) {
-    const hourlyTargetsGrid = document.getElementById('hourly-targets-grid');
-    
-    // Return if element doesn't exist
-    if (!hourlyTargetsGrid) return;
-    
-    // Clear existing content
-    hourlyTargetsGrid.innerHTML = '';
-    
-    if (!currentProductVariants || currentProductVariants.length === 0) {
-        hourlyTargetsGrid.innerHTML = '<div class="no-data">No hourly targets available</div>';
-        return;
-    }
-    
-    // Get current time
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    
-    // Collect all hourly targets from active variants
-    const hourlyTargetsMap = new Map();
-    
-    currentProductVariants.forEach(variant => {
-        if (variant.hourlyTargets) {
-            variant.hourlyTargets.forEach(hourTarget => {
-                const hour = hourTarget.hour;
-                if (!hourlyTargetsMap.has(hour)) {
-                    hourlyTargetsMap.set(hour, {
-                        target: 0,
-                        production: 0
-                    });
-                }
-                
-                hourlyTargetsMap.get(hour).target += hourTarget.target;
-                
-                // Find the corresponding production data
-                if (variant.hourlyProduction) {
-                    const prodItem = variant.hourlyProduction.find(p => p.hour === hour);
-                    if (prodItem) {
-                        hourlyTargetsMap.get(hour).production += prodItem.production;
-                    }
-                }
-            });
-        }
-    });
-    
-    // Convert to sorted array
-    const sortedHours = Array.from(hourlyTargetsMap.keys()).sort((a, b) => {
-        const [hourA, minuteA] = a.split(':').map(Number);
-        const [hourB, minuteB] = b.split(':').map(Number);
-        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-    });
-    
-    // Create hourly target items
-    sortedHours.forEach(hour => {
-        const data = hourlyTargetsMap.get(hour);
-        const [hourVal, minuteVal] = hour.split(':').map(Number);
-        const hourTimeMinutes = hourVal * 60 + minuteVal;
-        const currentTimeMinutes = currentHour * 60 + currentMinute;
-        
-        // Determine status
-        let status = 'upcoming';
-        if (currentTimeMinutes > hourTimeMinutes + 30) {
-            status = data.production >= data.target ? 'met' : 'missed';
-        } else if (currentTimeMinutes >= hourTimeMinutes - 30 && currentTimeMinutes <= hourTimeMinutes + 30) {
-            status = 'current';
-        }
-        
-        // Create hourly target item
-        const item = document.createElement('div');
-        item.className = `hourly-target-item status-${status}`;
-        
-        const timeElement = document.createElement('div');
-        timeElement.className = 'hourly-target-time';
-        timeElement.textContent = hour;
-        item.appendChild(timeElement);
-        
-        const statusElement = document.createElement('div');
-        statusElement.className = 'hourly-target-status';
-        statusElement.textContent = status === 'met' ? '✓' : status === 'missed' ? '✗' : '';
-        item.appendChild(statusElement);
-        
-        hourlyTargetsGrid.appendChild(item);
-    });
-}
-
 // Initialize the dashboard when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initDashboard);
 
@@ -3064,3 +2389,4 @@ window.addEventListener('beforeunload', function() {
 </body>
 </html>
 
+        
