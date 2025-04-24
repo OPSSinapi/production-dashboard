@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-24T08:30:01.115Z",
+    "timestamp": "2025-04-24T08:30:59.456Z",
     "date": "2025-04-24",
     "facility": "Main Plant"
   },
@@ -165,6 +165,74 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "Scalpel-Packaging-PARC15S",
+      "product": {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging"
+      },
+      "variant": {
+        "id": "PARC15S",
+        "name": "PARC15S",
+        "fullName": "Scalpel Packaging PARC15S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 23
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 1578,
+        "daily": 15789,
+        "boxes": 31
+      },
+      "actual": {
+        "total": 1500,
+        "boxes": 3,
+        "progress": 10
+      },
+      "batches": [
+        {
+          "id": 25041741,
+          "quantity": 1500,
+          "boxes": 3
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 1500,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 15394,
+          "progress": 10
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 1500,
+          "cumTarget": 1578,
+          "cumActual": 1500,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 1500,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -175,6 +243,13 @@
         "totalProduction": 72,
         "totalTarget": 1471,
         "progress": 5
+      },
+      {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging",
+        "totalProduction": 1500,
+        "totalTarget": 15789,
+        "progress": 10
       }
     ],
     "supervisors": [
@@ -196,6 +271,16 @@
         "progress": 5,
         "variants": [
           "SCD-XL1000SC"
+        ]
+      },
+      {
+        "id": "Nosi",
+        "name": "Nosi",
+        "totalProduction": 1500,
+        "totalTarget": 15394,
+        "progress": 10,
+        "variants": [
+          "Scalpel-Packaging-PARC15S"
         ]
       }
     ]
