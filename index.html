@@ -1872,7 +1872,7 @@ function showLoadingOrError(message) {
             updateBatchInfoTable(filteredGroups);
         }
 
-        // UPDATED FUNCTION: Update batch information table
+        // FIXED FUNCTION: Update batch information table
 function updateBatchInfoTable(filteredGroups) {
     const batchInfoTableBody = document.getElementById('batch-info-tbody');
     const batchInfoTableHead = document.getElementById('batch-info-thead');
@@ -1888,6 +1888,10 @@ function updateBatchInfoTable(filteredGroups) {
         batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
         return;
     }
+    
+    // Get current time to determine current variant - MOVED TO TOP
+    const now = new Date();
+    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
     
     // Create the table header row
     const headerRow = document.createElement('tr');
@@ -1995,8 +1999,6 @@ function updateBatchInfoTable(filteredGroups) {
     }
     
     let currentProduct = null;
-    const now = new Date();
-    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
     
     batchData.forEach(batch => {
         // Add product header if changed
