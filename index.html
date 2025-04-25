@@ -2069,6 +2069,13 @@ function updateBatchInfoTable(filteredGroups) {
     const hourlyTargetMap = new Map();     // Map to store targets by hour
     const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
     
+    // CRITICAL FIX: Get the current total production directly from metrics
+    // This ensures we're showing the exact same value as the metrics card
+    const metricsCurrentUnits = document.getElementById('current-units').textContent;
+    const metricsTargetUnits = document.getElementById('target-units').textContent;
+    const currentTotal = parseInt(metricsCurrentUnits, 10);
+    const targetTotal = parseInt(metricsTargetUnits, 10);
+    
     // Process each variant and collect unique hours
     group.variants.forEach(variant => {
         // Get variant time window
@@ -2177,19 +2184,31 @@ function updateBatchInfoTable(filteredGroups) {
         }
     });
     
-    // Filter data to only show up to current time plus buffer
-    const now = new Date();
-    const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
-    const currentTimePlusBuffer = currentMinuteOfDay + 30;
-    
-    // MODIFIED: Ensure we include at least the latest data point
+    // Do not filter data - we want to show all available data points
     let filteredData = cumulativeData;
-    if (cumulativeData.length > 0) {
-        // Make sure we include the latest data point regardless of time
-        const latestTimeMinutes = cumulativeData[cumulativeData.length - 1].timeMinutes;
-        filteredData = cumulativeData.filter(item => 
-            item.timeMinutes <= Math.max(currentTimePlusBuffer, latestTimeMinutes)
-        );
+    
+    // CRITICAL FIX: Add current hour with the correct totals from metrics
+    // Only do this if we have data and the last point doesn't match
+    if (filteredData.length > 0 && currentTotal > 0) {
+        const lastPoint = filteredData[filteredData.length - 1];
+        
+        // If the last production value doesn't match the metrics, add or update a point
+        if (lastPoint.production !== currentTotal) {
+            // Get current time to use as the data point hour
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const currentHourStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+            const currentTimeMinutes = currentHour * 60 + currentMinute;
+            
+            // Add a new data point with the correct values from the metrics
+            filteredData.push({
+                hour: currentHourStr,
+                production: currentTotal,
+                target: targetTotal, 
+                timeMinutes: currentTimeMinutes
+            });
+        }
     }
     
     if (filteredData.length === 0) {
@@ -2324,8 +2343,10 @@ function updateBatchInfoTable(filteredGroups) {
     const startTimeFormatted = `${startTimeHour.toString().padStart(2, '0')}:${startTimeMinute.toString().padStart(2, '0')}`;
 
     // Generate hourly intervals from start time to current time
+    const now = new Date();
     const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-    const endTimeMinutes = Math.min(latestEndMinutes, currentTimeMinutes + 60); // Show up to 1 hour ahead
+    // Extend end time to ensure we see the final data point
+    const endTimeMinutes = Math.max(latestEndMinutes, currentTimeMinutes + 60); 
 
     // Create time ticks
     const allHours = [];
@@ -2447,7 +2468,12 @@ function updateBatchInfoTable(filteredGroups) {
     productionLineGroup.appendChild(productionPath);
     
     // Add production points and labels
-    productionPoints.forEach(point => {
+    productionPoints.forEach((point, index) => {
+        // Skip emphasizing intermediate points if we have many points
+        if (productionPoints.length > 7 && index > 0 && index < productionPoints.length - 1 && index % 2 === 0) {
+            return;
+        }
+        
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', point.x);
         circle.setAttribute('cy', point.y);
@@ -2466,13 +2492,18 @@ function updateBatchInfoTable(filteredGroups) {
         productionLineGroup.appendChild(text);
     });
     
-    // ADDED: Emphasize the last production point (current total)
+    // CRITICAL FIX: Always emphasize the last production point (current total)
     if (productionPoints.length > 0) {
         const lastPoint = productionPoints[productionPoints.length - 1];
+        
+        // Ensure this point shows the correct value from metrics
+        lastPoint.production = currentTotal;
+        
+        // Create emphasized circle and label
         const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         emphasizedCircle.setAttribute('cx', lastPoint.x);
         emphasizedCircle.setAttribute('cy', lastPoint.y);
-        emphasizedCircle.setAttribute('r', isFullscreen ? '7' : '6');
+        emphasizedCircle.setAttribute('r', isFullscreen ? '8' : '7');
         emphasizedCircle.setAttribute('fill', 'var(--production-color)');
         emphasizedCircle.setAttribute('stroke', '#ffffff');
         emphasizedCircle.setAttribute('stroke-width', '2');
@@ -2480,12 +2511,13 @@ function updateBatchInfoTable(filteredGroups) {
         
         const emphasizedText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         emphasizedText.setAttribute('x', lastPoint.x);
-        emphasizedText.setAttribute('y', lastPoint.y - 10);
+        emphasizedText.setAttribute('y', lastPoint.y - 12);
         emphasizedText.setAttribute('text-anchor', 'middle');
-        emphasizedText.setAttribute('font-size', isFullscreen ? '16' : '14');
+        emphasizedText.setAttribute('font-size', isFullscreen ? '18' : '16');
         emphasizedText.setAttribute('font-weight', 'bold');
         emphasizedText.setAttribute('fill', 'var(--production-color)');
-        emphasizedText.textContent = lastPoint.production;
+        // Ensure the text shows the current total from metrics
+        emphasizedText.textContent = currentTotal;
         productionLineGroup.appendChild(emphasizedText);
     }
     
@@ -2537,7 +2569,12 @@ function updateBatchInfoTable(filteredGroups) {
     targetLineGroup.appendChild(targetPath);
     
     // Add target points and labels
-    targetPoints.forEach(point => {
+    targetPoints.forEach((point, index) => {
+        // Skip emphasizing intermediate points if we have many points
+        if (targetPoints.length > 7 && index > 0 && index < targetPoints.length - 1 && index % 2 === 0) {
+            return;
+        }
+        
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', point.x);
         circle.setAttribute('cy', point.y);
@@ -2555,6 +2592,35 @@ function updateBatchInfoTable(filteredGroups) {
         text.textContent = point.target;
         targetLineGroup.appendChild(text);
     });
+    
+    // Emphasize the last target point
+    if (targetPoints.length > 0) {
+        const lastPoint = targetPoints[targetPoints.length - 1];
+        
+        // Ensure this point shows the correct target value from metrics
+        lastPoint.target = targetTotal;
+        
+        const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        emphasizedCircle.setAttribute('cx', lastPoint.x);
+        emphasizedCircle.setAttribute('cy', lastPoint.y);
+        emphasizedCircle.setAttribute('r', isFullscreen ? '7' : '6');
+        emphasizedCircle.setAttribute('fill', 'var(--target-color)');
+        emphasizedCircle.setAttribute('stroke', '#ffffff');
+        emphasizedCircle.setAttribute('stroke-width', '2');
+        targetLineGroup.appendChild(emphasizedCircle);
+        
+        const emphasizedText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        emphasizedText.setAttribute('x', lastPoint.x);
+        emphasizedText.setAttribute('y', lastPoint.y - 10);
+        emphasizedText.setAttribute('text-anchor', 'middle');
+        emphasizedText.setAttribute('font-size', isFullscreen ? '16' : '14');
+        emphasizedText.setAttribute('font-weight', 'bold');
+        emphasizedText.setAttribute('fill', 'var(--target-color)');
+        // Ensure the text shows the current target from metrics
+        emphasizedText.textContent = targetTotal;
+        targetLineGroup.appendChild(emphasizedText);
+    }
+    
     svg.appendChild(targetLineGroup);
 }
 
