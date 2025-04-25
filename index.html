@@ -1873,7 +1873,6 @@ function showLoadingOrError(message) {
         }
 
         // NEW FUNCTION: Update batch information table
-        // NEW FUNCTION: Update batch information table
 function updateBatchInfoTable(filteredGroups) {
     const batchInfoTableBody = document.getElementById('batch-info-tbody');
     const batchInfoTableHead = document.getElementById('batch-info-thead');
@@ -1953,17 +1952,14 @@ function updateBatchInfoTable(filteredGroups) {
         });
     });
     
-    // Check if we have specific product types in the data
-    const hasAssemblyProducts = batchData.some(batch => batch.isAssembly);
-    
-    // Create the table header row based on products in the data
+    // Create the table header row - always use "Boxes" for consistency
     const headerRow = document.createElement('tr');
     headerRow.innerHTML = `
         <th>Product</th>
         <th>Variant</th>
         <th>Batch</th>
         <th>Units</th>
-        <th>${hasAssemblyProducts ? 'Container' : 'Boxes'}</th>
+        <th>Boxes</th>
     `;
     batchInfoTableHead.appendChild(headerRow);
     
@@ -2065,14 +2061,14 @@ function updateBatchInfoTable(filteredGroups) {
         unitsCell.textContent = batch.units;
         row.appendChild(unitsCell);
         
-        // Boxes/Bags cell
-        const boxesCell = document.createElement('td');
+        // Boxes/Bags cell - Display appropriate container type
+        const containerCell = document.createElement('td');
         if (batch.isAssembly) {
-            boxesCell.textContent = `${batch.boxes} Bags`;
+            containerCell.textContent = `${batch.boxes} Bags`;
         } else {
-            boxesCell.textContent = batch.boxes;
+            containerCell.textContent = batch.boxes;
         }
-        row.appendChild(boxesCell);
+        row.appendChild(containerCell);
         
         batchInfoTableBody.appendChild(row);
     });
