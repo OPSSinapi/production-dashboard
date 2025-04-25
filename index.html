@@ -226,7 +226,17 @@ body {
 /* ===== CONTENT CONTAINER ===== */
 .content {
     display: flex;
-    flex-direction: row; /* Changed to row layout */
+    flex-direction: column; /* Changed to column layout */
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    gap: clamp(0.5rem, 1vh, 1rem);
+}
+
+/* Add a new charts-row class */
+.charts-row {
+    display: flex;
+    flex-direction: row;
     flex: 1;
     min-height: 0;
     overflow: hidden;
@@ -236,10 +246,9 @@ body {
 .main-content {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-    gap: clamp(0.5rem, 1vh, 1rem);
+    width: 100%;
+    flex-shrink: 0; /* Don't shrink the top content */
+    overflow: visible;
 }
 
 /* ===== TOP ROW WITH SUPERVISOR AND METRICS ===== */
@@ -633,8 +642,8 @@ body {
 
 /* For smaller screens */
 @media screen and (max-width: 1200px) {
-    .content {
-        flex-direction: column; /* Stack content on smaller screens */
+    .charts-row {
+        flex-direction: column; /* Stack charts and batch info on smaller screens */
     }
     
     .top-row {
@@ -757,88 +766,91 @@ body {
         </div>
         
         <!-- Content wrapper for main and batch info -->
-        <div class="content">
-            <!-- Main content area -->
-            <div class="main-content">
-                <!-- Top Row: Supervisor + Metrics -->
-                <div class="top-row">
-                    <!-- Supervisor Panel -->
-                    <div class="supervisor-panel">
-                        <div class="supervisor-name" id="supervisor-name">SUPERVISOR: Loading...</div>
-                        <div class="product-name" id="product-name">PRODUCT: Loading...</div>
-                        
-                        <div class="variant-sequence" id="variant-sequence">
-                            <div class="loading">Loading variants...</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Metrics Container -->
-                    <div class="metrics-container">
-                        <!-- Units (renamed from Progress) -->
-                        <div class="metric-card">
-                            <div class="metric-title">UNITS</div>
-                            <div class="metric-value">
-                                <span class="current-value" id="current-units">0</span>/<span class="target-value" id="target-units">0</span>
-                            </div>
-                            <div class="metric-subvalue" id="progress-percentage">0%</div>
-                        </div>
-                        
-                        <!-- Boxes - NEXT TO UNITS -->
-                        <div class="metric-card">
-                            <div class="metric-title">BOXES</div>
-                            <div class="metric-value">
-                                <span class="current-value" id="current-boxes">0</span>/<span class="target-value" id="target-boxes">0</span>
-                            </div>
-                            <div class="metric-subvalue">completed</div>
-                        </div>
-                        
-                        <!-- Cycle Time -->
-                        <div class="metric-card">
-                            <div class="metric-title">CYCLE TIME</div>
-                            <div class="metric-value">
-                                <span class="current-value" id="actual-cycle-time">0</span>/<span class="target-value" id="target-cycle-time">0</span>
-                            </div>
-                            <div class="metric-subvalue">seconds</div>
-                        </div>
-                    </div>
-                </div>
+<div class="content">
+    <!-- Main content area (top row section only) -->
+    <div class="main-content">
+        <!-- Top Row: Supervisor + Metrics -->
+        <div class="top-row">
+            <!-- Supervisor Panel -->
+            <div class="supervisor-panel">
+                <div class="supervisor-name" id="supervisor-name">SUPERVISOR: Loading...</div>
+                <div class="product-name" id="product-name">PRODUCT: Loading...</div>
                 
-                <!-- Charts Container - With expanded height since hourly targets are removed -->
-                <div class="charts-container">
-                    <div class="chart-title" id="chart-title">Production Progress</div>
-                    <div class="chart-area">
-                        <div class="chart" id="cumulative-chart"></div>
-                        <div class="chart hidden" id="hourly-chart"></div>
-                    </div>
-                    <div class="chart-nav">
-                        <div class="chart-nav-dot active" data-chart="cumulative"></div>
-                        <div class="chart-nav-dot" data-chart="hourly"></div>
-                    </div>
+                <div class="variant-sequence" id="variant-sequence">
+                    <div class="loading">Loading variants...</div>
                 </div>
             </div>
             
-            <!-- New Batch Information Panel -->
-            <div class="batch-info-section">
-                <div class="batch-info-title">BATCH INFORMATION</div>
-                <table class="batch-info-table" id="batch-info-table">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Variant</th>
-                            <th>Batch</th>
-                            <th>Units</th>
-                            <th>Boxes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="batch-info-tbody">
-                        <!-- Batch information will be populated dynamically -->
-                        <tr>
-                            <td colspan="5">Loading batch information...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Metrics Container -->
+            <div class="metrics-container">
+                <!-- Units (renamed from Progress) -->
+                <div class="metric-card">
+                    <div class="metric-title">UNITS</div>
+                    <div class="metric-value">
+                        <span class="current-value" id="current-units">0</span>/<span class="target-value" id="target-units">0</span>
+                    </div>
+                    <div class="metric-subvalue" id="progress-percentage">0%</div>
+                </div>
+                
+                <!-- Boxes - NEXT TO UNITS -->
+                <div class="metric-card">
+                    <div class="metric-title">BOXES</div>
+                    <div class="metric-value">
+                        <span class="current-value" id="current-boxes">0</span>/<span class="target-value" id="target-boxes">0</span>
+                    </div>
+                    <div class="metric-subvalue">completed</div>
+                </div>
+                
+                <!-- Cycle Time -->
+                <div class="metric-card">
+                    <div class="metric-title">CYCLE TIME</div>
+                    <div class="metric-value">
+                        <span class="current-value" id="actual-cycle-time">0</span>/<span class="target-value" id="target-cycle-time">0</span>
+                    </div>
+                    <div class="metric-subvalue">seconds</div>
+                </div>
             </div>
         </div>
+    </div>
+    
+    <!-- New Charts Row: Charts + Batch Info -->
+    <div class="charts-row">
+        <!-- Charts Container - Now moved outside main-content -->
+        <div class="charts-container">
+            <div class="chart-title" id="chart-title">Production Progress</div>
+            <div class="chart-area">
+                <div class="chart" id="cumulative-chart"></div>
+                <div class="chart hidden" id="hourly-chart"></div>
+            </div>
+            <div class="chart-nav">
+                <div class="chart-nav-dot active" data-chart="cumulative"></div>
+                <div class="chart-nav-dot" data-chart="hourly"></div>
+            </div>
+        </div>
+        
+        <!-- Batch Information Panel - Now in the charts row -->
+        <div class="batch-info-section">
+            <div class="batch-info-title">BATCH INFORMATION</div>
+            <table class="batch-info-table" id="batch-info-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Variant</th>
+                        <th>Batch</th>
+                        <th>Units</th>
+                        <th>Boxes</th>
+                    </tr>
+                </thead>
+                <tbody id="batch-info-tbody">
+                    <!-- Batch information will be populated dynamically -->
+                    <tr>
+                        <td colspan="5">Loading batch information...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
         
         <!-- Footer -->
         <div class="footer">
