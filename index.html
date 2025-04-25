@@ -1872,7 +1872,7 @@ function showLoadingOrError(message) {
             updateBatchInfoTable(filteredGroups);
         }
 
-        // NEW FUNCTION: Update batch information table
+        // UPDATED FUNCTION: Update batch information table
 function updateBatchInfoTable(filteredGroups) {
     const batchInfoTableBody = document.getElementById('batch-info-tbody');
     const batchInfoTableHead = document.getElementById('batch-info-thead');
@@ -1889,12 +1889,20 @@ function updateBatchInfoTable(filteredGroups) {
         return;
     }
     
-    // Create an array to hold all batch information from selected supervisors
-    let batchData = [];
+    // Create the table header row
+    const headerRow = document.createElement('tr');
+    headerRow.innerHTML = `
+        <th>Product</th>
+        <th>Variant</th>
+        <th>Batch</th>
+        <th>Units</th>
+        <th>Boxes</th>
+    `;
+    batchInfoTableHead.appendChild(headerRow);
     
-    // Get current time to determine current variant
-    const now = new Date();
-    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+    // Create a Map to store the unique batches by ID
+    // This ensures we don't count the same batch multiple times
+    const uniqueBatchesMap = new Map();
     
     // Process each group's variants
     Object.values(filteredGroups).forEach(group => {
@@ -1935,64 +1943,37 @@ function updateBatchInfoTable(filteredGroups) {
                 }
             }
             
-            // Process each batch
+            // Process each batch - USE THE ORIGINAL QUANTITIES
             productionItem.batches.forEach(batch => {
-                batchData.push({
-                    product: productName,
-                    variant: variantName,
-                    batchId: batch.id,
-                    units: batch.quantity,
-                    boxes: batch.boxes,
-                    supervisor: supervisorName,
-                    isCurrent: isCurrentVariant,
-                    // Determine if this is a Scalpel Assembly product
-                    isAssembly: productName.toLowerCase().includes('assembly')
-                });
+                const batchKey = `${productName}-${variantName}-${batch.id}`;
+                
+                // Only add the batch if we haven't seen it before
+                if (!uniqueBatchesMap.has(batchKey)) {
+                    uniqueBatchesMap.set(batchKey, {
+                        product: productName,
+                        variant: variantName,
+                        batchId: batch.id,
+                        units: batch.quantity,  // Use original quantity
+                        boxes: batch.boxes,     // Use original boxes count
+                        supervisor: supervisorName,
+                        isCurrent: isCurrentVariant,
+                        isAssembly: productName.toLowerCase().includes('assembly')
+                    });
+                } else {
+                    // If we do have the batch, just update the isCurrent flag if needed
+                    if (isCurrentVariant) {
+                        uniqueBatchesMap.get(batchKey).isCurrent = true;
+                    }
+                }
             });
         });
     });
     
-    // Create the table header row - always use "Boxes" for consistency
-    const headerRow = document.createElement('tr');
-    headerRow.innerHTML = `
-        <th>Product</th>
-        <th>Variant</th>
-        <th>Batch</th>
-        <th>Units</th>
-        <th>Boxes</th>
-    `;
-    batchInfoTableHead.appendChild(headerRow);
-    
-    // Aggregate batch data by unique Product-Variant-Batch combinations
-    const aggregatedBatchData = [];
-    const uniqueCombinations = new Map();
-    
-    batchData.forEach(batch => {
-        // Create a unique key for this combination
-        const key = `${batch.product}-${batch.variant}-${batch.batchId}`;
-        
-        if (uniqueCombinations.has(key)) {
-            // Update existing entry
-            const existingBatch = uniqueCombinations.get(key);
-            existingBatch.units += batch.units;
-            existingBatch.boxes += batch.boxes;
-            // Ensure the batch is marked as current if any occurrence is current
-            if (batch.isCurrent) {
-                existingBatch.isCurrent = true;
-            }
-        } else {
-            // Create new entry
-            uniqueCombinations.set(key, {...batch});
-        }
-    });
-    
-    // Convert map to array
-    uniqueCombinations.forEach(batch => {
-        aggregatedBatchData.push(batch);
-    });
+    // Convert map to array for display
+    const batchData = Array.from(uniqueBatchesMap.values());
     
     // Sort batches by product, then by variant
-    aggregatedBatchData.sort((a, b) => {
+    batchData.sort((a, b) => {
         // First by product
         if (a.product !== b.product) {
             return a.product.localeCompare(b.product);
@@ -2008,14 +1989,16 @@ function updateBatchInfoTable(filteredGroups) {
     });
     
     // Create table rows for each batch
-    if (aggregatedBatchData.length === 0) {
+    if (batchData.length === 0) {
         batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
         return;
     }
     
     let currentProduct = null;
+    const now = new Date();
+    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
     
-    aggregatedBatchData.forEach(batch => {
+    batchData.forEach(batch => {
         // Add product header if changed
         if (batch.product !== currentProduct) {
             currentProduct = batch.product;
