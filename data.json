@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-25T08:43:00.297Z",
+    "timestamp": "2025-04-25T08:44:20.704Z",
     "date": "2025-04-25",
     "facility": "Main Plant"
   },
@@ -298,6 +298,74 @@
       ]
     },
     {
+      "id": "Scalpel-Assembly-PAMS15NS",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PAMS15NS",
+        "name": "PAMS15NS",
+        "fullName": "Scalpel Assembly PAMS15NS",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 10
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 1578,
+        "daily": 11842,
+        "boxes": 11
+      },
+      "actual": {
+        "total": 2000,
+        "boxes": 2,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 25042350,
+          "quantity": 2000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 2000,
+          "startTime": "08:42",
+          "endTime": "15:15",
+          "target": 8894,
+          "progress": 22
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1263,
+          "actual": 2000,
+          "cumTarget": 2841,
+          "cumActual": 2000,
+          "transitionTarget": 1263,
+          "previousVariant": "Scalpel-Assembly-PARC15S",
+          "previousVariantMinutes": 12,
+          "currentVariantMinutes": 48
+        }
+      ]
+    },
+    {
       "id": "Scalpel-Packaging-PARC11NS",
       "product": {
         "id": "Scalpel-Packaging",
@@ -445,7 +513,7 @@
         "fullName": "Scalpel Assembly PARC15S",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 21
+        "actualCycleTime": 1
       },
       "shiftId": "standard",
       "targets": {
@@ -471,9 +539,9 @@
           "name": "Nosi",
           "production": 1000,
           "startTime": "08:24",
-          "endTime": "15:15",
-          "target": 9368,
-          "progress": 11
+          "endTime": "08:42",
+          "target": 473,
+          "progress": 211
         }
       ],
       "timeline": [
@@ -490,14 +558,14 @@
         },
         {
           "hour": "09:30",
-          "target": 1578,
+          "target": 315,
           "actual": 0,
-          "cumTarget": 1735,
+          "cumTarget": 472,
           "cumActual": 1000,
-          "transitionTarget": 0,
+          "transitionTarget": 315,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
+          "currentVariantMinutes": 12
         }
       ]
     }
@@ -533,18 +601,18 @@
         "progress": 7
       },
       {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly",
+        "totalProduction": 4000,
+        "totalTarget": 35526,
+        "progress": 11
+      },
+      {
         "id": "Scalpel-Packaging",
         "name": "Scalpel Packaging",
         "totalProduction": 3000,
         "totalTarget": 11842,
         "progress": 25
-      },
-      {
-        "id": "Scalpel-Assembly",
-        "name": "Scalpel Assembly",
-        "totalProduction": 2000,
-        "totalTarget": 23684,
-        "progress": 8
       }
     ],
     "supervisors": [
@@ -561,13 +629,14 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 5000,
-        "totalTarget": 21578,
-        "progress": 23,
+        "totalProduction": 7000,
+        "totalTarget": 21577,
+        "progress": 32,
         "variants": [
           "Scalpel-Assembly-PARC15NS",
           "Scalpel-Assembly-PARC15S",
-          "Scalpel-Packaging-PARC11NS"
+          "Scalpel-Packaging-PARC11NS",
+          "Scalpel-Assembly-PAMS15NS"
         ]
       },
       {
