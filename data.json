@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-25T08:24:58.719Z",
+    "timestamp": "2025-04-25T08:25:59.158Z",
     "date": "2025-04-25",
     "facility": "Main Plant"
   },
@@ -94,7 +94,7 @@
         "fullName": "Scalpel Assembly PARC15NS",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 30
+        "actualCycleTime": 3
       },
       "shiftId": "standard",
       "targets": {
@@ -120,22 +120,79 @@
           "name": "Nosi",
           "production": 1000,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 13026,
-          "progress": 8
+          "endTime": "08:24",
+          "target": 1421,
+          "progress": 70
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
-          "target": 1578,
+          "target": 1421,
           "actual": 1000,
-          "cumTarget": 1578,
+          "cumTarget": 1421,
           "cumActual": 1000,
-          "transitionTarget": 0,
+          "transitionTarget": 1421,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
+          "currentVariantMinutes": 54
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-Assembly-PARC15S",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PARC15S",
+        "name": "PARC15S",
+        "fullName": "Scalpel Assembly PARC15S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 26
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 1578,
+        "daily": 11842,
+        "boxes": 11
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 1,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 25042350,
+          "quantity": 1000,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 1000,
+          "startTime": "08:24",
+          "endTime": "16:30",
+          "target": 11605,
+          "progress": 9
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 157,
+          "actual": 2000,
+          "cumTarget": 157,
+          "cumActual": 2000,
+          "transitionTarget": 157,
+          "previousVariant": "Scalpel-Assembly-PARC15NS",
+          "previousVariantMinutes": 54,
+          "currentVariantMinutes": 6
         }
       ]
     }
@@ -152,8 +209,8 @@
       {
         "id": "Scalpel-Assembly",
         "name": "Scalpel Assembly",
-        "totalProduction": 1000,
-        "totalTarget": 11842,
+        "totalProduction": 2000,
+        "totalTarget": 23684,
         "progress": 8
       }
     ],
@@ -171,11 +228,12 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 1000,
+        "totalProduction": 2000,
         "totalTarget": 13026,
-        "progress": 8,
+        "progress": 15,
         "variants": [
-          "Scalpel-Assembly-PARC15NS"
+          "Scalpel-Assembly-PARC15NS",
+          "Scalpel-Assembly-PARC15S"
         ]
       }
     ]
