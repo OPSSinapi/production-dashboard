@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-25T08:30:05.808Z",
+    "timestamp": "2025-04-25T08:30:59.651Z",
     "date": "2025-04-25",
     "facility": "Main Plant"
   },
@@ -8,23 +8,91 @@
     {
       "id": "standard",
       "startTime": "07:30",
-      "endTime": "16:30",
+      "endTime": "15:15",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:15"
+          "startTime": "14:45",
+          "endTime": "15:05"
         },
         {
           "type": "lunch",
           "startTime": "12:00",
-          "endTime": "12:30"
+          "endTime": "12:35"
         }
       ],
-      "availableWorkHours": 7.5
+      "availableWorkHours": 7
     }
   ],
   "production": [
+    {
+      "id": "PopUp-Y001NVL",
+      "product": {
+        "id": "PopUp",
+        "name": "PopUp"
+      },
+      "variant": {
+        "id": "Y001NVL",
+        "name": "Y001NVL",
+        "fullName": "PopUp Y001NVL",
+        "cycleTime": 0,
+        "devicesPerBox": 100,
+        "actualCycleTime": 211
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 0,
+        "daily": 480,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 21
+      },
+      "batches": [
+        {
+          "id": 25042452,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 100,
+          "startTime": "08:29",
+          "endTime": "15:15",
+          "target": 480,
+          "progress": 21
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 0,
+          "actual": 100,
+          "cumTarget": 0,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XS50+",
       "product": {
@@ -37,7 +105,7 @@
         "fullName": "SCD XS50+",
         "cycleTime": 29.41,
         "devicesPerBox": 15,
-        "actualCycleTime": 660
+        "actualCycleTime": 547
       },
       "shiftId": "standard",
       "targets": {
@@ -63,9 +131,9 @@
           "name": "Michaela",
           "production": 45,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 1009,
-          "progress": 4
+          "endTime": "15:15",
+          "target": 836,
+          "progress": 5
         }
       ],
       "timeline": [
@@ -105,7 +173,7 @@
         "fullName": "Scalpel Packaging PARC11NS",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 10
+        "actualCycleTime": 8
       },
       "shiftId": "standard",
       "targets": {
@@ -131,9 +199,9 @@
           "name": "Nosi",
           "production": 3000,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 13026,
-          "progress": 23
+          "endTime": "15:15",
+          "target": 10789,
+          "progress": 28
         }
       ],
       "timeline": [
@@ -241,7 +309,7 @@
         "fullName": "Scalpel Assembly PARC15S",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 26
+        "actualCycleTime": 21
       },
       "shiftId": "standard",
       "targets": {
@@ -267,9 +335,9 @@
           "name": "Nosi",
           "production": 1000,
           "startTime": "08:24",
-          "endTime": "16:30",
-          "target": 11605,
-          "progress": 9
+          "endTime": "15:15",
+          "target": 9368,
+          "progress": 11
         }
       ],
       "timeline": [
@@ -301,6 +369,13 @@
   "summary": {
     "products": [
       {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 100,
+        "totalTarget": 480,
+        "progress": 21
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 45,
@@ -327,8 +402,8 @@
         "id": "Michaela",
         "name": "Michaela",
         "totalProduction": 45,
-        "totalTarget": 1009,
-        "progress": 4,
+        "totalTarget": 836,
+        "progress": 5,
         "variants": [
           "SCD-XS50+"
         ]
@@ -337,12 +412,22 @@
         "id": "Nosi",
         "name": "Nosi",
         "totalProduction": 5000,
-        "totalTarget": 26052,
-        "progress": 19,
+        "totalTarget": 21578,
+        "progress": 23,
         "variants": [
           "Scalpel-Assembly-PARC15NS",
           "Scalpel-Assembly-PARC15S",
           "Scalpel-Packaging-PARC11NS"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 100,
+        "totalTarget": 480,
+        "progress": 21,
+        "variants": [
+          "PopUp-Y001NVL"
         ]
       }
     ]
