@@ -1,10 +1,28 @@
 {
   "metadata": {
-    "timestamp": "2025-04-29T09:13:00.169Z",
+    "timestamp": "2025-04-29T09:13:59.432Z",
     "date": "2025-04-29",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
+    },
     {
       "id": "overtime",
       "startTime": "07:30",
@@ -27,27 +45,77 @@
         }
       ],
       "availableWorkHours": 9.76
-    },
-    {
-      "id": "standard",
-      "startTime": "07:30",
-      "endTime": "16:30",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:25",
-          "endTime": "10:45"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        }
-      ],
-      "availableWorkHours": 8.09
     }
   ],
   "production": [
+    {
+      "id": "LEVO-XL2200SD",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL2200SD",
+        "name": "XL2200SD",
+        "fullName": "LEVO XL2200SD",
+        "cycleTime": 97.06,
+        "devicesPerBox": 12,
+        "actualCycleTime": 1213
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 37,
+        "daily": 300,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 24,
+        "boxes": 2,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 25042554,
+          "quantity": 24,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 24,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 299,
+          "progress": 8
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 37,
+          "actual": 0,
+          "cumTarget": 37,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 37,
+          "actual": 24,
+          "cumTarget": 74,
+          "cumActual": 24,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XS50+",
       "product": {
@@ -197,6 +265,13 @@
   "summary": {
     "products": [
       {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 24,
+        "totalTarget": 300,
+        "progress": 8
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 165,
@@ -231,6 +306,16 @@
         "variants": [
           "SCD-XS50+",
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 24,
+        "totalTarget": 299,
+        "progress": 8,
+        "variants": [
+          "LEVO-XL2200SD"
         ]
       }
     ]
