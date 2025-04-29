@@ -1,10 +1,33 @@
 {
   "metadata": {
-    "timestamp": "2025-04-29T08:41:58.753Z",
+    "timestamp": "2025-04-29T08:43:02.032Z",
     "date": "2025-04-29",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "overtime",
+      "startTime": "07:30",
+      "endTime": "18:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "17:40",
+          "endTime": "18:00"
+        }
+      ],
+      "availableWorkHours": 9.76
+    },
     {
       "id": "standard",
       "startTime": "07:30",
@@ -25,6 +48,74 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XS50+",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XS50+",
+        "name": "XS50+",
+        "fullName": "SCD XS50+",
+        "cycleTime": 29.41,
+        "devicesPerBox": 15,
+        "actualCycleTime": 585
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 122,
+        "daily": 1194,
+        "boxes": 79
+      },
+      "actual": {
+        "total": 60,
+        "boxes": 4,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25042349,
+          "quantity": 60,
+          "boxes": 4
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 60,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 1193,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 122,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 122,
+          "actual": 60,
+          "cumTarget": 244,
+          "cumActual": 60,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SUM-500V2",
       "product": {
@@ -97,6 +188,13 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 60,
+        "totalTarget": 1194,
+        "progress": 5
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 100,
@@ -113,6 +211,16 @@
         "progress": 10,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 60,
+        "totalTarget": 1193,
+        "progress": 5,
+        "variants": [
+          "SCD-XS50+"
         ]
       }
     ]
