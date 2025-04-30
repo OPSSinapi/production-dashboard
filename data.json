@@ -1,13 +1,114 @@
 {
   "metadata": {
-    "timestamp": "2025-04-30T07:47:01.243Z",
+    "timestamp": "2025-04-30T07:48:02.593Z",
     "date": "2025-04-30",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "overtime",
+      "startTime": "07:30",
+      "endTime": "18:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "17:40",
+          "endTime": "18:00"
+        }
+      ],
+      "availableWorkHours": 9.76
+    }
+  ],
+  "production": [
+    {
+      "id": "Scalpel-Packaging-PAHS11S",
+      "product": {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging"
+      },
+      "variant": {
+        "id": "PAHS11S",
+        "name": "PAHS11S",
+        "fullName": "Scalpel Packaging PAHS11S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 35
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 1578,
+        "daily": 15410,
+        "boxes": 30
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 2,
+        "progress": 6
+      },
+      "batches": [
+        {
+          "id": 25042957,
+          "quantity": 1000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 1000,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 15394,
+          "progress": 6
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 1578,
+          "cumActual": 1000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging",
+        "totalProduction": 1000,
+        "totalTarget": 15410,
+        "progress": 6
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Nosi",
+        "name": "Nosi",
+        "totalProduction": 1000,
+        "totalTarget": 15394,
+        "progress": 6,
+        "variants": [
+          "Scalpel-Packaging-PAHS11S"
+        ]
+      }
+    ]
   }
 }
