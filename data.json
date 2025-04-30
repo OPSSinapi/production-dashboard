@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-30T11:14:07.818Z",
+    "timestamp": "2025-04-30T11:15:03.663Z",
     "date": "2025-04-30",
     "facility": "Main Plant"
   },
@@ -600,7 +600,7 @@
         "fullName": "Scalpel Assembly PAHS15S",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 18
+        "actualCycleTime": 6
       },
       "shiftId": "overtime",
       "targets": {
@@ -626,9 +626,9 @@
           "name": "Apelele",
           "production": 2000,
           "startTime": "07:30",
-          "endTime": "18:30",
-          "target": 15394,
-          "progress": 13
+          "endTime": "11:12",
+          "target": 5315,
+          "progress": 38
         }
       ],
       "timeline": [
@@ -667,14 +667,104 @@
         },
         {
           "hour": "11:30",
-          "target": 1184,
+          "target": 1105,
           "actual": 0,
-          "cumTarget": 5787,
+          "cumTarget": 5708,
           "cumActual": 2000,
+          "transitionTarget": 1105,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 42
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-Assembly-PAMC10S",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PAMC10S",
+        "name": "PAMC10S",
+        "fullName": "Scalpel Assembly PAMC10S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 8
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 1578,
+        "daily": 15410,
+        "boxes": 15
+      },
+      "actual": {
+        "total": 3000,
+        "boxes": 3,
+        "progress": 19
+      },
+      "batches": [
+        {
+          "id": 25043063,
+          "quantity": 3000,
+          "boxes": 3
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 3000,
+          "startTime": "11:12",
+          "endTime": "18:30",
+          "target": 10078,
+          "progress": 30
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 45
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1447,
+          "actual": 0,
+          "cumTarget": 4603,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 473,
+          "actual": 3000,
+          "cumTarget": 5076,
+          "cumActual": 3000,
+          "transitionTarget": 473,
+          "previousVariant": "Scalpel-Assembly-PAHS15S",
+          "previousVariantMinutes": 42,
+          "currentVariantMinutes": 18
         }
       ]
     }
@@ -712,9 +802,9 @@
       {
         "id": "Scalpel-Assembly",
         "name": "Scalpel Assembly",
-        "totalProduction": 2000,
-        "totalTarget": 15410,
-        "progress": 13
+        "totalProduction": 5000,
+        "totalTarget": 30820,
+        "progress": 16
       }
     ],
     "supervisors": [
@@ -763,11 +853,12 @@
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 2000,
-        "totalTarget": 15394,
-        "progress": 13,
+        "totalProduction": 5000,
+        "totalTarget": 15393,
+        "progress": 32,
         "variants": [
-          "Scalpel-Assembly-PAHS15S"
+          "Scalpel-Assembly-PAHS15S",
+          "Scalpel-Assembly-PAMC10S"
         ]
       }
     ]
