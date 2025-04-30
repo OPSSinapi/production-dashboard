@@ -1,28 +1,10 @@
 {
   "metadata": {
-    "timestamp": "2025-04-30T08:04:02.491Z",
+    "timestamp": "2025-04-30T08:05:02.836Z",
     "date": "2025-04-30",
     "facility": "Main Plant"
   },
   "shifts": [
-    {
-      "id": "standard",
-      "startTime": "07:30",
-      "endTime": "16:30",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:25",
-          "endTime": "10:45"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        }
-      ],
-      "availableWorkHours": 8.09
-    },
     {
       "id": "overtime",
       "startTime": "07:30",
@@ -45,9 +27,84 @@
         }
       ],
       "availableWorkHours": 9.76
+    },
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL1000+",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000+",
+        "name": "XL1000+",
+        "fullName": "SCD XL1000+",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 2925
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 122,
+        "daily": 1194,
+        "boxes": 99
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 25042958,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 12,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 1193,
+          "progress": 1
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 12,
+          "cumTarget": 122,
+          "cumActual": 12,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SUM-500V2",
       "product": {
@@ -60,7 +117,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 28.13,
         "devicesPerBox": 20,
-        "actualCycleTime": 728
+        "actualCycleTime": 485
       },
       "shiftId": "standard",
       "targets": {
@@ -69,35 +126,35 @@
         "boxes": 51
       },
       "actual": {
-        "total": 40,
-        "boxes": 2,
-        "progress": 4
+        "total": 60,
+        "boxes": 3,
+        "progress": 6
       },
       "batches": [
         {
           "id": 25042956,
-          "quantity": 40,
-          "boxes": 2
+          "quantity": 60,
+          "boxes": 3
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 40,
+          "production": 60,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 1034,
-          "progress": 4
+          "progress": 6
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 127,
-          "actual": 40,
+          "actual": 60,
           "cumTarget": 127,
-          "cumActual": 40,
+          "cumActual": 60,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -166,11 +223,18 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "totalTarget": 1194,
+        "progress": 1
+      },
+      {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 40,
+        "totalProduction": 60,
         "totalTarget": 1035,
-        "progress": 4
+        "progress": 6
       },
       {
         "id": "Scalpel-Packaging",
@@ -194,11 +258,21 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 40,
+        "totalProduction": 60,
         "totalTarget": 1034,
-        "progress": 4,
+        "progress": 6,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 12,
+        "totalTarget": 1193,
+        "progress": 1,
+        "variants": [
+          "SCD-XL1000+"
         ]
       }
     ]
