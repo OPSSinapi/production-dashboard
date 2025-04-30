@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-04-30T08:40:05.980Z",
+    "timestamp": "2025-04-30T08:41:02.656Z",
     "date": "2025-04-30",
     "facility": "Main Plant"
   },
@@ -185,6 +185,74 @@
       ]
     },
     {
+      "id": "UBT-",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "UBT UBT",
+        "cycleTime": 59.4,
+        "devicesPerBox": 25,
+        "actualCycleTime": 582
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 60,
+        "daily": 490,
+        "boxes": 19
+      },
+      "actual": {
+        "total": 50,
+        "boxes": 2,
+        "progress": 10
+      },
+      "batches": [
+        {
+          "id": 25042555,
+          "quantity": 50,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 50,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 489,
+          "progress": 10
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 60,
+          "actual": 0,
+          "cumTarget": 60,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 60,
+          "actual": 50,
+          "cumTarget": 120,
+          "cumActual": 50,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "Scalpel-Packaging-PAHS11S",
       "product": {
         "id": "Scalpel-Packaging",
@@ -196,7 +264,7 @@
         "fullName": "Scalpel Packaging PAHS11S",
         "cycleTime": 2.28,
         "devicesPerBox": 500,
-        "actualCycleTime": 35
+        "actualCycleTime": 12
       },
       "shiftId": "overtime",
       "targets": {
@@ -205,26 +273,26 @@
         "boxes": 30
       },
       "actual": {
-        "total": 1000,
-        "boxes": 2,
-        "progress": 6
+        "total": 3000,
+        "boxes": 6,
+        "progress": 19
       },
       "batches": [
         {
           "id": 25042957,
-          "quantity": 1000,
-          "boxes": 2
+          "quantity": 3000,
+          "boxes": 6
         }
       ],
       "supervisors": [
         {
           "id": "Nosi",
           "name": "Nosi",
-          "production": 1000,
+          "production": 3000,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 15394,
-          "progress": 6
+          "progress": 19
         }
       ],
       "timeline": [
@@ -242,9 +310,9 @@
         {
           "hour": "09:30",
           "target": 1578,
-          "actual": 0,
+          "actual": 2000,
           "cumTarget": 3156,
-          "cumActual": 1000,
+          "cumActual": 3000,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -270,20 +338,27 @@
         "progress": 12
       },
       {
+        "id": "UBT",
+        "name": "UBT",
+        "totalProduction": 50,
+        "totalTarget": 490,
+        "progress": 10
+      },
+      {
         "id": "Scalpel-Packaging",
         "name": "Scalpel Packaging",
-        "totalProduction": 1000,
+        "totalProduction": 3000,
         "totalTarget": 15410,
-        "progress": 6
+        "progress": 19
       }
     ],
     "supervisors": [
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 1000,
+        "totalProduction": 3000,
         "totalTarget": 15394,
-        "progress": 6,
+        "progress": 19,
         "variants": [
           "Scalpel-Packaging-PAHS11S"
         ]
@@ -306,6 +381,16 @@
         "progress": 3,
         "variants": [
           "SCD-XL1000+"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 50,
+        "totalTarget": 489,
+        "progress": 10,
+        "variants": [
+          "UBT-"
         ]
       }
     ]
