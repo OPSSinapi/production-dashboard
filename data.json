@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-05T09:02:08.402Z",
+    "timestamp": "2025-05-05T09:03:08.286Z",
     "date": "2025-05-05",
     "facility": "Main Plant"
   },
@@ -256,6 +256,74 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "Scalpel-Packaging-PAMC11S",
+      "product": {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging"
+      },
+      "variant": {
+        "id": "PAMC11S",
+        "name": "PAMC11S",
+        "fullName": "Scalpel Packaging PAMC11S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 35
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 1578,
+        "daily": 15410,
+        "boxes": 30
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 2,
+        "progress": 6
+      },
+      "batches": [
+        {
+          "id": 25043068,
+          "quantity": 1000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 1000,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 15394,
+          "progress": 6
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 3156,
+          "cumActual": 1000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -280,6 +348,13 @@
         "totalProduction": 120,
         "totalTarget": 1035,
         "progress": 12
+      },
+      {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging",
+        "totalProduction": 1000,
+        "totalTarget": 15410,
+        "progress": 6
       }
     ],
     "supervisors": [
@@ -311,6 +386,16 @@
         "progress": 12,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Nosi",
+        "name": "Nosi",
+        "totalProduction": 1000,
+        "totalTarget": 15394,
+        "progress": 6,
+        "variants": [
+          "Scalpel-Packaging-PAMC11S"
         ]
       }
     ]
