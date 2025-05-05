@@ -1,10 +1,28 @@
 {
   "metadata": {
-    "timestamp": "2025-05-05T08:17:00.717Z",
+    "timestamp": "2025-05-05T08:18:02.643Z",
     "date": "2025-05-05",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
+    },
     {
       "id": "overtime",
       "startTime": "07:30",
@@ -30,6 +48,63 @@
     }
   ],
   "production": [
+    {
+      "id": "LEVO-XL2200S",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL2200S",
+        "name": "XL2200S",
+        "fullName": "LEVO XL2200S",
+        "cycleTime": 97.06,
+        "devicesPerBox": 12,
+        "actualCycleTime": 2425
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 37,
+        "daily": 300,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 25043067,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 12,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 299,
+          "progress": 4
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 37,
+          "actual": 12,
+          "cumTarget": 37,
+          "cumActual": 12,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XL1000S",
       "product": {
@@ -91,6 +166,13 @@
   "summary": {
     "products": [
       {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 12,
+        "totalTarget": 300,
+        "progress": 4
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 12,
@@ -107,6 +189,16 @@
         "progress": 1,
         "variants": [
           "SCD-XL1000S"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 12,
+        "totalTarget": 299,
+        "progress": 4,
+        "variants": [
+          "LEVO-XL2200S"
         ]
       }
     ]
