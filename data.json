@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-05T09:19:01.205Z",
+    "timestamp": "2025-05-05T09:20:01.017Z",
     "date": "2025-05-05",
     "facility": "Main Plant"
   },
@@ -324,6 +324,74 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "Scalpel-Assembly-PARC10S",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PARC10S",
+        "name": "PARC10S",
+        "fullName": "Scalpel Assembly PARC10S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 35
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 1578,
+        "daily": 15410,
+        "boxes": 15
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 1,
+        "progress": 6
+      },
+      "batches": [
+        {
+          "id": 25050104,
+          "quantity": 1000,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 1000,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 15394,
+          "progress": 6
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 3156,
+          "cumActual": 1000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -352,6 +420,13 @@
       {
         "id": "Scalpel-Packaging",
         "name": "Scalpel Packaging",
+        "totalProduction": 1000,
+        "totalTarget": 15410,
+        "progress": 6
+      },
+      {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly",
         "totalProduction": 1000,
         "totalTarget": 15410,
         "progress": 6
@@ -396,6 +471,16 @@
         "progress": 6,
         "variants": [
           "Scalpel-Packaging-PAMC11S"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 1000,
+        "totalTarget": 15394,
+        "progress": 6,
+        "variants": [
+          "Scalpel-Assembly-PARC10S"
         ]
       }
     ]
