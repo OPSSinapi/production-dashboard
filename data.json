@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-07T08:11:05.118Z",
+    "timestamp": "2025-05-07T08:12:03.347Z",
     "date": "2025-05-07",
     "facility": "Main Plant"
   },
@@ -27,6 +27,24 @@
         }
       ],
       "availableWorkHours": 9.76
+    },
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
     }
   ],
   "production": [
@@ -80,6 +98,63 @@
           "actual": 12,
           "cumTarget": 122,
           "cumActual": 12,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "UBT-",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "UBT UBT",
+        "cycleTime": 59.4,
+        "devicesPerBox": 25,
+        "actualCycleTime": 1164
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 60,
+        "daily": 490,
+        "boxes": 19
+      },
+      "actual": {
+        "total": 25,
+        "boxes": 1,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25042555,
+          "quantity": 25,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 25,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 489,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 60,
+          "actual": 25,
+          "cumTarget": 60,
+          "cumActual": 25,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -155,6 +230,13 @@
         "progress": 1
       },
       {
+        "id": "UBT",
+        "name": "UBT",
+        "totalProduction": 25,
+        "totalTarget": 490,
+        "progress": 5
+      },
+      {
         "id": "Scalpel-Packaging",
         "name": "Scalpel Packaging",
         "totalProduction": 500,
@@ -181,6 +263,16 @@
         "progress": 3,
         "variants": [
           "Scalpel-Packaging-PARC10S"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 25,
+        "totalTarget": 489,
+        "progress": 5,
+        "variants": [
+          "UBT-"
         ]
       }
     ]
