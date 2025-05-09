@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-09T08:59:10.241Z",
+    "timestamp": "2025-05-09T09:00:01.618Z",
     "date": "2025-05-09",
     "facility": "Main Plant"
   },
@@ -173,7 +173,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 28.13,
         "devicesPerBox": 20,
-        "actualCycleTime": 186
+        "actualCycleTime": 165
       },
       "shiftId": "standard",
       "targets": {
@@ -182,26 +182,26 @@
         "boxes": 43
       },
       "actual": {
-        "total": 160,
-        "boxes": 8,
-        "progress": 18
+        "total": 180,
+        "boxes": 9,
+        "progress": 21
       },
       "batches": [
         {
           "id": 25050713,
-          "quantity": 160,
-          "boxes": 8
+          "quantity": 180,
+          "boxes": 9
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 160,
+          "production": 180,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 1055,
-          "progress": 15
+          "progress": 17
         }
       ],
       "timeline": [
@@ -219,9 +219,77 @@
         {
           "hour": "09:30",
           "target": 127,
-          "actual": 60,
+          "actual": 80,
           "cumTarget": 254,
-          "cumActual": 160,
+          "cumActual": 180,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "UBT-",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "UBT UBT",
+        "cycleTime": 59.4,
+        "devicesPerBox": 25,
+        "actualCycleTime": 594
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 60,
+        "daily": 414,
+        "boxes": 16
+      },
+      "actual": {
+        "total": 50,
+        "boxes": 2,
+        "progress": 12
+      },
+      "batches": [
+        {
+          "id": 25042555,
+          "quantity": 50,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 50,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 500,
+          "progress": 10
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 60,
+          "actual": 0,
+          "cumTarget": 60,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 60,
+          "actual": 50,
+          "cumTarget": 120,
+          "cumActual": 50,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -317,9 +385,16 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 160,
+        "totalProduction": 180,
         "totalTarget": 875,
-        "progress": 18
+        "progress": 21
+      },
+      {
+        "id": "UBT",
+        "name": "UBT",
+        "totalProduction": 50,
+        "totalTarget": 414,
+        "progress": 12
       },
       {
         "id": "Scalpel-Assembly",
@@ -343,9 +418,9 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 160,
+        "totalProduction": 180,
         "totalTarget": 1055,
-        "progress": 15,
+        "progress": 17,
         "variants": [
           "SUM-500V2"
         ]
@@ -368,6 +443,16 @@
         "progress": 15,
         "variants": [
           "Scalpel-Assembly-PARC11S"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 50,
+        "totalTarget": 500,
+        "progress": 10,
+        "variants": [
+          "UBT-"
         ]
       }
     ]
