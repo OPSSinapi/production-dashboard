@@ -1,10 +1,28 @@
 {
   "metadata": {
-    "timestamp": "2025-05-12T10:09:04.265Z",
+    "timestamp": "2025-05-12T10:10:03.354Z",
     "date": "2025-05-12",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
+    },
     {
       "id": "overtime",
       "startTime": "07:30",
@@ -27,24 +45,6 @@
         }
       ],
       "availableWorkHours": 9.76
-    },
-    {
-      "id": "standard",
-      "startTime": "07:30",
-      "endTime": "16:30",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:25",
-          "endTime": "10:45"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        }
-      ],
-      "availableWorkHours": 8.09
     }
   ],
   "production": [
@@ -60,18 +60,18 @@
         "fullName": "SCD XL1000SC",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 163
+        "actualCycleTime": 135
       },
-      "shiftId": "overtime",
+      "shiftId": "standard",
       "targets": {
         "hourly": 122,
-        "daily": 1194,
-        "boxes": 99
+        "daily": 990,
+        "boxes": 82
       },
       "actual": {
         "total": 216,
         "boxes": 18,
-        "progress": 18
+        "progress": 22
       },
       "batches": [
         {
@@ -86,9 +86,9 @@
           "name": "Michaela",
           "production": 216,
           "startTime": "07:30",
-          "endTime": "18:30",
-          "target": 1193,
-          "progress": 18
+          "endTime": "16:30",
+          "target": 989,
+          "progress": 22
         }
       ],
       "timeline": [
@@ -529,8 +529,8 @@
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 216,
-        "totalTarget": 1194,
-        "progress": 18
+        "totalTarget": 990,
+        "progress": 22
       },
       {
         "id": "LEVO",
@@ -573,8 +573,8 @@
         "id": "Michaela",
         "name": "Michaela",
         "totalProduction": 216,
-        "totalTarget": 1193,
-        "progress": 18,
+        "totalTarget": 989,
+        "progress": 22,
         "variants": [
           "SCD-XL1000SC"
         ]
