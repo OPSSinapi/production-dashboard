@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-14T08:02:07.669Z",
+    "timestamp": "2025-05-14T08:03:01.719Z",
     "date": "2025-05-14",
     "facility": "Main Plant"
   },
@@ -48,6 +48,63 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL1000SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SC",
+        "name": "XL1000SC",
+        "fullName": "SCD XL1000SC",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 1213
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 122,
+        "daily": 990,
+        "boxes": 82
+      },
+      "actual": {
+        "total": 24,
+        "boxes": 2,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25050511,
+          "quantity": 24,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 24,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 989,
+          "progress": 2
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 24,
+          "cumTarget": 122,
+          "cumActual": 24,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "LEVO-XL1150SCi",
       "product": {
@@ -166,6 +223,13 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 24,
+        "totalTarget": 990,
+        "progress": 2
+      },
+      {
         "id": "LEVO",
         "name": "LEVO",
         "totalProduction": 28,
@@ -199,6 +263,16 @@
         "progress": 9,
         "variants": [
           "LEVO-XL1150SCi"
+        ]
+      },
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 24,
+        "totalTarget": 989,
+        "progress": 2,
+        "variants": [
+          "SCD-XL1000SC"
         ]
       }
     ]
