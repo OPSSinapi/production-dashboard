@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-15T08:21:00.512Z",
+    "timestamp": "2025-05-15T08:22:02.281Z",
     "date": "2025-05-15",
     "facility": "Main Plant"
   },
@@ -60,7 +60,7 @@
         "fullName": "SCD XL1000SC",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 2425
+        "actualCycleTime": 404
       },
       "shiftId": "standard",
       "targets": {
@@ -69,35 +69,35 @@
         "boxes": 82
       },
       "actual": {
-        "total": 12,
-        "boxes": 1,
-        "progress": 1
+        "total": 72,
+        "boxes": 6,
+        "progress": 7
       },
       "batches": [
         {
           "id": 25051426,
-          "quantity": 12,
-          "boxes": 1
+          "quantity": 72,
+          "boxes": 6
         }
       ],
       "supervisors": [
         {
           "id": "Michaela",
           "name": "Michaela",
-          "production": 12,
+          "production": 72,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 989,
-          "progress": 1
+          "progress": 7
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 122,
-          "actual": 12,
+          "actual": 72,
           "cumTarget": 122,
-          "cumActual": 12,
+          "cumActual": 72,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -117,7 +117,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 28.13,
         "devicesPerBox": 20,
-        "actualCycleTime": 293
+        "actualCycleTime": 251
       },
       "shiftId": "overtime",
       "targets": {
@@ -126,35 +126,92 @@
         "boxes": 62
       },
       "actual": {
-        "total": 120,
-        "boxes": 6,
-        "progress": 10
+        "total": 140,
+        "boxes": 7,
+        "progress": 11
       },
       "batches": [
         {
           "id": 25051424,
-          "quantity": 120,
-          "boxes": 6
+          "quantity": 140,
+          "boxes": 7
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 120,
+          "production": 140,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1247,
-          "progress": 10
+          "progress": 11
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 127,
-          "actual": 120,
+          "actual": 140,
           "cumTarget": 127,
-          "cumActual": 120,
+          "cumActual": 140,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-Assembly-PARC15S",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PARC15S",
+        "name": "PARC15S",
+        "fullName": "Scalpel Assembly PARC15S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 29
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12773,
+        "boxes": 12
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 1,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 25051425,
+          "quantity": 1000,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 1000,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 12763,
+          "progress": 8
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 1578,
+          "cumActual": 1000,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -168,25 +225,32 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 12,
+        "totalProduction": 72,
         "totalTarget": 990,
-        "progress": 1
+        "progress": 7
       },
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 120,
+        "totalProduction": 140,
         "totalTarget": 1249,
-        "progress": 10
+        "progress": 11
+      },
+      {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly",
+        "totalProduction": 1000,
+        "totalTarget": 12773,
+        "progress": 8
       }
     ],
     "supervisors": [
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 120,
+        "totalProduction": 140,
         "totalTarget": 1247,
-        "progress": 10,
+        "progress": 11,
         "variants": [
           "SUM-500V2"
         ]
@@ -194,11 +258,21 @@
       {
         "id": "Michaela",
         "name": "Michaela",
-        "totalProduction": 12,
+        "totalProduction": 72,
         "totalTarget": 989,
-        "progress": 1,
+        "progress": 7,
         "variants": [
           "SCD-XL1000SC"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 1000,
+        "totalTarget": 12763,
+        "progress": 8,
+        "variants": [
+          "Scalpel-Assembly-PARC15S"
         ]
       }
     ]
