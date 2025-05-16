@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-16T09:09:06.017Z",
+    "timestamp": "2025-05-16T09:10:21.097Z",
     "date": "2025-05-16",
     "facility": "Main Plant"
   },
@@ -185,6 +185,74 @@
       ]
     },
     {
+      "id": "PopUp-FC",
+      "product": {
+        "id": "PopUp",
+        "name": "PopUp"
+      },
+      "variant": {
+        "id": "FC",
+        "name": "FC",
+        "fullName": "PopUp FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 93
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 72,
+        "daily": 497,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 200,
+        "boxes": 2,
+        "progress": 40
+      },
+      "batches": [
+        {
+          "id": 25050101,
+          "quantity": 200,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 200,
+          "startTime": "09:09",
+          "endTime": "15:15",
+          "target": 376,
+          "progress": 53
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 72,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 72,
+          "actual": 200,
+          "cumTarget": 144,
+          "cumActual": 200,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "SUM-500V2",
       "product": {
         "id": "SUM",
@@ -196,7 +264,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 28.13,
         "devicesPerBox": 20,
-        "actualCycleTime": 114
+        "actualCycleTime": 106
       },
       "shiftId": "overtime",
       "targets": {
@@ -205,26 +273,26 @@
         "boxes": 52
       },
       "actual": {
-        "total": 260,
-        "boxes": 13,
-        "progress": 25
+        "total": 280,
+        "boxes": 14,
+        "progress": 26
       },
       "batches": [
         {
           "id": 25051424,
-          "quantity": 260,
-          "boxes": 13
+          "quantity": 280,
+          "boxes": 14
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 260,
+          "production": 280,
           "startTime": "07:30",
           "endTime": "17:00",
           "target": 1055,
-          "progress": 25
+          "progress": 27
         }
       ],
       "timeline": [
@@ -242,9 +310,9 @@
         {
           "hour": "09:30",
           "target": 127,
-          "actual": 80,
+          "actual": 100,
           "cumTarget": 254,
-          "cumActual": 260,
+          "cumActual": 280,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -406,11 +474,18 @@
         "progress": 22
       },
       {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 200,
+        "totalTarget": 497,
+        "progress": 40
+      },
+      {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 260,
+        "totalProduction": 280,
         "totalTarget": 1057,
-        "progress": 25
+        "progress": 26
       },
       {
         "id": "Scalpel-Packaging",
@@ -431,9 +506,9 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 260,
+        "totalProduction": 280,
         "totalTarget": 1055,
-        "progress": 25,
+        "progress": 27,
         "variants": [
           "SUM-500V2"
         ]
@@ -476,6 +551,16 @@
         "progress": 56,
         "variants": [
           "Scalpel-Packaging-PARC10NS"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 200,
+        "totalTarget": 376,
+        "progress": 53,
+        "variants": [
+          "PopUp-FC"
         ]
       }
     ]
