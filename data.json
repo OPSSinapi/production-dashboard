@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-19T08:32:05.036Z",
+    "timestamp": "2025-05-19T08:33:02.793Z",
     "date": "2025-05-19",
     "facility": "Main Plant"
   },
@@ -48,6 +48,74 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL1000SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SC",
+        "name": "XL1000SC",
+        "fullName": "SCD XL1000SC",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 606
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 122,
+        "daily": 990,
+        "boxes": 82
+      },
+      "actual": {
+        "total": 48,
+        "boxes": 4,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25051527,
+          "quantity": 48,
+          "boxes": 4
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 48,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 989,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 122,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 122,
+          "actual": 48,
+          "cumTarget": 244,
+          "cumActual": 48,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "Ellavi-Drape-Line-4-BC01",
       "product": {
@@ -324,6 +392,13 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 48,
+        "totalTarget": 990,
+        "progress": 5
+      },
+      {
         "id": "Ellavi-Drape-Line-4",
         "name": "Ellavi Drape Line 4",
         "totalProduction": 100,
@@ -391,6 +466,16 @@
         "progress": 10,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 48,
+        "totalTarget": 989,
+        "progress": 5,
+        "variants": [
+          "SCD-XL1000SC"
         ]
       }
     ]
