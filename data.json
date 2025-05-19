@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-19T10:04:04.961Z",
+    "timestamp": "2025-05-19T10:05:07.985Z",
     "date": "2025-05-19",
     "facility": "Main Plant"
   },
@@ -534,7 +534,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 28.13,
         "devicesPerBox": 20,
-        "actualCycleTime": 110
+        "actualCycleTime": 103
       },
       "shiftId": "overtime",
       "targets": {
@@ -543,26 +543,26 @@
         "boxes": 62
       },
       "actual": {
-        "total": 320,
-        "boxes": 16,
-        "progress": 26
+        "total": 340,
+        "boxes": 17,
+        "progress": 27
       },
       "batches": [
         {
           "id": 25051938,
-          "quantity": 320,
-          "boxes": 16
+          "quantity": 340,
+          "boxes": 17
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 320,
+          "production": 340,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1247,
-          "progress": 26
+          "progress": 27
         }
       ],
       "timeline": [
@@ -591,13 +591,92 @@
         {
           "hour": "10:30",
           "target": 117,
-          "actual": 60,
+          "actual": 80,
           "cumTarget": 371,
-          "cumActual": 320,
+          "cumActual": 340,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 55
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-Assembly-PAMS24S",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PAMS24S",
+        "name": "PAMS24S",
+        "fullName": "Scalpel Assembly PAMS24S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 20
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12773,
+        "boxes": 12
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 1,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 25051939,
+          "quantity": 1000,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 1000,
+          "startTime": "10:02",
+          "endTime": "16:30",
+          "target": 8763,
+          "progress": 11
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 736,
+          "actual": 1000,
+          "cumTarget": 3892,
+          "cumActual": 1000,
+          "transitionTarget": 736,
+          "previousVariant": "Scalpel-Assembly-PARC11NS",
+          "previousVariantMinutes": 32,
+          "currentVariantMinutes": 28
         }
       ]
     },
@@ -613,7 +692,7 @@
         "fullName": "Scalpel Assembly PARC11NS",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 29
+        "actualCycleTime": 9
       },
       "shiftId": "standard",
       "targets": {
@@ -639,9 +718,9 @@
           "name": "Apelele",
           "production": 1000,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 12763,
-          "progress": 8
+          "endTime": "10:02",
+          "target": 4000,
+          "progress": 25
         }
       ],
       "timeline": [
@@ -669,14 +748,14 @@
         },
         {
           "hour": "10:30",
-          "target": 1447,
+          "target": 842,
           "actual": 0,
-          "cumTarget": 4603,
+          "cumTarget": 3998,
           "cumActual": 1000,
-          "transitionTarget": 0,
+          "transitionTarget": 842,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 55
+          "currentVariantMinutes": 32
         }
       ]
     },
@@ -800,15 +879,15 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 320,
+        "totalProduction": 340,
         "totalTarget": 1249,
-        "progress": 26
+        "progress": 27
       },
       {
         "id": "Scalpel-Assembly",
         "name": "Scalpel Assembly",
-        "totalProduction": 1000,
-        "totalTarget": 12773,
+        "totalProduction": 2000,
+        "totalTarget": 25546,
         "progress": 8
       },
       {
@@ -833,12 +912,13 @@
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 6000,
+        "totalProduction": 7000,
         "totalTarget": 25526,
-        "progress": 24,
+        "progress": 27,
         "variants": [
           "Scalpel-Assembly-PARC11NS",
-          "Scalpel-Packaging-PARC11NS"
+          "Scalpel-Packaging-PARC11NS",
+          "Scalpel-Assembly-PAMS24S"
         ]
       },
       {
@@ -856,9 +936,9 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 320,
+        "totalProduction": 340,
         "totalTarget": 1247,
-        "progress": 26,
+        "progress": 27,
         "variants": [
           "SUM-500V2"
         ]
