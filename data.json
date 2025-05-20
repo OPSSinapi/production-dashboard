@@ -1,13 +1,159 @@
 {
   "metadata": {
-    "timestamp": "2025-05-20T07:28:05.232Z",
+    "timestamp": "2025-05-20T07:29:01.947Z",
     "date": "2025-05-20",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
+    }
+  ],
+  "production": [
+    {
+      "id": "PopUp-XS50",
+      "product": {
+        "id": "PopUp",
+        "name": "PopUp"
+      },
+      "variant": {
+        "id": "XS50",
+        "name": "XS50",
+        "fullName": "PopUp XS50",
+        "cycleTime": 90,
+        "devicesPerBox": 25,
+        "actualCycleTime": 1169
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 40,
+        "daily": 323,
+        "boxes": 12
+      },
+      "actual": {
+        "total": 25,
+        "boxes": 1,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 25051944,
+          "quantity": 25,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 25,
+          "startTime": "07:28",
+          "endTime": "16:30",
+          "target": 324,
+          "progress": 8
+        }
+      ],
+      "timeline": []
+    },
+    {
+      "id": "Scalpel-Packaging-PAMS24S",
+      "product": {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging"
+      },
+      "variant": {
+        "id": "PAMS24S",
+        "name": "PAMS24S",
+        "fullName": "Scalpel Packaging PAMS24S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 29
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12773,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 2,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 25051939,
+          "quantity": 1000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 1000,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 12763,
+          "progress": 8
+        }
+      ],
+      "timeline": []
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 25,
+        "totalTarget": 323,
+        "progress": 8
+      },
+      {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging",
+        "totalProduction": 1000,
+        "totalTarget": 12773,
+        "progress": 8
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 1000,
+        "totalTarget": 12763,
+        "progress": 8,
+        "variants": [
+          "Scalpel-Packaging-PAMS24S"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 25,
+        "totalTarget": 324,
+        "progress": 8,
+        "variants": [
+          "PopUp-XS50"
+        ]
+      }
+    ]
   }
 }
