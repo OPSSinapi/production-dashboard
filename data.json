@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-21T10:56:05.192Z",
+    "timestamp": "2025-05-21T10:57:02.492Z",
     "date": "2025-05-21",
     "facility": "Main Plant"
   },
@@ -48,6 +48,96 @@
     }
   ],
   "production": [
+    {
+      "id": "Ellavi-Drape-Line-1-BC01",
+      "product": {
+        "id": "Ellavi-Drape-Line-1",
+        "name": "Ellavi Drape Line 1"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "Ellavi Drape Line 1 BC01",
+        "cycleTime": 24.75,
+        "devicesPerBox": 100,
+        "actualCycleTime": 291
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 145,
+        "daily": 1176,
+        "boxes": 11
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 9
+      },
+      "batches": [
+        {
+          "id": 25051531,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 100,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 1175,
+          "progress": 9
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 145,
+          "actual": 0,
+          "cumTarget": 145,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 145,
+          "actual": 0,
+          "cumTarget": 290,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 133,
+          "actual": 0,
+          "cumTarget": 423,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 109,
+          "actual": 100,
+          "cumTarget": 532,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        }
+      ]
+    },
     {
       "id": "LEVO-XL1150SC",
       "product": {
@@ -592,6 +682,13 @@
   "summary": {
     "products": [
       {
+        "id": "Ellavi-Drape-Line-1",
+        "name": "Ellavi Drape Line 1",
+        "totalProduction": 100,
+        "totalTarget": 1176,
+        "progress": 9
+      },
+      {
         "id": "LEVO",
         "name": "LEVO",
         "totalProduction": 14,
@@ -684,6 +781,16 @@
         "variants": [
           "Scalpel-Assembly-PAMS11NS",
           "Scalpel-Packaging-PAMS23S"
+        ]
+      },
+      {
+        "id": "Nosi",
+        "name": "Nosi",
+        "totalProduction": 100,
+        "totalTarget": 1175,
+        "progress": 9,
+        "variants": [
+          "Ellavi-Drape-Line-1-BC01"
         ]
       }
     ]
