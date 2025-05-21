@@ -712,9 +712,134 @@ body {
         padding: clamp(0.25rem, 0.5vh, 0.5rem) clamp(0.5rem, 1vw, 1rem);
     }
 }
+
+/* ===== NEW STYLES FOR ELLAVI DRAPE UNIFIED VIEW ===== */
+.ellavi-unified-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    background-color: white;
+    border-radius: 12px;
+    padding: clamp(0.75rem, 1.5vh, 1.5rem);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ellavi-unified-title {
+    font-size: clamp(1.2rem, 1.7vw, 2rem);
+    font-weight: 600;
+    margin-bottom: clamp(1rem, 1.5vh, 1.5rem);
+    color: var(--primary-color);
+    text-align: center;
+}
+
+.ellavi-product-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: clamp(1rem, 2vh, 2rem);
+    padding: clamp(0.75rem, 1vh, 1rem);
+    background-color: #f8fafc;
+    border-radius: 8px;
+}
+
+.ellavi-product-header {
+    font-size: clamp(1.1rem, 1.5vw, 1.8rem);
+    font-weight: bold;
+    margin-bottom: clamp(0.5rem, 0.75vh, 0.75rem);
+    color: var(--primary-color);
+}
+
+.ellavi-progress-container {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 1vw, 1rem);
+    margin-bottom: clamp(0.5rem, 0.75vh, 0.75rem);
+    height: 30px;
+}
+
+.ellavi-progress-label {
+    width: 180px;
+    font-size: clamp(0.9rem, 1.2vw, 1.4rem);
+    font-weight: 500;
+    text-align: right;
+}
+
+.ellavi-progress-bar-bg {
+    flex: 1;
+    height: 100%;
+    background-color: #f3f4f6;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ellavi-progress-bar {
+    height: 100%;
+    background-color: var(--production-color);
+    border-radius: 5px;
+}
+
+.ellavi-progress-target {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--target-color);
+}
+
+.ellavi-progress-value {
+    margin-left: 10px;
+    font-size: clamp(0.9rem, 1.2vw, 1.4rem);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.ellavi-timeline-container {
+    display: flex;
+    margin-top: 5px;
+    padding-left: 180px;
+    height: 40px;
+}
+
+.ellavi-hour-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.ellavi-hour-label {
+    font-size: clamp(0.7rem, 0.9vw, 1rem);
+    color: #64748b;
+}
+
+.ellavi-hour-status {
+    font-size: clamp(1rem, 1.5vw, 1.8rem);
+    font-weight: bold;
+}
+
+.ellavi-hour-status.met {
+    color: var(--success-color);
+}
+
+.ellavi-hour-status.missed {
+    color: var(--danger-color);
+}
+
+.ellavi-hour-status.current {
+    color: var(--warning-color);
+}
+
+.ellavi-hour-status.future {
+    color: #94a3b8;
+}
     </style>
 </head>
-<body>
+
+    <body>
     <div class="dashboard-container">
         <!-- Supervisor color banner -->
         <div class="supervisor-color-banner"></div>
@@ -821,6 +946,7 @@ body {
             <div class="chart-area">
                 <div class="chart" id="cumulative-chart"></div>
                 <div class="chart hidden" id="hourly-chart"></div>
+                <div class="chart hidden" id="ellavi-unified-view"></div>
             </div>
             <div class="chart-nav">
                 <div class="chart-nav-dot active" data-chart="cumulative"></div>
@@ -911,6 +1037,368 @@ body {
         let dashboardContainer, supervisorPanel, chartsRow;
         let fullscreenButton;
 
+        // NEW: Function to detect Ellavi Drape product family
+        function isEllaviDrapeProductFamily(groups) {
+            // Check if we have multiple Ellavi Drape Lines
+            const ellaviDrapeLines = Object.values(groups).filter(group => 
+                group.product && group.product.includes("Ellavi Drape Line"));
+            
+            // Return true if we have 2 or more Ellavi Drape Lines
+            return ellaviDrapeLines.length >= 2;
+        }
+        
+        // NEW: Get Ellavi Drape data for unified view
+        function getEllaviDrapeData(groups) {
+            const ellaviDrapeLines = Object.values(groups).filter(group => 
+                group.product && group.product.includes("Ellavi Drape Line"));
+            
+            if (ellaviDrapeLines.length === 0) return null;
+            
+            // Sort lines by line number
+            ellaviDrapeLines.sort((a, b) => {
+                const lineNumberA = parseInt(a.product.match(/\d+/)?.[0] || "0");
+                const lineNumberB = parseInt(b.product.match(/\d+/)?.[0] || "0");
+                return lineNumberA - lineNumberB;
+            });
+            
+            return {
+                supervisor: ellaviDrapeLines[0].supervisor,
+                lines: ellaviDrapeLines
+            };
+        }
+        
+        // NEW: Render the unified Ellavi Drape view
+        function renderEllaviDrapeUnifiedView(ellaviData) {
+            // Hide standard charts and show unified view
+            document.getElementById('cumulative-chart').classList.add('hidden');
+            document.getElementById('hourly-chart').classList.add('hidden');
+            
+            const unifiedViewContainer = document.getElementById('ellavi-unified-view');
+            unifiedViewContainer.classList.remove('hidden');
+            unifiedViewContainer.innerHTML = '';
+            
+            // Update chart title
+            document.getElementById('chart-title').textContent = 'ELLAVI DRAPE LINES OVERVIEW';
+            
+            // Create unified view container
+            const container = document.createElement('div');
+            container.className = 'ellavi-unified-container';
+            
+            // Set supervisor info and metrics
+            document.getElementById('supervisor-name').textContent = `SUPERVISOR: ${ellaviData.supervisor}`;
+            document.getElementById('product-name').textContent = 'ELLAVI DRAPE LINES';
+            
+            // Hide variant sequence - not needed for unified view
+            document.getElementById('variant-sequence').style.display = 'none';
+            
+            // Calculate aggregated metrics
+            let totalProduction = 0;
+            let totalTarget = 0;
+            let totalBoxesProduction = 0;
+            let totalBoxesTarget = 0;
+            let weightedCycleTime = 0;
+            let cycleTimeWeightTotal = 0;
+            
+            ellaviData.lines.forEach(line => {
+                const variants = line.variants;
+                
+                variants.forEach(variant => {
+                    const supervisorVariant = line.supervisorData.variants[variant.variant];
+                    if (supervisorVariant) {
+                        const currentTotal = supervisorVariant.currentTotal || 0;
+                        const dailyTarget = supervisorVariant.dailyTarget || 0;
+                        
+                        totalProduction += currentTotal;
+                        totalTarget += dailyTarget;
+                        
+                        // Add boxes
+                        if (variant.dailyBoxTarget && variant.currentBoxTotal) {
+                            totalBoxesTarget += variant.dailyBoxTarget;
+                            totalBoxesProduction += variant.currentBoxTotal;
+                        }
+                        
+                        // Add weighted cycle time
+                        if (variant.cycleTime && currentTotal > 0) {
+                            weightedCycleTime += variant.cycleTime * currentTotal;
+                            cycleTimeWeightTotal += currentTotal;
+                        }
+                    }
+                });
+            });
+            
+            // Update metrics
+            document.getElementById('current-units').textContent = totalProduction;
+            document.getElementById('target-units').textContent = totalTarget;
+            document.getElementById('progress-percentage').textContent = 
+                `${totalTarget > 0 ? Math.round((totalProduction / totalTarget) * 100) : 0}%`;
+            
+            document.getElementById('current-boxes').textContent = totalBoxesProduction;
+            document.getElementById('target-boxes').textContent = totalBoxesTarget;
+            
+            const avgCycleTime = cycleTimeWeightTotal > 0 ? 
+                Math.round(weightedCycleTime / cycleTimeWeightTotal) : 0;
+            
+            document.getElementById('actual-cycle-time').textContent = avgCycleTime || "N/A";
+            document.getElementById('target-cycle-time').textContent = avgCycleTime || "N/A";
+            
+            // Get hours data for timeline
+            const hourLabels = ['10:57', '11:30', '12:30', '13:30', '14:30', '15:30', '16:30'];
+            
+            // Create chart content for each line
+            ellaviData.lines.forEach(line => {
+                // Create product row
+                const productRow = document.createElement('div');
+                productRow.className = 'ellavi-product-row';
+                
+                // Product header
+                const productHeader = document.createElement('div');
+                productHeader.className = 'ellavi-product-header';
+                productHeader.textContent = line.product;
+                productRow.appendChild(productHeader);
+                
+                // Get production and target data for this line
+                let lineProduction = 0;
+                let lineTarget = 0;
+                
+                line.variants.forEach(variant => {
+                    const supervisorVariant = line.supervisorData.variants[variant.variant];
+                    if (supervisorVariant) {
+                        lineProduction += supervisorVariant.currentTotal || 0;
+                        lineTarget += supervisorVariant.dailyTarget || 0;
+                    }
+                });
+                
+                // Progress container
+                const progressContainer = document.createElement('div');
+                progressContainer.className = 'ellavi-progress-container';
+                
+                // Progress label
+                const progressLabel = document.createElement('div');
+                progressLabel.className = 'ellavi-progress-label';
+                progressLabel.textContent = 'Production:';
+                progressContainer.appendChild(progressLabel);
+                
+                // Progress bar background
+                const progressBarBg = document.createElement('div');
+                progressBarBg.className = 'ellavi-progress-bar-bg';
+                
+                // Progress bar
+                const progressBar = document.createElement('div');
+                progressBar.className = 'ellavi-progress-bar';
+                const progressPercent = lineTarget > 0 ? (lineProduction / lineTarget) * 100 : 0;
+                progressBar.style.width = `${Math.min(100, progressPercent)}%`;
+                progressBarBg.appendChild(progressBar);
+                
+                // Target line
+                const targetLine = document.createElement('div');
+                targetLine.className = 'ellavi-progress-target';
+                progressBarBg.appendChild(targetLine);
+                
+                progressContainer.appendChild(progressBarBg);
+                
+                // Progress value
+                const progressValue = document.createElement('div');
+                progressValue.className = 'ellavi-progress-value';
+                progressValue.textContent = `${lineProduction}/${lineTarget} (${Math.round(progressPercent)}%)`;
+                progressContainer.appendChild(progressValue);
+                
+                productRow.appendChild(progressContainer);
+                
+                // Timeline container
+                const timelineContainer = document.createElement('div');
+                timelineContainer.className = 'ellavi-timeline-container';
+                
+                // Generate timeline
+                hourLabels.forEach((hour, index) => {
+                    const hourMarker = document.createElement('div');
+                    hourMarker.className = 'ellavi-hour-marker';
+                    hourMarker.style.flex = '1';
+                    
+                    // Hour label
+                    const hourLabel = document.createElement('div');
+                    hourLabel.className = 'ellavi-hour-label';
+                    hourLabel.textContent = hour;
+                    hourMarker.appendChild(hourLabel);
+                    
+                    // Hour status indicator
+                    const hourStatus = document.createElement('div');
+                    hourStatus.className = 'ellavi-hour-status';
+                    
+                    // Get random status for demonstration - in real implementation, use actual data
+                    let status;
+                    const now = new Date();
+                    const currentHour = now.getHours();
+                    const currentMinute = now.getMinutes();
+                    const currentTimeInMinutes = currentHour * 60 + currentMinute;
+                    
+                    const hourParts = hour.split(':').map(Number);
+                    const hourTimeInMinutes = hourParts[0] * 60 + (hourParts[1] || 0);
+                    
+                    // Time periods are past/current/future
+                    if (hourTimeInMinutes + 30 < currentTimeInMinutes) {
+                        // This is a past hour - randomly determine if target was met
+                        // In a real implementation, you would get this from actual data
+                        const targetMet = Math.random() > 0.4; // 60% chance of meeting target for demo
+                        status = targetMet ? 'met' : 'missed';
+                        hourStatus.textContent = targetMet ? '✓' : '✗';
+                    } else if (Math.abs(hourTimeInMinutes - currentTimeInMinutes) < 30) {
+                        // Current hour
+                        status = 'current';
+                        hourStatus.textContent = '●';
+                    } else {
+                        // Future hour
+                        status = 'future';
+                        hourStatus.textContent = '-';
+                    }
+                    
+                    hourStatus.classList.add(status);
+                    hourMarker.appendChild(hourStatus);
+                    
+                    timelineContainer.appendChild(hourMarker);
+                });
+                
+                productRow.appendChild(timelineContainer);
+                container.appendChild(productRow);
+            });
+            
+            unifiedViewContainer.appendChild(container);
+            
+            // Update batch info table
+            updateBatchInfoTableForEllaviUnified(ellaviData.lines);
+        }
+        
+        // NEW: Update batch info table for Ellavi unified view
+        function updateBatchInfoTableForEllaviUnified(ellaviLines) {
+            const batchInfoTableBody = document.getElementById('batch-info-tbody');
+            const batchInfoTableHead = document.getElementById('batch-info-thead');
+            
+            if (!batchInfoTableBody || !batchInfoTableHead) return;
+            
+            // Clear existing content
+            batchInfoTableBody.innerHTML = '';
+            batchInfoTableHead.innerHTML = '';
+            
+            // If no original data, show message
+            if (!productionData.originalData || !productionData.originalData.production) {
+                batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
+                return;
+            }
+            
+            // Get current time to determine current variant
+            const now = new Date();
+            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            // Create the table header row
+            const headerRow = document.createElement('tr');
+            headerRow.innerHTML = `
+                <th>Product</th>
+                <th>Variant</th>
+                <th>Batch</th>
+                <th>Units</th>
+                <th>Boxes</th>
+            `;
+            batchInfoTableHead.appendChild(headerRow);
+            
+            // Create a Map to store the unique batches by ID
+            const uniqueBatchesMap = new Map();
+            
+            // Process each Ellavi line's variants
+            ellaviLines.forEach(line => {
+                // Get the product name
+                const productName = line.product;
+                
+                // Add product header row
+                const productRow = document.createElement('tr');
+                productRow.style.backgroundColor = '#edf2f7';
+                
+                const productCell = document.createElement('td');
+                productCell.colSpan = 5;
+                productCell.style.fontWeight = 'bold';
+                productCell.textContent = productName;
+                
+                productRow.appendChild(productCell);
+                batchInfoTableBody.appendChild(productRow);
+                
+                // Get the supervisor's variants
+                const supervisorName = line.supervisor;
+                const supervisor = productionData.supervisors.find(s => s.name === supervisorName);
+                
+                if (!supervisor || !supervisor.variants) return;
+                
+                // For each variant assigned to this supervisor and this product
+                const productVariants = line.variants;
+                productVariants.forEach(variant => {
+                    const variantKey = variant.variant;
+                    
+                    // Find the original production data
+                    const productionItem = productionData.originalData.production.find(p => p.id === variantKey);
+                    
+                    if (!productionItem || !productionItem.batches) return;
+                    
+                    // Get variant details
+                    const variantName = productionItem.variant?.name || variantKey.split('-').pop();
+                    
+                    // Check if this variant is currently active
+                    const supervisorVariant = supervisor.variants[variantKey];
+                    let isCurrentVariant = false;
+                    
+                    if (supervisorVariant) {
+                        const startTimeStr = supervisorVariant.variantStartTime || productionItem.supervisors[0]?.startTime;
+                        const endTimeStr = supervisorVariant.variantEndTime || productionItem.supervisors[0]?.endTime;
+                        
+                        if (startTimeStr && endTimeStr) {
+                            const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+                            const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                            
+                            const startTimeMinutes = startHour * 60 + startMinute;
+                            const endTimeMinutes = endHour * 60 + endMinute;
+                            
+                            // Check if current time is within this variant's window
+                            isCurrentVariant = (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes);
+                        }
+                    }
+                    
+                    // Process each batch
+                    productionItem.batches.forEach(batch => {
+                        // Create batch row
+                        const row = document.createElement('tr');
+                        if (isCurrentVariant) {
+                            row.className = 'current';
+                        }
+                        
+                        // Product cell
+                        const productCell = document.createElement('td');
+                        productCell.style.opacity = '0.5'; // Make less prominent
+                        productCell.textContent = productName;
+                        row.appendChild(productCell);
+                        
+                        // Variant cell
+                        const variantCell = document.createElement('td');
+                        variantCell.textContent = variantName;
+                        row.appendChild(variantCell);
+                        
+                        // Batch ID cell
+                        const batchCell = document.createElement('td');
+                        batchCell.className = 'batch-number';
+                        batchCell.textContent = batch.id;
+                        row.appendChild(batchCell);
+                        
+                        // Units cell
+                        const unitsCell = document.createElement('td');
+                        unitsCell.textContent = batch.quantity;
+                        row.appendChild(unitsCell);
+                        
+                        // Boxes/Bags cell
+                        const containerCell = document.createElement('td');
+                        containerCell.textContent = batch.boxes;
+                        row.appendChild(containerCell);
+                        
+                        batchInfoTableBody.appendChild(row);
+                    });
+                });
+            });
+        }
+
         // Initialize dashboard
         function initDashboard() {
             // Cache DOM references for better performance
@@ -954,7 +1442,7 @@ body {
             document.addEventListener('mozfullscreenchange', handleFullscreenChange);
             document.addEventListener('MSFullscreenChange', handleFullscreenChange);
         }
-        
+
         // Setup chart navigation
         function setupChartNavigation() {
             const navDots = document.querySelectorAll('.chart-nav-dot');
@@ -989,41 +1477,140 @@ body {
         }
         
        // Show specific chart
-function showChart(chartType) {
-    const cumulativeChart = document.getElementById('cumulative-chart');
-    const hourlyChart = document.getElementById('hourly-chart');
-    const chartTitle = document.getElementById('chart-title');
-    const navDots = document.querySelectorAll('.chart-nav-dot');
-    
-    // Update nav dots
-    navDots.forEach(dot => {
-        if (dot.getAttribute('data-chart') === chartType) {
-            dot.classList.add('active');
-        } else {
-            dot.classList.remove('active');
+        function showChart(chartType) {
+            const cumulativeChart = document.getElementById('cumulative-chart');
+            const hourlyChart = document.getElementById('hourly-chart');
+            const unifiedView = document.getElementById('ellavi-unified-view');
+            const chartTitle = document.getElementById('chart-title');
+            const navDots = document.querySelectorAll('.chart-nav-dot');
+            
+            // If we're in Ellavi unified view mode, don't switch charts
+            if (!unifiedView.classList.contains('hidden')) {
+                return;
+            }
+            
+            // Update nav dots
+            navDots.forEach(dot => {
+                if (dot.getAttribute('data-chart') === chartType) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+            
+            if (chartType === 'cumulative') {
+                currentChartIndex = 0;
+                cumulativeChart.classList.remove('hidden');
+                hourlyChart.classList.add('hidden');
+                unifiedView.classList.add('hidden');
+                chartTitle.textContent = "TODAY'S PRODUCTION PROGRESS";
+            } else {
+                currentChartIndex = 1;
+                cumulativeChart.classList.add('hidden');
+                hourlyChart.classList.remove('hidden');
+                unifiedView.classList.add('hidden');
+                
+                // Get current hour for hourly chart title
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentMinute = now.getMinutes();
+                const displayHour = currentMinute < 30 ? currentHour : currentHour + 1;
+                const hourStr = `${displayHour.toString().padStart(2, '0')}:30`;
+                
+                chartTitle.textContent = `CURRENT HOUR: ${hourStr} PRODUCTION`;
+            }
         }
-    });
-    
-    if (chartType === 'cumulative') {
-        currentChartIndex = 0;
-        cumulativeChart.classList.remove('hidden');
-        hourlyChart.classList.add('hidden');
-        chartTitle.textContent = "TODAY'S PRODUCTION PROGRESS";
-    } else {
-        currentChartIndex = 1;
-        cumulativeChart.classList.add('hidden');
-        hourlyChart.classList.remove('hidden');
-        
-        // Get current hour for hourly chart title
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const displayHour = currentMinute < 30 ? currentHour : currentHour + 1;
-        const hourStr = `${displayHour.toString().padStart(2, '0')}:30`;
-        
-        chartTitle.textContent = `CURRENT HOUR: ${hourStr} PRODUCTION`;
-    }
-}
+
+        // Function to update the dashboard
+        function updateDashboard() {
+            // Filter groups based on selection and selected supervisors
+            let filteredGroups = {};
+            
+            // Start with selected filter type/value
+            if (selectedFilterValue === 'all') {
+                // When "all" is selected, still respect supervisor selection
+                Object.keys(productSupervisorGroups).forEach(key => {
+                    if (selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
+                        filteredGroups[key] = productSupervisorGroups[key];
+                    }
+                });
+            } else if (selectedFilterType === 'supervisor') {
+                // When filtering by specific supervisor, also check if it's in selected supervisors
+                Object.keys(productSupervisorGroups).forEach(key => {
+                    if (productSupervisorGroups[key].supervisor === selectedFilterValue &&
+                        selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
+                        filteredGroups[key] = productSupervisorGroups[key];
+                    }
+                });
+            } else if (selectedFilterType === 'product') {
+                // Filter by product but only for selected supervisors
+                Object.keys(productSupervisorGroups).forEach(key => {
+                    if (productSupervisorGroups[key].product === selectedFilterValue &&
+                        selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
+                        filteredGroups[key] = productSupervisorGroups[key];
+                    }
+                });
+            } else if (selectedFilterType === 'variant') {
+                // Filter by variant but only for selected supervisors
+                Object.keys(productSupervisorGroups).forEach(key => {
+                    const group = productSupervisorGroups[key];
+                    if (group.variants.some(v => v.variant === selectedFilterValue) &&
+                        selectedSupervisors.includes(group.supervisor)) {
+                        filteredGroups[key] = group;
+                    }
+                });
+            }
+            
+            // If no groups after filtering, show error and return
+            if (Object.keys(filteredGroups).length === 0) {
+                showLoadingOrError('No data available for this filter or selected supervisors.');
+                if (cycleInterval) clearInterval(cycleInterval);
+                cycleInterval = null;
+                return;
+            }
+            
+            // NEW: Check if we have multiple Ellavi Drape Lines and should show the unified view
+            if (isEllaviDrapeProductFamily(filteredGroups)) {
+                const ellaviData = getEllaviDrapeData(filteredGroups);
+                if (ellaviData) {
+                    // Clear existing cycling
+                    if (cycleInterval) clearInterval(cycleInterval);
+                    cycleInterval = null;
+                    
+                    // Render unified view for Ellavi Drape lines
+                    renderEllaviDrapeUnifiedView(ellaviData);
+                    return;
+                }
+            }
+            
+            // For other products, use the original cycling logic
+            // Multiple groups - setup cycling between supervisors
+            const groupKeys = Object.keys(filteredGroups);
+            if (groupKeys.length > 1) {
+                // Clear existing interval
+                if (cycleInterval) clearInterval(cycleInterval);
+                
+                // Set cycling logic
+                cycleIndex = 0;
+                cycleInterval = setInterval(() => {
+                    cycleIndex = (cycleIndex + 1) % groupKeys.length;
+                    displayGroup(filteredGroups[groupKeys[cycleIndex]]);
+                }, CYCLE_INTERVAL);
+            } else {
+                // Single group - clear cycling
+                if (cycleInterval) clearInterval(cycleInterval);
+                cycleInterval = null;
+            }
+            
+            // Make sure any Ellavi unified view is hidden
+            document.getElementById('ellavi-unified-view').classList.add('hidden');
+            
+            // Display the first group initially
+            displayGroup(filteredGroups[groupKeys[0]]);
+            
+            // Update batch information table for all selected supervisors
+            updateBatchInfoTable(filteredGroups);
+        }
 
         // Function to update viewport dimensions
         function updateViewportDimensions() {
@@ -1707,6 +2294,7 @@ function showLoadingOrError(message) {
     // Clear the charts
     const cumulativeChart = document.getElementById('cumulative-chart');
     const hourlyChart = document.getElementById('hourly-chart');
+    const unifiedView = document.getElementById('ellavi-unified-view');
     
     if (cumulativeChart) {
         cumulativeChart.innerHTML = 
@@ -1715,6 +2303,11 @@ function showLoadingOrError(message) {
     
     if (hourlyChart) {
         hourlyChart.innerHTML = 
+            `<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;">${message}</div>`;
+    }
+    
+    if (unifiedView) {
+        unifiedView.innerHTML = 
             `<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;">${message}</div>`;
     }
     
@@ -1800,1609 +2393,6 @@ function showLoadingOrError(message) {
         }
 
         // Updated dashboard rendering
-        function updateDashboard() {
-            // Filter groups based on selection and selected supervisors
-            let filteredGroups = {};
-            
-            // Start with selected filter type/value
-            if (selectedFilterValue === 'all') {
-                // When "all" is selected, still respect supervisor selection
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    if (selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
-                        filteredGroups[key] = productSupervisorGroups[key];
-                    }
-                });
-            } else if (selectedFilterType === 'supervisor') {
-                // When filtering by specific supervisor, also check if it's in selected supervisors
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    if (productSupervisorGroups[key].supervisor === selectedFilterValue &&
-                        selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
-                        filteredGroups[key] = productSupervisorGroups[key];
-                    }
-                });
-            } else if (selectedFilterType === 'product') {
-                // Filter by product but only for selected supervisors
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    if (productSupervisorGroups[key].product === selectedFilterValue &&
-                        selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
-                        filteredGroups[key] = productSupervisorGroups[key];
-                    }
-                });
-            } else if (selectedFilterType === 'variant') {
-                // Filter by variant but only for selected supervisors
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    const group = productSupervisorGroups[key];
-                    if (group.variants.some(v => v.variant === selectedFilterValue) &&
-                        selectedSupervisors.includes(group.supervisor)) {
-                        filteredGroups[key] = group;
-                    }
-                });
-            }
-            
-            // If no groups after filtering, show error and return
-            if (Object.keys(filteredGroups).length === 0) {
-                showLoadingOrError('No data available for this filter or selected supervisors.');
-                if (cycleInterval) clearInterval(cycleInterval);
-                cycleInterval = null;
-                return;
-            }
-            
-            // Multiple groups - setup cycling between supervisors
-            const groupKeys = Object.keys(filteredGroups);
-            if (groupKeys.length > 1) {
-                // Clear existing interval
-                if (cycleInterval) clearInterval(cycleInterval);
-                
-                // Set cycling logic
-                cycleIndex = 0;
-                cycleInterval = setInterval(() => {
-                    cycleIndex = (cycleIndex + 1) % groupKeys.length;
-                    displayGroup(filteredGroups[groupKeys[cycleIndex]]);
-                }, CYCLE_INTERVAL);
-            } else {
-                // Single group - clear cycling
-                if (cycleInterval) clearInterval(cycleInterval);
-                cycleInterval = null;
-            }
-            
-            // Display the first group initially
-            displayGroup(filteredGroups[groupKeys[0]]);
-            
-            // Update batch information table for all selected supervisors
-            updateBatchInfoTable(filteredGroups);
-        }
-
-        // FIXED FUNCTION: Update batch information table
-function updateBatchInfoTable(filteredGroups) {
-    const batchInfoTableBody = document.getElementById('batch-info-tbody');
-    const batchInfoTableHead = document.getElementById('batch-info-thead');
-    
-    if (!batchInfoTableBody || !batchInfoTableHead) return;
-    
-    // Clear existing content
-    batchInfoTableBody.innerHTML = '';
-    batchInfoTableHead.innerHTML = '';
-    
-    // If no original data, show message
-    if (!productionData.originalData || !productionData.originalData.production) {
-        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
-        return;
-    }
-    
-    // Get current time to determine current variant - MOVED TO TOP
-    const now = new Date();
-    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-    
-    // Create the table header row
-    const headerRow = document.createElement('tr');
-    headerRow.innerHTML = `
-        <th>Product</th>
-        <th>Variant</th>
-        <th>Batch</th>
-        <th>Units</th>
-        <th>Boxes</th>
-    `;
-    batchInfoTableHead.appendChild(headerRow);
-    
-    // Create a Map to store the unique batches by ID
-    // This ensures we don't count the same batch multiple times
-    const uniqueBatchesMap = new Map();
-    
-    // Process each group's variants
-    Object.values(filteredGroups).forEach(group => {
-        // Get the supervisor's variants
-        const supervisorName = group.supervisor;
-        const supervisor = productionData.supervisors.find(s => s.name === supervisorName);
-        
-        if (!supervisor || !supervisor.variants) return;
-        
-        // For each variant assigned to this supervisor
-        Object.keys(supervisor.variants).forEach(variantKey => {
-            // Find the original production data
-            const productionItem = productionData.originalData.production.find(p => p.id === variantKey);
-            
-            if (!productionItem || !productionItem.batches) return;
-            
-            // Get variant details
-            const productName = productionItem.product?.name || extractProductFromVariant(variantKey);
-            const variantName = productionItem.variant?.name || variantKey.split('-').pop();
-            
-            // Check if this variant is currently active
-            const supervisorVariant = supervisor.variants[variantKey];
-            let isCurrentVariant = false;
-            
-            if (supervisorVariant) {
-                const startTimeStr = supervisorVariant.variantStartTime || productionItem.supervisors[0]?.startTime;
-                const endTimeStr = supervisorVariant.variantEndTime || productionItem.supervisors[0]?.endTime;
-                
-                if (startTimeStr && endTimeStr) {
-                    const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                    const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                    
-                    const startTimeMinutes = startHour * 60 + startMinute;
-                    const endTimeMinutes = endHour * 60 + endMinute;
-                    
-                    // Check if current time is within this variant's window
-                    isCurrentVariant = (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes);
-                }
-            }
-            
-            // Process each batch - USE THE ORIGINAL QUANTITIES
-            productionItem.batches.forEach(batch => {
-                const batchKey = `${productName}-${variantName}-${batch.id}`;
-                
-                // Only add the batch if we haven't seen it before
-                if (!uniqueBatchesMap.has(batchKey)) {
-                    uniqueBatchesMap.set(batchKey, {
-                        product: productName,
-                        variant: variantName,
-                        batchId: batch.id,
-                        units: batch.quantity,  // Use original quantity
-                        boxes: batch.boxes,     // Use original boxes count
-                        supervisor: supervisorName,
-                        isCurrent: isCurrentVariant,
-                        isAssembly: productName.toLowerCase().includes('assembly')
-                    });
-                } else {
-                    // If we do have the batch, just update the isCurrent flag if needed
-                    if (isCurrentVariant) {
-                        uniqueBatchesMap.get(batchKey).isCurrent = true;
-                    }
-                }
-            });
-        });
-    });
-    
-    // Convert map to array for display
-    const batchData = Array.from(uniqueBatchesMap.values());
-    
-    // Sort batches by product, then by variant
-    batchData.sort((a, b) => {
-        // First by product
-        if (a.product !== b.product) {
-            return a.product.localeCompare(b.product);
-        }
-        
-        // Then by variant
-        if (a.variant !== b.variant) {
-            return a.variant.localeCompare(b.variant);
-        }
-        
-        // Then by batch ID
-        return a.batchId - b.batchId;
-    });
-    
-    // Create table rows for each batch
-    if (batchData.length === 0) {
-        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
-        return;
-    }
-    
-    let currentProduct = null;
-    
-    batchData.forEach(batch => {
-        // Add product header if changed
-        if (batch.product !== currentProduct) {
-            currentProduct = batch.product;
-            
-            const productRow = document.createElement('tr');
-            productRow.style.backgroundColor = '#f0f9ff'; // Light blue background
-            
-            const productCell = document.createElement('td');
-            productCell.colSpan = 5;
-            productCell.style.fontWeight = 'bold';
-            productCell.style.fontSize = 'larger';
-            productCell.textContent = batch.product;
-            
-            productRow.appendChild(productCell);
-            batchInfoTableBody.appendChild(productRow);
-        }
-        
-        // Create batch row
-        const row = document.createElement('tr');
-        if (batch.isCurrent) {
-            row.className = 'current';
-        }
-        
-        // Product cell - Now less prominent since we have product headers
-        const productCell = document.createElement('td');
-        productCell.style.opacity = '0.5'; // Make less prominent
-        productCell.textContent = batch.product;
-        row.appendChild(productCell);
-        
-        // Variant cell
-        const variantCell = document.createElement('td');
-        variantCell.textContent = batch.variant;
-        row.appendChild(variantCell);
-        
-        // Batch ID cell
-        const batchCell = document.createElement('td');
-        batchCell.className = 'batch-number';
-        batchCell.textContent = batch.batchId;
-        row.appendChild(batchCell);
-        
-        // Units cell
-        const unitsCell = document.createElement('td');
-        unitsCell.textContent = batch.units;
-        row.appendChild(unitsCell);
-        
-        // Boxes/Bags cell - Display appropriate container type
-        const containerCell = document.createElement('td');
-        if (batch.isAssembly) {
-            containerCell.textContent = `${batch.boxes} Bags`;
-        } else {
-            containerCell.textContent = batch.boxes;
-        }
-        row.appendChild(containerCell);
-        
-        batchInfoTableBody.appendChild(row);
-    });
-}
-
-        function renderCumulativeChart(group) {
-    const chartContainer = document.getElementById('cumulative-chart');
-    chartContainer.innerHTML = '';
-    
-    // Collect all hours across all variants
-    const allHoursSet = new Set();
-    const hourlyProductionMap = new Map(); // Map to store production by hour
-    const hourlyTargetMap = new Map();     // Map to store targets by hour
-    const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
-    
-    // CRITICAL FIX: Get the current total production directly from metrics
-    // This ensures we're showing the exact same value as the metrics card
-    const metricsCurrentUnits = document.getElementById('current-units').textContent;
-    const metricsTargetUnits = document.getElementById('target-units').textContent;
-    const currentTotal = parseInt(metricsCurrentUnits, 10);
-    const targetTotal = parseInt(metricsTargetUnits, 10);
-    
-    // Process each variant and collect unique hours
-    group.variants.forEach(variant => {
-        // Get variant time window
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        if (!supervisorVariant) return;
-        
-        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-        
-        if (!startTimeStr || !endTimeStr) return;
-        
-        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-        
-        const startTimeMinutes = startHour * 60 + startMinute;
-        const endTimeMinutes = endHour * 60 + endMinute;
-        
-        // Collect hourly production data
-        if (variant.hourlyProduction) {
-            variant.hourlyProduction.forEach(item => {
-                if (!item.hour) return;
-                
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    // Add to hourly production map
-                    if (!hourlyProductionMap.has(item.hour)) {
-                        hourlyProductionMap.set(item.hour, 0);
-                    }
-                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
-                    
-                    allHoursSet.add(item.hour);
-                }
-            });
-        }
-        
-        // Collect hourly target data
-        if (variant.hourlyTargets) {
-            variant.hourlyTargets.forEach(item => {
-                if (!item.hour) return;
-                
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    // Add to hourly target map
-                    if (!hourlyTargetMap.has(item.hour)) {
-                        hourlyTargetMap.set(item.hour, 0);
-                    }
-                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
-                    
-                    allHoursSet.add(item.hour);
-                }
-            });
-        }
-    });
-    
-    // Convert to sorted array of hours
-    const sortedHours = Array.from(allHoursSet).sort((a, b) => {
-        const [hourA, minuteA] = a.split(':').map(Number);
-        const [hourB, minuteB] = b.split(':').map(Number);
-        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-    });
-    
-    if (sortedHours.length === 0) {
-        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available</div>';
-        return;
-    }
-    
-    // Build cumulative data arrays
-    const cumulativeData = [];
-    let runningProductionTotal = 0;
-    let runningTargetTotal = 0;
-    
-    // Generate time-based data points
-    sortedHours.forEach(hour => {
-        const hourProduction = hourlyProductionMap.get(hour) || 0;
-        const hourTarget = hourlyTargetMap.get(hour) || 0;
-        
-        // Add to running totals
-        runningProductionTotal += hourProduction;
-        runningTargetTotal += hourTarget;
-        
-        const [hourVal, minuteVal] = hour.split(':').map(Number);
-        const timeMinutes = hourVal * 60 + minuteVal;
-        
-        cumulativeData.push({
-            hour: hour,
-            production: runningProductionTotal,
-            target: runningTargetTotal,
-            timeMinutes: timeMinutes
-        });
-        
-        // Determine status for each hour
-        const now = new Date();
-        const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-        
-        // Only evaluate completed hours
-        if (currentTimeMinutes >= timeMinutes + 30) {
-            hourlyStatusMap.set(hour, hourProduction >= hourTarget ? 'met' : 'missed');
-        } else if (currentTimeMinutes >= timeMinutes - 30 && currentTimeMinutes < timeMinutes + 30) {
-            hourlyStatusMap.set(hour, 'current');
-        } else {
-            hourlyStatusMap.set(hour, 'upcoming');
-        }
-    });
-    
-    // Do not filter data - we want to show all available data points
-    let filteredData = cumulativeData;
-    
-    // CRITICAL FIX: Add current hour with the correct totals from metrics
-    // Only do this if we have data and the last point doesn't match
-    if (filteredData.length > 0 && currentTotal > 0) {
-        const lastPoint = filteredData[filteredData.length - 1];
-        
-        // If the last production value doesn't match the metrics, add or update a point
-        if (lastPoint.production !== currentTotal) {
-            // Get current time to use as the data point hour
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentHourStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
-            const currentTimeMinutes = currentHour * 60 + currentMinute;
-            
-            // Add a new data point with the correct values from the metrics
-            filteredData.push({
-                hour: currentHourStr,
-                production: currentTotal,
-                target: targetTotal, 
-                timeMinutes: currentTimeMinutes
-            });
-        }
-    }
-    
-    if (filteredData.length === 0) {
-        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available for current time period</div>';
-        return;
-    }
-    
-    // Get chart dimensions based on container
-    const chartArea = chartContainer.closest('.chart-area');
-    const svgWidth = chartArea.clientWidth;
-    const svgHeight = chartArea.clientHeight;
-    
-    // Check if dimensions are valid
-    if (svgWidth <= 0 || svgHeight <= 0) {
-        // Try again later if dimensions are not ready
-        setTimeout(() => renderCumulativeChart(group), 100);
-        return;
-    }
-    
-    // Calculate padding based on container size for responsive design
-    const padding = {
-        top: Math.max(10, Math.floor(svgHeight * 0.05)),
-        right: Math.max(10, Math.floor(svgWidth * 0.05)),
-        bottom: Math.max(50, Math.floor(svgHeight * 0.18)), // Increased bottom padding for status indicators
-        left: Math.max(40, Math.floor(svgWidth * 0.12))
-    };
-    
-    // Calculate chart dimensions
-    const chartWidth = svgWidth - padding.left - padding.right;
-    const chartHeight = svgHeight - padding.top - padding.bottom;
-    
-    // Find max value for chart scaling (with 10% buffer)
-    const maxValue = Math.max(
-        ...filteredData.map(item => Math.max(item.target || 0, item.production || 0))
-    ) * 1.1;
-    
-    // Create SVG element
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '100%');
-    svg.setAttribute('height', '100%');
-    svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
-    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-    chartContainer.appendChild(svg);
-    
-    // Add grid lines
-    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    for (let i = 0; i <= 4; i++) {
-        const y = padding.top + (chartHeight * i / 4);
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', padding.left);
-        line.setAttribute('y1', y);
-        line.setAttribute('x2', svgWidth - padding.right);
-        line.setAttribute('y2', y);
-        line.setAttribute('stroke', '#ddd');
-        line.setAttribute('stroke-width', '1');
-        gridGroup.appendChild(line);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', padding.left - 10);
-        text.setAttribute('y', y + 5);
-        text.setAttribute('text-anchor', 'end');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('fill', '#666');
-        text.textContent = Math.round(maxValue * (4 - i) / 4);
-        gridGroup.appendChild(text);
-    }
-    
-    // Add y-axis title
-    const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    yAxisTitle.setAttribute('x', padding.left - 35);
-    yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
-    yAxisTitle.setAttribute('text-anchor', 'middle');
-    yAxisTitle.setAttribute('font-size', isFullscreen ? '16' : '14');
-    yAxisTitle.setAttribute('font-weight', 'bold');
-    yAxisTitle.setAttribute('fill', '#666');
-    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 35}, ${padding.top + chartHeight / 2})`);
-    yAxisTitle.textContent = 'Units';
-    gridGroup.appendChild(yAxisTitle);
-    
-    // Add axes
-    const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    yAxis.setAttribute('x1', padding.left);
-    yAxis.setAttribute('y1', padding.top);
-    yAxis.setAttribute('x2', padding.left);
-    yAxis.setAttribute('y2', svgHeight - padding.bottom);
-    yAxis.setAttribute('stroke', '#666');
-    yAxis.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(yAxis);
-    
-    const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    xAxis.setAttribute('x1', padding.left);
-    xAxis.setAttribute('y1', svgHeight - padding.bottom);
-    xAxis.setAttribute('x2', svgWidth - padding.right);
-    xAxis.setAttribute('y2', svgHeight - padding.bottom);
-    xAxis.setAttribute('stroke', '#666');
-    xAxis.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(xAxis);
-    
-    svg.appendChild(gridGroup);
-    
-    // Find earliest start time and latest end time across all variants
-    let earliestStartMinutes = 24 * 60; // Initialize to end of day
-    let latestEndMinutes = 0;
-
-    group.variants.forEach(variant => {
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        if (supervisorVariant) {
-            const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-            const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-            
-            if (startTimeStr && endTimeStr) {
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const startTimeMinutes = startHour * 60 + startMinute;
-                
-                if (startTimeMinutes < earliestStartMinutes) {
-                    earliestStartMinutes = startTimeMinutes;
-                }
-                
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                if (endTimeMinutes > latestEndMinutes) {
-                    latestEndMinutes = endTimeMinutes;
-                }
-            }
-        }
-    });
-
-    // Format the start time for display (first tick)
-    const startTimeHour = Math.floor(earliestStartMinutes / 60);
-    const startTimeMinute = earliestStartMinutes % 60;
-    const startTimeFormatted = `${startTimeHour.toString().padStart(2, '0')}:${startTimeMinute.toString().padStart(2, '0')}`;
-
-    // Generate hourly intervals from start time to current time
-    const now = new Date();
-    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-    // Extend end time to ensure we see the final data point
-    const endTimeMinutes = Math.max(latestEndMinutes, currentTimeMinutes + 60); 
-
-    // Create time ticks
-    const allHours = [];
-    
-    // Add the start time as the first tick
-    allHours.push(startTimeFormatted);
-    
-    // Calculate the first full hour after start time
-    const firstFullHourMinutes = Math.ceil(earliestStartMinutes / 60) * 60 + 30;
-    
-    // Then add standard hour markers (8:30, 9:30, etc.)
-    for (let minutes = firstFullHourMinutes; minutes <= endTimeMinutes; minutes += 60) {
-        const hour = Math.floor(minutes / 60);
-        const formattedHour = `${hour.toString().padStart(2, '0')}:30`;
-        allHours.push(formattedHour);
-    }
-
-    // Add X-axis ticks, labels and status indicators
-    const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    allHours.forEach((hour, index) => {
-        const x = padding.left + (chartWidth * index / (allHours.length - 1 || 1));
-        const y = svgHeight - padding.bottom + 20;
-        
-        // Add tick mark
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        tick.setAttribute('x1', x);
-        tick.setAttribute('y1', svgHeight - padding.bottom);
-        tick.setAttribute('x2', x);
-        tick.setAttribute('y2', svgHeight - padding.bottom + 5);
-        tick.setAttribute('stroke', '#666');
-        tick.setAttribute('stroke-width', '1.5');
-        xLabelsGroup.appendChild(tick);
-        
-        // Add hour label
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', x);
-        text.setAttribute('y', y);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('fill', '#666');
-        text.textContent = hour;
-        xLabelsGroup.appendChild(text);
-        
-        // Add status indicator below the hour label
-        const status = hourlyStatusMap.get(hour);
-        if (status) {
-            let statusSymbol = '';
-            let fillColor = '#94a3b8'; // Default gray
-            
-            if (status === 'met') {
-                statusSymbol = '✓';
-                fillColor = '#0d9488'; // Green for met
-            } else if (status === 'missed') {
-                statusSymbol = '✗';
-                fillColor = '#e11d48'; // Red for missed
-            } else if (status === 'current') {
-                statusSymbol = '●';
-                fillColor = '#ca8a04'; // Yellow for current
-            }
-            
-            if (statusSymbol) {
-                const statusText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                statusText.setAttribute('x', x);
-                statusText.setAttribute('y', y + 20);
-                statusText.setAttribute('text-anchor', 'middle');
-                statusText.setAttribute('font-size', isFullscreen ? '18' : '16');
-                statusText.setAttribute('font-weight', 'bold');
-                statusText.setAttribute('fill', fillColor);
-                statusText.textContent = statusSymbol;
-                xLabelsGroup.appendChild(statusText);
-            }
-        }
-    });
-    svg.appendChild(xLabelsGroup);
-    
-    // Draw production line - starting from the first tick (start time) with zero production
-    const productionLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    
-    // Start with a point at zero (at the start time)
-    let productionPathD = `M ${padding.left} ${padding.top + chartHeight}`;
-    const productionPoints = [{
-        x: padding.left,
-        y: padding.top + chartHeight,
-        production: 0,
-        hour: startTimeFormatted
-    }];
-    
-    // Get data points for production line with proper cumulative totals
-    filteredData.forEach((dataPoint) => {
-        // Find the x position based on the hour
-        const hourIndex = allHours.indexOf(dataPoint.hour);
-        let x;
-        if (hourIndex >= 0) {
-            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
-        } else {
-            // If hour not in allHours, interpolate
-            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
-                          ((endTimeMinutes - earliestStartMinutes) || 1);
-            x = padding.left + (chartWidth * timeRatio);
-        }
-        
-        const y = padding.top + chartHeight - (chartHeight * (dataPoint.production / maxValue));
-        
-        productionPoints.push({ 
-            x, 
-            y, 
-            production: dataPoint.production, 
-            hour: dataPoint.hour 
-        });
-        productionPathD += ` L ${x} ${y}`;
-    });
-    
-    // Add production line
-    const productionPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    productionPath.setAttribute('d', productionPathD);
-    productionPath.setAttribute('stroke', 'var(--production-color)');
-    productionPath.setAttribute('stroke-width', '3');
-    productionPath.setAttribute('fill', 'none');
-    productionLineGroup.appendChild(productionPath);
-    
-    // Add production points and labels
-    productionPoints.forEach((point, index) => {
-        // Skip emphasizing intermediate points if we have many points
-        if (productionPoints.length > 7 && index > 0 && index < productionPoints.length - 1 && index % 2 === 0) {
-            return;
-        }
-        
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', point.x);
-        circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', isFullscreen ? '5' : '4');
-        circle.setAttribute('fill', 'var(--production-color)');
-        productionLineGroup.appendChild(circle);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 8);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('font-weight', 'bold');
-        text.setAttribute('fill', 'var(--production-color)');
-        text.textContent = point.production;
-        productionLineGroup.appendChild(text);
-    });
-    
-    // CRITICAL FIX: Always emphasize the last production point (current total)
-    if (productionPoints.length > 0) {
-        const lastPoint = productionPoints[productionPoints.length - 1];
-        
-        // Ensure this point shows the correct value from metrics
-        lastPoint.production = currentTotal;
-        
-        // Create emphasized circle and label
-        const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        emphasizedCircle.setAttribute('cx', lastPoint.x);
-        emphasizedCircle.setAttribute('cy', lastPoint.y);
-        emphasizedCircle.setAttribute('r', isFullscreen ? '8' : '7');
-        emphasizedCircle.setAttribute('fill', 'var(--production-color)');
-        emphasizedCircle.setAttribute('stroke', '#ffffff');
-        emphasizedCircle.setAttribute('stroke-width', '2');
-        productionLineGroup.appendChild(emphasizedCircle);
-        
-        const emphasizedText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        emphasizedText.setAttribute('x', lastPoint.x);
-        emphasizedText.setAttribute('y', lastPoint.y - 12);
-        emphasizedText.setAttribute('text-anchor', 'middle');
-        emphasizedText.setAttribute('font-size', isFullscreen ? '18' : '16');
-        emphasizedText.setAttribute('font-weight', 'bold');
-        emphasizedText.setAttribute('fill', 'var(--production-color)');
-        // Ensure the text shows the current total from metrics
-        emphasizedText.textContent = currentTotal;
-        productionLineGroup.appendChild(emphasizedText);
-    }
-    
-    svg.appendChild(productionLineGroup);
-    
-    // Draw target line - starting from the first tick (start time) with zero target
-    const targetLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    
-    // Start with a point at zero (at the start time)
-    let targetPathD = `M ${padding.left} ${padding.top + chartHeight}`;
-    const targetPoints = [{
-        x: padding.left,
-        y: padding.top + chartHeight,
-        target: 0,
-        hour: startTimeFormatted
-    }];
-    
-    // Get data points for target line with proper cumulative totals
-    filteredData.forEach((dataPoint) => {
-        // Find the x position based on the hour
-        const hourIndex = allHours.indexOf(dataPoint.hour);
-        let x;
-        if (hourIndex >= 0) {
-            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
-        } else {
-            // If hour not in allHours, interpolate
-            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
-                          ((endTimeMinutes - earliestStartMinutes) || 1);
-            x = padding.left + (chartWidth * timeRatio);
-        }
-        
-        const y = padding.top + chartHeight - (chartHeight * (dataPoint.target / maxValue));
-        
-        targetPoints.push({ 
-            x, 
-            y, 
-            target: dataPoint.target, 
-            hour: dataPoint.hour 
-        });
-        targetPathD += ` L ${x} ${y}`;
-    });
-    
-    // Add target line
-    const targetPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    targetPath.setAttribute('d', targetPathD);
-    targetPath.setAttribute('stroke', 'var(--target-color)');
-    targetPath.setAttribute('stroke-width', '3');
-    targetPath.setAttribute('fill', 'none');
-    targetLineGroup.appendChild(targetPath);
-    
-    // Add target points and labels
-    targetPoints.forEach((point, index) => {
-        // Skip emphasizing intermediate points if we have many points
-        if (targetPoints.length > 7 && index > 0 && index < targetPoints.length - 1 && index % 2 === 0) {
-            return;
-        }
-        
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', point.x);
-        circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', isFullscreen ? '5' : '4');
-        circle.setAttribute('fill', 'var(--target-color)');
-        targetLineGroup.appendChild(circle);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 8);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('font-weight', 'bold');
-        text.setAttribute('fill', 'var(--target-color)');
-        text.textContent = point.target;
-        targetLineGroup.appendChild(text);
-    });
-    
-    // Emphasize the last target point
-    if (targetPoints.length > 0) {
-        const lastPoint = targetPoints[targetPoints.length - 1];
-        
-        // Ensure this point shows the correct target value from metrics
-        lastPoint.target = targetTotal;
-        
-        const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        emphasizedCircle.setAttribute('cx', lastPoint.x);
-        emphasizedCircle.setAttribute('cy', lastPoint.y);
-        emphasizedCircle.setAttribute('r', isFullscreen ? '7' : '6');
-        emphasizedCircle.setAttribute('fill', 'var(--target-color)');
-        emphasizedCircle.setAttribute('stroke', '#ffffff');
-        emphasizedCircle.setAttribute('stroke-width', '2');
-        targetLineGroup.appendChild(emphasizedCircle);
-        
-        const emphasizedText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        emphasizedText.setAttribute('x', lastPoint.x);
-        emphasizedText.setAttribute('y', lastPoint.y - 10);
-        emphasizedText.setAttribute('text-anchor', 'middle');
-        emphasizedText.setAttribute('font-size', isFullscreen ? '16' : '14');
-        emphasizedText.setAttribute('font-weight', 'bold');
-        emphasizedText.setAttribute('fill', 'var(--target-color)');
-        // Ensure the text shows the current target from metrics
-        emphasizedText.textContent = targetTotal;
-        targetLineGroup.appendChild(emphasizedText);
-    }
-    
-    svg.appendChild(targetLineGroup);
-}
-
-function renderHourlyChart(group) {
-    const chartContainer = document.getElementById('hourly-chart');
-    chartContainer.innerHTML = '';
-    
-    // Get current time to determine current hour period
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    
-    // Determine the current hour period (e.g. if it's 15:15, use the 14:30-15:30 period)
-    const currentPeriodHour = currentMinute < 30 ? currentHour : currentHour + 1;
-    const currentPeriodMinute = 30;
-    const currentPeriodStr = `${currentPeriodHour.toString().padStart(2, '0')}:${currentPeriodMinute.toString().padStart(2, '0')}`;
-    
-    // Initialize maps for the current hour period only
-    const hourlyProductionMap = new Map();
-    const hourlyTargetMap = new Map();
-    
-    // Process each variant and collect data only for current hour period
-    group.variants.forEach(variant => {
-        // Get variant time window
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        if (!supervisorVariant) return;
-        
-        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-        
-        if (!startTimeStr || !endTimeStr) return;
-        
-        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-        
-        const startTimeMinutes = startHour * 60 + startMinute;
-        const endTimeMinutes = endHour * 60 + endMinute;
-        
-        // Collect hourly production data only for current period
-        if (variant.hourlyProduction) {
-            variant.hourlyProduction.forEach(item => {
-                if (!item.hour || item.hour !== currentPeriodStr) return;
-                
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    // Add to hourly production map
-                    if (!hourlyProductionMap.has(item.hour)) {
-                        hourlyProductionMap.set(item.hour, 0);
-                    }
-                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
-                }
-            });
-        }
-        
-        // Collect hourly target data only for current period
-        if (variant.hourlyTargets) {
-            variant.hourlyTargets.forEach(item => {
-                if (!item.hour || item.hour !== currentPeriodStr) return;
-                
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    // Add to hourly target map
-                    if (!hourlyTargetMap.has(item.hour)) {
-                        hourlyTargetMap.set(item.hour, 0);
-                    }
-                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
-                }
-            });
-        }
-    });
-    
-    // We only show the current hour period
-    const sortedHours = [currentPeriodStr];
-    
-    if (hourlyProductionMap.size === 0 && hourlyTargetMap.size === 0) {
-        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available for current hour period</div>';
-        return;
-    }
-    
-    // Get chart dimensions based on container
-    const chartArea = chartContainer.closest('.chart-area');
-    const svgWidth = chartArea.clientWidth;
-    const svgHeight = chartArea.clientHeight;
-    
-    // Check if dimensions are valid
-    if (svgWidth <= 0 || svgHeight <= 0) {
-        // Try again later if dimensions are not ready
-        setTimeout(() => renderHourlyChart(group), 100);
-        return;
-    }
-    
-    // Calculate padding based on container size for responsive design
-    const padding = {
-        top: Math.max(10, Math.floor(svgHeight * 0.05)),
-        right: Math.max(10, Math.floor(svgWidth * 0.05)),
-        bottom: Math.max(50, Math.floor(svgHeight * 0.1)), // Reduced bottom padding as we don't have status indicators
-        left: Math.max(40, Math.floor(svgWidth * 0.12))
-    };
-    
-    // Calculate chart dimensions
-    const chartWidth = svgWidth - padding.left - padding.right;
-    const chartHeight = svgHeight - padding.top - padding.bottom;
-    
-    // Find max value for chart scaling (with 10% buffer)
-    const maxValue = Math.max(
-        hourlyProductionMap.get(currentPeriodStr) || 0,
-        hourlyTargetMap.get(currentPeriodStr) || 0
-    ) * 1.1 || 100; // Default to 100 if no values
-    
-    // Create SVG element
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '100%');
-    svg.setAttribute('height', '100%');
-    svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
-    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-    chartContainer.appendChild(svg);
-    
-    // Add grid lines
-    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    for (let i = 0; i <= 4; i++) {
-        const y = padding.top + (chartHeight * i / 4);
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', padding.left);
-        line.setAttribute('y1', y);
-        line.setAttribute('x2', svgWidth - padding.right);
-        line.setAttribute('y2', y);
-        line.setAttribute('stroke', '#ddd');
-        line.setAttribute('stroke-width', '1');
-        gridGroup.appendChild(line);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', padding.left - 10);
-        text.setAttribute('y', y + 5);
-        text.setAttribute('text-anchor', 'end');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('fill', '#666');
-        text.textContent = Math.round(maxValue * (4 - i) / 4);
-        gridGroup.appendChild(text);
-    }
-    
-    // Add y-axis title
-    const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    yAxisTitle.setAttribute('x', padding.left - 35);
-    yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
-    yAxisTitle.setAttribute('text-anchor', 'middle');
-    yAxisTitle.setAttribute('font-size', isFullscreen ? '16' : '14');
-    yAxisTitle.setAttribute('font-weight', 'bold');
-    yAxisTitle.setAttribute('fill', '#666');
-    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 35}, ${padding.top + chartHeight / 2})`);
-    yAxisTitle.textContent = 'Units per Hour';
-    gridGroup.appendChild(yAxisTitle);
-    
-    // Add axes
-    const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    yAxis.setAttribute('x1', padding.left);
-    yAxis.setAttribute('y1', padding.top);
-    yAxis.setAttribute('x2', padding.left);
-    yAxis.setAttribute('y2', svgHeight - padding.bottom);
-    yAxis.setAttribute('stroke', '#666');
-    yAxis.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(yAxis);
-    
-    const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    xAxis.setAttribute('x1', padding.left);
-    xAxis.setAttribute('y1', svgHeight - padding.bottom);
-    xAxis.setAttribute('x2', svgWidth - padding.right);
-    xAxis.setAttribute('y2', svgHeight - padding.bottom);
-    xAxis.setAttribute('stroke', '#666');
-    xAxis.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(xAxis);
-    
-    svg.appendChild(gridGroup);
-    
-    // Calculate bar width for single hour period (centered in chart)
-    const barGroupWidth = chartWidth * 0.3; // Use 30% of chart width
-    const barWidth = barGroupWidth * 0.42; // Each bar takes 42% of group width
-    
-    // Add X-axis label for current hour period
-    const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    const x = padding.left + chartWidth / 2; // Center of chart
-    const y = svgHeight - padding.bottom + 20;
-    
-    // Add tick mark
-    const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    tick.setAttribute('x1', x);
-    tick.setAttribute('y1', svgHeight - padding.bottom);
-    tick.setAttribute('x2', x);
-    tick.setAttribute('y2', svgHeight - padding.bottom + 5);
-    tick.setAttribute('stroke', '#666');
-    tick.setAttribute('stroke-width', '1.5');
-    xLabelsGroup.appendChild(tick);
-    
-    // Add hour label
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', x);
-    text.setAttribute('y', y);
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('font-size', isFullscreen ? '16' : '14');
-    text.setAttribute('font-weight', 'bold');
-    text.setAttribute('fill', '#666');
-    text.textContent = currentPeriodStr;
-    xLabelsGroup.appendChild(text);
-    
-    svg.appendChild(xLabelsGroup);
-    
-    // Create bar charts for current hour period only
-    const barsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    
-    // Calculate center position for the bar group
-    const barGroupX = padding.left + (chartWidth - barGroupWidth) / 2;
-    
-    // Production bar (left bar in the group)
-    const productionValue = hourlyProductionMap.get(currentPeriodStr) || 0;
-    const productionHeight = (productionValue / maxValue) * chartHeight;
-    const productionY = svgHeight - padding.bottom - productionHeight;
-    
-    const productionBarX = barGroupX + (barGroupWidth * 0.08); // 8% offset from left
-    
-    const productionBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    productionBar.setAttribute('x', productionBarX);
-    productionBar.setAttribute('y', productionY);
-    productionBar.setAttribute('width', barWidth);
-    productionBar.setAttribute('height', productionHeight);
-    productionBar.setAttribute('rx', '2'); // Rounded corners
-    productionBar.setAttribute('ry', '2');
-    productionBar.setAttribute('fill', 'var(--production-color)');
-    barsGroup.appendChild(productionBar);
-    
-    // Production value label
-    const productionLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    productionLabel.setAttribute('x', productionBarX + (barWidth / 2));
-    productionLabel.setAttribute('y', productionY - 5);
-    productionLabel.setAttribute('text-anchor', 'middle');
-    productionLabel.setAttribute('font-size', isFullscreen ? '14' : '12');
-    productionLabel.setAttribute('font-weight', 'bold');
-    productionLabel.setAttribute('fill', 'var(--production-color)');
-    productionLabel.textContent = productionValue;
-    barsGroup.appendChild(productionLabel);
-    
-    // Target bar (right bar in the group)
-    const targetValue = hourlyTargetMap.get(currentPeriodStr) || 0;
-    const targetHeight = (targetValue / maxValue) * chartHeight;
-    const targetY = svgHeight - padding.bottom - targetHeight;
-    
-    const targetBarX = barGroupX + (barGroupWidth * 0.5); // 50% offset from left
-    
-    const targetBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    targetBar.setAttribute('x', targetBarX);
-    targetBar.setAttribute('y', targetY);
-    targetBar.setAttribute('width', barWidth);
-    targetBar.setAttribute('height', targetHeight);
-    targetBar.setAttribute('rx', '2'); // Rounded corners
-    targetBar.setAttribute('ry', '2');
-    targetBar.setAttribute('fill', 'var(--target-color)');
-    barsGroup.appendChild(targetBar);
-    
-    // Target value label
-    const targetLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    targetLabel.setAttribute('x', targetBarX + (barWidth / 2));
-    targetLabel.setAttribute('y', targetY - 5);
-    targetLabel.setAttribute('text-anchor', 'middle');
-    targetLabel.setAttribute('font-size', isFullscreen ? '14' : '12');
-    targetLabel.setAttribute('font-weight', 'bold');
-    targetLabel.setAttribute('fill', 'var(--target-color)');
-    targetLabel.textContent = targetValue;
-    barsGroup.appendChild(targetLabel);
-    
-    svg.appendChild(barsGroup);
-    
-    // Add legend
-    const legendGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    
-    // Production legend
-    const prodLegendRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    prodLegendRect.setAttribute('x', padding.left);
-    prodLegendRect.setAttribute('y', padding.top - 25);
-    prodLegendRect.setAttribute('width', 12);
-    prodLegendRect.setAttribute('height', 12);
-    prodLegendRect.setAttribute('fill', 'var(--production-color)');
-    legendGroup.appendChild(prodLegendRect);
-    
-    const prodLegendText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    prodLegendText.setAttribute('x', padding.left + 18);
-    prodLegendText.setAttribute('y', padding.top - 15);
-    prodLegendText.setAttribute('font-size', isFullscreen ? '14' : '12');
-    prodLegendText.setAttribute('fill', '#666');
-    prodLegendText.textContent = 'Production';
-    legendGroup.appendChild(prodLegendText);
-    
-    // Target legend
-    const targetLegendRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    targetLegendRect.setAttribute('x', padding.left + 100);
-    targetLegendRect.setAttribute('y', padding.top - 25);
-    targetLegendRect.setAttribute('width', 12);
-    targetLegendRect.setAttribute('height', 12);
-    targetLegendRect.setAttribute('fill', 'var(--target-color)');
-    legendGroup.appendChild(targetLegendRect);
-    
-    const targetLegendText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    targetLegendText.setAttribute('x', padding.left + 118);
-    targetLegendText.setAttribute('y', padding.top - 15);
-    targetLegendText.setAttribute('font-size', isFullscreen ? '14' : '12');
-    targetLegendText.setAttribute('fill', '#666');
-    targetLegendText.textContent = 'Target';
-    legendGroup.appendChild(targetLegendText);
-    
-    svg.appendChild(legendGroup);
-}
-
-         // Completely redesigned chart rendering for better cross-device compatibility
-function renderCumulativeChart(group) {
-    const chartContainer = document.getElementById('cumulative-chart');
-    chartContainer.innerHTML = '';
-    
-    // Collect all hours across all variants
-    const allHoursSet = new Set();
-    const hourlyProductionMap = new Map(); // Map to store production by hour
-    const hourlyTargetMap = new Map();     // Map to store targets by hour
-    const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
-    
-    // Process each variant and collect unique hours
-    group.variants.forEach(variant => {
-        // Get variant time window
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        if (!supervisorVariant) return;
-        
-        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-        
-        if (!startTimeStr || !endTimeStr) return;
-        
-        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-        
-        const startTimeMinutes = startHour * 60 + startMinute;
-        const endTimeMinutes = endHour * 60 + endMinute;
-        
-        // Collect hourly production data
-        if (variant.hourlyProduction) {
-            variant.hourlyProduction.forEach(item => {
-                if (!item.hour) return;
-                
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    // Add to hourly production map
-                    if (!hourlyProductionMap.has(item.hour)) {
-                        hourlyProductionMap.set(item.hour, 0);
-                    }
-                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
-                    
-                    allHoursSet.add(item.hour);
-                }
-            });
-        }
-        
-        // Collect hourly target data
-        if (variant.hourlyTargets) {
-            variant.hourlyTargets.forEach(item => {
-                if (!item.hour) return;
-                
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    // Add to hourly target map
-                    if (!hourlyTargetMap.has(item.hour)) {
-                        hourlyTargetMap.set(item.hour, 0);
-                    }
-                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
-                    
-                    allHoursSet.add(item.hour);
-                }
-            });
-        }
-    });
-    
-    // Convert to sorted array of hours
-    const sortedHours = Array.from(allHoursSet).sort((a, b) => {
-        const [hourA, minuteA] = a.split(':').map(Number);
-        const [hourB, minuteB] = b.split(':').map(Number);
-        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-    });
-    
-    if (sortedHours.length === 0) {
-        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available</div>';
-        return;
-    }
-    
-    // Build cumulative data arrays
-    const cumulativeData = [];
-    let runningProductionTotal = 0;
-    let runningTargetTotal = 0;
-    
-    // Generate time-based data points
-    sortedHours.forEach(hour => {
-        const hourProduction = hourlyProductionMap.get(hour) || 0;
-        const hourTarget = hourlyTargetMap.get(hour) || 0;
-        
-        // Add to running totals
-        runningProductionTotal += hourProduction;
-        runningTargetTotal += hourTarget;
-        
-        const [hourVal, minuteVal] = hour.split(':').map(Number);
-        const timeMinutes = hourVal * 60 + minuteVal;
-        
-        cumulativeData.push({
-            hour: hour,
-            production: runningProductionTotal,
-            target: runningTargetTotal,
-            timeMinutes: timeMinutes
-        });
-        
-        // Determine status for each hour
-        const now = new Date();
-        const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-        
-        // Only evaluate completed hours
-        if (currentTimeMinutes >= timeMinutes + 30) {
-            hourlyStatusMap.set(hour, hourProduction >= hourTarget ? 'met' : 'missed');
-        } else if (currentTimeMinutes >= timeMinutes - 30 && currentTimeMinutes < timeMinutes + 30) {
-            hourlyStatusMap.set(hour, 'current');
-        } else {
-            hourlyStatusMap.set(hour, 'upcoming');
-        }
-    });
-    
-    // Filter data to only show up to current time plus buffer
-    const now = new Date();
-    const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
-    const currentTimePlusBuffer = currentMinuteOfDay + 30;
-    
-    const filteredData = cumulativeData.filter(item => item.timeMinutes <= currentTimePlusBuffer);
-    
-    if (filteredData.length === 0) {
-        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available for current time period</div>';
-        return;
-    }
-    
-    // Get chart dimensions based on container
-    const chartArea = chartContainer.closest('.chart-area');
-    const svgWidth = chartArea.clientWidth;
-    const svgHeight = chartArea.clientHeight;
-    
-    // Check if dimensions are valid
-    if (svgWidth <= 0 || svgHeight <= 0) {
-        // Try again later if dimensions are not ready
-        setTimeout(() => renderCumulativeChart(group), 100);
-        return;
-    }
-    
-    // Calculate padding based on container size for responsive design
-    const padding = {
-        top: Math.max(10, Math.floor(svgHeight * 0.05)),
-        right: Math.max(10, Math.floor(svgWidth * 0.05)),
-        bottom: Math.max(50, Math.floor(svgHeight * 0.18)), // Increased bottom padding for status indicators
-        left: Math.max(40, Math.floor(svgWidth * 0.12))
-    };
-    
-    // Calculate chart dimensions
-    const chartWidth = svgWidth - padding.left - padding.right;
-    const chartHeight = svgHeight - padding.top - padding.bottom;
-    
-    // Find max value for chart scaling (with 10% buffer)
-    const maxValue = Math.max(
-        ...filteredData.map(item => Math.max(item.target || 0, item.production || 0))
-    ) * 1.1;
-    
-    // Create SVG element
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', '100%');
-    svg.setAttribute('height', '100%');
-    svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
-    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-    chartContainer.appendChild(svg);
-    
-    // Add grid lines
-    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    for (let i = 0; i <= 4; i++) {
-        const y = padding.top + (chartHeight * i / 4);
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', padding.left);
-        line.setAttribute('y1', y);
-        line.setAttribute('x2', svgWidth - padding.right);
-        line.setAttribute('y2', y);
-        line.setAttribute('stroke', '#ddd');
-        line.setAttribute('stroke-width', '1');
-        gridGroup.appendChild(line);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', padding.left - 10);
-        text.setAttribute('y', y + 5);
-        text.setAttribute('text-anchor', 'end');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('fill', '#666');
-        text.textContent = Math.round(maxValue * (4 - i) / 4);
-        gridGroup.appendChild(text);
-    }
-    
-    // Add y-axis title
-    const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    yAxisTitle.setAttribute('x', padding.left - 35);
-    yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
-    yAxisTitle.setAttribute('text-anchor', 'middle');
-    yAxisTitle.setAttribute('font-size', isFullscreen ? '16' : '14');
-    yAxisTitle.setAttribute('font-weight', 'bold');
-    yAxisTitle.setAttribute('fill', '#666');
-    yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 35}, ${padding.top + chartHeight / 2})`);
-    yAxisTitle.textContent = 'Units';
-    gridGroup.appendChild(yAxisTitle);
-    
-    // Add axes
-    const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    yAxis.setAttribute('x1', padding.left);
-    yAxis.setAttribute('y1', padding.top);
-    yAxis.setAttribute('x2', padding.left);
-    yAxis.setAttribute('y2', svgHeight - padding.bottom);
-    yAxis.setAttribute('stroke', '#666');
-    yAxis.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(yAxis);
-    
-    const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    xAxis.setAttribute('x1', padding.left);
-    xAxis.setAttribute('y1', svgHeight - padding.bottom);
-    xAxis.setAttribute('x2', svgWidth - padding.right);
-    xAxis.setAttribute('y2', svgHeight - padding.bottom);
-    xAxis.setAttribute('stroke', '#666');
-    xAxis.setAttribute('stroke-width', '1.5');
-    gridGroup.appendChild(xAxis);
-    
-    svg.appendChild(gridGroup);
-    
-    // Find earliest start time and latest end time across all variants
-    let earliestStartMinutes = 24 * 60; // Initialize to end of day
-    let latestEndMinutes = 0;
-
-    group.variants.forEach(variant => {
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        if (supervisorVariant) {
-            const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-            const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-            
-            if (startTimeStr && endTimeStr) {
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const startTimeMinutes = startHour * 60 + startMinute;
-                
-                if (startTimeMinutes < earliestStartMinutes) {
-                    earliestStartMinutes = startTimeMinutes;
-                }
-                
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                if (endTimeMinutes > latestEndMinutes) {
-                    latestEndMinutes = endTimeMinutes;
-                }
-            }
-        }
-    });
-
-    // Format the start time for display (first tick)
-    const startTimeHour = Math.floor(earliestStartMinutes / 60);
-    const startTimeMinute = earliestStartMinutes % 60;
-    const startTimeFormatted = `${startTimeHour.toString().padStart(2, '0')}:${startTimeMinute.toString().padStart(2, '0')}`;
-
-    // Generate hourly intervals from start time to current time
-    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-    const endTimeMinutes = Math.min(latestEndMinutes, currentTimeMinutes + 60); // Show up to 1 hour ahead
-
-    // Create time ticks
-    const allHours = [];
-    
-    // Add the start time as the first tick
-    allHours.push(startTimeFormatted);
-    
-    // Calculate the first full hour after start time
-    const firstFullHourMinutes = Math.ceil(earliestStartMinutes / 60) * 60 + 30;
-    
-    // Then add standard hour markers (8:30, 9:30, etc.)
-    for (let minutes = firstFullHourMinutes; minutes <= endTimeMinutes; minutes += 60) {
-        const hour = Math.floor(minutes / 60);
-        const formattedHour = `${hour.toString().padStart(2, '0')}:30`;
-        allHours.push(formattedHour);
-    }
-
-    // Add X-axis ticks, labels and status indicators
-    const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    allHours.forEach((hour, index) => {
-        const x = padding.left + (chartWidth * index / (allHours.length - 1 || 1));
-        const y = svgHeight - padding.bottom + 20;
-        
-        // Add tick mark
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        tick.setAttribute('x1', x);
-        tick.setAttribute('y1', svgHeight - padding.bottom);
-        tick.setAttribute('x2', x);
-        tick.setAttribute('y2', svgHeight - padding.bottom + 5);
-        tick.setAttribute('stroke', '#666');
-        tick.setAttribute('stroke-width', '1.5');
-        xLabelsGroup.appendChild(tick);
-        
-        // Add hour label
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', x);
-        text.setAttribute('y', y);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('fill', '#666');
-        text.textContent = hour;
-        xLabelsGroup.appendChild(text);
-        
-        // Add status indicator below the hour label
-        const status = hourlyStatusMap.get(hour);
-        if (status) {
-            let statusSymbol = '';
-            let fillColor = '#94a3b8'; // Default gray
-            
-            if (status === 'met') {
-                statusSymbol = '✓';
-                fillColor = '#0d9488'; // Green for met
-            } else if (status === 'missed') {
-                statusSymbol = '✗';
-                fillColor = '#e11d48'; // Red for missed
-            } else if (status === 'current') {
-                statusSymbol = '●';
-                fillColor = '#ca8a04'; // Yellow for current
-            }
-            
-            if (statusSymbol) {
-                const statusText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                statusText.setAttribute('x', x);
-                statusText.setAttribute('y', y + 20);
-                statusText.setAttribute('text-anchor', 'middle');
-                statusText.setAttribute('font-size', isFullscreen ? '18' : '16');
-                statusText.setAttribute('font-weight', 'bold');
-                statusText.setAttribute('fill', fillColor);
-                statusText.textContent = statusSymbol;
-                xLabelsGroup.appendChild(statusText);
-            }
-        }
-    });
-    svg.appendChild(xLabelsGroup);
-    
-    // Draw production line - starting from the first tick (start time) with zero production
-    const productionLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    
-    // Start with a point at zero (at the start time)
-    let productionPathD = `M ${padding.left} ${padding.top + chartHeight}`;
-    const productionPoints = [{
-        x: padding.left,
-        y: padding.top + chartHeight,
-        production: 0,
-        hour: startTimeFormatted
-    }];
-    
-    // Get data points for production line with proper cumulative totals
-    filteredData.forEach((dataPoint) => {
-        // Find the x position based on the hour
-        const hourIndex = allHours.indexOf(dataPoint.hour);
-        let x;
-        if (hourIndex >= 0) {
-            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
-        } else {
-            // If hour not in allHours, interpolate
-            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
-                          ((endTimeMinutes - earliestStartMinutes) || 1);
-            x = padding.left + (chartWidth * timeRatio);
-        }
-        
-        const y = padding.top + chartHeight - (chartHeight * (dataPoint.production / maxValue));
-        
-        productionPoints.push({ 
-            x, 
-            y, 
-            production: dataPoint.production, 
-            hour: dataPoint.hour 
-        });
-        productionPathD += ` L ${x} ${y}`;
-    });
-    
-    // Add production line
-    const productionPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    productionPath.setAttribute('d', productionPathD);
-    productionPath.setAttribute('stroke', 'var(--production-color)');
-    productionPath.setAttribute('stroke-width', '3');
-    productionPath.setAttribute('fill', 'none');
-    productionLineGroup.appendChild(productionPath);
-    
-    // Add production points and labels
-    productionPoints.forEach(point => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', point.x);
-        circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', isFullscreen ? '5' : '4');
-        circle.setAttribute('fill', 'var(--production-color)');
-        productionLineGroup.appendChild(circle);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 8);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('font-weight', 'bold');
-        text.setAttribute('fill', 'var(--production-color)');
-        text.textContent = point.production;
-        productionLineGroup.appendChild(text);
-    });
-    svg.appendChild(productionLineGroup);
-    
-    // Draw target line - starting from the first tick (start time) with zero target
-    const targetLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    
-    // Start with a point at zero (at the start time)
-    let targetPathD = `M ${padding.left} ${padding.top + chartHeight}`;
-    const targetPoints = [{
-        x: padding.left,
-        y: padding.top + chartHeight,
-        target: 0,
-        hour: startTimeFormatted
-    }];
-    
-    // Get data points for target line with proper cumulative totals
-    filteredData.forEach((dataPoint) => {
-        // Find the x position based on the hour
-        const hourIndex = allHours.indexOf(dataPoint.hour);
-        let x;
-        if (hourIndex >= 0) {
-            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
-        } else {
-            // If hour not in allHours, interpolate
-            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
-                          ((endTimeMinutes - earliestStartMinutes) || 1);
-            x = padding.left + (chartWidth * timeRatio);
-        }
-        
-        const y = padding.top + chartHeight - (chartHeight * (dataPoint.target / maxValue));
-        
-        targetPoints.push({ 
-            x, 
-            y, 
-            target: dataPoint.target, 
-            hour: dataPoint.hour 
-        });
-        targetPathD += ` L ${x} ${y}`;
-    });
-    
-    // Add target line
-    const targetPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    targetPath.setAttribute('d', targetPathD);
-    targetPath.setAttribute('stroke', 'var(--target-color)');
-    targetPath.setAttribute('stroke-width', '3');
-    targetPath.setAttribute('fill', 'none');
-    targetLineGroup.appendChild(targetPath);
-    
-    // Add target points and labels
-    targetPoints.forEach(point => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', point.x);
-        circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', isFullscreen ? '5' : '4');
-        circle.setAttribute('fill', 'var(--target-color)');
-        targetLineGroup.appendChild(circle);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 8);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('font-weight', 'bold');
-        text.setAttribute('fill', 'var(--target-color)');
-        text.textContent = point.target;
-        targetLineGroup.appendChild(text);
-    });
-    svg.appendChild(targetLineGroup);
-}
-        
-        // Function to display a group
         function displayGroup(group) {
             // Set current product and supervisor
             currentProduct = group.product;
@@ -3467,11 +2457,205 @@ function renderCumulativeChart(group) {
             updateSupervisorInfo(group);
             updateMetrics(group);
             
+            // Make sure variant sequence is displayed (might be hidden by Ellavi view)
+            document.getElementById('variant-sequence').style.display = 'flex';
+            
+            // Set standard chart display
+            document.getElementById('cumulative-chart').classList.remove('hidden');
+            document.getElementById('ellavi-unified-view').classList.add('hidden');
+            
             // Small delay to ensure UI updates before redrawing charts
             setTimeout(() => {
                 renderCumulativeChart(group);
                 renderHourlyChart(group);
             }, 50);
+        }
+        
+        // FIXED FUNCTION: Update batch information table
+        function updateBatchInfoTable(filteredGroups) {
+            const batchInfoTableBody = document.getElementById('batch-info-tbody');
+            const batchInfoTableHead = document.getElementById('batch-info-thead');
+            
+            if (!batchInfoTableBody || !batchInfoTableHead) return;
+            
+            // Clear existing content
+            batchInfoTableBody.innerHTML = '';
+            batchInfoTableHead.innerHTML = '';
+            
+            // If no original data, show message
+            if (!productionData.originalData || !productionData.originalData.production) {
+                batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
+                return;
+            }
+            
+            // Get current time to determine current variant - MOVED TO TOP
+            const now = new Date();
+            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+            
+            // Create the table header row
+            const headerRow = document.createElement('tr');
+            headerRow.innerHTML = `
+                <th>Product</th>
+                <th>Variant</th>
+                <th>Batch</th>
+                <th>Units</th>
+                <th>Boxes</th>
+            `;
+            batchInfoTableHead.appendChild(headerRow);
+            
+            // Create a Map to store the unique batches by ID
+            // This ensures we don't count the same batch multiple times
+            const uniqueBatchesMap = new Map();
+            
+            // Process each group's variants
+            Object.values(filteredGroups).forEach(group => {
+                // Get the supervisor's variants
+                const supervisorName = group.supervisor;
+                const supervisor = productionData.supervisors.find(s => s.name === supervisorName);
+                
+                if (!supervisor || !supervisor.variants) return;
+                
+                // For each variant assigned to this supervisor
+                Object.keys(supervisor.variants).forEach(variantKey => {
+                    // Find the original production data
+                    const productionItem = productionData.originalData.production.find(p => p.id === variantKey);
+                    
+                    if (!productionItem || !productionItem.batches) return;
+                    
+                    // Get variant details
+                    const productName = productionItem.product?.name || extractProductFromVariant(variantKey);
+                    const variantName = productionItem.variant?.name || variantKey.split('-').pop();
+                    
+                    // Check if this variant is currently active
+                    const supervisorVariant = supervisor.variants[variantKey];
+                    let isCurrentVariant = false;
+                    
+                    if (supervisorVariant) {
+                        const startTimeStr = supervisorVariant.variantStartTime || productionItem.supervisors[0]?.startTime;
+                        const endTimeStr = supervisorVariant.variantEndTime || productionItem.supervisors[0]?.endTime;
+                        
+                        if (startTimeStr && endTimeStr) {
+                            const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+                            const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                            
+                            const startTimeMinutes = startHour * 60 + startMinute;
+                            const endTimeMinutes = endHour * 60 + endMinute;
+                            
+                            // Check if current time is within this variant's window
+                            isCurrentVariant = (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes);
+                        }
+                    }
+                    
+                    // Process each batch - USE THE ORIGINAL QUANTITIES
+                    productionItem.batches.forEach(batch => {
+                        const batchKey = `${productName}-${variantName}-${batch.id}`;
+                        
+                        // Only add the batch if we haven't seen it before
+                        if (!uniqueBatchesMap.has(batchKey)) {
+                            uniqueBatchesMap.set(batchKey, {
+                                product: productName,
+                                variant: variantName,
+                                batchId: batch.id,
+                                units: batch.quantity,  // Use original quantity
+                                boxes: batch.boxes,     // Use original boxes count
+                                supervisor: supervisorName,
+                                isCurrent: isCurrentVariant,
+                                isAssembly: productName.toLowerCase().includes('assembly')
+                            });
+                        } else {
+                            // If we do have the batch, just update the isCurrent flag if needed
+                            if (isCurrentVariant) {
+                                uniqueBatchesMap.get(batchKey).isCurrent = true;
+                            }
+                        }
+                    });
+                });
+            });
+            
+            // Convert map to array for display
+            const batchData = Array.from(uniqueBatchesMap.values());
+            
+            // Sort batches by product, then by variant
+            batchData.sort((a, b) => {
+                // First by product
+                if (a.product !== b.product) {
+                    return a.product.localeCompare(b.product);
+                }
+                
+                // Then by variant
+                if (a.variant !== b.variant) {
+                    return a.variant.localeCompare(b.variant);
+                }
+                
+                // Then by batch ID
+                return a.batchId - b.batchId;
+            });
+            
+            // Create table rows for each batch
+            if (batchData.length === 0) {
+                batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
+                return;
+            }
+            
+            let currentProduct = null;
+            
+            batchData.forEach(batch => {
+                // Add product header if changed
+                if (batch.product !== currentProduct) {
+                    currentProduct = batch.product;
+                    
+                    const productRow = document.createElement('tr');
+                    productRow.style.backgroundColor = '#f0f9ff'; // Light blue background
+                    
+                    const productCell = document.createElement('td');
+                    productCell.colSpan = 5;
+                    productCell.style.fontWeight = 'bold';
+                    productCell.style.fontSize = 'larger';
+                    productCell.textContent = batch.product;
+                    
+                    productRow.appendChild(productCell);
+                    batchInfoTableBody.appendChild(productRow);
+                }
+                
+                // Create batch row
+                const row = document.createElement('tr');
+                if (batch.isCurrent) {
+                    row.className = 'current';
+                }
+                
+                // Product cell - Now less prominent since we have product headers
+                const productCell = document.createElement('td');
+                productCell.style.opacity = '0.5'; // Make less prominent
+                productCell.textContent = batch.product;
+                row.appendChild(productCell);
+                
+                // Variant cell
+                const variantCell = document.createElement('td');
+                variantCell.textContent = batch.variant;
+                row.appendChild(variantCell);
+                
+                // Batch ID cell
+                const batchCell = document.createElement('td');
+                batchCell.className = 'batch-number';
+                batchCell.textContent = batch.batchId;
+                row.appendChild(batchCell);
+                
+                // Units cell
+                const unitsCell = document.createElement('td');
+                unitsCell.textContent = batch.units;
+                row.appendChild(unitsCell);
+                
+                // Boxes/Bags cell - Display appropriate container type
+                const containerCell = document.createElement('td');
+                if (batch.isAssembly) {
+                    containerCell.textContent = `${batch.boxes} Bags`;
+                } else {
+                    containerCell.textContent = batch.boxes;
+                }
+                row.appendChild(containerCell);
+                
+                batchInfoTableBody.appendChild(row);
+            });
         }
 
         // Function to apply supervisor styling
@@ -3768,5 +2952,4 @@ window.addEventListener('beforeunload', function() {
     </script>
 </body>
 </html>
-
-        
+                        
