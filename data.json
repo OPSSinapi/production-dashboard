@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-22T07:59:20.098Z",
+    "timestamp": "2025-05-22T08:00:01.343Z",
     "date": "2025-05-22",
     "facility": "Main Plant"
   },
@@ -48,6 +48,63 @@
     }
   ],
   "production": [
+    {
+      "id": "LEVO-XL2200S+",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL2200S+",
+        "name": "XL2200S+",
+        "fullName": "LEVO XL2200S+",
+        "cycleTime": 97.06,
+        "devicesPerBox": 8,
+        "actualCycleTime": 3638
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 37,
+        "daily": 300,
+        "boxes": 37
+      },
+      "actual": {
+        "total": 8,
+        "boxes": 1,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 25052149,
+          "quantity": 8,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 8,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 299,
+          "progress": 3
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 37,
+          "actual": 8,
+          "cumTarget": 37,
+          "cumActual": 8,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XL1000SCP",
       "product": {
@@ -161,10 +218,74 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "UBT-",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "UBT UBT",
+        "cycleTime": 59.4,
+        "devicesPerBox": 25,
+        "actualCycleTime": 1164
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 60,
+        "daily": 490,
+        "boxes": 19
+      },
+      "actual": {
+        "total": 25,
+        "boxes": 1,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25051937,
+          "quantity": 25,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 25,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 489,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 60,
+          "actual": 25,
+          "cumTarget": 60,
+          "cumActual": 25,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
     "products": [
+      {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 8,
+        "totalTarget": 300,
+        "progress": 3
+      },
       {
         "id": "SCD",
         "name": "SCD",
@@ -178,6 +299,13 @@
         "totalProduction": 80,
         "totalTarget": 1249,
         "progress": 6
+      },
+      {
+        "id": "UBT",
+        "name": "UBT",
+        "totalProduction": 25,
+        "totalTarget": 490,
+        "progress": 5
       }
     ],
     "supervisors": [
@@ -199,6 +327,26 @@
         "progress": 4,
         "variants": [
           "SCD-XL1000SCP"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 8,
+        "totalTarget": 299,
+        "progress": 3,
+        "variants": [
+          "LEVO-XL2200S+"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 25,
+        "totalTarget": 489,
+        "progress": 5,
+        "variants": [
+          "UBT-"
         ]
       }
     ]
