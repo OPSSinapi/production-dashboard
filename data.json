@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-05-23T08:50:02.712Z",
+    "timestamp": "2025-05-23T08:51:05.357Z",
     "date": "2025-05-23",
     "facility": "Main Plant"
   },
@@ -264,7 +264,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 28.13,
         "devicesPerBox": 20,
-        "actualCycleTime": 248
+        "actualCycleTime": 186
       },
       "shiftId": "overtime",
       "targets": {
@@ -273,35 +273,35 @@
         "boxes": 52
       },
       "actual": {
-        "total": 120,
-        "boxes": 6,
-        "progress": 11
+        "total": 160,
+        "boxes": 8,
+        "progress": 15
       },
       "batches": [
         {
           "id": 25052147,
-          "quantity": 120,
-          "boxes": 6
+          "quantity": 160,
+          "boxes": 8
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 120,
+          "production": 160,
           "startTime": "07:30",
           "endTime": "17:00",
           "target": 1055,
-          "progress": 11
+          "progress": 15
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 127,
-          "actual": 120,
+          "actual": 160,
           "cumTarget": 127,
-          "cumActual": 120,
+          "cumActual": 160,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -312,7 +312,75 @@
           "target": 127,
           "actual": 0,
           "cumTarget": 254,
-          "cumActual": 120,
+          "cumActual": 160,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "UBT-",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "UBT UBT",
+        "cycleTime": 59.4,
+        "devicesPerBox": 25,
+        "actualCycleTime": 984
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 60,
+        "daily": 414,
+        "boxes": 16
+      },
+      "actual": {
+        "total": 25,
+        "boxes": 1,
+        "progress": 6
+      },
+      "batches": [
+        {
+          "id": 25052254,
+          "quantity": 25,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 25,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 414,
+          "progress": 6
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 60,
+          "actual": 25,
+          "cumTarget": 60,
+          "cumActual": 25,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 60,
+          "actual": 0,
+          "cumTarget": 120,
+          "cumActual": 25,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -347,9 +415,16 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 120,
+        "totalProduction": 160,
         "totalTarget": 1057,
-        "progress": 11
+        "progress": 15
+      },
+      {
+        "id": "UBT",
+        "name": "UBT",
+        "totalProduction": 25,
+        "totalTarget": 414,
+        "progress": 6
       }
     ],
     "supervisors": [
@@ -377,11 +452,21 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 120,
+        "totalProduction": 160,
         "totalTarget": 1055,
-        "progress": 11,
+        "progress": 15,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 25,
+        "totalTarget": 414,
+        "progress": 6,
+        "variants": [
+          "UBT-"
         ]
       }
     ]
