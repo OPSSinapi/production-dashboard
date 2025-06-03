@@ -1,13 +1,97 @@
 {
   "metadata": {
-    "timestamp": "2025-06-04T00:26:00.720Z",
+    "timestamp": "2025-06-04T00:26:59.461Z",
     "date": "2025-06-03",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
+    }
+  ],
+  "production": [
+    {
+      "id": "Ellavi-Drape-Line-1-BC01",
+      "product": {
+        "id": "Ellavi-Drape-Line-1",
+        "name": "Ellavi Drape Line 1"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "Ellavi Drape Line 1 BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 291
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 123,
+        "daily": 1001,
+        "boxes": 10
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 10
+      },
+      "batches": [
+        {
+          "id": 25053070,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 100,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 1000,
+          "progress": 10
+        }
+      ],
+      "timeline": []
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "Ellavi-Drape-Line-1",
+        "name": "Ellavi Drape Line 1",
+        "totalProduction": 100,
+        "totalTarget": 1001,
+        "progress": 10
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Nosi",
+        "name": "Nosi",
+        "totalProduction": 100,
+        "totalTarget": 1000,
+        "progress": 10,
+        "variants": [
+          "Ellavi-Drape-Line-1-BC01"
+        ]
+      }
+    ]
   }
 }
