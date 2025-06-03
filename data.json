@@ -1,13 +1,109 @@
 {
   "metadata": {
-    "timestamp": "2025-06-03T07:34:00.797Z",
+    "timestamp": "2025-06-03T07:35:00.295Z",
     "date": "2025-06-03",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
+    }
+  ],
+  "production": [
+    {
+      "id": "Ellavi-Drape-Line-4-BC01",
+      "product": {
+        "id": "Ellavi-Drape-Line-4",
+        "name": "Ellavi Drape Line 4"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "Ellavi Drape Line 4 BC01",
+        "cycleTime": 29.12,
+        "devicesPerBox": 100,
+        "actualCycleTime": 291
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 123,
+        "daily": 1000,
+        "boxes": 10
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 10
+      },
+      "batches": [
+        {
+          "id": 25053070,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 100,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 999,
+          "progress": 10
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 123,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "Ellavi-Drape-Line-4",
+        "name": "Ellavi Drape Line 4",
+        "totalProduction": 100,
+        "totalTarget": 1000,
+        "progress": 10
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Nosi",
+        "name": "Nosi",
+        "totalProduction": 100,
+        "totalTarget": 999,
+        "progress": 10,
+        "variants": [
+          "Ellavi-Drape-Line-4-BC01"
+        ]
+      }
+    ]
   }
 }
