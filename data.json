@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-04T09:17:04.205Z",
+    "timestamp": "2025-06-04T09:17:59.911Z",
     "date": "2025-06-04",
     "facility": "Main Plant"
   },
@@ -585,6 +585,74 @@
       ]
     },
     {
+      "id": "Scalpel-Packaging-PAHS15S",
+      "product": {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging"
+      },
+      "variant": {
+        "id": "PAHS15S",
+        "name": "PAHS15S",
+        "fullName": "Scalpel Packaging PAHS15S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 10
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12773,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 3000,
+        "boxes": 6,
+        "progress": 23
+      },
+      "batches": [
+        {
+          "id": 25060206,
+          "quantity": 3000,
+          "boxes": 6
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 3000,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 12763,
+          "progress": 24
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 3000,
+          "cumTarget": 3156,
+          "cumActual": 3000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "Scalpel-Assembly-PAMC10S",
       "product": {
         "id": "Scalpel-Assembly",
@@ -705,6 +773,13 @@
         "progress": 21
       },
       {
+        "id": "Scalpel-Packaging",
+        "name": "Scalpel Packaging",
+        "totalProduction": 3000,
+        "totalTarget": 12773,
+        "progress": 23
+      },
+      {
         "id": "Scalpel-Assembly",
         "name": "Scalpel Assembly",
         "totalProduction": 1000,
@@ -769,11 +844,12 @@
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 1000,
-        "totalTarget": 12763,
-        "progress": 8,
+        "totalProduction": 4000,
+        "totalTarget": 25526,
+        "progress": 16,
         "variants": [
-          "Scalpel-Assembly-PAMC10S"
+          "Scalpel-Assembly-PAMC10S",
+          "Scalpel-Packaging-PAHS15S"
         ]
       }
     ]
