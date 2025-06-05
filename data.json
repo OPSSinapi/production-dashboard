@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-05T09:44:04.398Z",
+    "timestamp": "2025-06-05T09:45:04.993Z",
     "date": "2025-06-05",
     "facility": "Main Plant"
   },
@@ -748,7 +748,7 @@
         "fullName": "Scalpel Assembly PAMC15S",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 10
+        "actualCycleTime": 3
       },
       "shiftId": "standard",
       "targets": {
@@ -774,9 +774,9 @@
           "name": "Apelele",
           "production": 3000,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 12763,
-          "progress": 24
+          "endTime": "09:43",
+          "target": 3500,
+          "progress": 86
         }
       ],
       "timeline": [
@@ -804,14 +804,93 @@
         },
         {
           "hour": "10:30",
-          "target": 1447,
+          "target": 342,
           "actual": 0,
-          "cumTarget": 4603,
+          "cumTarget": 3498,
           "cumActual": 3000,
+          "transitionTarget": 342,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 13
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-Assembly-PARC10S",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PARC10S",
+        "name": "PARC10S",
+        "fullName": "Scalpel Assembly PARC10S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 21
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12773,
+        "boxes": 12
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 1,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 25060512,
+          "quantity": 1000,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 1000,
+          "startTime": "09:43",
+          "endTime": "16:30",
+          "target": 9263,
+          "progress": 11
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 55
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1236,
+          "actual": 1000,
+          "cumTarget": 4392,
+          "cumActual": 1000,
+          "transitionTarget": 1236,
+          "previousVariant": "Scalpel-Assembly-PAMC15S",
+          "previousVariantMinutes": 13,
+          "currentVariantMinutes": 47
         }
       ]
     }
@@ -884,9 +963,9 @@
       {
         "id": "Scalpel-Assembly",
         "name": "Scalpel Assembly",
-        "totalProduction": 3000,
-        "totalTarget": 12773,
-        "progress": 23
+        "totalProduction": 4000,
+        "totalTarget": 25546,
+        "progress": 16
       }
     ],
     "supervisors": [
@@ -946,12 +1025,13 @@
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 5500,
+        "totalProduction": 6500,
         "totalTarget": 25526,
-        "progress": 22,
+        "progress": 25,
         "variants": [
           "Scalpel-Packaging-PAMC10S",
-          "Scalpel-Assembly-PAMC15S"
+          "Scalpel-Assembly-PAMC15S",
+          "Scalpel-Assembly-PARC10S"
         ]
       }
     ]
