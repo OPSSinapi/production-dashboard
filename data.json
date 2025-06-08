@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-08T03:51:00.923Z",
+    "timestamp": "2025-06-08T03:52:02.307Z",
     "date": "2025-06-08",
     "facility": "Main Plant"
   },
@@ -35,26 +35,116 @@
         "boxes": 9
       },
       "actual": {
-        "total": 500,
-        "boxes": 5,
-        "progress": 51
+        "total": 900,
+        "boxes": 9,
+        "progress": 91
       },
       "batches": [
         {
           "id": 25060615,
-          "quantity": 500,
-          "boxes": 5
+          "quantity": 900,
+          "boxes": 9
         }
       ],
       "supervisors": [
         {
           "id": "Nosi",
           "name": "Nosi",
-          "production": 500,
+          "production": 900,
           "startTime": "",
           "endTime": "",
           "target": 990,
-          "progress": 51
+          "progress": 91
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "01:30",
+          "target": 185,
+          "actual": 0,
+          "cumTarget": 185,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 90
+        },
+        {
+          "hour": "02:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 308,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "03:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 431,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "04:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 554,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "EV-L2-NS-BC01",
+      "product": {
+        "id": "EV-L2-NS",
+        "name": "EV L2 NS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L2 NS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 1
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 123,
+        "daily": 990,
+        "boxes": 9
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 10
+      },
+      "batches": [
+        {
+          "id": 25060615,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 100,
+          "startTime": "03:51",
+          "endTime": "",
+          "target": 990,
+          "progress": 10
         }
       ],
       "timeline": [
@@ -110,20 +200,28 @@
       {
         "id": "EV-L1-NS",
         "name": "EV L1 NS",
-        "totalProduction": 500,
+        "totalProduction": 900,
         "totalTarget": 990,
-        "progress": 51
+        "progress": 91
+      },
+      {
+        "id": "EV-L2-NS",
+        "name": "EV L2 NS",
+        "totalProduction": 100,
+        "totalTarget": 990,
+        "progress": 10
       }
     ],
     "supervisors": [
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 500,
-        "totalTarget": 990,
+        "totalProduction": 1000,
+        "totalTarget": 1980,
         "progress": 51,
         "variants": [
-          "EV-L1-NS-BC01"
+          "EV-L1-NS-BC01",
+          "EV-L2-NS-BC01"
         ]
       }
     ]
