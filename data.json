@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-10T00:45:01.179Z",
+    "timestamp": "2025-06-10T00:46:00.703Z",
     "date": "2025-06-09",
     "facility": "Main Plant"
   },
@@ -114,6 +114,105 @@
         }
       ],
       "timeline": []
+    },
+    {
+      "id": "EV-L3-NS-BC01",
+      "product": {
+        "id": "EV-L3-NS",
+        "name": "EV L3 NS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L3 NS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 63
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 123,
+        "daily": 1361,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 300,
+        "boxes": 3,
+        "progress": 22
+      },
+      "batches": [
+        {
+          "id": 25060615,
+          "quantity": 300,
+          "boxes": 3
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Ayanda",
+          "name": "Ayanda",
+          "production": 300,
+          "startTime": "00:44",
+          "endTime": "06:00",
+          "target": 651,
+          "progress": 46
+        }
+      ],
+      "timeline": []
+    },
+    {
+      "id": "EV-L4-NS-BC01",
+      "product": {
+        "id": "EV-L4-NS",
+        "name": "EV L4 NS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L4 NS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 311
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 123,
+        "daily": 1361,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 200,
+        "boxes": 2,
+        "progress": 15
+      },
+      "batches": [
+        {
+          "id": 25060615,
+          "quantity": 200,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 100,
+          "startTime": "18:00",
+          "endTime": "06:00",
+          "target": 1361,
+          "progress": 7
+        },
+        {
+          "id": "Ayanda",
+          "name": "Ayanda",
+          "production": 100,
+          "startTime": "00:45",
+          "endTime": "06:00",
+          "target": 649,
+          "progress": 15
+        }
+      ],
+      "timeline": []
     }
   ],
   "summary": {
@@ -131,18 +230,44 @@
         "totalProduction": 300,
         "totalTarget": 1361,
         "progress": 22
+      },
+      {
+        "id": "EV-L3-NS",
+        "name": "EV L3 NS",
+        "totalProduction": 300,
+        "totalTarget": 1361,
+        "progress": 22
+      },
+      {
+        "id": "EV-L4-NS",
+        "name": "EV L4 NS",
+        "totalProduction": 200,
+        "totalTarget": 1361,
+        "progress": 15
       }
     ],
     "supervisors": [
       {
         "id": "Ayanda",
         "name": "Ayanda",
-        "totalProduction": 500,
-        "totalTarget": 2012,
-        "progress": 25,
+        "totalProduction": 900,
+        "totalTarget": 3312,
+        "progress": 27,
         "variants": [
           "EV-L1-NS-BC01",
-          "EV-L2-NS-BC01"
+          "EV-L2-NS-BC01",
+          "EV-L3-NS-BC01",
+          "EV-L4-NS-BC01"
+        ]
+      },
+      {
+        "id": "Nosi",
+        "name": "Nosi",
+        "totalProduction": 100,
+        "totalTarget": 1361,
+        "progress": 7,
+        "variants": [
+          "EV-L4-NS-BC01"
         ]
       }
     ]
