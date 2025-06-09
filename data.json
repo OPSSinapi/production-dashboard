@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-09T07:43:57.828Z",
+    "timestamp": "2025-06-09T07:44:59.974Z",
     "date": "2025-06-09",
     "facility": "Main Plant"
   },
@@ -22,6 +22,24 @@
         }
       ],
       "availableWorkHours": 11
+    },
+    {
+      "id": "standard",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
     }
   ],
   "production": [
@@ -92,6 +110,63 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "SCD-XS50+",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XS50+",
+        "name": "XS50+",
+        "fullName": "SCD XS50+",
+        "cycleTime": 29.41,
+        "devicesPerBox": 15,
+        "actualCycleTime": 1940
+      },
+      "shiftId": "standard",
+      "targets": {
+        "hourly": 122,
+        "daily": 990,
+        "boxes": 66
+      },
+      "actual": {
+        "total": 15,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25060617,
+          "quantity": 15,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 15,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 989,
+          "progress": 2
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 15,
+          "cumTarget": 122,
+          "cumActual": 15,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -102,6 +177,13 @@
         "totalProduction": 100,
         "totalTarget": 1361,
         "progress": 7
+      },
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 15,
+        "totalTarget": 990,
+        "progress": 2
       }
     ],
     "supervisors": [
@@ -113,6 +195,16 @@
         "progress": 7,
         "variants": [
           "EV-L3-DS-BC01"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 15,
+        "totalTarget": 989,
+        "progress": 2,
+        "variants": [
+          "SCD-XS50+"
         ]
       }
     ]
