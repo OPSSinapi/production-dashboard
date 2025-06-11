@@ -1,12 +1,13 @@
 {
   "metadata": {
-    "timestamp": "2025-06-11T12:07:05.062Z",
+    "timestamp": "2025-06-11T12:07:48.849Z",
     "date": "2025-06-11",
     "facility": "Main Plant"
   },
   "shifts": [
     {
-      "id": "overtime",
+      "id": "day-shift",
+      "name": "11h DS",
       "startTime": "06:00",
       "endTime": "18:00",
       "breaks": [
@@ -24,7 +25,8 @@
       "availableWorkHours": 11
     },
     {
-      "id": "standard",
+      "id": "night-shift",
+      "name": "11h NS",
       "startTime": "18:00",
       "endTime": "06:00",
       "breaks": [
@@ -40,6 +42,25 @@
         }
       ],
       "availableWorkHours": 11
+    },
+    {
+      "id": "normal-time",
+      "name": "8.25h NT",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
     }
   ],
   "production": [
@@ -57,7 +78,7 @@
         "devicesPerBox": 100,
         "actualCycleTime": 50
       },
-      "shiftId": "overtime",
+      "shiftId": "day-shift",
       "targets": {
         "hourly": 123,
         "daily": 1361,
@@ -169,7 +190,7 @@
         "devicesPerBox": 100,
         "actualCycleTime": 62
       },
-      "shiftId": "standard",
+      "shiftId": "night-shift",
       "targets": {
         "hourly": 123,
         "daily": 1361,
@@ -226,7 +247,7 @@
         "devicesPerBox": 100,
         "actualCycleTime": 80
       },
-      "shiftId": "overtime",
+      "shiftId": "day-shift",
       "targets": {
         "hourly": 123,
         "daily": 1361,
@@ -338,7 +359,7 @@
         "devicesPerBox": 100,
         "actualCycleTime": 23
       },
-      "shiftId": "standard",
+      "shiftId": "night-shift",
       "targets": {
         "hourly": 123,
         "daily": 1361,
@@ -395,7 +416,7 @@
         "devicesPerBox": 100,
         "actualCycleTime": 364
       },
-      "shiftId": "overtime",
+      "shiftId": "day-shift",
       "targets": {
         "hourly": 123,
         "daily": 1361,
@@ -507,7 +528,7 @@
         "devicesPerBox": 100,
         "actualCycleTime": 23
       },
-      "shiftId": "standard",
+      "shiftId": "night-shift",
       "targets": {
         "hourly": 123,
         "daily": 1361,
@@ -564,7 +585,7 @@
         "devicesPerBox": 100,
         "actualCycleTime": 48
       },
-      "shiftId": "overtime",
+      "shiftId": "day-shift",
       "targets": {
         "hourly": 123,
         "daily": 1361,
@@ -676,7 +697,7 @@
         "devicesPerBox": 100,
         "actualCycleTime": 26
       },
-      "shiftId": "standard",
+      "shiftId": "night-shift",
       "targets": {
         "hourly": 123,
         "daily": 1361,
@@ -731,9 +752,9 @@
         "fullName": "LEVO XL1150SC",
         "cycleTime": 97.06,
         "devicesPerBox": 14,
-        "actualCycleTime": 309
+        "actualCycleTime": 208
       },
-      "shiftId": "standard",
+      "shiftId": "normal-time",
       "targets": {
         "hourly": 37,
         "daily": 300,
@@ -756,9 +777,9 @@
           "id": "Siyabonga",
           "name": "Siyabonga",
           "production": 140,
-          "startTime": "18:00",
-          "endTime": "06:00",
-          "target": 300,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 299,
           "progress": 47
         }
       ],
@@ -832,9 +853,9 @@
         "fullName": "SCD XL1000+",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 1092
+        "actualCycleTime": 247
       },
-      "shiftId": "standard",
+      "shiftId": "normal-time",
       "targets": {
         "hourly": 122,
         "daily": 990,
@@ -858,9 +879,9 @@
           "name": "Michaela",
           "production": 60,
           "startTime": "11:48",
-          "endTime": "06:00",
-          "target": 990,
-          "progress": 6
+          "endTime": "16:30",
+          "target": 503,
+          "progress": 12
         }
       ],
       "timeline": [
@@ -933,9 +954,9 @@
         "fullName": "SCD XS50+",
         "cycleTime": 29.41,
         "devicesPerBox": 15,
-        "actualCycleTime": 153
+        "actualCycleTime": 34
       },
-      "shiftId": "standard",
+      "shiftId": "normal-time",
       "targets": {
         "hourly": 122,
         "daily": 990,
@@ -958,10 +979,10 @@
           "id": "Michaela",
           "name": "Michaela",
           "production": 420,
-          "startTime": "18:00",
+          "startTime": "07:30",
           "endTime": "11:48",
-          "target": 990,
-          "progress": 42
+          "target": 485,
+          "progress": 87
         }
       ],
       "timeline": [
@@ -1034,9 +1055,9 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 28.13,
         "devicesPerBox": 20,
-        "actualCycleTime": 86
+        "actualCycleTime": 58
       },
-      "shiftId": "standard",
+      "shiftId": "normal-time",
       "targets": {
         "hourly": 127,
         "daily": 1035,
@@ -1059,9 +1080,9 @@
           "id": "Luthando",
           "name": "Luthando",
           "production": 500,
-          "startTime": "18:00",
-          "endTime": "06:00",
-          "target": 1035,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 1034,
           "progress": 48
         }
       ],
@@ -1135,9 +1156,9 @@
         "fullName": "UBT UBT",
         "cycleTime": 59.4,
         "devicesPerBox": 25,
-        "actualCycleTime": 192
+        "actualCycleTime": 129
       },
-      "shiftId": "standard",
+      "shiftId": "normal-time",
       "targets": {
         "hourly": 60,
         "daily": 490,
@@ -1160,9 +1181,9 @@
           "id": "Mvokwe",
           "name": "Mvokwe",
           "production": 225,
-          "startTime": "18:00",
-          "endTime": "06:00",
-          "target": 490,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 489,
           "progress": 46
         }
       ],
@@ -1236,9 +1257,9 @@
         "fullName": "Scalpel Packaging PARC11S",
         "cycleTime": 2.28,
         "devicesPerBox": 500,
-        "actualCycleTime": 5
+        "actualCycleTime": 3
       },
-      "shiftId": "standard",
+      "shiftId": "normal-time",
       "targets": {
         "hourly": 1578,
         "daily": 12773,
@@ -1261,9 +1282,9 @@
           "id": "Apelele",
           "name": "Apelele",
           "production": 9500,
-          "startTime": "18:00",
-          "endTime": "06:00",
-          "target": 12773,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 12763,
           "progress": 74
         }
       ],
@@ -1337,9 +1358,9 @@
         "fullName": "Scalpel Assembly PARC15S",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 11
+        "actualCycleTime": 3
       },
-      "shiftId": "standard",
+      "shiftId": "normal-time",
       "targets": {
         "hourly": 1578,
         "daily": 12773,
@@ -1363,9 +1384,9 @@
           "name": "Apelele",
           "production": 7000,
           "startTime": "09:14",
-          "endTime": "06:00",
-          "target": 12773,
-          "progress": 55
+          "endTime": "16:30",
+          "target": 10026,
+          "progress": 70
         }
       ],
       "timeline": [
@@ -1559,7 +1580,7 @@
         "id": "Luthando",
         "name": "Luthando",
         "totalProduction": 500,
-        "totalTarget": 1035,
+        "totalTarget": 1034,
         "progress": 48,
         "variants": [
           "SUM-500V2"
@@ -1569,8 +1590,8 @@
         "id": "Michaela",
         "name": "Michaela",
         "totalProduction": 480,
-        "totalTarget": 1980,
-        "progress": 24,
+        "totalTarget": 988,
+        "progress": 49,
         "variants": [
           "SCD-XS50+",
           "SCD-XL1000+"
@@ -1580,7 +1601,7 @@
         "id": "Mvokwe",
         "name": "Mvokwe",
         "totalProduction": 225,
-        "totalTarget": 490,
+        "totalTarget": 489,
         "progress": 46,
         "variants": [
           "UBT-"
@@ -1590,7 +1611,7 @@
         "id": "Siyabonga",
         "name": "Siyabonga",
         "totalProduction": 140,
-        "totalTarget": 300,
+        "totalTarget": 299,
         "progress": 47,
         "variants": [
           "LEVO-XL1150SC"
@@ -1600,8 +1621,8 @@
         "id": "Apelele",
         "name": "Apelele",
         "totalProduction": 16500,
-        "totalTarget": 25546,
-        "progress": 65,
+        "totalTarget": 22789,
+        "progress": 72,
         "variants": [
           "Scalpel-Packaging-PARC11S",
           "Scalpel-Assembly-PARC15S"
