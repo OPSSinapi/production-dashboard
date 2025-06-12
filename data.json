@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-12T10:25:04.016Z",
+    "timestamp": "2025-06-12T10:26:06.916Z",
     "date": "2025-06-12",
     "facility": "Main Plant"
   },
@@ -353,6 +353,85 @@
       ]
     },
     {
+      "id": "PopUp-FC",
+      "product": {
+        "id": "PopUp",
+        "name": "PopUp"
+      },
+      "variant": {
+        "id": "FC",
+        "name": "FC",
+        "fullName": "PopUp FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 188
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "daily": 588,
+        "boxes": 5
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 25061227,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 100,
+          "startTime": "10:21",
+          "endTime": "16:30",
+          "target": 380,
+          "progress": 26
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 72,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 144,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 66,
+          "actual": 100,
+          "cumTarget": 210,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ]
+    },
+    {
       "id": "SCD-XL1000S",
       "product": {
         "id": "SCD",
@@ -601,7 +680,7 @@
         "fullName": "Scalpel Assembly PARC15S",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 6
+        "actualCycleTime": 5
       },
       "shiftId": "normal-time",
       "targets": {
@@ -610,26 +689,26 @@
         "boxes": 12
       },
       "actual": {
-        "total": 4000,
-        "boxes": 4,
-        "progress": 31
+        "total": 5000,
+        "boxes": 5,
+        "progress": 39
       },
       "batches": [
         {
           "id": 25061124,
-          "quantity": 4000,
-          "boxes": 4
+          "quantity": 5000,
+          "boxes": 5
         }
       ],
       "supervisors": [
         {
           "id": "Apelele",
           "name": "Apelele",
-          "production": 4000,
+          "production": 5000,
           "startTime": "08:42",
           "endTime": "16:30",
           "target": 10868,
-          "progress": 37
+          "progress": 46
         }
       ],
       "timeline": [
@@ -658,9 +737,9 @@
         {
           "hour": "10:30",
           "target": 1447,
-          "actual": 0,
+          "actual": 1000,
           "cumTarget": 4603,
-          "cumActual": 4000,
+          "cumActual": 5000,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -707,6 +786,13 @@
         "progress": 33
       },
       {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 100,
+        "totalTarget": 588,
+        "progress": 17
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 252,
@@ -730,9 +816,9 @@
       {
         "id": "Scalpel-Assembly",
         "name": "Scalpel Assembly",
-        "totalProduction": 4000,
+        "totalProduction": 5000,
         "totalTarget": 12773,
-        "progress": 31
+        "progress": 39
       }
     ],
     "supervisors": [
@@ -752,9 +838,9 @@
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 6500,
+        "totalProduction": 7500,
         "totalTarget": 23631,
-        "progress": 28,
+        "progress": 32,
         "variants": [
           "Scalpel-Packaging-PARC12S",
           "Scalpel-Assembly-PARC15S"
@@ -788,6 +874,16 @@
         "progress": 33,
         "variants": [
           "LEVO-XL1150SC"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 100,
+        "totalTarget": 380,
+        "progress": 26,
+        "variants": [
+          "PopUp-FC"
         ]
       }
     ]
