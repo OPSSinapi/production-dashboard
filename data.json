@@ -1,10 +1,29 @@
 {
   "metadata": {
-    "timestamp": "2025-06-12T14:30:04.070Z",
+    "timestamp": "2025-06-12T14:31:06.191Z",
     "date": "2025-06-12",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "day-shift",
+      "name": "11h DS",
+      "startTime": "06:00",
+      "endTime": "18:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11
+    },
     {
       "id": "night-shift",
       "name": "11h NS",
@@ -45,6 +64,151 @@
     }
   ],
   "production": [
+    {
+      "id": "EV-L1-DS-BC01",
+      "product": {
+        "id": "EV-L1-DS",
+        "name": "EV L1 DS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L1 DS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 127
+      },
+      "shiftId": "day-shift",
+      "targets": {
+        "hourly": 123,
+        "daily": 1361,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 7
+      },
+      "batches": [
+        {
+          "id": 25051125,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 100,
+          "startTime": "14:28",
+          "endTime": "18:00",
+          "target": 437,
+          "progress": 23
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "07:30",
+          "target": 185,
+          "actual": 0,
+          "cumTarget": 185,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 90
+        },
+        {
+          "hour": "08:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 308,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 431,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 113,
+          "actual": 0,
+          "cumTarget": 544,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 92,
+          "actual": 0,
+          "cumTarget": 636,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        },
+        {
+          "hour": "12:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 759,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "13:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 882,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 51,
+          "actual": 100,
+          "cumTarget": 933,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
+        },
+        {
+          "hour": "15:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 1056,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "EV-L1-NS-BC01",
       "product": {
@@ -821,7 +985,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 45
+        "actualCycleTime": 44
       },
       "shiftId": "normal-time",
       "targets": {
@@ -830,26 +994,26 @@
         "boxes": 55
       },
       "actual": {
-        "total": 640,
-        "boxes": 32,
-        "progress": 58
+        "total": 660,
+        "boxes": 33,
+        "progress": 60
       },
       "batches": [
         {
           "id": 25061226,
-          "quantity": 640,
-          "boxes": 32
+          "quantity": 660,
+          "boxes": 33
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 640,
+          "production": 660,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 1099,
-          "progress": 58
+          "progress": 60
         }
       ],
       "timeline": [
@@ -922,9 +1086,9 @@
         {
           "hour": "14:30",
           "target": 56,
-          "actual": 80,
+          "actual": 100,
           "cumTarget": 826,
-          "cumActual": 640,
+          "cumActual": 660,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -935,7 +1099,7 @@
           "target": 136,
           "actual": 0,
           "cumTarget": 962,
-          "cumActual": 640,
+          "cumActual": 660,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -1232,26 +1396,26 @@
         "boxes": 25
       },
       "actual": {
-        "total": 5500,
-        "boxes": 11,
-        "progress": 43
+        "total": 6000,
+        "boxes": 12,
+        "progress": 47
       },
       "batches": [
         {
           "id": 25061124,
-          "quantity": 5500,
-          "boxes": 11
+          "quantity": 6000,
+          "boxes": 12
         }
       ],
       "supervisors": [
         {
           "id": "Apelele",
           "name": "Apelele",
-          "production": 5500,
+          "production": 6000,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 12763,
-          "progress": 43
+          "progress": 47
         }
       ],
       "timeline": [
@@ -1324,9 +1488,9 @@
         {
           "hour": "14:30",
           "target": 657,
-          "actual": 0,
+          "actual": 500,
           "cumTarget": 8600,
-          "cumActual": 5500,
+          "cumActual": 6000,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -1337,7 +1501,7 @@
           "target": 1578,
           "actual": 0,
           "cumTarget": 10178,
-          "cumActual": 5500,
+          "cumActual": 6000,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -1348,6 +1512,13 @@
   ],
   "summary": {
     "products": [
+      {
+        "id": "EV-L1-DS",
+        "name": "EV L1 DS",
+        "totalProduction": 100,
+        "totalTarget": 1361,
+        "progress": 7
+      },
       {
         "id": "EV-L1-NS",
         "name": "EV L1 NS",
@@ -1400,16 +1571,16 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 640,
+        "totalProduction": 660,
         "totalTarget": 1100,
-        "progress": 58
+        "progress": 60
       },
       {
         "id": "Scalpel-Packaging",
         "name": "Scalpel Packaging",
-        "totalProduction": 9000,
+        "totalProduction": 9500,
         "totalTarget": 25546,
-        "progress": 35
+        "progress": 37
       },
       {
         "id": "Scalpel-Assembly",
@@ -1423,22 +1594,23 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 6000,
-        "totalTarget": 2623,
-        "progress": 229,
+        "totalProduction": 6100,
+        "totalTarget": 3060,
+        "progress": 199,
         "variants": [
           "EV-L2-NS-BC01",
           "EV-L3-NS-BC01",
           "EV-L4-NS-BC01",
-          "EV-L1-NS-BC01"
+          "EV-L1-NS-BC01",
+          "EV-L1-DS-BC01"
         ]
       },
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 20000,
+        "totalProduction": 20500,
         "totalTarget": 36394,
-        "progress": 55,
+        "progress": 56,
         "variants": [
           "Scalpel-Packaging-PARC12S",
           "Scalpel-Assembly-PARC15S",
@@ -1448,9 +1620,9 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 640,
+        "totalProduction": 660,
         "totalTarget": 1099,
-        "progress": 58,
+        "progress": 60,
         "variants": [
           "SUM-500V2"
         ]
