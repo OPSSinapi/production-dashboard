@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-13T08:27:02.683Z",
+    "timestamp": "2025-06-13T08:28:17.621Z",
     "date": "2025-06-13",
     "facility": "Main Plant"
   },
@@ -576,7 +576,7 @@
         "fullName": "LEVO XL1150SC",
         "cycleTime": 97.06,
         "devicesPerBox": 14,
-        "actualCycleTime": 1757
+        "actualCycleTime": 879
       },
       "shiftId": "normal-time",
       "targets": {
@@ -585,35 +585,35 @@
         "boxes": 18
       },
       "actual": {
-        "total": 14,
-        "boxes": 1,
-        "progress": 6
+        "total": 28,
+        "boxes": 2,
+        "progress": 11
       },
       "batches": [
         {
           "id": 25060616,
-          "quantity": 14,
-          "boxes": 1
+          "quantity": 28,
+          "boxes": 2
         }
       ],
       "supervisors": [
         {
           "id": "Siyabonga",
           "name": "Siyabonga",
-          "production": 14,
+          "production": 28,
           "startTime": "07:30",
           "endTime": "15:15",
           "target": 253,
-          "progress": 6
+          "progress": 11
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 37,
-          "actual": 14,
+          "actual": 28,
           "cumTarget": 37,
-          "cumActual": 14,
+          "cumActual": 28,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -734,6 +734,63 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "Scalpel-Assembly-PARC15S",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PARC15S",
+        "name": "PARC15S",
+        "fullName": "Scalpel Assembly PARC15S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 12
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 10800,
+        "boxes": 10
+      },
+      "actual": {
+        "total": 2000,
+        "boxes": 2,
+        "progress": 19
+      },
+      "batches": [
+        {
+          "id": 25061124,
+          "quantity": 2000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 2000,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 10789,
+          "progress": 19
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 2000,
+          "cumTarget": 1578,
+          "cumActual": 2000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -797,9 +854,9 @@
       {
         "id": "LEVO",
         "name": "LEVO",
-        "totalProduction": 14,
+        "totalProduction": 28,
         "totalTarget": 253,
-        "progress": 6
+        "progress": 11
       },
       {
         "id": "SCD",
@@ -814,6 +871,13 @@
         "totalProduction": 120,
         "totalTarget": 930,
         "progress": 13
+      },
+      {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly",
+        "totalProduction": 2000,
+        "totalTarget": 10800,
+        "progress": 19
       }
     ],
     "supervisors": [
@@ -857,11 +921,21 @@
       {
         "id": "Siyabonga",
         "name": "Siyabonga",
-        "totalProduction": 14,
+        "totalProduction": 28,
         "totalTarget": 253,
-        "progress": 6,
+        "progress": 11,
         "variants": [
           "LEVO-XL1150SC"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 2000,
+        "totalTarget": 10789,
+        "progress": 19,
+        "variants": [
+          "Scalpel-Assembly-PARC15S"
         ]
       }
     ]
