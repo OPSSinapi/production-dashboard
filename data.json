@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-17T07:58:06.069Z",
+    "timestamp": "2025-06-17T07:59:06.970Z",
     "date": "2025-06-17",
     "facility": "Main Plant"
   },
@@ -261,7 +261,7 @@
         "fullName": "EV L4 DS BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 329
+        "actualCycleTime": 165
       },
       "shiftId": "day-shift",
       "targets": {
@@ -270,26 +270,26 @@
         "boxes": 13
       },
       "actual": {
-        "total": 100,
-        "boxes": 1,
-        "progress": 7
+        "total": 200,
+        "boxes": 2,
+        "progress": 15
       },
       "batches": [
         {
           "id": 25061332,
-          "quantity": 100,
-          "boxes": 1
+          "quantity": 200,
+          "boxes": 2
         }
       ],
       "supervisors": [
         {
           "id": "Nosi",
           "name": "Nosi",
-          "production": 100,
+          "production": 200,
           "startTime": "07:56",
           "endTime": "18:00",
           "target": 1132,
-          "progress": 9
+          "progress": 18
         }
       ],
       "timeline": [
@@ -307,9 +307,66 @@
         {
           "hour": "08:30",
           "target": 123,
-          "actual": 100,
+          "actual": 200,
           "cumTarget": 308,
-          "cumActual": 100,
+          "cumActual": 200,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "SCD-XL1000SCP",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SCP",
+        "name": "XL1000SCP",
+        "fullName": "SCD XL1000SCP",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 2425
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 122,
+        "daily": 990,
+        "boxes": 82
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 25061230,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 12,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 989,
+          "progress": 1
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 12,
+          "cumTarget": 122,
+          "cumActual": 12,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -401,9 +458,16 @@
       {
         "id": "EV-L4-DS",
         "name": "EV L4 DS",
-        "totalProduction": 100,
+        "totalProduction": 200,
         "totalTarget": 1361,
-        "progress": 7
+        "progress": 15
+      },
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "totalTarget": 990,
+        "progress": 1
       },
       {
         "id": "Scalpel-Packaging",
@@ -417,9 +481,9 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 400,
+        "totalProduction": 500,
         "totalTarget": 3637,
-        "progress": 11,
+        "progress": 14,
         "variants": [
           "EV-L1-DS-BC01",
           "EV-L3-DS-BC01",
@@ -444,6 +508,16 @@
         "progress": 4,
         "variants": [
           "Scalpel-Packaging-PARC15S"
+        ]
+      },
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 12,
+        "totalTarget": 989,
+        "progress": 1,
+        "variants": [
+          "SCD-XL1000SCP"
         ]
       }
     ]
