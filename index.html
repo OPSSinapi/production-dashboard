@@ -2100,12 +2100,18 @@ function updateBatchInfoTable(filteredGroups) {
     const hourlyTargetMap = new Map();     // Map to store targets by hour
     const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
     
-    // CRITICAL FIX: Get the current total production directly from metrics
-    // This ensures we're showing the exact same value as the metrics card
-    const metricsCurrentUnits = document.getElementById('current-units').textContent;
-    const metricsTargetUnits = document.getElementById('target-units').textContent;
-    const currentTotal = parseInt(metricsCurrentUnits, 10);
-    const targetTotal = parseInt(metricsTargetUnits, 10);
+    // CRITICAL FIX: Calculate the correct total production for this supervisor only
+    let supervisorTotalProduction = 0;
+    let supervisorTotalTarget = 0;
+    
+    // Calculate totals from supervisor data
+    group.variants.forEach(variant => {
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        if (supervisorVariant) {
+            supervisorTotalProduction += (supervisorVariant.currentTotal || 0);
+            supervisorTotalTarget += (supervisorVariant.dailyTarget || 0);
+        }
+    });
     
     // Process each variant and collect unique hours
     group.variants.forEach(variant => {
@@ -2124,7 +2130,22 @@ function updateBatchInfoTable(filteredGroups) {
         const startTimeMinutes = startHour * 60 + startMinute;
         const endTimeMinutes = endHour * 60 + endMinute;
         
-        // Collect hourly production data
+        // Get the supervisor's proportion of production for this variant
+        // This is needed because timeline data is at variant level, not supervisor level
+        let supervisorProportion = 1.0;
+        
+        // Find the original production data to check if multiple supervisors work on this variant
+        if (productionData.originalData && productionData.originalData.production) {
+            const prodItem = productionData.originalData.production.find(p => p.id === variant.variant);
+            if (prodItem && prodItem.supervisors && prodItem.supervisors.length > 1) {
+                // Multiple supervisors - calculate this supervisor's proportion
+                const totalVariantProduction = prodItem.actual.total;
+                const thisSupervisorProduction = supervisorVariant.currentTotal || 0;
+                supervisorProportion = totalVariantProduction > 0 ? thisSupervisorProduction / totalVariantProduction : 0;
+            }
+        }
+        
+        // Collect hourly production data with supervisor proportion applied
         if (variant.hourlyProduction) {
             variant.hourlyProduction.forEach(item => {
                 if (!item.hour) return;
@@ -2133,18 +2154,21 @@ function updateBatchInfoTable(filteredGroups) {
                 const itemTimeMinutes = itemHour * 60 + itemMinute;
                 
                 if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    // Apply supervisor proportion to the production
+                    const adjustedProduction = Math.round((item.production || 0) * supervisorProportion);
+                    
                     // Add to hourly production map
                     if (!hourlyProductionMap.has(item.hour)) {
                         hourlyProductionMap.set(item.hour, 0);
                     }
-                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
+                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + adjustedProduction);
                     
                     allHoursSet.add(item.hour);
                 }
             });
         }
         
-        // Collect hourly target data
+        // Collect hourly target data (targets don't need proportion adjustment)
         if (variant.hourlyTargets) {
             variant.hourlyTargets.forEach(item => {
                 if (!item.hour) return;
@@ -2153,11 +2177,15 @@ function updateBatchInfoTable(filteredGroups) {
                 const itemTimeMinutes = itemHour * 60 + itemMinute;
                 
                 if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    // For targets, we need to use the supervisor-specific targets
+                    // Calculate hourly target based on supervisor's daily target and time window
+                    const supervisorHourlyTarget = Math.round((supervisorVariant.dailyTarget || 0) * (item.target || 0) / (variant.dailyTarget || 1));
+                    
                     // Add to hourly target map
                     if (!hourlyTargetMap.has(item.hour)) {
                         hourlyTargetMap.set(item.hour, 0);
                     }
-                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
+                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + supervisorHourlyTarget);
                     
                     allHoursSet.add(item.hour);
                 }
@@ -2194,6 +2222,11 @@ function updateBatchInfoTable(filteredGroups) {
         const [hourVal, minuteVal] = hour.split(':').map(Number);
         const timeMinutes = hourVal * 60 + minuteVal;
         
+        // Ensure cumulative totals don't exceed supervisor totals
+        if (runningProductionTotal > supervisorTotalProduction) {
+            runningProductionTotal = supervisorTotalProduction;
+        }
+        
         cumulativeData.push({
             hour: hour,
             production: runningProductionTotal,
@@ -2218,13 +2251,12 @@ function updateBatchInfoTable(filteredGroups) {
     // Do not filter data - we want to show all available data points
     let filteredData = cumulativeData;
     
-    // CRITICAL FIX: Add current hour with the correct totals from metrics
-    // Only do this if we have data and the last point doesn't match
-    if (filteredData.length > 0 && currentTotal > 0) {
+    // CRITICAL FIX: Ensure the last data point matches the supervisor's actual total
+    if (filteredData.length > 0) {
         const lastPoint = filteredData[filteredData.length - 1];
         
-        // If the last production value doesn't match the metrics, add or update a point
-        if (lastPoint.production !== currentTotal) {
+        // If the last production value doesn't match the supervisor's total, add or update a point
+        if (lastPoint.production !== supervisorTotalProduction) {
             // Get current time to use as the data point hour
             const now = new Date();
             const currentHour = now.getHours();
@@ -2232,11 +2264,11 @@ function updateBatchInfoTable(filteredGroups) {
             const currentHourStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
             const currentTimeMinutes = currentHour * 60 + currentMinute;
             
-            // Add a new data point with the correct values from the metrics
+            // Add a new data point with the correct values from the supervisor's data
             filteredData.push({
                 hour: currentHourStr,
-                production: currentTotal,
-                target: targetTotal, 
+                production: supervisorTotalProduction,
+                target: supervisorTotalTarget, 
                 timeMinutes: currentTimeMinutes
             });
         }
@@ -2527,8 +2559,8 @@ function updateBatchInfoTable(filteredGroups) {
     if (productionPoints.length > 0) {
         const lastPoint = productionPoints[productionPoints.length - 1];
         
-        // Ensure this point shows the correct value from metrics
-        lastPoint.production = currentTotal;
+        // Ensure this point shows the correct value from supervisor data
+        lastPoint.production = supervisorTotalProduction;
         
         // Create emphasized circle and label
         const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -2547,8 +2579,8 @@ function updateBatchInfoTable(filteredGroups) {
         emphasizedText.setAttribute('font-size', isFullscreen ? '18' : '16');
         emphasizedText.setAttribute('font-weight', 'bold');
         emphasizedText.setAttribute('fill', 'var(--production-color)');
-        // Ensure the text shows the current total from metrics
-        emphasizedText.textContent = currentTotal;
+        // Ensure the text shows the current total from supervisor data
+        emphasizedText.textContent = supervisorTotalProduction;
         productionLineGroup.appendChild(emphasizedText);
     }
     
@@ -2628,8 +2660,8 @@ function updateBatchInfoTable(filteredGroups) {
     if (targetPoints.length > 0) {
         const lastPoint = targetPoints[targetPoints.length - 1];
         
-        // Ensure this point shows the correct target value from metrics
-        lastPoint.target = targetTotal;
+        // Ensure this point shows the correct target value from supervisor data
+        lastPoint.target = supervisorTotalTarget;
         
         const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         emphasizedCircle.setAttribute('cx', lastPoint.x);
@@ -2647,8 +2679,8 @@ function updateBatchInfoTable(filteredGroups) {
         emphasizedText.setAttribute('font-size', isFullscreen ? '16' : '14');
         emphasizedText.setAttribute('font-weight', 'bold');
         emphasizedText.setAttribute('fill', 'var(--target-color)');
-        // Ensure the text shows the current target from metrics
-        emphasizedText.textContent = targetTotal;
+        // Ensure the text shows the current target from supervisor data
+        emphasizedText.textContent = supervisorTotalTarget;
         targetLineGroup.appendChild(emphasizedText);
     }
     
