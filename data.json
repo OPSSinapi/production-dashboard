@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-18T08:55:04.582Z",
+    "timestamp": "2025-06-18T08:56:13.189Z",
     "date": "2025-06-18",
     "facility": "Main Plant"
   },
@@ -353,7 +353,7 @@
         "fullName": "SCD XL1000SCP",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 243
+        "actualCycleTime": 220
       },
       "shiftId": "normal-time",
       "targets": {
@@ -362,26 +362,26 @@
         "boxes": 82
       },
       "actual": {
-        "total": 120,
-        "boxes": 10,
-        "progress": 12
+        "total": 132,
+        "boxes": 11,
+        "progress": 13
       },
       "batches": [
         {
           "id": 25061230,
-          "quantity": 120,
-          "boxes": 10
+          "quantity": 132,
+          "boxes": 11
         }
       ],
       "supervisors": [
         {
           "id": "Michaela",
           "name": "Michaela",
-          "production": 120,
+          "production": 132,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 989,
-          "progress": 12
+          "progress": 13
         }
       ],
       "timeline": [
@@ -399,9 +399,77 @@
         {
           "hour": "09:30",
           "target": 122,
-          "actual": 36,
+          "actual": 48,
           "cumTarget": 244,
-          "cumActual": 120,
+          "cumActual": 132,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "PopUp-XS50",
+      "product": {
+        "id": "PopUp",
+        "name": "PopUp"
+      },
+      "variant": {
+        "id": "XS50",
+        "name": "XS50",
+        "fullName": "PopUp XS50",
+        "cycleTime": 90,
+        "devicesPerBox": 25,
+        "actualCycleTime": 480
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 40,
+        "daily": 323,
+        "boxes": 12
+      },
+      "actual": {
+        "total": 50,
+        "boxes": 2,
+        "progress": 15
+      },
+      "batches": [
+        {
+          "id": 25061228,
+          "quantity": 50,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 50,
+          "startTime": "08:55",
+          "endTime": "16:30",
+          "target": 266,
+          "progress": 19
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 40,
+          "actual": 0,
+          "cumTarget": 40,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 40,
+          "actual": 50,
+          "cumTarget": 80,
+          "cumActual": 50,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -586,9 +654,16 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 120,
+        "totalProduction": 132,
         "totalTarget": 990,
-        "progress": 12
+        "progress": 13
+      },
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 50,
+        "totalTarget": 323,
+        "progress": 15
       },
       {
         "id": "SUM",
@@ -622,9 +697,9 @@
       {
         "id": "Michaela",
         "name": "Michaela",
-        "totalProduction": 120,
+        "totalProduction": 132,
         "totalTarget": 989,
-        "progress": 12,
+        "progress": 13,
         "variants": [
           "SCD-XL1000SCP"
         ]
@@ -657,6 +732,16 @@
         "progress": 16,
         "variants": [
           "Scalpel-Assembly-PARC11NS"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 50,
+        "totalTarget": 266,
+        "progress": 19,
+        "variants": [
+          "PopUp-XS50"
         ]
       }
     ]
