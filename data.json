@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-18T09:24:05.004Z",
+    "timestamp": "2025-06-18T09:25:10.116Z",
     "date": "2025-06-18",
     "facility": "Main Plant"
   },
@@ -342,6 +342,74 @@
       ]
     },
     {
+      "id": "PopUp-FC",
+      "product": {
+        "id": "PopUp",
+        "name": "PopUp"
+      },
+      "variant": {
+        "id": "FC",
+        "name": "FC",
+        "fullName": "PopUp FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 223
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "daily": 588,
+        "boxes": 5
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 25061227,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 100,
+          "startTime": "09:24",
+          "endTime": "16:30",
+          "target": 449,
+          "progress": 22
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 72,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 7,
+          "actual": 150,
+          "cumTarget": 79,
+          "cumActual": 150,
+          "transitionTarget": 7,
+          "previousVariant": "PopUp-XS50",
+          "previousVariantMinutes": 54,
+          "currentVariantMinutes": 6
+        }
+      ]
+    },
+    {
       "id": "SCD-XL1000SCP",
       "product": {
         "id": "SCD",
@@ -421,7 +489,7 @@
         "fullName": "PopUp XS50",
         "cycleTime": 90,
         "devicesPerBox": 25,
-        "actualCycleTime": 480
+        "actualCycleTime": 35
       },
       "shiftId": "normal-time",
       "targets": {
@@ -447,9 +515,9 @@
           "name": "Mvokwe",
           "production": 50,
           "startTime": "08:55",
-          "endTime": "16:30",
-          "target": 266,
-          "progress": 19
+          "endTime": "09:24",
+          "target": 19,
+          "progress": 263
         }
       ],
       "timeline": [
@@ -466,14 +534,14 @@
         },
         {
           "hour": "09:30",
-          "target": 40,
+          "target": 36,
           "actual": 50,
-          "cumTarget": 80,
+          "cumTarget": 76,
           "cumActual": 50,
-          "transitionTarget": 0,
+          "transitionTarget": 36,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
+          "currentVariantMinutes": 54
         }
       ]
     },
@@ -652,18 +720,18 @@
         "progress": 19
       },
       {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 150,
+        "totalTarget": 911,
+        "progress": 16
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 180,
         "totalTarget": 990,
         "progress": 18
-      },
-      {
-        "id": "PopUp",
-        "name": "PopUp",
-        "totalProduction": 50,
-        "totalTarget": 323,
-        "progress": 15
       },
       {
         "id": "SUM",
@@ -737,11 +805,12 @@
       {
         "id": "Mvokwe",
         "name": "Mvokwe",
-        "totalProduction": 50,
-        "totalTarget": 266,
-        "progress": 19,
+        "totalProduction": 150,
+        "totalTarget": 468,
+        "progress": 32,
         "variants": [
-          "PopUp-XS50"
+          "PopUp-XS50",
+          "PopUp-FC"
         ]
       }
     ]
