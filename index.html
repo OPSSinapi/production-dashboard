@@ -1908,6 +1908,12 @@ function updateBatchInfoTable(filteredGroups) {
     // This ensures we don't count the same batch multiple times
     const uniqueBatchesMap = new Map();
     
+    // Create a set of supervisors that are currently being displayed
+    const displayedSupervisors = new Set();
+    Object.values(filteredGroups).forEach(group => {
+        displayedSupervisors.add(group.supervisor);
+    });
+    
     // Process each group's variants
     Object.values(filteredGroups).forEach(group => {
         // Get the supervisor's variants
@@ -1916,8 +1922,10 @@ function updateBatchInfoTable(filteredGroups) {
         
         if (!supervisor || !supervisor.variants) return;
         
-        // For each variant assigned to this supervisor
-        Object.keys(supervisor.variants).forEach(variantKey => {
+        // ONLY process variants that are actually in this filtered group
+        group.variants.forEach(variantInGroup => {
+            const variantKey = variantInGroup.variant;
+            
             // Find the original production data
             const productionItem = productionData.originalData.production.find(p => p.id === variantKey);
             
@@ -1947,8 +1955,30 @@ function updateBatchInfoTable(filteredGroups) {
                 }
             }
             
-            // Process each batch - USE THE ORIGINAL QUANTITIES
-            productionItem.batches.forEach(batch => {
+            // Process each batch - but only show batches for the filtered supervisors
+            productionItem.batches.forEach((batch, batchIndex) => {
+                // Find which supervisor this batch belongs to by matching production quantities
+                const matchingSupervisor = productionItem.supervisors.find(sup => {
+                    // If there's only one supervisor, it gets all batches
+                    if (productionItem.supervisors.length === 1) {
+                        return sup.name === supervisorName;
+                    }
+                    
+                    // For multiple supervisors, try to match based on production quantities
+                    // This is a simplified approach - in a real system you'd have explicit batch-supervisor mapping
+                    if (batchIndex === 0 && productionItem.supervisors[0].name === supervisorName) {
+                        return true;
+                    }
+                    if (batchIndex === 1 && productionItem.supervisors[1] && productionItem.supervisors[1].name === supervisorName) {
+                        return true;
+                    }
+                    
+                    return false;
+                });
+                
+                // Only include this batch if it belongs to the current supervisor
+                if (!matchingSupervisor) return;
+                
                 const batchKey = `${productName}-${variantName}-${batch.id}`;
                 
                 // Only add the batch if we haven't seen it before
@@ -2058,6 +2088,7 @@ function updateBatchInfoTable(filteredGroups) {
         batchInfoTableBody.appendChild(row);
     });
 }
+
 
         function renderCumulativeChart(group) {
     const chartContainer = document.getElementById('cumulative-chart');
