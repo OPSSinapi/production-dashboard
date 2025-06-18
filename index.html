@@ -2088,7 +2088,6 @@ function updateBatchInfoTable(filteredGroups) {
         batchInfoTableBody.appendChild(row);
     });
 }
-
         function renderCumulativeChart(group) {
     const chartContainer = document.getElementById('cumulative-chart');
     chartContainer.innerHTML = '';
@@ -2099,17 +2098,18 @@ function updateBatchInfoTable(filteredGroups) {
     const hourlyTargetMap = new Map();     // Map to store targets by hour
     const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
     
-    // CRITICAL FIX: Get the exact production values from the metrics display
-    // This ensures we use the same values shown in the UI
-    const metricsCurrentUnits = parseInt(document.getElementById('current-units').textContent, 10) || 0;
-    const metricsTargetUnits = parseInt(document.getElementById('target-units').textContent, 10) || 0;
+    // CRITICAL FIX: Calculate the correct total production for this supervisor only
+    let supervisorTotalProduction = 0;
+    let supervisorTotalTarget = 0;
     
-    // Use these as our authoritative totals
-    const supervisorTotalProduction = metricsCurrentUnits;
-    const supervisorTotalTarget = metricsTargetUnits;
-    
-    // Track the total production across all variants for this supervisor (from timeline data)
-    let timelineTotalProduction = 0;
+    // Calculate totals from supervisor data
+    group.variants.forEach(variant => {
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        if (supervisorVariant) {
+            supervisorTotalProduction += (supervisorVariant.currentTotal || 0);
+            supervisorTotalTarget += (supervisorVariant.dailyTarget || 0);
+        }
+    });
     
     // Process each variant and collect unique hours
     group.variants.forEach(variant => {
@@ -2128,7 +2128,22 @@ function updateBatchInfoTable(filteredGroups) {
         const startTimeMinutes = startHour * 60 + startMinute;
         const endTimeMinutes = endHour * 60 + endMinute;
         
-        // Collect hourly production data
+        // Get the supervisor's proportion of production for this variant
+        // This is needed because timeline data is at variant level, not supervisor level
+        let supervisorProportion = 1.0;
+        
+        // Find the original production data to check if multiple supervisors work on this variant
+        if (productionData.originalData && productionData.originalData.production) {
+            const prodItem = productionData.originalData.production.find(p => p.id === variant.variant);
+            if (prodItem && prodItem.supervisors && prodItem.supervisors.length > 1) {
+                // Multiple supervisors - calculate this supervisor's proportion
+                const totalVariantProduction = prodItem.actual.total;
+                const thisSupervisorProduction = supervisorVariant.currentTotal || 0;
+                supervisorProportion = totalVariantProduction > 0 ? thisSupervisorProduction / totalVariantProduction : 0;
+            }
+        }
+        
+        // Collect hourly production data with supervisor proportion applied
         if (variant.hourlyProduction) {
             variant.hourlyProduction.forEach(item => {
                 if (!item.hour) return;
@@ -2137,32 +2152,21 @@ function updateBatchInfoTable(filteredGroups) {
                 const itemTimeMinutes = itemHour * 60 + itemMinute;
                 
                 if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    // Add to hourly production map (we'll adjust these later)
+                    // Apply supervisor proportion to the production
+                    const adjustedProduction = Math.round((item.production || 0) * supervisorProportion);
+                    
+                    // Add to hourly production map
                     if (!hourlyProductionMap.has(item.hour)) {
                         hourlyProductionMap.set(item.hour, 0);
                     }
-                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
+                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + adjustedProduction);
                     
                     allHoursSet.add(item.hour);
                 }
             });
         }
         
-        // Track total production from timeline
-        if (variant.hourlyProduction) {
-            const lastHourInRange = variant.hourlyProduction.filter(item => {
-                if (!item.hour) return false;
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                return itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes;
-            }).pop();
-            
-            if (lastHourInRange && lastHourInRange.production) {
-                timelineTotalProduction += lastHourInRange.production;
-            }
-        }
-        
-        // Collect hourly target data
+        // Collect hourly target data (targets don't need proportion adjustment)
         if (variant.hourlyTargets) {
             variant.hourlyTargets.forEach(item => {
                 if (!item.hour) return;
@@ -2171,39 +2175,21 @@ function updateBatchInfoTable(filteredGroups) {
                 const itemTimeMinutes = itemHour * 60 + itemMinute;
                 
                 if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                    // For targets, we need to use the supervisor-specific targets
+                    // Calculate hourly target based on supervisor's daily target and time window
+                    const supervisorHourlyTarget = Math.round((supervisorVariant.dailyTarget || 0) * (item.target || 0) / (variant.dailyTarget || 1));
+                    
                     // Add to hourly target map
                     if (!hourlyTargetMap.has(item.hour)) {
                         hourlyTargetMap.set(item.hour, 0);
                     }
-                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
+                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + supervisorHourlyTarget);
                     
                     allHoursSet.add(item.hour);
                 }
             });
         }
     });
-    
-    // Calculate scaling factor to adjust timeline data to match supervisor's actual production
-    let productionScalingFactor = 1.0;
-    if (timelineTotalProduction > 0 && supervisorTotalProduction !== timelineTotalProduction) {
-        // Check if we need to scale down (multiple supervisors case)
-        if (productionData.originalData && productionData.originalData.production) {
-            // For each variant, check if multiple supervisors are involved
-            let hasMultipleSupervisors = false;
-            
-            group.variants.forEach(variant => {
-                const prodItem = productionData.originalData.production.find(p => p.id === variant.variant);
-                if (prodItem && prodItem.supervisors && prodItem.supervisors.length > 1) {
-                    hasMultipleSupervisors = true;
-                }
-            });
-            
-            if (hasMultipleSupervisors) {
-                // Scale the production data to match this supervisor's actual production
-                productionScalingFactor = supervisorTotalProduction / timelineTotalProduction;
-            }
-        }
-    }
     
     // Convert to sorted array of hours
     const sortedHours = Array.from(allHoursSet).sort((a, b) => {
@@ -2217,27 +2203,27 @@ function updateBatchInfoTable(filteredGroups) {
         return;
     }
     
-    // Build cumulative data arrays with scaling applied
+    // Build cumulative data arrays
     const cumulativeData = [];
     let runningProductionTotal = 0;
     let runningTargetTotal = 0;
     
     // Generate time-based data points
     sortedHours.forEach(hour => {
-        const hourProduction = Math.round((hourlyProductionMap.get(hour) || 0) * productionScalingFactor);
+        const hourProduction = hourlyProductionMap.get(hour) || 0;
         const hourTarget = hourlyTargetMap.get(hour) || 0;
         
         // Add to running totals
         runningProductionTotal += hourProduction;
         runningTargetTotal += hourTarget;
         
-        // Ensure we don't exceed supervisor's actual total
+        const [hourVal, minuteVal] = hour.split(':').map(Number);
+        const timeMinutes = hourVal * 60 + minuteVal;
+        
+        // Ensure cumulative totals don't exceed supervisor totals
         if (runningProductionTotal > supervisorTotalProduction) {
             runningProductionTotal = supervisorTotalProduction;
         }
-        
-        const [hourVal, minuteVal] = hour.split(':').map(Number);
-        const timeMinutes = hourVal * 60 + minuteVal;
         
         cumulativeData.push({
             hour: hour,
@@ -2260,35 +2246,27 @@ function updateBatchInfoTable(filteredGroups) {
         }
     });
     
-    // Ensure the final cumulative total matches the supervisor's actual production
-    if (cumulativeData.length > 0) {
-        const lastDataPoint = cumulativeData[cumulativeData.length - 1];
-        if (lastDataPoint.production !== supervisorTotalProduction) {
-            // Adjust the last point to match exactly
-            lastDataPoint.production = supervisorTotalProduction;
-        }
-    }
+    // Do not filter data - we want to show all available data points
+    let filteredData = cumulativeData;
     
-    // Filter data to only show up to current time plus buffer
-    const now = new Date();
-    const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
-    const currentTimePlusBuffer = currentMinuteOfDay + 60;
-    
-    let filteredData = cumulativeData.filter(item => item.timeMinutes <= currentTimePlusBuffer);
-    
-    // Always ensure we have a final point with the correct supervisor total
+    // CRITICAL FIX: Ensure the last data point matches the supervisor's actual total
     if (filteredData.length > 0) {
         const lastPoint = filteredData[filteredData.length - 1];
+        
+        // If the last production value doesn't match the supervisor's total, add or update a point
         if (lastPoint.production !== supervisorTotalProduction) {
+            // Get current time to use as the data point hour
+            const now = new Date();
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
             const currentHourStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
             const currentTimeMinutes = currentHour * 60 + currentMinute;
             
+            // Add a new data point with the correct values from the supervisor's data
             filteredData.push({
                 hour: currentHourStr,
                 production: supervisorTotalProduction,
-                target: supervisorTotalTarget,
+                target: supervisorTotalTarget, 
                 timeMinutes: currentTimeMinutes
             });
         }
@@ -2426,6 +2404,7 @@ function updateBatchInfoTable(filteredGroups) {
     const startTimeFormatted = `${startTimeHour.toString().padStart(2, '0')}:${startTimeMinute.toString().padStart(2, '0')}`;
 
     // Generate hourly intervals from start time to current time
+    const now = new Date();
     const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
     // Extend end time to ensure we see the final data point
     const endTimeMinutes = Math.max(latestEndMinutes, currentTimeMinutes + 60); 
@@ -2578,17 +2557,13 @@ function updateBatchInfoTable(filteredGroups) {
     if (productionPoints.length > 0) {
         const lastPoint = productionPoints[productionPoints.length - 1];
         
-        // Ensure this point shows the correct value from metrics
+        // Ensure this point shows the correct value from supervisor data
         lastPoint.production = supervisorTotalProduction;
-        
-        // Recalculate Y position for the correct value
-        const correctedY = padding.top + chartHeight - (chartHeight * (supervisorTotalProduction / maxValue));
-        lastPoint.y = correctedY;
         
         // Create emphasized circle and label
         const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         emphasizedCircle.setAttribute('cx', lastPoint.x);
-        emphasizedCircle.setAttribute('cy', correctedY);
+        emphasizedCircle.setAttribute('cy', lastPoint.y);
         emphasizedCircle.setAttribute('r', isFullscreen ? '8' : '7');
         emphasizedCircle.setAttribute('fill', 'var(--production-color)');
         emphasizedCircle.setAttribute('stroke', '#ffffff');
@@ -2597,12 +2572,12 @@ function updateBatchInfoTable(filteredGroups) {
         
         const emphasizedText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         emphasizedText.setAttribute('x', lastPoint.x);
-        emphasizedText.setAttribute('y', correctedY - 12);
+        emphasizedText.setAttribute('y', lastPoint.y - 12);
         emphasizedText.setAttribute('text-anchor', 'middle');
         emphasizedText.setAttribute('font-size', isFullscreen ? '18' : '16');
         emphasizedText.setAttribute('font-weight', 'bold');
         emphasizedText.setAttribute('fill', 'var(--production-color)');
-        // Ensure the text shows the current total from metrics
+        // Ensure the text shows the current total from supervisor data
         emphasizedText.textContent = supervisorTotalProduction;
         productionLineGroup.appendChild(emphasizedText);
     }
@@ -2683,15 +2658,12 @@ function updateBatchInfoTable(filteredGroups) {
     if (targetPoints.length > 0) {
         const lastPoint = targetPoints[targetPoints.length - 1];
         
-        // Ensure this point shows the correct target value from metrics
+        // Ensure this point shows the correct target value from supervisor data
         lastPoint.target = supervisorTotalTarget;
-        
-        // Recalculate Y position for the correct value
-        const correctedY = padding.top + chartHeight - (chartHeight * (supervisorTotalTarget / maxValue));
         
         const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         emphasizedCircle.setAttribute('cx', lastPoint.x);
-        emphasizedCircle.setAttribute('cy', correctedY);
+        emphasizedCircle.setAttribute('cy', lastPoint.y);
         emphasizedCircle.setAttribute('r', isFullscreen ? '7' : '6');
         emphasizedCircle.setAttribute('fill', 'var(--target-color)');
         emphasizedCircle.setAttribute('stroke', '#ffffff');
@@ -2700,19 +2672,19 @@ function updateBatchInfoTable(filteredGroups) {
         
         const emphasizedText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         emphasizedText.setAttribute('x', lastPoint.x);
-        emphasizedText.setAttribute('y', correctedY - 10);
+        emphasizedText.setAttribute('y', lastPoint.y - 10);
         emphasizedText.setAttribute('text-anchor', 'middle');
         emphasizedText.setAttribute('font-size', isFullscreen ? '16' : '14');
         emphasizedText.setAttribute('font-weight', 'bold');
         emphasizedText.setAttribute('fill', 'var(--target-color)');
-        // Ensure the text shows the current target from metrics
+        // Ensure the text shows the current target from supervisor data
         emphasizedText.textContent = supervisorTotalTarget;
         targetLineGroup.appendChild(emphasizedText);
     }
     
     svg.appendChild(targetLineGroup);
 }
-
+        
 function renderHourlyChart(group) {
     const chartContainer = document.getElementById('hourly-chart');
     chartContainer.innerHTML = '';
