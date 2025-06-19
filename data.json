@@ -1,13 +1,151 @@
 {
   "metadata": {
-    "timestamp": "2025-06-20T01:05:01.131Z",
+    "timestamp": "2025-06-20T01:06:02.021Z",
     "date": "2025-06-19",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "night-shift",
+      "name": "11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11
+    }
+  ],
+  "production": [
+    {
+      "id": "EV-L1-NS-BC01",
+      "product": {
+        "id": "EV-L1-NS",
+        "name": "EV L1 NS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L1 NS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 216
+      },
+      "shiftId": "night-shift",
+      "targets": {
+        "hourly": 123,
+        "daily": 1361,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 200,
+        "boxes": 2,
+        "progress": 15
+      },
+      "batches": [
+        {
+          "id": 25061840,
+          "quantity": 200,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 200,
+          "startTime": "18:00",
+          "endTime": "06:00",
+          "target": 1361,
+          "progress": 15
+        }
+      ],
+      "timeline": []
+    },
+    {
+      "id": "EV-L2-NS-BC01",
+      "product": {
+        "id": "EV-L2-NS",
+        "name": "EV L2 NS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L2 NS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 177
+      },
+      "shiftId": "night-shift",
+      "targets": {
+        "hourly": 123,
+        "daily": 1361,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 7
+      },
+      "batches": [
+        {
+          "id": 25061840,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 100,
+          "startTime": "01:05",
+          "endTime": "06:00",
+          "target": 608,
+          "progress": 16
+        }
+      ],
+      "timeline": []
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "EV-L1-NS",
+        "name": "EV L1 NS",
+        "totalProduction": 200,
+        "totalTarget": 1361,
+        "progress": 15
+      },
+      {
+        "id": "EV-L2-NS",
+        "name": "EV L2 NS",
+        "totalProduction": 100,
+        "totalTarget": 1361,
+        "progress": 7
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Nosi",
+        "name": "Nosi",
+        "totalProduction": 300,
+        "totalTarget": 1969,
+        "progress": 15,
+        "variants": [
+          "EV-L1-NS-BC01",
+          "EV-L2-NS-BC01"
+        ]
+      }
+    ]
   }
 }
