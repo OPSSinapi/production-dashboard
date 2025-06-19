@@ -1,29 +1,10 @@
 {
   "metadata": {
-    "timestamp": "2025-06-19T06:52:04.362Z",
+    "timestamp": "2025-06-19T06:53:04.356Z",
     "date": "2025-06-19",
     "facility": "Main Plant"
   },
   "shifts": [
-    {
-      "id": "night-shift",
-      "name": "11h NS",
-      "startTime": "18:00",
-      "endTime": "06:00",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:25",
-          "endTime": "10:45"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        }
-      ],
-      "availableWorkHours": 11
-    },
     {
       "id": "day-shift",
       "name": "11h DS",
@@ -42,9 +23,85 @@
         }
       ],
       "availableWorkHours": 11
+    },
+    {
+      "id": "night-shift",
+      "name": "11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11
     }
   ],
   "production": [
+    {
+      "id": "EV-L1-DS-BC01",
+      "product": {
+        "id": "EV-L1-DS",
+        "name": "EV L1 DS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L1 DS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 370
+      },
+      "shiftId": "day-shift",
+      "targets": {
+        "hourly": 123,
+        "daily": 1361,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 7
+      },
+      "batches": [
+        {
+          "id": 25061840,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 100,
+          "startTime": "06:48",
+          "endTime": "18:00",
+          "target": 1272,
+          "progress": 8
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "07:30",
+          "target": 185,
+          "actual": 100,
+          "cumTarget": 185,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 90
+        }
+      ]
+    },
     {
       "id": "EV-L1-NS-BC01",
       "product": {
@@ -448,6 +505,13 @@
   "summary": {
     "products": [
       {
+        "id": "EV-L1-DS",
+        "name": "EV L1 DS",
+        "totalProduction": 100,
+        "totalTarget": 1361,
+        "progress": 7
+      },
+      {
         "id": "EV-L1-NS",
         "name": "EV L1 NS",
         "totalProduction": 900,
@@ -501,9 +565,9 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 3300,
-        "totalTarget": 6618,
-        "progress": 50,
+        "totalProduction": 3400,
+        "totalTarget": 7890,
+        "progress": 43,
         "variants": [
           "EV-L1-NS-BC01",
           "EV-L3-NS-BC01",
@@ -511,7 +575,8 @@
           "EV-L2-NS-BC01",
           "EV-L4-DS-BC01",
           "EV-L3-DS-BC01",
-          "EV-L2-DS-BC01"
+          "EV-L2-DS-BC01",
+          "EV-L1-DS-BC01"
         ]
       }
     ]
