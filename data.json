@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-19T07:42:01.175Z",
+    "timestamp": "2025-06-19T07:43:00.925Z",
     "date": "2025-06-19",
     "facility": "Main Plant"
   },
@@ -42,6 +42,25 @@
         }
       ],
       "availableWorkHours": 11
+    },
+    {
+      "id": "normal-time",
+      "name": "8.25h NT",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
     }
   ],
   "production": [
@@ -544,6 +563,63 @@
           "currentVariantMinutes": 0
         }
       ]
+    },
+    {
+      "id": "SUM-500V2",
+      "product": {
+        "id": "SUM",
+        "name": "SUM"
+      },
+      "variant": {
+        "id": "500V2",
+        "name": "500V2",
+        "fullName": "SUM SUM500V2",
+        "cycleTime": 26.47,
+        "devicesPerBox": 20,
+        "actualCycleTime": 1455
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 136,
+        "daily": 1100,
+        "boxes": 55
+      },
+      "actual": {
+        "total": 20,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25061733,
+          "quantity": 20,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Zonica",
+          "name": "Zonica",
+          "production": 20,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 1099,
+          "progress": 2
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 136,
+          "actual": 20,
+          "cumTarget": 136,
+          "cumActual": 20,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -603,6 +679,13 @@
         "totalProduction": 900,
         "totalTarget": 1361,
         "progress": 66
+      },
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 20,
+        "totalTarget": 1100,
+        "progress": 2
       }
     ],
     "supervisors": [
@@ -621,6 +704,16 @@
           "EV-L3-DS-BC01",
           "EV-L2-DS-BC01",
           "EV-L1-DS-BC01"
+        ]
+      },
+      {
+        "id": "Zonica",
+        "name": "Zonica",
+        "totalProduction": 20,
+        "totalTarget": 1099,
+        "progress": 2,
+        "variants": [
+          "SUM-500V2"
         ]
       }
     ]
