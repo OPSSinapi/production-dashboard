@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-20T08:11:09.830Z",
+    "timestamp": "2025-06-20T08:12:06.540Z",
     "date": "2025-06-20",
     "facility": "Main Plant"
   },
@@ -42,6 +42,25 @@
         }
       ],
       "availableWorkHours": 11
+    },
+    {
+      "id": "normal-time",
+      "name": "7h NT",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "14:45",
+          "endTime": "15:05"
+        },
+        {
+          "type": "lunch",
+          "startTime": "12:00",
+          "endTime": "12:35"
+        }
+      ],
+      "availableWorkHours": 6.84
     }
   ],
   "production": [
@@ -476,6 +495,63 @@
           "currentVariantMinutes": 0
         }
       ]
+    },
+    {
+      "id": "PopUp-FC",
+      "product": {
+        "id": "PopUp",
+        "name": "PopUp"
+      },
+      "variant": {
+        "id": "FC",
+        "name": "FC",
+        "fullName": "PopUp FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 222
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "daily": 497,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 20
+      },
+      "batches": [
+        {
+          "id": 25061227,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 100,
+          "startTime": "08:10",
+          "endTime": "15:15",
+          "target": 448,
+          "progress": 22
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 100,
+          "cumTarget": 72,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -528,6 +604,13 @@
         "totalProduction": 800,
         "totalTarget": 1361,
         "progress": 59
+      },
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 100,
+        "totalTarget": 497,
+        "progress": 20
       }
     ],
     "supervisors": [
@@ -554,6 +637,16 @@
         "variants": [
           "EV-L3-NS-BC01",
           "EV-L4-NS-BC01"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 100,
+        "totalTarget": 448,
+        "progress": 22,
+        "variants": [
+          "PopUp-FC"
         ]
       }
     ]
