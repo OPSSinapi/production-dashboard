@@ -1872,8 +1872,7 @@ function showLoadingOrError(message) {
             updateBatchInfoTable(filteredGroups);
         }
 
-        // FIXED FUNCTION: Update batch information table
-function updateBatchInfoTable(filteredGroups) {
+        function updateBatchInfoTable(filteredGroups) {
     const batchInfoTableBody = document.getElementById('batch-info-tbody');
     const batchInfoTableHead = document.getElementById('batch-info-thead');
     
@@ -1883,13 +1882,7 @@ function updateBatchInfoTable(filteredGroups) {
     batchInfoTableBody.innerHTML = '';
     batchInfoTableHead.innerHTML = '';
     
-    // If no original data, show message
-    if (!productionData.originalData || !productionData.originalData.production) {
-        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
-        return;
-    }
-    
-    // Get current time to determine current variant - MOVED TO TOP
+    // Get current time to determine current variant
     const now = new Date();
     const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
     
@@ -1904,104 +1897,87 @@ function updateBatchInfoTable(filteredGroups) {
     `;
     batchInfoTableHead.appendChild(headerRow);
     
-    // Create a Map to store the unique batches by ID
-    // This ensures we don't count the same batch multiple times
+    // If no original data, show message
+    if (!productionData.originalData || !productionData.originalData.production) {
+        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
+        return;
+    }
+    
+    // Create a Map to store the unique batches by ID for the CURRENT SUPERVISOR ONLY
     const uniqueBatchesMap = new Map();
     
-    // Create a set of supervisors that are currently being displayed
-    const displayedSupervisors = new Set();
-    Object.values(filteredGroups).forEach(group => {
-        displayedSupervisors.add(group.supervisor);
-    });
+    // Get the current supervisor being displayed
+    const currentSupervisorName = document.getElementById('supervisor-name').textContent.replace('SUPERVISOR: ', '');
     
-    // Process each group's variants
-    Object.values(filteredGroups).forEach(group => {
-        // Get the supervisor's variants
-        const supervisorName = group.supervisor;
-        const supervisor = productionData.supervisors.find(s => s.name === supervisorName);
-        
-        if (!supervisor || !supervisor.variants) return;
-        
-        // ONLY process variants that are actually in this filtered group
-        group.variants.forEach(variantInGroup => {
-            const variantKey = variantInGroup.variant;
+    // Only show batches for the current supervisor
+    if (currentSupervisorName) {
+        // Process each group's variants
+        Object.values(filteredGroups).forEach(group => {
+            // Only process if this is the current supervisor's group
+            if (group.supervisor !== currentSupervisorName) return;
             
-            // Find the original production data
-            const productionItem = productionData.originalData.production.find(p => p.id === variantKey);
-            
-            if (!productionItem || !productionItem.batches) return;
-            
-            // Get variant details
-            const productName = productionItem.product?.name || extractProductFromVariant(variantKey);
-            const variantName = productionItem.variant?.name || variantKey.split('-').pop();
-            
-            // Check if this variant is currently active
-            const supervisorVariant = supervisor.variants[variantKey];
-            let isCurrentVariant = false;
-            
-            if (supervisorVariant) {
-                const startTimeStr = supervisorVariant.variantStartTime || productionItem.supervisors[0]?.startTime;
-                const endTimeStr = supervisorVariant.variantEndTime || productionItem.supervisors[0]?.endTime;
+            // Process variants for this supervisor
+            group.variants.forEach(variantInGroup => {
+                const variantKey = variantInGroup.variant;
                 
-                if (startTimeStr && endTimeStr) {
-                    const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                    const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                // Find the original production data
+                const productionItem = productionData.originalData.production.find(p => p.id === variantKey);
+                
+                if (!productionItem || !productionItem.batches) return;
+                
+                // Get variant details
+                const productName = productionItem.product?.name || extractProductFromVariant(variantKey);
+                const variantName = productionItem.variant?.name || variantKey.split('-').pop();
+                
+                // Check if this variant is currently active
+                const supervisorVariant = group.supervisorData.variants[variantKey];
+                let isCurrentVariant = false;
+                
+                if (supervisorVariant) {
+                    const startTimeStr = supervisorVariant.variantStartTime || productionItem.supervisors[0]?.startTime;
+                    const endTimeStr = supervisorVariant.variantEndTime || productionItem.supervisors[0]?.endTime;
                     
-                    const startTimeMinutes = startHour * 60 + startMinute;
-                    const endTimeMinutes = endHour * 60 + endMinute;
-                    
-                    // Check if current time is within this variant's window
-                    isCurrentVariant = (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes);
+                    if (startTimeStr && endTimeStr) {
+                        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+                        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                        
+                        const startTimeMinutes = startHour * 60 + startMinute;
+                        const endTimeMinutes = endHour * 60 + endMinute;
+                        
+                        // Check if current time is within this variant's window
+                        isCurrentVariant = (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes);
+                    }
                 }
-            }
-            
-            // Process each batch - but only show batches for the filtered supervisors
-            productionItem.batches.forEach((batch, batchIndex) => {
-                // Find which supervisor this batch belongs to by matching production quantities
-                const matchingSupervisor = productionItem.supervisors.find(sup => {
-                    // If there's only one supervisor, it gets all batches
-                    if (productionItem.supervisors.length === 1) {
-                        return sup.name === supervisorName;
-                    }
+                
+                // Find supervisor-specific batch data
+                const supervisorData = productionItem.supervisors.find(s => s.name === currentSupervisorName);
+                if (!supervisorData) return;
+                
+                // Process each batch - but only for this specific supervisor
+                productionItem.batches.forEach(batch => {
+                    // We need to properly attribute batches to supervisors
+                    // For simplicity, use production quantities to estimate batch attribution
+                    const supervisorProdRatio = supervisorData.production / productionItem.actual.total;
+                    const estimatedBatchUnits = Math.round(batch.quantity * supervisorProdRatio);
+                    const estimatedBatchBoxes = Math.round(batch.boxes * supervisorProdRatio);
                     
-                    // For multiple supervisors, try to match based on production quantities
-                    // This is a simplified approach - in a real system you'd have explicit batch-supervisor mapping
-                    if (batchIndex === 0 && productionItem.supervisors[0].name === supervisorName) {
-                        return true;
+                    if (estimatedBatchUnits > 0) {
+                        const batchKey = `${productName}-${variantName}-${batch.id}`;
+                        uniqueBatchesMap.set(batchKey, {
+                            product: productName,
+                            variant: variantName,
+                            batchId: batch.id,
+                            units: estimatedBatchUnits,
+                            boxes: estimatedBatchBoxes,
+                            supervisor: currentSupervisorName,
+                            isCurrent: isCurrentVariant,
+                            isAssembly: productName.toLowerCase().includes('assembly')
+                        });
                     }
-                    if (batchIndex === 1 && productionItem.supervisors[1] && productionItem.supervisors[1].name === supervisorName) {
-                        return true;
-                    }
-                    
-                    return false;
                 });
-                
-                // Only include this batch if it belongs to the current supervisor
-                if (!matchingSupervisor) return;
-                
-                const batchKey = `${productName}-${variantName}-${batch.id}`;
-                
-                // Only add the batch if we haven't seen it before
-                if (!uniqueBatchesMap.has(batchKey)) {
-                    uniqueBatchesMap.set(batchKey, {
-                        product: productName,
-                        variant: variantName,
-                        batchId: batch.id,
-                        units: batch.quantity,  // Use original quantity
-                        boxes: batch.boxes,     // Use original boxes count
-                        supervisor: supervisorName,
-                        isCurrent: isCurrentVariant,
-                        isAssembly: productName.toLowerCase().includes('assembly')
-                    });
-                } else {
-                    // If we do have the batch, just update the isCurrent flag if needed
-                    if (isCurrentVariant) {
-                        uniqueBatchesMap.get(batchKey).isCurrent = true;
-                    }
-                }
             });
         });
-    });
+    }
     
     // Convert map to array for display
     const batchData = Array.from(uniqueBatchesMap.values());
@@ -2088,29 +2064,21 @@ function updateBatchInfoTable(filteredGroups) {
         batchInfoTableBody.appendChild(row);
     });
 }
+        
         function renderCumulativeChart(group) {
     const chartContainer = document.getElementById('cumulative-chart');
     chartContainer.innerHTML = '';
     
-    // Collect all hours across all variants
+    // Get the current supervisor
+    const currentSupervisor = group.supervisor;
+    
+    // Collect all hours across all variants for this supervisor
     const allHoursSet = new Set();
     const hourlyProductionMap = new Map(); // Map to store production by hour
     const hourlyTargetMap = new Map();     // Map to store targets by hour
     const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
     
-    // CRITICAL FIX: Get the exact production values from the metrics display
-    // This ensures we use the same values shown in the UI
-    const metricsCurrentUnits = parseInt(document.getElementById('current-units').textContent, 10) || 0;
-    const metricsTargetUnits = parseInt(document.getElementById('target-units').textContent, 10) || 0;
-    
-    // Use these as our authoritative totals
-    const supervisorTotalProduction = metricsCurrentUnits;
-    const supervisorTotalTarget = metricsTargetUnits;
-    
-    // Track the total production across all variants for this supervisor (from timeline data)
-    let timelineTotalProduction = 0;
-    
-    // Process each variant and collect unique hours
+    // Track production by hour directly from timeline data for better accuracy
     group.variants.forEach(variant => {
         // Get variant time window
         const supervisorVariant = group.supervisorData.variants[variant.variant];
@@ -2127,82 +2095,43 @@ function updateBatchInfoTable(filteredGroups) {
         const startTimeMinutes = startHour * 60 + startMinute;
         const endTimeMinutes = endHour * 60 + endMinute;
         
-        // Collect hourly production data
-        if (variant.hourlyProduction) {
-            variant.hourlyProduction.forEach(item => {
-                if (!item.hour) return;
-                
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    // Add to hourly production map (we'll adjust these later)
-                    if (!hourlyProductionMap.has(item.hour)) {
-                        hourlyProductionMap.set(item.hour, 0);
-                    }
-                    hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
-                    
-                    allHoursSet.add(item.hour);
-                }
-            });
-        }
+        // Get the original production item to access detailed timeline data
+        const prodItem = productionData.originalData.production.find(p => p.id === variant.variant);
+        const supervisorData = prodItem?.supervisors.find(s => s.name === currentSupervisor);
         
-        // Track total production from timeline
-        if (variant.hourlyProduction) {
-            const lastHourInRange = variant.hourlyProduction.filter(item => {
-                if (!item.hour) return false;
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                return itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes;
-            }).pop();
+        if (!prodItem || !prodItem.timeline || !supervisorData) return;
+        
+        // Calculate the supervisor's proportion of the variant's production
+        const supervisorRatio = supervisorData.production / prodItem.actual.total;
+        
+        // Process timeline data - but only for hours within this supervisor's time window
+        prodItem.timeline.forEach(hour => {
+            if (!hour.hour) return;
             
-            if (lastHourInRange && lastHourInRange.production) {
-                timelineTotalProduction += lastHourInRange.production;
-            }
-        }
-        
-        // Collect hourly target data
-        if (variant.hourlyTargets) {
-            variant.hourlyTargets.forEach(item => {
-                if (!item.hour) return;
+            const [itemHour, itemMinute] = hour.hour.split(':').map(Number);
+            const itemTimeMinutes = itemHour * 60 + itemMinute;
+            
+            if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
+                // Add hour to the set
+                allHoursSet.add(hour.hour);
                 
-                const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
+                // Calculate the supervisor's portion of the hour's production and target
+                const hourProduction = Math.round(hour.actual * supervisorRatio);
+                const hourTarget = Math.round(hour.target * supervisorRatio);
                 
-                if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                    // Add to hourly target map
-                    if (!hourlyTargetMap.has(item.hour)) {
-                        hourlyTargetMap.set(item.hour, 0);
-                    }
-                    hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
-                    
-                    allHoursSet.add(item.hour);
+                // Add to hourly maps
+                if (!hourlyProductionMap.has(hour.hour)) {
+                    hourlyProductionMap.set(hour.hour, 0);
                 }
-            });
-        }
+                hourlyProductionMap.set(hour.hour, hourlyProductionMap.get(hour.hour) + hourProduction);
+                
+                if (!hourlyTargetMap.has(hour.hour)) {
+                    hourlyTargetMap.set(hour.hour, 0);
+                }
+                hourlyTargetMap.set(hour.hour, hourlyTargetMap.get(hour.hour) + hourTarget);
+            }
+        });
     });
-    
-    // Calculate scaling factor to adjust timeline data to match supervisor's actual production
-    let productionScalingFactor = 1.0;
-    if (timelineTotalProduction > 0 && supervisorTotalProduction !== timelineTotalProduction) {
-        // Check if we need to scale down (multiple supervisors case)
-        if (productionData.originalData && productionData.originalData.production) {
-            // For each variant, check if multiple supervisors are involved
-            let hasMultipleSupervisors = false;
-            
-            group.variants.forEach(variant => {
-                const prodItem = productionData.originalData.production.find(p => p.id === variant.variant);
-                if (prodItem && prodItem.supervisors && prodItem.supervisors.length > 1) {
-                    hasMultipleSupervisors = true;
-                }
-            });
-            
-            if (hasMultipleSupervisors) {
-                // Scale the production data to match this supervisor's actual production
-                productionScalingFactor = supervisorTotalProduction / timelineTotalProduction;
-            }
-        }
-    }
     
     // Convert to sorted array of hours
     const sortedHours = Array.from(allHoursSet).sort((a, b) => {
@@ -2216,24 +2145,23 @@ function updateBatchInfoTable(filteredGroups) {
         return;
     }
     
-    // Build cumulative data arrays with scaling applied
+    // Get supervisor totals from metrics display for accuracy
+    const supervisorTotalProduction = parseInt(document.getElementById('current-units').textContent, 10) || 0;
+    const supervisorTotalTarget = parseInt(document.getElementById('target-units').textContent, 10) || 0;
+    
+    // Build cumulative data arrays
     const cumulativeData = [];
     let runningProductionTotal = 0;
     let runningTargetTotal = 0;
     
     // Generate time-based data points
     sortedHours.forEach(hour => {
-        const hourProduction = Math.round((hourlyProductionMap.get(hour) || 0) * productionScalingFactor);
+        const hourProduction = hourlyProductionMap.get(hour) || 0;
         const hourTarget = hourlyTargetMap.get(hour) || 0;
         
         // Add to running totals
         runningProductionTotal += hourProduction;
         runningTargetTotal += hourTarget;
-        
-        // Ensure we don't exceed supervisor's actual total
-        if (runningProductionTotal > supervisorTotalProduction) {
-            runningProductionTotal = supervisorTotalProduction;
-        }
         
         const [hourVal, minuteVal] = hour.split(':').map(Number);
         const timeMinutes = hourVal * 60 + minuteVal;
@@ -2262,10 +2190,8 @@ function updateBatchInfoTable(filteredGroups) {
     // Ensure the final cumulative total matches the supervisor's actual production
     if (cumulativeData.length > 0) {
         const lastDataPoint = cumulativeData[cumulativeData.length - 1];
-        if (lastDataPoint.production !== supervisorTotalProduction) {
-            // Adjust the last point to match exactly
-            lastDataPoint.production = supervisorTotalProduction;
-        }
+        // Adjust the last point to match exactly
+        lastDataPoint.production = supervisorTotalProduction;
     }
     
     // Filter data to only show up to current time plus buffer
@@ -2298,6 +2224,7 @@ function updateBatchInfoTable(filteredGroups) {
         return;
     }
     
+    // The rest of the function (chart rendering) remains the same
     // Get chart dimensions based on container
     const chartArea = chartContainer.closest('.chart-area');
     const svgWidth = chartArea.clientWidth;
@@ -2573,7 +2500,7 @@ function updateBatchInfoTable(filteredGroups) {
         productionLineGroup.appendChild(text);
     });
     
-    // CRITICAL FIX: Always emphasize the last production point (current total)
+    // Always emphasize the last production point (current total)
     if (productionPoints.length > 0) {
         const lastPoint = productionPoints[productionPoints.length - 1];
         
@@ -3181,57 +3108,70 @@ function renderHourlyChart(group) {
 
         // Function to update metrics
         function updateMetrics(group) {
-            // Initialize aggregated values
-            let totalTarget = 0;
-            let totalProduction = 0;
-            let totalBoxTarget = 0;
-            let totalBoxProduction = 0;
-            let weightedCycleTime = 0;
-            let totalCycleTimeWeight = 0;
+    // Initialize aggregated values - we'll only count the current supervisor's values
+    let totalTarget = 0;
+    let totalProduction = 0;
+    let totalBoxTarget = 0;
+    let totalBoxProduction = 0;
+    let weightedCycleTime = 0;
+    let totalCycleTimeWeight = 0;
+    
+    // Get current supervisor
+    const currentSupervisor = group.supervisor;
+    
+    // Calculate aggregated values for this supervisor only
+    group.variants.forEach(variant => {
+        const supervisorVariant = group.supervisorData.variants[variant.variant];
+        
+        if (supervisorVariant) {
+            // Get supervisor-specific data from the original data
+            const prodItem = productionData.originalData.production.find(p => p.id === variant.variant);
+            const supervisorData = prodItem?.supervisors.find(s => s.name === currentSupervisor);
             
-            // Calculate aggregated values
-            group.variants.forEach(variant => {
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
+            if (supervisorData) {
+                // Use supervisor-specific targets and production
+                totalTarget += (supervisorVariant.dailyTarget || 0);
+                totalProduction += (supervisorVariant.currentTotal || 0);
                 
-                if (supervisorVariant) {
-                    totalTarget += (supervisorVariant.dailyTarget || 0);
-                    totalProduction += (supervisorVariant.currentTotal || 0);
-                    
-                    // Add box totals consistently for all variants
-                    totalBoxTarget += (variant.dailyBoxTarget || 0);
-                    totalBoxProduction += (variant.currentBoxTotal || 0);
-                    
-                    // Add cycle time weighted by target
-                    const cycleTime = variant.cycleTime || 0;
-                    const target = supervisorVariant.dailyTarget || 0;
-                    
-                    if (cycleTime > 0 && target > 0) {
-                        weightedCycleTime += cycleTime * target;
-                        totalCycleTimeWeight += target;
-                    }
+                // Calculate box totals from supervisor's proportion of the variant's production
+                if (prodItem && prodItem.actual.total > 0) {
+                    const supervisorRatio = supervisorData.production / prodItem.actual.total;
+                    totalBoxProduction += Math.round((variant.currentBoxTotal || 0) * supervisorRatio);
+                    totalBoxTarget += Math.round((variant.dailyBoxTarget || 0) * (supervisorVariant.dailyTarget / prodItem.targets.daily));
                 }
-            });
-            
-            // Calculate overall progress percentage
-            const progressPercentage = totalTarget > 0 ? Math.round((totalProduction / totalTarget) * 100) : 0;
-            
-            // Calculate average cycle time
-            const avgCycleTime = totalCycleTimeWeight > 0 ? Math.round(weightedCycleTime / totalCycleTimeWeight) : 0;
-            
-            // Calculate actual cycle time across all variants
-            const actualCycleTime = calculateActualCycleTime(group.variants);
-            
-            // Update metrics display
-            document.getElementById('current-units').textContent = totalProduction;
-            document.getElementById('target-units').textContent = totalTarget;
-            document.getElementById('progress-percentage').textContent = `${progressPercentage}%`;
-            
-            document.getElementById('current-boxes').textContent = totalBoxProduction;
-            document.getElementById('target-boxes').textContent = totalBoxTarget;
-            
-            document.getElementById('actual-cycle-time').textContent = actualCycleTime === "N/A" ? "N/A" : actualCycleTime;
-            document.getElementById('target-cycle-time').textContent = avgCycleTime;
+                
+                // Add cycle time weighted by target
+                const cycleTime = variant.cycleTime || 0;
+                const target = supervisorVariant.dailyTarget || 0;
+                
+                if (cycleTime > 0 && target > 0) {
+                    weightedCycleTime += cycleTime * target;
+                    totalCycleTimeWeight += target;
+                }
+            }
         }
+    });
+    
+    // Calculate overall progress percentage
+    const progressPercentage = totalTarget > 0 ? Math.round((totalProduction / totalTarget) * 100) : 0;
+    
+    // Calculate average cycle time
+    const avgCycleTime = totalCycleTimeWeight > 0 ? Math.round(weightedCycleTime / totalCycleTimeWeight) : 0;
+    
+    // Calculate actual cycle time across all variants for this supervisor
+    const actualCycleTime = calculateActualCycleTime(group.variants);
+    
+    // Update metrics display
+    document.getElementById('current-units').textContent = totalProduction;
+    document.getElementById('target-units').textContent = totalTarget;
+    document.getElementById('progress-percentage').textContent = `${progressPercentage}%`;
+    
+    document.getElementById('current-boxes').textContent = totalBoxProduction;
+    document.getElementById('target-boxes').textContent = totalBoxTarget;
+    
+    document.getElementById('actual-cycle-time').textContent = actualCycleTime === "N/A" ? "N/A" : actualCycleTime;
+    document.getElementById('target-cycle-time').textContent = avgCycleTime;
+}
 
        function calculateActualCycleTime(variants) {
     // Check if any variant has actualCycleTime - if so, use weighted average of those values
