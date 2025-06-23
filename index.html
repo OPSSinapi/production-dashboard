@@ -2107,54 +2107,44 @@ function showLoadingOrError(message) {
     const supervisorTotalProduction = parseInt(document.getElementById('current-units').textContent, 10) || 0;
     const supervisorTotalTarget = parseInt(document.getElementById('target-units').textContent, 10) || 0;
     
-    // Get the original supervisor data
-    const originalSupervisor = productionData.originalData.summary.supervisors.find(
-        s => s.name === currentSupervisor
-    );
+    // Find ALL production items this supervisor worked on (across all variants)
+    const supervisorProductionItems = [];
     
-    if (!originalSupervisor) {
+    if (productionData.originalData && productionData.originalData.production) {
+        productionData.originalData.production.forEach(prodItem => {
+            const supervisorData = prodItem.supervisors.find(s => s.name === currentSupervisor);
+            if (supervisorData) {
+                supervisorProductionItems.push({
+                    prodItem,
+                    supervisorData,
+                    variantId: prodItem.id,
+                    startTime: supervisorData.startTime,
+                    endTime: supervisorData.endTime,
+                    production: supervisorData.production
+                });
+            }
+        });
+    }
+    
+    if (supervisorProductionItems.length === 0) {
         chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available for this supervisor</div>';
         return;
     }
     
-    // Find all variants this supervisor works on
-    const supervisorVariants = [];
-    
-    // Process all variants for this supervisor to get correct timing
-    (originalSupervisor.variants || []).forEach(variantId => {
-        const prodItem = productionData.originalData.production.find(p => p.id === variantId);
-        if (!prodItem) return;
-        
-        const supervisorData = prodItem.supervisors.find(s => s.name === currentSupervisor);
-        if (!supervisorData) return;
-        
-        // Add to supervisor variants
-        supervisorVariants.push({
-            variantId,
-            prodItem,
-            supervisorData,
-            cycleTime: prodItem.variant.cycleTime,
-            startTime: supervisorData.startTime,
-            endTime: supervisorData.endTime,
-            target: supervisorData.target,
-            production: supervisorData.production
-        });
-    });
-    
-    // Sort variants by start time
-    supervisorVariants.sort((a, b) => {
+    // Sort by start time
+    supervisorProductionItems.sort((a, b) => {
         const [aHour, aMin] = a.startTime.split(':').map(Number);
         const [bHour, bMin] = b.startTime.split(':').map(Number);
         return (aHour * 60 + aMin) - (bHour * 60 + bMin);
     });
     
-    // Find earliest start and latest end time
+    // Find earliest start and latest end time across all variants
     let earliestStart = "23:59";
     let latestEnd = "00:00";
     
-    supervisorVariants.forEach(variant => {
-        if (variant.startTime < earliestStart) earliestStart = variant.startTime;
-        if (variant.endTime > latestEnd) latestEnd = variant.endTime;
+    supervisorProductionItems.forEach(item => {
+        if (item.startTime < earliestStart) earliestStart = item.startTime;
+        if (item.endTime > latestEnd) latestEnd = item.endTime;
     });
     
     // Convert to minutes for calculations
@@ -2181,10 +2171,7 @@ function showLoadingOrError(message) {
         return hour * 60 + minute;
     }
     
-    // CRITICAL FIX: Directly use the timeline data from each variant
-    // We'll collect all production data by hour and calculate cumulative totals
-    
-    // Create hour-by-hour production data (7:30, 8:30, 9:30, etc.)
+    // Create hour-by-hour production data aggregated across ALL variants for this supervisor
     const hourlyData = {};
     
     // Initialize hourly data slots for standard hours
@@ -2196,37 +2183,38 @@ function showLoadingOrError(message) {
         };
     });
     
-    // Now go through each variant and fill in actual production data
-    // We need to get ACTUAL hour-by-hour production numbers directly from the timeline
-    supervisorVariants.forEach(variant => {
-        // We need the full timeline for this variant
-        if (!variant.prodItem.timeline) return;
+    // Process each production item this supervisor worked on
+    supervisorProductionItems.forEach(item => {
+        if (!item.prodItem.timeline) return;
         
-        // Go through timeline and sum up production by hour
-        variant.prodItem.timeline.forEach(timeSlot => {
+        const variantStartMin = parseTimeToMinutes(item.startTime);
+        const variantEndMin = parseTimeToMinutes(item.endTime);
+        
+        // Calculate this supervisor's proportion of the variant's total production
+        const totalVariantProduction = item.prodItem.actual.total || 0;
+        const supervisorVariantProduction = item.supervisorData.production || 0;
+        const supervisorRatio = totalVariantProduction > 0 ? supervisorVariantProduction / totalVariantProduction : 0;
+        
+        // Go through the timeline and aggregate this supervisor's portion by hour
+        item.prodItem.timeline.forEach(timeSlot => {
             if (!timeSlot.hour || !timeSlot.actual) return;
             
-            // Check if this hour is within this supervisor's work period for this variant
             const slotMinutes = parseTimeToMinutes(timeSlot.hour);
-            const variantStartMin = parseTimeToMinutes(variant.startTime);
-            const variantEndMin = parseTimeToMinutes(variant.endTime);
             
+            // Check if this hour is within this supervisor's work period for this variant
             if (slotMinutes >= variantStartMin && slotMinutes <= variantEndMin) {
-                // This slot is within the supervisor's work period
-                
                 // Calculate this supervisor's portion of this hour's production
                 let productionPortion = 0;
                 
-                if (variant.prodItem.supervisors.length === 1) {
+                if (item.prodItem.supervisors.length === 1) {
                     // This supervisor is the only one working on this variant
                     productionPortion = timeSlot.actual;
                 } else {
-                    // Multiple supervisors - calculate proportion
-                    const supervisorRatio = variant.supervisorData.production / variant.prodItem.actual.total;
+                    // Multiple supervisors - use the calculated ratio
                     productionPortion = Math.round(timeSlot.actual * supervisorRatio);
                 }
                 
-                // Add to the hourly data
+                // Add to the hourly data (aggregating across all variants)
                 if (hourlyData[timeSlot.hour]) {
                     hourlyData[timeSlot.hour].production += productionPortion;
                 }
@@ -2239,7 +2227,7 @@ function showLoadingOrError(message) {
         .filter(item => item.minutes >= startTimeMinutes && item.minutes <= endTimeMinutes)
         .sort((a, b) => a.minutes - b.minutes);
     
-    // CRITICAL FIX: Calculate cumulative production totals
+    // Calculate cumulative production totals
     let runningProduction = 0;
     const cumulativeData = [];
     
@@ -2263,25 +2251,30 @@ function showLoadingOrError(message) {
         });
     });
     
-    // CRITICAL FIX: Ensure the final production value matches the metrics
+    // Ensure the final production value matches the metrics total
     if (cumulativeData.length > 1 && runningProduction !== supervisorTotalProduction) {
-        // Get the actual production values from the hourly timeline
-        const actualTimelineProduction = hourlyDataArray.reduce((sum, item) => sum + item.production, 0);
+        // Calculate the difference
+        const difference = supervisorTotalProduction - runningProduction;
         
-        // If there's a mismatch, scale the production values to match the metrics
-        if (actualTimelineProduction > 0) {
-            const scaleFactor = supervisorTotalProduction / actualTimelineProduction;
+        // Adjust the final point to match the metrics total
+        cumulativeData[cumulativeData.length - 1].production = supervisorTotalProduction;
+        
+        // If there's a significant difference, distribute it proportionally across hours
+        if (Math.abs(difference) > 5 && hourlyDataArray.length > 0) {
+            console.log(`Adjusting production for ${currentSupervisor}: Timeline total ${runningProduction}, Metrics total ${supervisorTotalProduction}, Difference ${difference}`);
             
-            // Reset and recalculate with scaling
+            // Distribute the difference proportionally
+            const adjustment = difference / hourlyDataArray.length;
             runningProduction = 0;
+            
             for (let i = 1; i < cumulativeData.length; i++) {
-                const hourIdx = i - 1;
-                const scaledProduction = Math.round(hourlyDataArray[hourIdx].production * scaleFactor);
-                runningProduction += scaledProduction;
-                cumulativeData[i].production = runningProduction;
+                const hourIndex = i - 1;
+                hourlyDataArray[hourIndex].production += adjustment;
+                runningProduction += hourlyDataArray[hourIndex].production;
+                cumulativeData[i].production = Math.round(runningProduction);
             }
-        } else {
-            // If there's no production in the timeline, set the last point to the total
+            
+            // Final adjustment to ensure exact match
             cumulativeData[cumulativeData.length - 1].production = supervisorTotalProduction;
         }
     }
@@ -2295,7 +2288,7 @@ function showLoadingOrError(message) {
         dataPoint.target = Math.round(supervisorTotalTarget * elapsedProportion);
     });
     
-    // Filter data to only show up to current time plus one hour
+    // Filter data to only show up to current time plus one hour buffer
     const currentTimePlusBuffer = currentTimeMinutes + 60;
     let filteredData = cumulativeData.filter(item => item.minutes <= currentTimePlusBuffer);
     
