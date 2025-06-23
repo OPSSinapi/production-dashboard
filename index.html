@@ -2103,7 +2103,7 @@ function showLoadingOrError(message) {
     // Get the current supervisor
     const currentSupervisor = group.supervisor;
     
-    // Get supervisor totals from metrics display for accuracy
+    // Get supervisor totals from metrics display for accuracy - these are our source of truth
     const supervisorTotalProduction = parseInt(document.getElementById('current-units').textContent, 10) || 0;
     const supervisorTotalTarget = parseInt(document.getElementById('target-units').textContent, 10) || 0;
     
@@ -2175,98 +2175,9 @@ function showLoadingOrError(message) {
     const currentMinute = now.getMinutes();
     const currentTimeMinutes = currentHour * 60 + currentMinute;
     
-    // Generate data for target line (normalized to standard hours)
-    const hourlyTargetData = [];
-    let cumulativeTarget = 0;
-    
-    // Calculate the total available working minutes in the day
-    const totalMinutes = endTimeMinutes - startTimeMinutes;
-    
-    // Create hourly increments from start to end
-    const hourlyIncrements = [];
-    
-    // Start with the first hour mark
-    let firstHour = Math.floor(startTimeMinutes / 60);
-    let firstHourMark = `${firstHour.toString().padStart(2, '0')}:30`;
-    
-    // Add the starting point
-    hourlyTargetData.push({
-        hour: earliestStart,
-        minutes: startTimeMinutes,
-        target: 0,
-        production: 0
-    });
-    
-    // Add standard hour marks
-    standardHourMarks.forEach(hourMark => {
-        const [hour, minute] = hourMark.split(':').map(Number);
-        const minutes = hour * 60 + minute;
-        
-        // Skip hours outside the supervisor's working time
-        if (minutes <= startTimeMinutes || minutes > endTimeMinutes) return;
-        
-        // Calculate the proportional target for this hour
-        const elapsedProportion = (minutes - startTimeMinutes) / totalMinutes;
-        const hourTarget = Math.round(supervisorTotalTarget * elapsedProportion);
-        
-        hourlyTargetData.push({
-            hour: hourMark,
-            minutes,
-            target: hourTarget,
-            production: 0 // Will be filled in later
-        });
-    });
-    
-    // Add the end point if not already included
-    if (hourlyTargetData[hourlyTargetData.length - 1].minutes < endTimeMinutes) {
-        hourlyTargetData.push({
-            hour: latestEnd,
-            minutes: endTimeMinutes,
-            target: supervisorTotalTarget,
-            production: 0 // Will be filled in later
-        });
-    }
-    
-    // Now get production data from timeline
-    // Create a map to store production by hour
-    const hourlyProductionMap = new Map();
-    
-    supervisorVariants.forEach(variant => {
-        if (!variant.prodItem.timeline) return;
-        
-        // For this supervisor's variant, calculate what portion of each hour's production belongs to them
-        variant.prodItem.timeline.forEach(timeSlot => {
-            if (!timeSlot.hour) return;
-            
-            // Convert hour to minutes
-            const [slotHour, slotMinute] = timeSlot.hour.split(':').map(Number);
-            const slotMinutes = slotHour * 60 + slotMinute;
-            
-            // Check if this time slot is within this supervisor's time window for this variant
-            const variantStartMin = parseTimeToMinutes(variant.startTime);
-            const variantEndMin = parseTimeToMinutes(variant.endTime);
-            
-            if (slotMinutes >= variantStartMin && slotMinutes <= variantEndMin) {
-                // Calculate supervisor's portion of production
-                let hourlyProduction = 0;
-                
-                if (variant.prodItem.supervisors.length === 1) {
-                    // Only one supervisor, so they get all production
-                    hourlyProduction = timeSlot.actual;
-                } else {
-                    // Multiple supervisors - calculate based on proportion of total production
-                    const supervisorRatio = variant.production / variant.prodItem.actual.total;
-                    hourlyProduction = Math.round(timeSlot.actual * supervisorRatio);
-                }
-                
-                // Store in hourly map
-                if (!hourlyProductionMap.has(timeSlot.hour)) {
-                    hourlyProductionMap.set(timeSlot.hour, 0);
-                }
-                hourlyProductionMap.set(timeSlot.hour, hourlyProductionMap.get(timeSlot.hour) + hourlyProduction);
-            }
-        });
-    });
+    // Get hourly production data for each variant
+    // We need to create a clean mapping of hourly productions for this supervisor
+    const supervisorHourlyProduction = new Map();
     
     // Helper function to convert time string to minutes
     function parseTimeToMinutes(timeStr) {
@@ -2274,57 +2185,151 @@ function showLoadingOrError(message) {
         return hour * 60 + minute;
     }
     
-    // Fill in production data for the hourly target data
-    let cumulativeProduction = 0;
+    // First, collect raw hourly production data for each of the supervisor's variants
+    const rawHourlyData = [];
     
-    // Add production data to our hourly data points
-    hourlyTargetData.forEach((dataPoint, index) => {
-        // For the start point, production is 0
-        if (index === 0) {
-            dataPoint.production = 0;
-            return;
-        }
+    supervisorVariants.forEach(variant => {
+        if (!variant.prodItem.timeline) return;
         
-        // For standard hour marks, find the closest matching hour in the production data
-        if (hourlyProductionMap.has(dataPoint.hour)) {
-            cumulativeProduction += hourlyProductionMap.get(dataPoint.hour);
-        } else if (index > 0) {
-            // For hours with no direct match, try to find production within time window
-            const prevPoint = hourlyTargetData[index - 1];
-            const prevMinutes = prevPoint.minutes;
-            const currentMinutes = dataPoint.minutes;
+        variant.prodItem.timeline.forEach(timeSlot => {
+            if (!timeSlot.hour) return;
             
-            // Look for production entries within this time window
-            Array.from(hourlyProductionMap.entries()).forEach(([hour, production]) => {
-                const hourMinutes = parseTimeToMinutes(hour);
-                if (hourMinutes > prevMinutes && hourMinutes <= currentMinutes) {
-                    cumulativeProduction += production;
+            // Check if this time slot is within this supervisor's work window for this variant
+            const slotMinutes = parseTimeToMinutes(timeSlot.hour);
+            const variantStartMin = parseTimeToMinutes(variant.startTime);
+            const variantEndMin = parseTimeToMinutes(variant.endTime);
+            
+            if (slotMinutes >= variantStartMin && slotMinutes <= variantEndMin) {
+                // Calculate production for this supervisor
+                let hourlyProduction = 0;
+                
+                // Use timeline data but ensure we match the total production
+                if (variant.prodItem.supervisors.length === 1) {
+                    // If this supervisor is the only one, they get the full production
+                    hourlyProduction = timeSlot.actual;
+                } else {
+                    // If there are multiple supervisors, calculate this supervisor's proportion
+                    const supervisorProportion = variant.supervisorData.production / variant.prodItem.actual.total;
+                    hourlyProduction = Math.round(timeSlot.actual * supervisorProportion);
                 }
-            });
-        }
-        
-        dataPoint.production = cumulativeProduction;
+                
+                // Add to raw data
+                rawHourlyData.push({
+                    hour: timeSlot.hour,
+                    minutes: slotMinutes,
+                    production: hourlyProduction
+                });
+            }
+        });
     });
     
-    // Make sure the last point has the correct total production
-    if (hourlyTargetData.length > 0) {
-        hourlyTargetData[hourlyTargetData.length - 1].production = supervisorTotalProduction;
+    // Sort raw data by time
+    rawHourlyData.sort((a, b) => a.minutes - b.minutes);
+    
+    // Consolidate data for the same hour (in case there are multiple variants active)
+    const hourlyDataMap = new Map();
+    
+    rawHourlyData.forEach(item => {
+        if (!hourlyDataMap.has(item.hour)) {
+            hourlyDataMap.set(item.hour, {
+                hour: item.hour,
+                minutes: item.minutes,
+                production: 0
+            });
+        }
+        hourlyDataMap.get(item.hour).production += item.production;
+    });
+    
+    const hourlyData = Array.from(hourlyDataMap.values());
+    
+    // Calculate total production from hourly data
+    const totalHourlyProduction = hourlyData.reduce((sum, item) => sum + item.production, 0);
+    
+    // If the total doesn't match what's displayed in the metrics, scale the data
+    let productionScaleFactor = 1;
+    if (totalHourlyProduction > 0 && totalHourlyProduction !== supervisorTotalProduction) {
+        productionScaleFactor = supervisorTotalProduction / totalHourlyProduction;
+        
+        // Apply scaling to hourly data
+        hourlyData.forEach(item => {
+            item.production = Math.round(item.production * productionScaleFactor);
+        });
+    }
+    
+    // Generate target data points - a straight line from 0 to supervisorTotalTarget over the day
+    const chartData = [];
+    
+    // Add starting point
+    chartData.push({
+        hour: earliestStart,
+        minutes: startTimeMinutes,
+        target: 0,
+        production: 0
+    });
+    
+    // Calculate work duration in minutes
+    const workDuration = endTimeMinutes - startTimeMinutes;
+    
+    // Add hourly data points for standard hours
+    standardHourMarks.forEach(hourMark => {
+        const minutes = parseTimeToMinutes(hourMark);
+        
+        // Skip if outside work window
+        if (minutes <= startTimeMinutes || minutes > endTimeMinutes) return;
+        
+        // Calculate target as proportion of day elapsed
+        const elapsedProportion = (minutes - startTimeMinutes) / workDuration;
+        const target = Math.round(supervisorTotalTarget * elapsedProportion);
+        
+        // Calculate production at this hour
+        let production = 0;
+        
+        // Find all production entries up to this hour
+        const productionEntries = hourlyData.filter(entry => entry.minutes <= minutes);
+        production = productionEntries.reduce((sum, entry) => sum + entry.production, 0);
+        
+        chartData.push({
+            hour: hourMark,
+            minutes,
+            target,
+            production
+        });
+    });
+    
+    // Add end point to reach exactly the supervisor's total target
+    if (chartData[chartData.length - 1].minutes < endTimeMinutes) {
+        chartData.push({
+            hour: latestEnd,
+            minutes: endTimeMinutes,
+            target: supervisorTotalTarget,
+            production: supervisorTotalProduction
+        });
     }
     
     // Filter data to only show up to current time plus one hour
     const currentTimePlusBuffer = currentTimeMinutes + 60;
-    let filteredData = hourlyTargetData.filter(item => item.minutes <= currentTimePlusBuffer);
+    let filteredData = chartData.filter(item => item.minutes <= currentTimePlusBuffer);
     
     // Always ensure we have the current total at the current time
     if (filteredData.length > 0 && filteredData[filteredData.length - 1].minutes < currentTimeMinutes) {
         // Add a point at current time
         const currentHourStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+        
+        // Calculate proportion of day elapsed
+        const elapsedProportion = (currentTimeMinutes - startTimeMinutes) / workDuration;
+        const currentTarget = Math.round(supervisorTotalTarget * elapsedProportion);
+        
         filteredData.push({
             hour: currentHourStr,
             minutes: currentTimeMinutes,
-            target: Math.round(supervisorTotalTarget * ((currentTimeMinutes - startTimeMinutes) / totalMinutes)),
+            target: currentTarget,
             production: supervisorTotalProduction
         });
+    }
+    
+    // Make sure the last point has the correct production value (matching the metrics)
+    if (filteredData.length > 0) {
+        filteredData[filteredData.length - 1].production = supervisorTotalProduction;
     }
     
     if (filteredData.length === 0) {
@@ -2425,16 +2430,6 @@ function showLoadingOrError(message) {
     
     svg.appendChild(gridGroup);
     
-    // CRITICAL FIX: Use the standard hour marks for x-axis ticks
-    const visibleHourMarks = standardHourMarks.filter(hourMark => {
-        const [hour, minute] = hourMark.split(':').map(Number);
-        const minutes = hour * 60 + minute;
-        return minutes >= startTimeMinutes && minutes <= endTimeMinutes;
-    });
-    
-    // Add X-axis ticks and labels
-    const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    
     // Create a mapping function to convert time to x position
     function timeToXPosition(minutes) {
         // Normalize to the range 0-1
@@ -2443,10 +2438,17 @@ function showLoadingOrError(message) {
         return padding.left + (chartWidth * normalizedTime);
     }
     
+    // Get visible hour marks for x-axis
+    const visibleHourMarks = standardHourMarks.filter(hourMark => {
+        const minutes = parseTimeToMinutes(hourMark);
+        return minutes >= startTimeMinutes && minutes <= endTimeMinutes;
+    });
+    
+    // Add X-axis ticks and labels
+    const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    
     visibleHourMarks.forEach(hourMark => {
-        const [hour, minute] = hourMark.split(':').map(Number);
-        const minutes = hour * 60 + minute;
-        
+        const minutes = parseTimeToMinutes(hourMark);
         const x = timeToXPosition(minutes);
         const y = svgHeight - padding.bottom + 20;
         
@@ -2470,30 +2472,31 @@ function showLoadingOrError(message) {
         text.textContent = hourMark;
         xLabelsGroup.appendChild(text);
         
-        // Add status indicator (check if hour mark has passed)
+        // Add status indicator for past hours
         if (minutes < currentTimeMinutes) {
-            // Find the target and production for this hour
-            const dataPoint = hourlyTargetData.find(dp => dp.hour === hourMark);
+            // Find the production and target for this hour mark
+            const dataPoint = filteredData.find(dp => dp.hour === hourMark);
             let hourTarget = 0;
             let hourProduction = 0;
             
             if (dataPoint) {
-                // Use exact matching data point
                 hourTarget = dataPoint.target;
                 hourProduction = dataPoint.production;
             } else {
-                // Calculate from surrounding points
-                const prevPoints = hourlyTargetData.filter(dp => dp.minutes <= minutes);
-                const nextPoints = hourlyTargetData.filter(dp => dp.minutes > minutes);
+                // Try to interpolate from surrounding points
+                const prevPoints = filteredData.filter(dp => dp.minutes <= minutes);
+                const nextPoints = filteredData.filter(dp => dp.minutes > minutes);
                 
                 if (prevPoints.length > 0 && nextPoints.length > 0) {
                     const prevPoint = prevPoints[prevPoints.length - 1];
                     const nextPoint = nextPoints[0];
                     
-                    // Interpolate between points
                     const ratio = (minutes - prevPoint.minutes) / (nextPoint.minutes - prevPoint.minutes);
                     hourTarget = Math.round(prevPoint.target + (nextPoint.target - prevPoint.target) * ratio);
                     hourProduction = Math.round(prevPoint.production + (nextPoint.production - prevPoint.production) * ratio);
+                } else if (prevPoints.length > 0) {
+                    hourTarget = prevPoints[prevPoints.length - 1].target;
+                    hourProduction = prevPoints[prevPoints.length - 1].production;
                 }
             }
             
@@ -2510,7 +2513,7 @@ function showLoadingOrError(message) {
             }
             
             // Current hour gets special marking
-            if (hour === currentHour) {
+            if (parseTimeToMinutes(hourMark) === (Math.floor(currentTimeMinutes / 60) * 60 + 30)) {
                 statusSymbol = '●';
                 fillColor = '#ca8a04'; // Yellow for current
             }
@@ -2565,26 +2568,25 @@ function showLoadingOrError(message) {
     productionPath.setAttribute('fill', 'none');
     productionLineGroup.appendChild(productionPath);
     
-    // Add production points at standard hour marks
+    // Add production points and labels at visible hour marks
     visibleHourMarks.forEach(hourMark => {
-        const [hour, minute] = hourMark.split(':').map(Number);
-        const minutes = hour * 60 + minute;
+        const minutes = parseTimeToMinutes(hourMark);
         
         // Skip future hours
         if (minutes > currentTimeMinutes) return;
         
-        // Find the data point closest to this hour mark
+        // Find production value at this hour mark
         let productionValue = 0;
-        let xPos = timeToXPosition(minutes);
-        let yPos = padding.top + chartHeight; // Default to zero production
+        let x = timeToXPosition(minutes);
+        let y = padding.top + chartHeight; // Default to zero production
         
-        // Find production at this hour
+        // Try to find exact match
         const exactMatch = filteredData.find(dp => dp.hour === hourMark);
         if (exactMatch) {
             productionValue = exactMatch.production;
-            yPos = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
+            y = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
         } else {
-            // Interpolate between surrounding points
+            // Interpolate from surrounding points
             const prevPoints = filteredData.filter(dp => dp.minutes <= minutes);
             const nextPoints = filteredData.filter(dp => dp.minutes > minutes);
             
@@ -2594,26 +2596,25 @@ function showLoadingOrError(message) {
                 
                 const ratio = (minutes - prevPoint.minutes) / (nextPoint.minutes - prevPoint.minutes);
                 productionValue = Math.round(prevPoint.production + (nextPoint.production - prevPoint.production) * ratio);
-                yPos = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
+                y = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
             } else if (prevPoints.length > 0) {
-                // Use the last available data point
                 productionValue = prevPoints[prevPoints.length - 1].production;
-                yPos = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
+                y = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
             }
         }
         
         // Add point
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xPos);
-        circle.setAttribute('cy', yPos);
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
         circle.setAttribute('r', isFullscreen ? '5' : '4');
         circle.setAttribute('fill', 'var(--production-color)');
         productionLineGroup.appendChild(circle);
         
         // Add label
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', xPos);
-        text.setAttribute('y', yPos - 8);
+        text.setAttribute('x', x);
+        text.setAttribute('y', y - 8);
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('font-size', isFullscreen ? '14' : '12');
         text.setAttribute('font-weight', 'bold');
@@ -2685,26 +2686,25 @@ function showLoadingOrError(message) {
     targetPath.setAttribute('fill', 'none');
     targetLineGroup.appendChild(targetPath);
     
-    // Add target points at standard hour marks
+    // Add target points and labels at visible hour marks
     visibleHourMarks.forEach(hourMark => {
-        const [hour, minute] = hourMark.split(':').map(Number);
-        const minutes = hour * 60 + minute;
+        const minutes = parseTimeToMinutes(hourMark);
         
         // Skip future hours
         if (minutes > currentTimeMinutes + 60) return; // Allow showing next hour target
         
-        // Find the data point closest to this hour mark
+        // Find target value at this hour mark
         let targetValue = 0;
-        let xPos = timeToXPosition(minutes);
-        let yPos = padding.top + chartHeight; // Default to zero target
+        let x = timeToXPosition(minutes);
+        let y = padding.top + chartHeight; // Default to zero target
         
-        // Find target at this hour
+        // Try to find exact match
         const exactMatch = filteredData.find(dp => dp.hour === hourMark);
         if (exactMatch) {
             targetValue = exactMatch.target;
-            yPos = padding.top + chartHeight - (chartHeight * (targetValue / maxValue));
+            y = padding.top + chartHeight - (chartHeight * (targetValue / maxValue));
         } else {
-            // Interpolate between surrounding points
+            // Interpolate from surrounding points
             const prevPoints = filteredData.filter(dp => dp.minutes <= minutes);
             const nextPoints = filteredData.filter(dp => dp.minutes > minutes);
             
@@ -2714,26 +2714,25 @@ function showLoadingOrError(message) {
                 
                 const ratio = (minutes - prevPoint.minutes) / (nextPoint.minutes - prevPoint.minutes);
                 targetValue = Math.round(prevPoint.target + (nextPoint.target - prevPoint.target) * ratio);
-                yPos = padding.top + chartHeight - (chartHeight * (targetValue / maxValue));
+                y = padding.top + chartHeight - (chartHeight * (targetValue / maxValue));
             } else if (prevPoints.length > 0) {
-                // Use the last available data point
                 targetValue = prevPoints[prevPoints.length - 1].target;
-                yPos = padding.top + chartHeight - (chartHeight * (targetValue / maxValue));
+                y = padding.top + chartHeight - (chartHeight * (targetValue / maxValue));
             }
         }
         
         // Add point
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', xPos);
-        circle.setAttribute('cy', yPos);
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
         circle.setAttribute('r', isFullscreen ? '5' : '4');
         circle.setAttribute('fill', 'var(--target-color)');
         targetLineGroup.appendChild(circle);
         
         // Add label
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', xPos);
-        text.setAttribute('y', yPos - 8);
+        text.setAttribute('x', x);
+        text.setAttribute('y', y - 8);
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('font-size', isFullscreen ? '14' : '12');
         text.setAttribute('font-weight', 'bold');
