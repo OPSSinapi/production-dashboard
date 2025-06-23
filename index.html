@@ -2483,41 +2483,41 @@ function showLoadingOrError(message) {
     const timeTicks = timeTicksHours.map(hour => `${hour.toString().padStart(2, '0')}:30`);
     
     // Add X-axis ticks and labels
-    const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    timeTicks.forEach((tick, index) => {
-        // Calculate x position - map from time to chart position
-        const [tickHour, tickMin] = tick.split(':').map(Number);
-        const tickMinutes = tickHour * 60 + tickMin;
-        
-        // Only show ticks within the range of our data
-        if (tickMinutes < startTimeMinutes - 30 || tickMinutes > endTimeMinutes + 30) return;
-        
-        // Calculate relative position along chart width
-        const timeRange = endTimeMinutes - startTimeMinutes;
-        const relativePos = (tickMinutes - startTimeMinutes) / timeRange;
-        const x = padding.left + chartWidth * relativePos;
-        
-        const y = svgHeight - padding.bottom + 20;
-        
-        // Add tick mark
-        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        tick.setAttribute('x1', x);
-        tick.setAttribute('y1', svgHeight - padding.bottom);
-        tick.setAttribute('x2', x);
-        tick.setAttribute('y2', svgHeight - padding.bottom + 5);
-        tick.setAttribute('stroke', '#666');
-        tick.setAttribute('stroke-width', '1.5');
-        xLabelsGroup.appendChild(tick);
-        
-        // Add hour label
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', x);
-        text.setAttribute('y', y);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('fill', '#666');
-        text.textContent = tick;
-        xLabelsGroup.appendChild(text);
+const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+timeTicks.forEach((tickLabel, index) => {
+    // Calculate x position - map from time to chart position
+    const [tickHour, tickMin] = tickLabel.split(':').map(Number);
+    const tickMinutes = tickHour * 60 + tickMin;
+    
+    // Only show ticks within the range of our data
+    if (tickMinutes < startTimeMinutes - 30 || tickMinutes > endTimeMinutes + 30) return;
+    
+    // Calculate relative position along chart width
+    const timeRange = endTimeMinutes - startTimeMinutes;
+    const relativePos = (tickMinutes - startTimeMinutes) / timeRange;
+    const x = padding.left + chartWidth * relativePos;
+    
+    const y = svgHeight - padding.bottom + 20;
+    
+    // Add tick mark
+    const tickLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    tickLine.setAttribute('x1', x);
+    tickLine.setAttribute('y1', svgHeight - padding.bottom);
+    tickLine.setAttribute('x2', x);
+    tickLine.setAttribute('y2', svgHeight - padding.bottom + 5);
+    tickLine.setAttribute('stroke', '#666');
+    tickLine.setAttribute('stroke-width', '1.5');
+    xLabelsGroup.appendChild(tickLine);
+    
+    // Add hour label
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', x);
+    text.setAttribute('y', y);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('font-size', isFullscreen ? '14' : '12');
+    text.setAttribute('fill', '#666');
+    text.textContent = tickLabel;
+    xLabelsGroup.appendChild(text);
         
         // Add status indicator below the hour label (met/missed targets)
         const hourlySlot = hourlySlots.find(s => s.hour === tick);
