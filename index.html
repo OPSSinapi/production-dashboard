@@ -2103,20 +2103,11 @@ function showLoadingOrError(message) {
     // Get the current supervisor
     const currentSupervisor = group.supervisor;
     
-    // Collect all hours across all variants for this supervisor
-    const allHoursSet = new Set();
-    const hourlyProductionMap = new Map(); // Map to store production by hour
-    const hourlyTargetMap = new Map();     // Map to store targets by hour
-    const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
-    
     // Get supervisor totals from metrics display for accuracy
     const supervisorTotalProduction = parseInt(document.getElementById('current-units').textContent, 10) || 0;
     const supervisorTotalTarget = parseInt(document.getElementById('target-units').textContent, 10) || 0;
     
-    // Find all active time periods for this supervisor to calculate correct hourly targets
-    const activePeriods = [];
-    
-    // CRITICAL FIX: Get the supervisor from the original data
+    // Get the original supervisor data
     const originalSupervisor = productionData.originalData.summary.supervisors.find(
         s => s.name === currentSupervisor
     );
@@ -2126,7 +2117,10 @@ function showLoadingOrError(message) {
         return;
     }
     
-    // Process all variants this supervisor works on
+    // Find all variants this supervisor works on
+    const supervisorVariants = [];
+    
+    // Process all variants for this supervisor to get correct timing
     (originalSupervisor.variants || []).forEach(variantId => {
         const prodItem = productionData.originalData.production.find(p => p.id === variantId);
         if (!prodItem) return;
@@ -2134,179 +2128,256 @@ function showLoadingOrError(message) {
         const supervisorData = prodItem.supervisors.find(s => s.name === currentSupervisor);
         if (!supervisorData) return;
         
-        // Add this variant's time period to active periods
-        if (supervisorData.startTime && supervisorData.endTime) {
-            const [startHour, startMinute] = supervisorData.startTime.split(':').map(Number);
-            const [endHour, endMinute] = supervisorData.endTime.split(':').map(Number);
+        // Add to supervisor variants
+        supervisorVariants.push({
+            variantId,
+            prodItem,
+            supervisorData,
+            cycleTime: prodItem.variant.cycleTime,
+            startTime: supervisorData.startTime,
+            endTime: supervisorData.endTime,
+            target: supervisorData.target,
+            production: supervisorData.production
+        });
+    });
+    
+    // Sort variants by start time
+    supervisorVariants.sort((a, b) => {
+        const [aHour, aMin] = a.startTime.split(':').map(Number);
+        const [bHour, bMin] = b.startTime.split(':').map(Number);
+        return (aHour * 60 + aMin) - (bHour * 60 + bMin);
+    });
+    
+    // Find earliest start and latest end time
+    let earliestStart = "23:59";
+    let latestEnd = "00:00";
+    
+    supervisorVariants.forEach(variant => {
+        if (variant.startTime < earliestStart) earliestStart = variant.startTime;
+        if (variant.endTime > latestEnd) latestEnd = variant.endTime;
+    });
+    
+    // Convert to minutes for calculations
+    const [startHour, startMin] = earliestStart.split(':').map(Number);
+    const [endHour, endMin] = latestEnd.split(':').map(Number);
+    const startTimeMinutes = startHour * 60 + startMin;
+    const endTimeMinutes = endHour * 60 + endMin;
+    
+    // Get work schedule and breaks
+    const shifts = [];
+    supervisorVariants.forEach(variant => {
+        if (variant.prodItem.shiftId) {
+            const shift = productionData.originalData.shifts.find(s => s.id === variant.prodItem.shiftId);
+            if (shift && !shifts.some(s => s.id === shift.id)) {
+                shifts.push(shift);
+            }
+        }
+    });
+    
+    // Collect breaks (convert to minutes)
+    const breaks = [];
+    shifts.forEach(shift => {
+        if (shift.breaks) {
+            shift.breaks.forEach(breakItem => {
+                const [startHour, startMin] = breakItem.startTime.split(':').map(Number);
+                const [endHour, endMin] = breakItem.endTime.split(':').map(Number);
+                breaks.push({
+                    startMinutes: startHour * 60 + startMin,
+                    endMinutes: endHour * 60 + endMin,
+                    type: breakItem.type
+                });
+            });
+        }
+    });
+    
+    // Generate hourly time slots from earliest start to latest end
+    const hourlySlots = [];
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTimeMinutes = currentHour * 60 + currentMinute;
+    
+    // Start with the first full hour after start time
+    let slotStart = Math.floor(startTimeMinutes / 60) * 60;
+    if (startTimeMinutes % 60 > 0) slotStart += 60; // Move to next hour if not on hour boundary
+    
+    // Generate hourly slots
+    for (let time = slotStart; time <= endTimeMinutes; time += 60) {
+        const hour = Math.floor(time / 60);
+        const formattedHour = `${hour.toString().padStart(2, '0')}:30`;
+        
+        // Calculate available minutes in this hour (accounting for breaks)
+        let availableMinutes = 60; // Full hour by default
+        
+        // Check for breaks in this hour
+        breaks.forEach(breakItem => {
+            // Hour interval is from time-60 to time
+            const hourStart = time - 60;
+            const hourEnd = time;
             
-            activePeriods.push({
-                variantId,
-                startTimeMinutes: startHour * 60 + startMinute,
-                endTimeMinutes: endHour * 60 + endMinute,
-                cycleTime: prodItem.variant.cycleTime,
-                target: supervisorData.target,
-                production: supervisorData.production
-            });
-        }
-        
-        // Process timeline data for this variant
-        if (prodItem.timeline) {
-            prodItem.timeline.forEach(hour => {
-                if (!hour.hour) return;
-                
-                const [itemHour, itemMinute] = hour.hour.split(':').map(Number);
-                const itemTimeMinutes = itemHour * 60 + itemMinute;
-                
-                // Check if this hour is within this supervisor's active period for this variant
-                if (supervisorData.startTime && supervisorData.endTime) {
-                    const [startHour, startMinute] = supervisorData.startTime.split(':').map(Number);
-                    const [endHour, endMinute] = supervisorData.endTime.split(':').map(Number);
-                    
-                    const startTimeMinutes = startHour * 60 + startMinute;
-                    const endTimeMinutes = endHour * 60 + endMinute;
-                    
-                    // Check if this hour is within the supervisor's time window
-                    const prevHourTime = itemTimeMinutes - 60;
-                    
-                    // If the hour period overlaps with this supervisor's active period
-                    if ((prevHourTime <= endTimeMinutes && itemTimeMinutes >= startTimeMinutes)) {
-                        // Add hour to the set
-                        allHoursSet.add(hour.hour);
-                        
-                        // Calculate supervisor's portion of production for this hour
-                        let hourProduction = 0;
-                        let hourTarget = 0;
-                        
-                        // CRITICAL FIX: Calculate production and target proportionally
-                        if (prodItem.supervisors.length > 1) {
-                            // Multiple supervisors - calculate proportion based on total production
-                            const supervisorRatio = supervisorData.production / prodItem.actual.total;
-                            hourProduction = Math.round(hour.actual * supervisorRatio);
-                            hourTarget = Math.round(hour.target * supervisorRatio);
-                        } else {
-                            // Single supervisor - use full values
-                            hourProduction = hour.actual;
-                            hourTarget = hour.target;
-                        }
-                        
-                        // Add to hourly maps
-                        if (!hourlyProductionMap.has(hour.hour)) {
-                            hourlyProductionMap.set(hour.hour, 0);
-                        }
-                        hourlyProductionMap.set(hour.hour, hourlyProductionMap.get(hour.hour) + hourProduction);
-                        
-                        if (!hourlyTargetMap.has(hour.hour)) {
-                            hourlyTargetMap.set(hour.hour, 0);
-                        }
-                        hourlyTargetMap.set(hour.hour, hourlyTargetMap.get(hour.hour) + hourTarget);
-                    }
-                }
-            });
-        }
-    });
-    
-    // Sort active periods by start time
-    activePeriods.sort((a, b) => a.startTimeMinutes - b.startTimeMinutes);
-    
-    // Convert to sorted array of hours
-    const sortedHours = Array.from(allHoursSet).sort((a, b) => {
-        const [hourA, minuteA] = a.split(':').map(Number);
-        const [hourB, minuteB] = b.split(':').map(Number);
-        return (hourA * 60 + minuteA) - (hourB * 60 + minuteB);
-    });
-    
-    if (sortedHours.length === 0) {
-        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available</div>';
-        return;
-    }
-    
-    // CRITICAL FIX: Calculate cumulative target more accurately
-    const cumulativeData = [];
-    let runningProductionTotal = 0;
-    let runningTargetTotal = 0;
-    
-    // For each hour, calculate the correct target based on active variants in that hour
-    sortedHours.forEach(hour => {
-        const [hourVal, minuteVal] = hour.split(':').map(Number);
-        const hourStartMinutes = hourVal * 60 + minuteVal - 60; // Start of hour period
-        const hourEndMinutes = hourVal * 60 + minuteVal; // End of hour period
-        
-        // Calculate target for this hour based on active variants
-        let hourTarget = hourlyTargetMap.get(hour) || 0;
-        const hourProduction = hourlyProductionMap.get(hour) || 0;
-        
-        // Add to running totals
-        runningProductionTotal += hourProduction;
-        runningTargetTotal += hourTarget;
-        
-        cumulativeData.push({
-            hour: hour,
-            production: runningProductionTotal,
-            target: runningTargetTotal,
-            timeMinutes: hourEndMinutes
+            // If break overlaps with this hour
+            if (!(breakItem.endMinutes <= hourStart || breakItem.startMinutes >= hourEnd)) {
+                // Calculate overlap
+                const overlapStart = Math.max(breakItem.startMinutes, hourStart);
+                const overlapEnd = Math.min(breakItem.endMinutes, hourEnd);
+                availableMinutes -= (overlapEnd - overlapStart);
+            }
         });
         
-        // Determine status for each hour
-        const now = new Date();
-        const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-        
-        // Only evaluate completed hours
-        if (currentTimeMinutes >= hourEndMinutes + 30) {
-            hourlyStatusMap.set(hour, hourProduction >= hourTarget ? 'met' : 'missed');
-        } else if (currentTimeMinutes >= hourEndMinutes - 30 && currentTimeMinutes < hourEndMinutes + 30) {
-            hourlyStatusMap.set(hour, 'current');
-        } else {
-            hourlyStatusMap.set(hour, 'upcoming');
+        // Check if this hour is before the start time
+        if (time - 60 < startTimeMinutes) {
+            const minutesBeforeStart = startTimeMinutes - (time - 60);
+            availableMinutes -= minutesBeforeStart;
         }
+        
+        // Check if this hour is after the end time
+        if (time > endTimeMinutes) {
+            const minutesAfterEnd = time - endTimeMinutes;
+            availableMinutes -= minutesAfterEnd;
+        }
+        
+        // Make sure available minutes is not negative
+        availableMinutes = Math.max(0, availableMinutes);
+        
+        // Calculate which variants are active in this hour
+        const activeVariants = supervisorVariants.filter(variant => {
+            const [vStartHour, vStartMin] = variant.startTime.split(':').map(Number);
+            const [vEndHour, vEndMin] = variant.endTime.split(':').map(Number);
+            const vStartMinutes = vStartHour * 60 + vStartMin;
+            const vEndMinutes = vEndHour * 60 + vEndMin;
+            
+            // Check if variant is active in this hour
+            return (vStartMinutes < time && vEndMinutes > time - 60);
+        });
+        
+        // Calculate hourly target for this slot
+        let hourlyTarget = 0;
+        
+        if (activeVariants.length > 0) {
+            // If multiple variants are active, divide available time proportionally
+            const totalMinutesPerVariant = activeVariants.map(variant => {
+                const [vStartHour, vStartMin] = variant.startTime.split(':').map(Number);
+                const [vEndHour, vEndMin] = variant.endTime.split(':').map(Number);
+                const vStartMinutes = vStartHour * 60 + vStartMin;
+                const vEndMinutes = vEndHour * 60 + vEndMin;
+                
+                // Calculate overlap with current hour
+                const overlapStart = Math.max(vStartMinutes, time - 60);
+                const overlapEnd = Math.min(vEndMinutes, time);
+                return {
+                    variant,
+                    minutes: Math.max(0, overlapEnd - overlapStart)
+                };
+            });
+            
+            // Calculate total overlapping minutes
+            const totalOverlapMinutes = totalMinutesPerVariant.reduce((sum, item) => sum + item.minutes, 0);
+            
+            // Calculate proportional targets
+            if (totalOverlapMinutes > 0) {
+                totalMinutesPerVariant.forEach(item => {
+                    const proportion = item.minutes / totalOverlapMinutes;
+                    const variantHourlyTarget = Math.round(
+                        (3600 / item.variant.cycleTime) * (availableMinutes / 60) * proportion
+                    );
+                    hourlyTarget += variantHourlyTarget;
+                });
+            }
+        }
+        
+        // Add to hourly slots
+        hourlySlots.push({
+            hour: formattedHour,
+            hourMinutes: time,
+            availableMinutes,
+            hourlyTarget,
+            hourlyProduction: 0, // Will be populated from timeline data
+            isPast: time <= currentTimeMinutes
+        });
+    }
+    
+    // Populate production data from timeline
+    supervisorVariants.forEach(variant => {
+        if (!variant.prodItem.timeline) return;
+        
+        variant.prodItem.timeline.forEach(timePoint => {
+            if (!timePoint.hour) return;
+            
+            // Find the matching hour slot
+            const [tpHour, tpMin] = timePoint.hour.split(':').map(Number);
+            const tpMinutes = tpHour * 60 + tpMin;
+            
+            // Find the slot this belongs to
+            const slot = hourlySlots.find(s => s.hourMinutes === tpMinutes);
+            if (!slot) return;
+            
+            // Calculate supervisor's portion of production
+            const supervisorRatio = variant.supervisorData.production / variant.prodItem.actual.total;
+            const hourProduction = Math.round(timePoint.actual * supervisorRatio);
+            
+            // Add to slot's production
+            slot.hourlyProduction += hourProduction;
+        });
     });
     
-    // CRITICAL FIX: Ensure target line is monotonically increasing
-    // Check that the target line is always non-decreasing
-    for (let i = 1; i < cumulativeData.length; i++) {
-        if (cumulativeData[i].target < cumulativeData[i-1].target) {
-            cumulativeData[i].target = cumulativeData[i-1].target;
-        }
-    }
+    // Calculate cumulative values
+    let cumulativeTarget = 0;
+    let cumulativeProduction = 0;
     
-    // Ensure the final cumulative totals match the displayed metrics
-    if (cumulativeData.length > 0) {
-        const lastDataPoint = cumulativeData[cumulativeData.length - 1];
-        lastDataPoint.production = supervisorTotalProduction;
+    // Generate data points for the chart
+    const chartData = [];
+    
+    // Start with a point at start time with zero values
+    chartData.push({
+        hour: earliestStart,
+        minutes: startTimeMinutes,
+        target: 0,
+        production: 0
+    });
+    
+    // Add hourly data points
+    hourlySlots.forEach(slot => {
+        cumulativeTarget += slot.hourlyTarget;
+        cumulativeProduction += slot.hourlyProduction;
         
-        // Fix for target total - ensure it matches the supervisor's total target
-        // but maintain the proportions of the target line
-        if (lastDataPoint.target !== supervisorTotalTarget && lastDataPoint.target > 0) {
-            // Adjust all target values proportionally
-            const targetRatio = supervisorTotalTarget / lastDataPoint.target;
-            cumulativeData.forEach(point => {
-                point.target = Math.round(point.target * targetRatio);
-            });
-        }
+        chartData.push({
+            hour: slot.hour,
+            minutes: slot.hourMinutes,
+            target: cumulativeTarget,
+            production: cumulativeProduction
+        });
+    });
+    
+    // Now scale the cumulative target line to match the supervisor's total target
+    // This ensures the line reaches the supervisor's target at the end of the day
+    if (chartData.length > 1 && chartData[chartData.length - 1].target > 0) {
+        const targetScale = supervisorTotalTarget / chartData[chartData.length - 1].target;
+        
+        // Apply scaling to all target values
+        chartData.forEach(point => {
+            point.target = Math.round(point.target * targetScale);
+        });
     }
     
-    // Filter data to only show up to current time plus buffer
-    const now = new Date();
-    const currentMinuteOfDay = now.getHours() * 60 + now.getMinutes();
-    const currentTimePlusBuffer = currentMinuteOfDay + 60;
+    // Ensure the final production value matches the supervisor's actual total
+    if (chartData.length > 1) {
+        chartData[chartData.length - 1].production = supervisorTotalProduction;
+    }
     
-    let filteredData = cumulativeData.filter(item => item.timeMinutes <= currentTimePlusBuffer);
+    // Filter data to only show up to current time plus one hour
+    const currentTimePlusBuffer = currentTimeMinutes + 60;
+    let filteredData = chartData.filter(item => item.minutes <= currentTimePlusBuffer);
     
-    // Always ensure we have a final point with the correct supervisor total
-    if (filteredData.length > 0) {
-        const lastPoint = filteredData[filteredData.length - 1];
-        if (lastPoint.production !== supervisorTotalProduction || lastPoint.target !== supervisorTotalTarget) {
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentHourStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
-            const currentTimeMinutes = currentHour * 60 + currentMinute;
-            
-            filteredData.push({
-                hour: currentHourStr,
-                production: supervisorTotalProduction,
-                target: supervisorTotalTarget,
-                timeMinutes: currentTimeMinutes
-            });
-        }
+    // Always ensure we have the current total at the current time
+    if (filteredData.length > 0 && filteredData[filteredData.length - 1].minutes < currentTimeMinutes) {
+        // Add a point at current time
+        const currentHourStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+        filteredData.push({
+            hour: currentHourStr,
+            minutes: currentTimeMinutes,
+            target: filteredData[filteredData.length - 1].target,
+            production: supervisorTotalProduction
+        });
     }
     
     if (filteredData.length === 0) {
@@ -2314,7 +2385,6 @@ function showLoadingOrError(message) {
         return;
     }
     
-    // The rest of the chart rendering code remains the same
     // Get chart dimensions based on container
     const chartArea = chartContainer.closest('.chart-area');
     const svgWidth = chartArea.clientWidth;
@@ -2408,50 +2478,25 @@ function showLoadingOrError(message) {
     
     svg.appendChild(gridGroup);
     
-    // Find earliest start time and latest end time across all variants
-    let earliestStartMinutes = 24 * 60; // Initialize to end of day
-    let latestEndMinutes = 0;
-
-    // Use active periods to find earliest and latest times
-    activePeriods.forEach(period => {
-        if (period.startTimeMinutes < earliestStartMinutes) {
-            earliestStartMinutes = period.startTimeMinutes;
-        }
-        if (period.endTimeMinutes > latestEndMinutes) {
-            latestEndMinutes = period.endTimeMinutes;
-        }
-    });
-
-    // Format the start time for display (first tick)
-    const startTimeHour = Math.floor(earliestStartMinutes / 60);
-    const startTimeMinute = earliestStartMinutes % 60;
-    const startTimeFormatted = `${startTimeHour.toString().padStart(2, '0')}:${startTimeMinute.toString().padStart(2, '0')}`;
-
-    // Generate hourly intervals from start time to current time
-    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-    // Extend end time to ensure we see the final data point
-    const endTimeMinutes = Math.max(latestEndMinutes, currentTimeMinutes + 60); 
-
-    // Create time ticks
-    const allHours = [];
+    // Create time ticks for x-axis
+    const timeTicksHours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+    const timeTicks = timeTicksHours.map(hour => `${hour.toString().padStart(2, '0')}:30`);
     
-    // Add the start time as the first tick
-    allHours.push(startTimeFormatted);
-    
-    // Calculate the first full hour after start time
-    const firstFullHourMinutes = Math.ceil(earliestStartMinutes / 60) * 60 + 30;
-    
-    // Then add standard hour markers (8:30, 9:30, etc.)
-    for (let minutes = firstFullHourMinutes; minutes <= endTimeMinutes; minutes += 60) {
-        const hour = Math.floor(minutes / 60);
-        const formattedHour = `${hour.toString().padStart(2, '0')}:30`;
-        allHours.push(formattedHour);
-    }
-
-    // Add X-axis ticks, labels and status indicators
+    // Add X-axis ticks and labels
     const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    allHours.forEach((hour, index) => {
-        const x = padding.left + (chartWidth * index / (allHours.length - 1 || 1));
+    timeTicks.forEach((tick, index) => {
+        // Calculate x position - map from time to chart position
+        const [tickHour, tickMin] = tick.split(':').map(Number);
+        const tickMinutes = tickHour * 60 + tickMin;
+        
+        // Only show ticks within the range of our data
+        if (tickMinutes < startTimeMinutes - 30 || tickMinutes > endTimeMinutes + 30) return;
+        
+        // Calculate relative position along chart width
+        const timeRange = endTimeMinutes - startTimeMinutes;
+        const relativePos = (tickMinutes - startTimeMinutes) / timeRange;
+        const x = padding.left + chartWidth * relativePos;
+        
         const y = svgHeight - padding.bottom + 20;
         
         // Add tick mark
@@ -2471,76 +2516,70 @@ function showLoadingOrError(message) {
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('font-size', isFullscreen ? '14' : '12');
         text.setAttribute('fill', '#666');
-        text.textContent = hour;
+        text.textContent = tick;
         xLabelsGroup.appendChild(text);
         
-        // Add status indicator below the hour label
-        const status = hourlyStatusMap.get(hour);
-        if (status) {
+        // Add status indicator below the hour label (met/missed targets)
+        const hourlySlot = hourlySlots.find(s => s.hour === tick);
+        if (hourlySlot && hourlySlot.isPast) {
             let statusSymbol = '';
             let fillColor = '#94a3b8'; // Default gray
             
-            if (status === 'met') {
+            if (hourlySlot.hourlyProduction >= hourlySlot.hourlyTarget) {
                 statusSymbol = '✓';
                 fillColor = '#0d9488'; // Green for met
-            } else if (status === 'missed') {
+            } else {
                 statusSymbol = '✗';
                 fillColor = '#e11d48'; // Red for missed
-            } else if (status === 'current') {
+            }
+            
+            // Current hour gets special marking
+            if (tickHour === currentHour) {
                 statusSymbol = '●';
                 fillColor = '#ca8a04'; // Yellow for current
             }
             
-            if (statusSymbol) {
-                const statusText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                statusText.setAttribute('x', x);
-                statusText.setAttribute('y', y + 20);
-                statusText.setAttribute('text-anchor', 'middle');
-                statusText.setAttribute('font-size', isFullscreen ? '18' : '16');
-                statusText.setAttribute('font-weight', 'bold');
-                statusText.setAttribute('fill', fillColor);
-                statusText.textContent = statusSymbol;
-                xLabelsGroup.appendChild(statusText);
-            }
+            const statusText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            statusText.setAttribute('x', x);
+            statusText.setAttribute('y', y + 20);
+            statusText.setAttribute('text-anchor', 'middle');
+            statusText.setAttribute('font-size', isFullscreen ? '18' : '16');
+            statusText.setAttribute('font-weight', 'bold');
+            statusText.setAttribute('fill', fillColor);
+            statusText.textContent = statusSymbol;
+            xLabelsGroup.appendChild(statusText);
         }
     });
     svg.appendChild(xLabelsGroup);
     
-    // Draw production line - starting from the first tick (start time) with zero production
+    // Draw production line
     const productionLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     
-    // Start with a point at zero (at the start time)
-    let productionPathD = `M ${padding.left} ${padding.top + chartHeight}`;
-    const productionPoints = [{
-        x: padding.left,
-        y: padding.top + chartHeight,
-        production: 0,
-        hour: startTimeFormatted
-    }];
+    // Start with path data for production line
+    let productionPathD = '';
+    const productionPoints = [];
     
-    // Get data points for production line with proper cumulative totals
-    filteredData.forEach((dataPoint) => {
-        // Find the x position based on the hour
-        const hourIndex = allHours.indexOf(dataPoint.hour);
-        let x;
-        if (hourIndex >= 0) {
-            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
-        } else {
-            // If hour not in allHours, interpolate
-            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
-                          ((endTimeMinutes - earliestStartMinutes) || 1);
-            x = padding.left + (chartWidth * timeRatio);
-        }
+    // Create production line data points
+    filteredData.forEach((dataPoint, index) => {
+        // Calculate x position based on time
+        const relativePos = (dataPoint.minutes - startTimeMinutes) / (endTimeMinutes - startTimeMinutes);
+        const x = padding.left + chartWidth * relativePos;
         
+        // Calculate y position based on production value
         const y = padding.top + chartHeight - (chartHeight * (dataPoint.production / maxValue));
         
-        productionPoints.push({ 
-            x, 
-            y, 
-            production: dataPoint.production, 
-            hour: dataPoint.hour 
+        // Add to path data
+        if (index === 0) {
+            productionPathD = `M ${x} ${y}`;
+        } else {
+            productionPathD += ` L ${x} ${y}`;
+        }
+        
+        productionPoints.push({
+            x, y,
+            production: dataPoint.production,
+            hour: dataPoint.hour
         });
-        productionPathD += ` L ${x} ${y}`;
     });
     
     // Add production line
@@ -2551,46 +2590,38 @@ function showLoadingOrError(message) {
     productionPath.setAttribute('fill', 'none');
     productionLineGroup.appendChild(productionPath);
     
-    // Add production points and labels
+    // Add production points and labels at key intervals
     productionPoints.forEach((point, index) => {
-        // Skip emphasizing intermediate points if we have many points
-        if (productionPoints.length > 7 && index > 0 && index < productionPoints.length - 1 && index % 2 === 0) {
-            return;
+        // Only add points at start, hourly intervals, and end
+        if (index === 0 || index === productionPoints.length - 1 || 
+            point.hour.endsWith(':30')) {
+            
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', point.x);
+            circle.setAttribute('cy', point.y);
+            circle.setAttribute('r', isFullscreen ? '5' : '4');
+            circle.setAttribute('fill', 'var(--production-color)');
+            productionLineGroup.appendChild(circle);
+            
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', point.x);
+            text.setAttribute('y', point.y - 8);
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('font-size', isFullscreen ? '14' : '12');
+            text.setAttribute('font-weight', 'bold');
+            text.setAttribute('fill', 'var(--production-color)');
+            text.textContent = point.production;
+            productionLineGroup.appendChild(text);
         }
-        
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', point.x);
-        circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', isFullscreen ? '5' : '4');
-        circle.setAttribute('fill', 'var(--production-color)');
-        productionLineGroup.appendChild(circle);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 8);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('font-weight', 'bold');
-        text.setAttribute('fill', 'var(--production-color)');
-        text.textContent = point.production;
-        productionLineGroup.appendChild(text);
     });
     
-    // Always emphasize the last production point (current total)
+    // Emphasize the final production point
     if (productionPoints.length > 0) {
         const lastPoint = productionPoints[productionPoints.length - 1];
         
-        // Ensure this point shows the correct value from metrics
-        lastPoint.production = supervisorTotalProduction;
-        
-        // Recalculate Y position for the correct value
-        const correctedY = padding.top + chartHeight - (chartHeight * (supervisorTotalProduction / maxValue));
-        lastPoint.y = correctedY;
-        
-        // Create emphasized circle and label
         const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         emphasizedCircle.setAttribute('cx', lastPoint.x);
-        emphasizedCircle.setAttribute('cy', correctedY);
+        emphasizedCircle.setAttribute('cy', lastPoint.y);
         emphasizedCircle.setAttribute('r', isFullscreen ? '8' : '7');
         emphasizedCircle.setAttribute('fill', 'var(--production-color)');
         emphasizedCircle.setAttribute('stroke', '#ffffff');
@@ -2599,53 +2630,45 @@ function showLoadingOrError(message) {
         
         const emphasizedText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         emphasizedText.setAttribute('x', lastPoint.x);
-        emphasizedText.setAttribute('y', correctedY - 12);
+        emphasizedText.setAttribute('y', lastPoint.y - 12);
         emphasizedText.setAttribute('text-anchor', 'middle');
         emphasizedText.setAttribute('font-size', isFullscreen ? '18' : '16');
         emphasizedText.setAttribute('font-weight', 'bold');
         emphasizedText.setAttribute('fill', 'var(--production-color)');
-        // Ensure the text shows the current total from metrics
-        emphasizedText.textContent = supervisorTotalProduction;
+        emphasizedText.textContent = lastPoint.production;
         productionLineGroup.appendChild(emphasizedText);
     }
     
     svg.appendChild(productionLineGroup);
     
-    // Draw target line - starting from the first tick (start time) with zero target
+    // Draw target line
     const targetLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     
-    // Start with a point at zero (at the start time)
-    let targetPathD = `M ${padding.left} ${padding.top + chartHeight}`;
-    const targetPoints = [{
-        x: padding.left,
-        y: padding.top + chartHeight,
-        target: 0,
-        hour: startTimeFormatted
-    }];
+    // Start with path data for target line
+    let targetPathD = '';
+    const targetPoints = [];
     
-    // Get data points for target line with proper cumulative totals
-    filteredData.forEach((dataPoint) => {
-        // Find the x position based on the hour
-        const hourIndex = allHours.indexOf(dataPoint.hour);
-        let x;
-        if (hourIndex >= 0) {
-            x = padding.left + (chartWidth * hourIndex / (allHours.length - 1 || 1));
-        } else {
-            // If hour not in allHours, interpolate
-            const timeRatio = (dataPoint.timeMinutes - earliestStartMinutes) / 
-                          ((endTimeMinutes - earliestStartMinutes) || 1);
-            x = padding.left + (chartWidth * timeRatio);
-        }
+    // Create target line data points
+    filteredData.forEach((dataPoint, index) => {
+        // Calculate x position based on time
+        const relativePos = (dataPoint.minutes - startTimeMinutes) / (endTimeMinutes - startTimeMinutes);
+        const x = padding.left + chartWidth * relativePos;
         
+        // Calculate y position based on target value
         const y = padding.top + chartHeight - (chartHeight * (dataPoint.target / maxValue));
         
-        targetPoints.push({ 
-            x, 
-            y, 
-            target: dataPoint.target, 
-            hour: dataPoint.hour 
+        // Add to path data
+        if (index === 0) {
+            targetPathD = `M ${x} ${y}`;
+        } else {
+            targetPathD += ` L ${x} ${y}`;
+        }
+        
+        targetPoints.push({
+            x, y,
+            target: dataPoint.target,
+            hour: dataPoint.hour
         });
-        targetPathD += ` L ${x} ${y}`;
     });
     
     // Add target line
@@ -2656,44 +2679,38 @@ function showLoadingOrError(message) {
     targetPath.setAttribute('fill', 'none');
     targetLineGroup.appendChild(targetPath);
     
-    // Add target points and labels
+    // Add target points and labels at key intervals
     targetPoints.forEach((point, index) => {
-        // Skip emphasizing intermediate points if we have many points
-        if (targetPoints.length > 7 && index > 0 && index < targetPoints.length - 1 && index % 2 === 0) {
-            return;
+        // Only add points at start, hourly intervals, and end
+        if (index === 0 || index === targetPoints.length - 1 || 
+            point.hour.endsWith(':30')) {
+            
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', point.x);
+            circle.setAttribute('cy', point.y);
+            circle.setAttribute('r', isFullscreen ? '5' : '4');
+            circle.setAttribute('fill', 'var(--target-color)');
+            targetLineGroup.appendChild(circle);
+            
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', point.x);
+            text.setAttribute('y', point.y - 8);
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('font-size', isFullscreen ? '14' : '12');
+            text.setAttribute('font-weight', 'bold');
+            text.setAttribute('fill', 'var(--target-color)');
+            text.textContent = point.target;
+            targetLineGroup.appendChild(text);
         }
-        
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', point.x);
-        circle.setAttribute('cy', point.y);
-        circle.setAttribute('r', isFullscreen ? '5' : '4');
-        circle.setAttribute('fill', 'var(--target-color)');
-        targetLineGroup.appendChild(circle);
-        
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', point.x);
-        text.setAttribute('y', point.y - 8);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('font-size', isFullscreen ? '14' : '12');
-        text.setAttribute('font-weight', 'bold');
-        text.setAttribute('fill', 'var(--target-color)');
-        text.textContent = point.target;
-        targetLineGroup.appendChild(text);
     });
     
-    // Emphasize the last target point
+    // Emphasize the final target point
     if (targetPoints.length > 0) {
         const lastPoint = targetPoints[targetPoints.length - 1];
         
-        // Ensure this point shows the correct target value from metrics
-        lastPoint.target = supervisorTotalTarget;
-        
-        // Recalculate Y position for the correct value
-        const correctedY = padding.top + chartHeight - (chartHeight * (supervisorTotalTarget / maxValue));
-        
         const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         emphasizedCircle.setAttribute('cx', lastPoint.x);
-        emphasizedCircle.setAttribute('cy', correctedY);
+        emphasizedCircle.setAttribute('cy', lastPoint.y);
         emphasizedCircle.setAttribute('r', isFullscreen ? '7' : '6');
         emphasizedCircle.setAttribute('fill', 'var(--target-color)');
         emphasizedCircle.setAttribute('stroke', '#ffffff');
@@ -2702,13 +2719,12 @@ function showLoadingOrError(message) {
         
         const emphasizedText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         emphasizedText.setAttribute('x', lastPoint.x);
-        emphasizedText.setAttribute('y', correctedY - 10);
+        emphasizedText.setAttribute('y', lastPoint.y - 10);
         emphasizedText.setAttribute('text-anchor', 'middle');
         emphasizedText.setAttribute('font-size', isFullscreen ? '16' : '14');
         emphasizedText.setAttribute('font-weight', 'bold');
         emphasizedText.setAttribute('fill', 'var(--target-color)');
-        // Ensure the text shows the current target from metrics
-        emphasizedText.textContent = supervisorTotalTarget;
+        emphasizedText.textContent = lastPoint.target;
         targetLineGroup.appendChild(emphasizedText);
     }
     
