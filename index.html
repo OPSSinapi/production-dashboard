@@ -1882,10 +1882,6 @@ function showLoadingOrError(message) {
     batchInfoTableBody.innerHTML = '';
     batchInfoTableHead.innerHTML = '';
     
-    // Get current time to determine current variant
-    const now = new Date();
-    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-    
     // Create the table header row
     const headerRow = document.createElement('tr');
     headerRow.innerHTML = `
@@ -1903,87 +1899,127 @@ function showLoadingOrError(message) {
         return;
     }
     
-    // Create a Map to store the unique batches by ID for the CURRENT SUPERVISOR ONLY
-    const uniqueBatchesMap = new Map();
+    // Get current time to determine current variant
+    const now = new Date();
+    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
     
-    // Get the current supervisor being displayed
+    // Get the current supervisor name from the UI
     const currentSupervisorName = document.getElementById('supervisor-name').textContent.replace('SUPERVISOR: ', '');
     
-    // Only show batches for the current supervisor
-    if (currentSupervisorName) {
-        // Process each group's variants
-        Object.values(filteredGroups).forEach(group => {
-            // Only process if this is the current supervisor's group
-            if (group.supervisor !== currentSupervisorName) return;
-            
-            // Process variants for this supervisor
-            group.variants.forEach(variantInGroup => {
-                const variantKey = variantInGroup.variant;
-                
-                // Find the original production data
-                const productionItem = productionData.originalData.production.find(p => p.id === variantKey);
-                
-                if (!productionItem || !productionItem.batches) return;
-                
-                // Get variant details
-                const productName = productionItem.product?.name || extractProductFromVariant(variantKey);
-                const variantName = productionItem.variant?.name || variantKey.split('-').pop();
-                
-                // Check if this variant is currently active
-                const supervisorVariant = group.supervisorData.variants[variantKey];
-                let isCurrentVariant = false;
-                
-                if (supervisorVariant) {
-                    const startTimeStr = supervisorVariant.variantStartTime || productionItem.supervisors[0]?.startTime;
-                    const endTimeStr = supervisorVariant.variantEndTime || productionItem.supervisors[0]?.endTime;
-                    
-                    if (startTimeStr && endTimeStr) {
-                        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                        
-                        const startTimeMinutes = startHour * 60 + startMinute;
-                        const endTimeMinutes = endHour * 60 + endMinute;
-                        
-                        // Check if current time is within this variant's window
-                        isCurrentVariant = (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes);
-                    }
-                }
-                
-                // Find supervisor-specific batch data
-                const supervisorData = productionItem.supervisors.find(s => s.name === currentSupervisorName);
-                if (!supervisorData) return;
-                
-                // Process each batch - but only for this specific supervisor
-                productionItem.batches.forEach(batch => {
-                    // We need to properly attribute batches to supervisors
-                    // For simplicity, use production quantities to estimate batch attribution
-                    const supervisorProdRatio = supervisorData.production / productionItem.actual.total;
-                    const estimatedBatchUnits = Math.round(batch.quantity * supervisorProdRatio);
-                    const estimatedBatchBoxes = Math.round(batch.boxes * supervisorProdRatio);
-                    
-                    if (estimatedBatchUnits > 0) {
-                        const batchKey = `${productName}-${variantName}-${batch.id}`;
-                        uniqueBatchesMap.set(batchKey, {
-                            product: productName,
-                            variant: variantName,
-                            batchId: batch.id,
-                            units: estimatedBatchUnits,
-                            boxes: estimatedBatchBoxes,
-                            supervisor: currentSupervisorName,
-                            isCurrent: isCurrentVariant,
-                            isAssembly: productName.toLowerCase().includes('assembly')
-                        });
-                    }
-                });
-            });
-        });
+    if (!currentSupervisorName) {
+        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No supervisor selected</td></tr>';
+        return;
     }
     
-    // Convert map to array for display
-    const batchData = Array.from(uniqueBatchesMap.values());
+    // Store processed batches
+    const processedBatches = [];
+    
+    // CRITICAL FIX: Only process data for the current supervisor
+    const currentSupervisorOriginal = productionData.originalData.summary.supervisors.find(
+        s => s.name === currentSupervisorName
+    );
+    
+    if (!currentSupervisorOriginal) {
+        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available for this supervisor</td></tr>';
+        return;
+    }
+    
+    // Get all variants that this supervisor works on
+    const supervisorVariantIds = currentSupervisorOriginal.variants || [];
+    
+    // Process each variant
+    supervisorVariantIds.forEach(variantId => {
+        // Find the production item for this variant
+        const productionItem = productionData.originalData.production.find(p => p.id === variantId);
+        
+        if (!productionItem || !productionItem.batches || productionItem.batches.length === 0) return;
+        
+        // Find the supervisor data within this production item
+        const supervisorData = productionItem.supervisors.find(s => s.name === currentSupervisorName);
+        
+        if (!supervisorData) return;
+        
+        // Get product and variant details
+        const productName = productionItem.product?.name || '';
+        const variantName = productionItem.variant?.name || '';
+        
+        // Check if this variant is currently active
+        let isCurrentVariant = false;
+        const startTimeStr = supervisorData.startTime;
+        const endTimeStr = supervisorData.endTime;
+        
+        if (startTimeStr && endTimeStr) {
+            const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+            const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+            
+            const startTimeMinutes = startHour * 60 + startMinute;
+            const endTimeMinutes = endHour * 60 + endMinute;
+            
+            isCurrentVariant = (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes);
+        }
+        
+        // Calculate the supervisor's proportion of the total production for this variant
+        const totalProduction = productionItem.actual.total || 0;
+        const supervisorProduction = supervisorData.production || 0;
+        const supervisorRatio = totalProduction > 0 ? supervisorProduction / totalProduction : 0;
+        
+        // Process each batch that belongs to this supervisor
+        productionItem.batches.forEach(batch => {
+            // Calculate supervisor's portion of this batch
+            // For batch attribution, check if this supervisor is the main one for this batch
+            // CRITICAL FIX: Better batch attribution logic
+            let batchBelongsToSupervisor = false;
+            let supervisorUnits = 0;
+            let supervisorBoxes = 0;
+            
+            // Check if supervisor IDs match any in the batch
+            const supervisorIndex = productionItem.supervisors.findIndex(s => s.name === currentSupervisorName);
+            
+            if (supervisorIndex === 0 && productionItem.supervisors.length === 1) {
+                // If this is the only supervisor, all batches belong to them
+                batchBelongsToSupervisor = true;
+                supervisorUnits = batch.quantity;
+                supervisorBoxes = batch.boxes;
+            } else if (supervisorIndex !== -1) {
+                // If multiple supervisors, attribute batch based on batch index matching supervisor index
+                // or use production ratio as fallback
+                if (supervisorIndex < productionItem.batches.length) {
+                    // If supervisor index matches batch index, attribute fully to this supervisor
+                    if (productionItem.batches[supervisorIndex].id === batch.id) {
+                        batchBelongsToSupervisor = true;
+                        supervisorUnits = batch.quantity;
+                        supervisorBoxes = batch.boxes;
+                    }
+                } else {
+                    // Use production ratio for proportional attribution
+                    supervisorUnits = Math.round(batch.quantity * supervisorRatio);
+                    supervisorBoxes = Math.round(batch.boxes * supervisorRatio);
+                    batchBelongsToSupervisor = supervisorUnits > 0 || supervisorBoxes > 0;
+                }
+            }
+            
+            if (batchBelongsToSupervisor) {
+                processedBatches.push({
+                    product: productName,
+                    variant: variantName,
+                    batchId: batch.id,
+                    units: supervisorUnits,
+                    boxes: supervisorBoxes,
+                    isCurrent: isCurrentVariant,
+                    isAssembly: productName.toLowerCase().includes('assembly')
+                });
+            }
+        });
+    });
+    
+    // Check if we found any batches
+    if (processedBatches.length === 0) {
+        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available for this supervisor</td></tr>';
+        return;
+    }
     
     // Sort batches by product, then by variant
-    batchData.sort((a, b) => {
+    processedBatches.sort((a, b) => {
         // First by product
         if (a.product !== b.product) {
             return a.product.localeCompare(b.product);
@@ -1999,14 +2035,9 @@ function showLoadingOrError(message) {
     });
     
     // Create table rows for each batch
-    if (batchData.length === 0) {
-        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
-        return;
-    }
-    
     let currentProduct = null;
     
-    batchData.forEach(batch => {
+    processedBatches.forEach(batch => {
         // Add product header if changed
         if (batch.product !== currentProduct) {
             currentProduct = batch.product;
@@ -2065,7 +2096,7 @@ function showLoadingOrError(message) {
     });
 }
         
-        function renderCumulativeChart(group) {
+         function renderCumulativeChart(group) {
     const chartContainer = document.getElementById('cumulative-chart');
     chartContainer.innerHTML = '';
     
@@ -2078,60 +2109,104 @@ function showLoadingOrError(message) {
     const hourlyTargetMap = new Map();     // Map to store targets by hour
     const hourlyStatusMap = new Map();     // Map to store hour status (met/missed)
     
-    // Track production by hour directly from timeline data for better accuracy
-    group.variants.forEach(variant => {
-        // Get variant time window
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        if (!supervisorVariant) return;
+    // Get supervisor totals from metrics display for accuracy
+    const supervisorTotalProduction = parseInt(document.getElementById('current-units').textContent, 10) || 0;
+    const supervisorTotalTarget = parseInt(document.getElementById('target-units').textContent, 10) || 0;
+    
+    // Find all active time periods for this supervisor to calculate correct hourly targets
+    const activePeriods = [];
+    
+    // CRITICAL FIX: Get the supervisor from the original data
+    const originalSupervisor = productionData.originalData.summary.supervisors.find(
+        s => s.name === currentSupervisor
+    );
+    
+    if (!originalSupervisor) {
+        chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available for this supervisor</div>';
+        return;
+    }
+    
+    // Process all variants this supervisor works on
+    (originalSupervisor.variants || []).forEach(variantId => {
+        const prodItem = productionData.originalData.production.find(p => p.id === variantId);
+        if (!prodItem) return;
         
-        const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-        const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
+        const supervisorData = prodItem.supervisors.find(s => s.name === currentSupervisor);
+        if (!supervisorData) return;
         
-        if (!startTimeStr || !endTimeStr) return;
-        
-        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-        
-        const startTimeMinutes = startHour * 60 + startMinute;
-        const endTimeMinutes = endHour * 60 + endMinute;
-        
-        // Get the original production item to access detailed timeline data
-        const prodItem = productionData.originalData.production.find(p => p.id === variant.variant);
-        const supervisorData = prodItem?.supervisors.find(s => s.name === currentSupervisor);
-        
-        if (!prodItem || !prodItem.timeline || !supervisorData) return;
-        
-        // Calculate the supervisor's proportion of the variant's production
-        const supervisorRatio = supervisorData.production / prodItem.actual.total;
-        
-        // Process timeline data - but only for hours within this supervisor's time window
-        prodItem.timeline.forEach(hour => {
-            if (!hour.hour) return;
+        // Add this variant's time period to active periods
+        if (supervisorData.startTime && supervisorData.endTime) {
+            const [startHour, startMinute] = supervisorData.startTime.split(':').map(Number);
+            const [endHour, endMinute] = supervisorData.endTime.split(':').map(Number);
             
-            const [itemHour, itemMinute] = hour.hour.split(':').map(Number);
-            const itemTimeMinutes = itemHour * 60 + itemMinute;
-            
-            if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                // Add hour to the set
-                allHoursSet.add(hour.hour);
+            activePeriods.push({
+                variantId,
+                startTimeMinutes: startHour * 60 + startMinute,
+                endTimeMinutes: endHour * 60 + endMinute,
+                cycleTime: prodItem.variant.cycleTime,
+                target: supervisorData.target,
+                production: supervisorData.production
+            });
+        }
+        
+        // Process timeline data for this variant
+        if (prodItem.timeline) {
+            prodItem.timeline.forEach(hour => {
+                if (!hour.hour) return;
                 
-                // Calculate the supervisor's portion of the hour's production and target
-                const hourProduction = Math.round(hour.actual * supervisorRatio);
-                const hourTarget = Math.round(hour.target * supervisorRatio);
+                const [itemHour, itemMinute] = hour.hour.split(':').map(Number);
+                const itemTimeMinutes = itemHour * 60 + itemMinute;
                 
-                // Add to hourly maps
-                if (!hourlyProductionMap.has(hour.hour)) {
-                    hourlyProductionMap.set(hour.hour, 0);
+                // Check if this hour is within this supervisor's active period for this variant
+                if (supervisorData.startTime && supervisorData.endTime) {
+                    const [startHour, startMinute] = supervisorData.startTime.split(':').map(Number);
+                    const [endHour, endMinute] = supervisorData.endTime.split(':').map(Number);
+                    
+                    const startTimeMinutes = startHour * 60 + startMinute;
+                    const endTimeMinutes = endHour * 60 + endMinute;
+                    
+                    // Check if this hour is within the supervisor's time window
+                    const prevHourTime = itemTimeMinutes - 60;
+                    
+                    // If the hour period overlaps with this supervisor's active period
+                    if ((prevHourTime <= endTimeMinutes && itemTimeMinutes >= startTimeMinutes)) {
+                        // Add hour to the set
+                        allHoursSet.add(hour.hour);
+                        
+                        // Calculate supervisor's portion of production for this hour
+                        let hourProduction = 0;
+                        let hourTarget = 0;
+                        
+                        // CRITICAL FIX: Calculate production and target proportionally
+                        if (prodItem.supervisors.length > 1) {
+                            // Multiple supervisors - calculate proportion based on total production
+                            const supervisorRatio = supervisorData.production / prodItem.actual.total;
+                            hourProduction = Math.round(hour.actual * supervisorRatio);
+                            hourTarget = Math.round(hour.target * supervisorRatio);
+                        } else {
+                            // Single supervisor - use full values
+                            hourProduction = hour.actual;
+                            hourTarget = hour.target;
+                        }
+                        
+                        // Add to hourly maps
+                        if (!hourlyProductionMap.has(hour.hour)) {
+                            hourlyProductionMap.set(hour.hour, 0);
+                        }
+                        hourlyProductionMap.set(hour.hour, hourlyProductionMap.get(hour.hour) + hourProduction);
+                        
+                        if (!hourlyTargetMap.has(hour.hour)) {
+                            hourlyTargetMap.set(hour.hour, 0);
+                        }
+                        hourlyTargetMap.set(hour.hour, hourlyTargetMap.get(hour.hour) + hourTarget);
+                    }
                 }
-                hourlyProductionMap.set(hour.hour, hourlyProductionMap.get(hour.hour) + hourProduction);
-                
-                if (!hourlyTargetMap.has(hour.hour)) {
-                    hourlyTargetMap.set(hour.hour, 0);
-                }
-                hourlyTargetMap.set(hour.hour, hourlyTargetMap.get(hour.hour) + hourTarget);
-            }
-        });
+            });
+        }
     });
+    
+    // Sort active periods by start time
+    activePeriods.sort((a, b) => a.startTimeMinutes - b.startTimeMinutes);
     
     // Convert to sorted array of hours
     const sortedHours = Array.from(allHoursSet).sort((a, b) => {
@@ -2145,32 +2220,30 @@ function showLoadingOrError(message) {
         return;
     }
     
-    // Get supervisor totals from metrics display for accuracy
-    const supervisorTotalProduction = parseInt(document.getElementById('current-units').textContent, 10) || 0;
-    const supervisorTotalTarget = parseInt(document.getElementById('target-units').textContent, 10) || 0;
-    
-    // Build cumulative data arrays
+    // CRITICAL FIX: Calculate cumulative target more accurately
     const cumulativeData = [];
     let runningProductionTotal = 0;
     let runningTargetTotal = 0;
     
-    // Generate time-based data points
+    // For each hour, calculate the correct target based on active variants in that hour
     sortedHours.forEach(hour => {
+        const [hourVal, minuteVal] = hour.split(':').map(Number);
+        const hourStartMinutes = hourVal * 60 + minuteVal - 60; // Start of hour period
+        const hourEndMinutes = hourVal * 60 + minuteVal; // End of hour period
+        
+        // Calculate target for this hour based on active variants
+        let hourTarget = hourlyTargetMap.get(hour) || 0;
         const hourProduction = hourlyProductionMap.get(hour) || 0;
-        const hourTarget = hourlyTargetMap.get(hour) || 0;
         
         // Add to running totals
         runningProductionTotal += hourProduction;
         runningTargetTotal += hourTarget;
         
-        const [hourVal, minuteVal] = hour.split(':').map(Number);
-        const timeMinutes = hourVal * 60 + minuteVal;
-        
         cumulativeData.push({
             hour: hour,
             production: runningProductionTotal,
             target: runningTargetTotal,
-            timeMinutes: timeMinutes
+            timeMinutes: hourEndMinutes
         });
         
         // Determine status for each hour
@@ -2178,20 +2251,37 @@ function showLoadingOrError(message) {
         const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
         
         // Only evaluate completed hours
-        if (currentTimeMinutes >= timeMinutes + 30) {
+        if (currentTimeMinutes >= hourEndMinutes + 30) {
             hourlyStatusMap.set(hour, hourProduction >= hourTarget ? 'met' : 'missed');
-        } else if (currentTimeMinutes >= timeMinutes - 30 && currentTimeMinutes < timeMinutes + 30) {
+        } else if (currentTimeMinutes >= hourEndMinutes - 30 && currentTimeMinutes < hourEndMinutes + 30) {
             hourlyStatusMap.set(hour, 'current');
         } else {
             hourlyStatusMap.set(hour, 'upcoming');
         }
     });
     
-    // Ensure the final cumulative total matches the supervisor's actual production
+    // CRITICAL FIX: Ensure target line is monotonically increasing
+    // Check that the target line is always non-decreasing
+    for (let i = 1; i < cumulativeData.length; i++) {
+        if (cumulativeData[i].target < cumulativeData[i-1].target) {
+            cumulativeData[i].target = cumulativeData[i-1].target;
+        }
+    }
+    
+    // Ensure the final cumulative totals match the displayed metrics
     if (cumulativeData.length > 0) {
         const lastDataPoint = cumulativeData[cumulativeData.length - 1];
-        // Adjust the last point to match exactly
         lastDataPoint.production = supervisorTotalProduction;
+        
+        // Fix for target total - ensure it matches the supervisor's total target
+        // but maintain the proportions of the target line
+        if (lastDataPoint.target !== supervisorTotalTarget && lastDataPoint.target > 0) {
+            // Adjust all target values proportionally
+            const targetRatio = supervisorTotalTarget / lastDataPoint.target;
+            cumulativeData.forEach(point => {
+                point.target = Math.round(point.target * targetRatio);
+            });
+        }
     }
     
     // Filter data to only show up to current time plus buffer
@@ -2204,7 +2294,7 @@ function showLoadingOrError(message) {
     // Always ensure we have a final point with the correct supervisor total
     if (filteredData.length > 0) {
         const lastPoint = filteredData[filteredData.length - 1];
-        if (lastPoint.production !== supervisorTotalProduction) {
+        if (lastPoint.production !== supervisorTotalProduction || lastPoint.target !== supervisorTotalTarget) {
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
             const currentHourStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
@@ -2224,7 +2314,7 @@ function showLoadingOrError(message) {
         return;
     }
     
-    // The rest of the function (chart rendering) remains the same
+    // The rest of the chart rendering code remains the same
     // Get chart dimensions based on container
     const chartArea = chartContainer.closest('.chart-area');
     const svgWidth = chartArea.clientWidth;
@@ -2322,27 +2412,13 @@ function showLoadingOrError(message) {
     let earliestStartMinutes = 24 * 60; // Initialize to end of day
     let latestEndMinutes = 0;
 
-    group.variants.forEach(variant => {
-        const supervisorVariant = group.supervisorData.variants[variant.variant];
-        if (supervisorVariant) {
-            const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-            const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-            
-            if (startTimeStr && endTimeStr) {
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const startTimeMinutes = startHour * 60 + startMinute;
-                
-                if (startTimeMinutes < earliestStartMinutes) {
-                    earliestStartMinutes = startTimeMinutes;
-                }
-                
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                if (endTimeMinutes > latestEndMinutes) {
-                    latestEndMinutes = endTimeMinutes;
-                }
-            }
+    // Use active periods to find earliest and latest times
+    activePeriods.forEach(period => {
+        if (period.startTimeMinutes < earliestStartMinutes) {
+            earliestStartMinutes = period.startTimeMinutes;
+        }
+        if (period.endTimeMinutes > latestEndMinutes) {
+            latestEndMinutes = period.endTimeMinutes;
         }
     });
 
