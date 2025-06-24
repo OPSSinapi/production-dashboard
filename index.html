@@ -1885,6 +1885,7 @@ function showLoadingOrError(message) {
     // Create the table header row
     const headerRow = document.createElement('tr');
     headerRow.innerHTML = `
+        <th>Supervisor</th>
         <th>Product</th>
         <th>Variant</th>
         <th>Batch</th>
@@ -1895,7 +1896,7 @@ function showLoadingOrError(message) {
     
     // If no original data, show message
     if (!productionData.originalData || !productionData.originalData.production) {
-        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
+        batchInfoTableBody.innerHTML = '<tr><td colspan="6">No batch information available</td></tr>';
         return;
     }
     
@@ -1903,124 +1904,134 @@ function showLoadingOrError(message) {
     const now = new Date();
     const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
     
-    // Get the current supervisor name from the UI
-    const currentSupervisorName = document.getElementById('supervisor-name').textContent.replace('SUPERVISOR: ', '');
-    
-    if (!currentSupervisorName) {
-        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No supervisor selected</td></tr>';
+    // Process batches for ALL selected supervisors
+    if (!selectedSupervisors || selectedSupervisors.length === 0) {
+        batchInfoTableBody.innerHTML = '<tr><td colspan="6">No supervisors selected</td></tr>';
         return;
     }
     
-    // Store processed batches
+    // Store processed batches with supervisor information
     const processedBatches = [];
     
-    // CRITICAL FIX: Only process data for the current supervisor
-    const currentSupervisorOriginal = productionData.originalData.summary.supervisors.find(
-        s => s.name === currentSupervisorName
-    );
-    
-    if (!currentSupervisorOriginal) {
-        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available for this supervisor</td></tr>';
-        return;
-    }
-    
-    // Get all variants that this supervisor works on
-    const supervisorVariantIds = currentSupervisorOriginal.variants || [];
-    
-    // Process each variant
-    supervisorVariantIds.forEach(variantId => {
-        // Find the production item for this variant
-        const productionItem = productionData.originalData.production.find(p => p.id === variantId);
+    // Process each selected supervisor
+    selectedSupervisors.forEach(supervisorName => {
+        const supervisorOriginal = productionData.originalData.summary.supervisors.find(
+            s => s.name === supervisorName
+        );
         
-        if (!productionItem || !productionItem.batches || productionItem.batches.length === 0) return;
+        if (!supervisorOriginal) return;
         
-        // Find the supervisor data within this production item
-        const supervisorData = productionItem.supervisors.find(s => s.name === currentSupervisorName);
+        // Get all variants that this supervisor works on
+        const supervisorVariantIds = supervisorOriginal.variants || [];
         
-        if (!supervisorData) return;
-        
-        // Get product and variant details
-        const productName = productionItem.product?.name || '';
-        const variantName = productionItem.variant?.name || '';
-        
-        // Check if this variant is currently active
-        let isCurrentVariant = false;
-        const startTimeStr = supervisorData.startTime;
-        const endTimeStr = supervisorData.endTime;
-        
-        if (startTimeStr && endTimeStr) {
-            const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-            const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+        // Process each variant
+        supervisorVariantIds.forEach(variantId => {
+            // Find the production item for this variant
+            const productionItem = productionData.originalData.production.find(p => p.id === variantId);
             
-            const startTimeMinutes = startHour * 60 + startMinute;
-            const endTimeMinutes = endHour * 60 + endMinute;
+            if (!productionItem || !productionItem.batches || productionItem.batches.length === 0) return;
             
-            isCurrentVariant = (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes);
-        }
-        
-        // Calculate the supervisor's proportion of the total production for this variant
-        const totalProduction = productionItem.actual.total || 0;
-        const supervisorProduction = supervisorData.production || 0;
-        const supervisorRatio = totalProduction > 0 ? supervisorProduction / totalProduction : 0;
-        
-        // Process each batch that belongs to this supervisor
-        productionItem.batches.forEach(batch => {
-            // Calculate supervisor's portion of this batch
-            // For batch attribution, check if this supervisor is the main one for this batch
-            // CRITICAL FIX: Better batch attribution logic
-            let batchBelongsToSupervisor = false;
-            let supervisorUnits = 0;
-            let supervisorBoxes = 0;
+            // Find the supervisor data within this production item
+            const supervisorData = productionItem.supervisors.find(s => s.name === supervisorName);
             
-            // Check if supervisor IDs match any in the batch
-            const supervisorIndex = productionItem.supervisors.findIndex(s => s.name === currentSupervisorName);
+            if (!supervisorData) return;
             
-            if (supervisorIndex === 0 && productionItem.supervisors.length === 1) {
-                // If this is the only supervisor, all batches belong to them
-                batchBelongsToSupervisor = true;
-                supervisorUnits = batch.quantity;
-                supervisorBoxes = batch.boxes;
-            } else if (supervisorIndex !== -1) {
-                // If multiple supervisors, attribute batch based on batch index matching supervisor index
-                // or use production ratio as fallback
-                if (supervisorIndex < productionItem.batches.length) {
-                    // If supervisor index matches batch index, attribute fully to this supervisor
-                    if (productionItem.batches[supervisorIndex].id === batch.id) {
-                        batchBelongsToSupervisor = true;
-                        supervisorUnits = batch.quantity;
-                        supervisorBoxes = batch.boxes;
+            // Get product and variant details
+            const productName = productionItem.product?.name || '';
+            const variantName = productionItem.variant?.name || '';
+            
+            // Check if this variant is currently active for this supervisor
+            let isCurrentVariant = false;
+            const startTimeStr = supervisorData.startTime;
+            const endTimeStr = supervisorData.endTime;
+            
+            if (startTimeStr && endTimeStr) {
+                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
+                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
+                
+                const startTimeMinutes = startHour * 60 + startMinute;
+                const endTimeMinutes = endHour * 60 + endMinute;
+                
+                isCurrentVariant = (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes);
+            }
+            
+            // Calculate the supervisor's proportion of the total production for this variant
+            const totalProduction = productionItem.actual.total || 0;
+            const supervisorProduction = supervisorData.production || 0;
+            const supervisorRatio = totalProduction > 0 ? supervisorProduction / totalProduction : 0;
+            
+            // Process each batch that belongs to this supervisor
+            productionItem.batches.forEach(batch => {
+                // Calculate supervisor's portion of this batch
+                let batchBelongsToSupervisor = false;
+                let supervisorUnits = 0;
+                let supervisorBoxes = 0;
+                
+                // Check if supervisor IDs match any in the batch
+                const supervisorIndex = productionItem.supervisors.findIndex(s => s.name === supervisorName);
+                
+                if (supervisorIndex === 0 && productionItem.supervisors.length === 1) {
+                    // If this is the only supervisor, all batches belong to them
+                    batchBelongsToSupervisor = true;
+                    supervisorUnits = batch.quantity;
+                    supervisorBoxes = batch.boxes;
+                } else if (supervisorIndex !== -1) {
+                    // If multiple supervisors, attribute batch based on batch index matching supervisor index
+                    // or use production ratio as fallback
+                    if (supervisorIndex < productionItem.batches.length) {
+                        // If supervisor index matches batch index, attribute fully to this supervisor
+                        if (productionItem.batches[supervisorIndex].id === batch.id) {
+                            batchBelongsToSupervisor = true;
+                            supervisorUnits = batch.quantity;
+                            supervisorBoxes = batch.boxes;
+                        }
+                    } else {
+                        // Use production ratio for proportional attribution
+                        supervisorUnits = Math.round(batch.quantity * supervisorRatio);
+                        supervisorBoxes = Math.round(batch.boxes * supervisorRatio);
+                        batchBelongsToSupervisor = supervisorUnits > 0 || supervisorBoxes > 0;
                     }
-                } else {
-                    // Use production ratio for proportional attribution
-                    supervisorUnits = Math.round(batch.quantity * supervisorRatio);
-                    supervisorBoxes = Math.round(batch.boxes * supervisorRatio);
-                    batchBelongsToSupervisor = supervisorUnits > 0 || supervisorBoxes > 0;
                 }
-            }
-            
-            if (batchBelongsToSupervisor) {
-                processedBatches.push({
-                    product: productName,
-                    variant: variantName,
-                    batchId: batch.id,
-                    units: supervisorUnits,
-                    boxes: supervisorBoxes,
-                    isCurrent: isCurrentVariant,
-                    isAssembly: productName.toLowerCase().includes('assembly')
-                });
-            }
+                
+                if (batchBelongsToSupervisor) {
+                    processedBatches.push({
+                        supervisor: supervisorName,
+                        product: productName,
+                        variant: variantName,
+                        batchId: batch.id,
+                        units: supervisorUnits,
+                        boxes: supervisorBoxes,
+                        isCurrent: isCurrentVariant,
+                        isAssembly: productName.toLowerCase().includes('assembly'),
+                        // Add sort keys
+                        supervisorOrder: selectedSupervisors.indexOf(supervisorName), // Maintain selected order
+                        startTimeMinutes: startTimeStr ? 
+                            (parseInt(startTimeStr.split(':')[0]) * 60 + parseInt(startTimeStr.split(':')[1])) : 0
+                    });
+                }
+            });
         });
     });
     
     // Check if we found any batches
     if (processedBatches.length === 0) {
-        batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available for this supervisor</td></tr>';
+        batchInfoTableBody.innerHTML = '<tr><td colspan="6">No batch information available for selected supervisors</td></tr>';
         return;
     }
     
-    // Sort batches by product, then by variant
+    // Sort batches by supervisor (in selected order), then by start time, then by product, then by variant
     processedBatches.sort((a, b) => {
-        // First by product
+        // First by supervisor order (as selected)
+        if (a.supervisorOrder !== b.supervisorOrder) {
+            return a.supervisorOrder - b.supervisorOrder;
+        }
+        
+        // Then by start time within supervisor
+        if (a.startTimeMinutes !== b.startTimeMinutes) {
+            return a.startTimeMinutes - b.startTimeMinutes;
+        }
+        
+        // Then by product
         if (a.product !== b.product) {
             return a.product.localeCompare(b.product);
         }
@@ -2030,25 +2041,41 @@ function showLoadingOrError(message) {
             return a.variant.localeCompare(b.variant);
         }
         
-        // Then by batch ID
+        // Finally by batch ID
         return a.batchId - b.batchId;
     });
     
-    // Create table rows for each batch
+    // Create table rows for each batch with supervisor grouping
+    let currentSupervisor = null;
     let currentProduct = null;
     
     processedBatches.forEach(batch => {
-        // Add product header if changed
+        // Add supervisor header if changed
+        if (batch.supervisor !== currentSupervisor) {
+            currentSupervisor = batch.supervisor;
+            currentProduct = null; // Reset product when supervisor changes
+            
+            const supervisorRow = document.createElement('tr');
+            supervisorRow.className = 'supervisor-header';
+            supervisorRow.style.backgroundColor = getSupervisorColor(batch.supervisor);
+            
+            const supervisorCell = document.createElement('td');
+            supervisorCell.colSpan = 6;
+            supervisorCell.textContent = `SUPERVISOR: ${batch.supervisor}`;
+            
+            supervisorRow.appendChild(supervisorCell);
+            batchInfoTableBody.appendChild(supervisorRow);
+        }
+        
+        // Add product header if changed within supervisor
         if (batch.product !== currentProduct) {
             currentProduct = batch.product;
             
             const productRow = document.createElement('tr');
-            productRow.style.backgroundColor = '#f0f9ff'; // Light blue background
+            productRow.className = 'product-header';
             
             const productCell = document.createElement('td');
-            productCell.colSpan = 5;
-            productCell.style.fontWeight = 'bold';
-            productCell.style.fontSize = 'larger';
+            productCell.colSpan = 6;
             productCell.textContent = batch.product;
             
             productRow.appendChild(productCell);
@@ -2061,9 +2088,15 @@ function showLoadingOrError(message) {
             row.className = 'current';
         }
         
-        // Product cell - Now less prominent since we have product headers
+        // Supervisor cell - less prominent since we have supervisor headers
+        const supervisorCell = document.createElement('td');
+        supervisorCell.style.opacity = '0.5';
+        supervisorCell.textContent = batch.supervisor;
+        row.appendChild(supervisorCell);
+        
+        // Product cell - less prominent since we have product headers
         const productCell = document.createElement('td');
-        productCell.style.opacity = '0.5'; // Make less prominent
+        productCell.style.opacity = '0.5';
         productCell.textContent = batch.product;
         row.appendChild(productCell);
         
