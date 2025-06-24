@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-24T10:58:20.939Z",
+    "timestamp": "2025-06-24T10:59:10.216Z",
     "date": "2025-06-24",
     "facility": "Main Plant"
   },
@@ -171,7 +171,7 @@
         "fullName": "EV L1 DS BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 80
+        "actualCycleTime": 48
       },
       "shiftId": "day-shift",
       "targets": {
@@ -180,9 +180,9 @@
         "boxes": 13
       },
       "actual": {
-        "total": 300,
-        "boxes": 3,
-        "progress": 22
+        "total": 500,
+        "boxes": 5,
+        "progress": 37
       },
       "batches": [
         {
@@ -192,19 +192,19 @@
         },
         {
           "id": 25062454,
-          "quantity": 100,
-          "boxes": 1
+          "quantity": 300,
+          "boxes": 3
         }
       ],
       "supervisors": [
         {
           "id": "Nosi",
           "name": "Nosi",
-          "production": 300,
+          "production": 500,
           "startTime": "10:37",
           "endTime": "18:00",
           "target": 825,
-          "progress": 36
+          "progress": 61
         }
       ],
       "timeline": [
@@ -255,9 +255,9 @@
         {
           "hour": "11:30",
           "target": 92,
-          "actual": 300,
+          "actual": 500,
           "cumTarget": 636,
-          "cumActual": 300,
+          "cumActual": 500,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -1111,7 +1111,7 @@
         "fullName": "Scalpel Assembly PAMS15NS",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 15
+        "actualCycleTime": 6
       },
       "shiftId": "normal-time",
       "targets": {
@@ -1137,9 +1137,9 @@
           "name": "Apelele",
           "production": 2000,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 12763,
-          "progress": 16
+          "endTime": "10:58",
+          "target": 4947,
+          "progress": 40
         }
       ],
       "timeline": [
@@ -1178,14 +1178,14 @@
         },
         {
           "hour": "11:30",
-          "target": 1184,
+          "target": 736,
           "actual": 0,
-          "cumTarget": 5787,
+          "cumTarget": 5339,
           "cumActual": 2000,
-          "transitionTarget": 0,
+          "transitionTarget": 736,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 45
+          "currentVariantMinutes": 28
         }
       ]
     },
@@ -1278,6 +1278,96 @@
           "currentVariantMinutes": 45
         }
       ]
+    },
+    {
+      "id": "Scalpel-Assembly-PARC10S",
+      "product": {
+        "id": "Scalpel-Assembly",
+        "name": "Scalpel Assembly"
+      },
+      "variant": {
+        "id": "PARC10S",
+        "name": "PARC10S",
+        "fullName": "Scalpel Assembly PARC10S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 9
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12773,
+        "boxes": 12
+      },
+      "actual": {
+        "total": 2000,
+        "boxes": 2,
+        "progress": 16
+      },
+      "batches": [
+        {
+          "id": 25062453,
+          "quantity": 2000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 2000,
+          "startTime": "10:58",
+          "endTime": "16:30",
+          "target": 7815,
+          "progress": 26
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1447,
+          "actual": 0,
+          "cumTarget": 4603,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 842,
+          "actual": 2000,
+          "cumTarget": 5445,
+          "cumActual": 2000,
+          "transitionTarget": 842,
+          "previousVariant": "Scalpel-Assembly-PAMS15NS",
+          "previousVariantMinutes": 28,
+          "currentVariantMinutes": 32
+        }
+      ]
     }
   ],
   "summary": {
@@ -1292,9 +1382,9 @@
       {
         "id": "EV-L1-DS",
         "name": "EV L1 DS",
-        "totalProduction": 300,
+        "totalProduction": 500,
         "totalTarget": 1361,
-        "progress": 22
+        "progress": 37
       },
       {
         "id": "EV-L1-NS",
@@ -1362,8 +1452,8 @@
       {
         "id": "Scalpel-Assembly",
         "name": "Scalpel Assembly",
-        "totalProduction": 2000,
-        "totalTarget": 12773,
+        "totalProduction": 4000,
+        "totalTarget": 25546,
         "progress": 16
       },
       {
@@ -1378,9 +1468,9 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 15600,
+        "totalProduction": 15800,
         "totalTarget": 18667,
-        "progress": 84,
+        "progress": 85,
         "variants": [
           "EV-L1-NS-BC01",
           "EV-L2-NS-BC01",
@@ -1436,11 +1526,12 @@
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 2000,
-        "totalTarget": 12763,
-        "progress": 16,
+        "totalProduction": 4000,
+        "totalTarget": 12762,
+        "progress": 31,
         "variants": [
-          "Scalpel-Assembly-PAMS15NS"
+          "Scalpel-Assembly-PAMS15NS",
+          "Scalpel-Assembly-PARC10S"
         ]
       },
       {
