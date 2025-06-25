@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-25T07:54:17.858Z",
+    "timestamp": "2025-06-25T07:55:15.703Z",
     "date": "2025-06-25",
     "facility": "Main Plant"
   },
@@ -329,6 +329,63 @@
           "currentVariantMinutes": 0
         }
       ]
+    },
+    {
+      "id": "SUM-500V2",
+      "product": {
+        "id": "SUM",
+        "name": "SUM"
+      },
+      "variant": {
+        "id": "500V2",
+        "name": "500V2",
+        "fullName": "SUM SUM500V2",
+        "cycleTime": 26.47,
+        "devicesPerBox": 20,
+        "actualCycleTime": 728
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 136,
+        "daily": 1100,
+        "boxes": 55
+      },
+      "actual": {
+        "total": 40,
+        "boxes": 2,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 25062558,
+          "quantity": 40,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Luthando",
+          "name": "Luthando",
+          "production": 40,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 1099,
+          "progress": 4
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 136,
+          "actual": 40,
+          "cumTarget": 136,
+          "cumActual": 40,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -367,6 +424,13 @@
         "totalProduction": 1600,
         "totalTarget": 1361,
         "progress": 118
+      },
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 40,
+        "totalTarget": 1100,
+        "progress": 4
       }
     ],
     "supervisors": [
@@ -391,6 +455,16 @@
         "progress": 2,
         "variants": [
           "SCD-XL1000SC"
+        ]
+      },
+      {
+        "id": "Luthando",
+        "name": "Luthando",
+        "totalProduction": 40,
+        "totalTarget": 1099,
+        "progress": 4,
+        "variants": [
+          "SUM-500V2"
         ]
       }
     ]
