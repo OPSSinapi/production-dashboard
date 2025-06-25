@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-25T05:00:03.462Z",
+    "timestamp": "2025-06-25T05:01:08.354Z",
     "date": "2025-06-25",
     "facility": "Main Plant"
   },
@@ -83,7 +83,52 @@
         "fullName": "EV L2 NS BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 37
+        "actualCycleTime": 7
+      },
+      "shiftId": "night-shift",
+      "targets": {
+        "hourly": 123,
+        "daily": 1361,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 500,
+        "boxes": 5,
+        "progress": 37
+      },
+      "batches": [
+        {
+          "id": 25062454,
+          "quantity": 500,
+          "boxes": 5
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 500,
+          "startTime": "04:59",
+          "endTime": "06:00",
+          "target": 125,
+          "progress": 400
+        }
+      ],
+      "timeline": []
+    },
+    {
+      "id": "EV-L3-NS-BC01",
+      "product": {
+        "id": "EV-L3-NS",
+        "name": "EV L3 NS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L3 NS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 36
       },
       "shiftId": "night-shift",
       "targets": {
@@ -108,10 +153,10 @@
           "id": "Nosi",
           "name": "Nosi",
           "production": 100,
-          "startTime": "04:59",
+          "startTime": "05:00",
           "endTime": "06:00",
-          "target": 125,
-          "progress": 80
+          "target": 123,
+          "progress": 81
         }
       ],
       "timeline": []
@@ -129,6 +174,13 @@
       {
         "id": "EV-L2-NS",
         "name": "EV L2 NS",
+        "totalProduction": 500,
+        "totalTarget": 1361,
+        "progress": 37
+      },
+      {
+        "id": "EV-L3-NS",
+        "name": "EV L3 NS",
         "totalProduction": 100,
         "totalTarget": 1361,
         "progress": 7
@@ -138,12 +190,13 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 1600,
-        "totalTarget": 1486,
-        "progress": 108,
+        "totalProduction": 2100,
+        "totalTarget": 1609,
+        "progress": 131,
         "variants": [
           "EV-L1-NS-BC01",
-          "EV-L2-NS-BC01"
+          "EV-L2-NS-BC01",
+          "EV-L3-NS-BC01"
         ]
       }
     ]
