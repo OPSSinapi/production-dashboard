@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-25T12:27:19.313Z",
+    "timestamp": "2025-06-25T12:28:08.511Z",
     "date": "2025-06-25",
     "facility": "Main Plant"
   },
@@ -23,6 +23,25 @@
         }
       ],
       "availableWorkHours": 8.09
+    },
+    {
+      "id": "day-shift",
+      "name": "11h DS",
+      "startTime": "06:00",
+      "endTime": "18:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11
     },
     {
       "id": "night-shift",
@@ -139,6 +158,118 @@
           "actual": 96,
           "cumTarget": 569,
           "cumActual": 480,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "EV-L1-DS-BC01",
+      "product": {
+        "id": "EV-L1-DS",
+        "name": "EV L1 DS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L1 DS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 180
+      },
+      "shiftId": "day-shift",
+      "targets": {
+        "hourly": 123,
+        "daily": 1361,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 7
+      },
+      "batches": [
+        {
+          "id": 25062454,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 100,
+          "startTime": "12:25",
+          "endTime": "18:00",
+          "target": 618,
+          "progress": 16
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "07:30",
+          "target": 185,
+          "actual": 0,
+          "cumTarget": 185,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 90
+        },
+        {
+          "hour": "08:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 308,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 431,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 113,
+          "actual": 0,
+          "cumTarget": 544,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 92,
+          "actual": 0,
+          "cumTarget": 636,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        },
+        {
+          "hour": "12:30",
+          "target": 123,
+          "actual": 100,
+          "cumTarget": 759,
+          "cumActual": 100,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -689,7 +820,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 49
+        "actualCycleTime": 47
       },
       "shiftId": "normal-time",
       "targets": {
@@ -698,26 +829,26 @@
         "boxes": 55
       },
       "actual": {
-        "total": 600,
-        "boxes": 30,
-        "progress": 55
+        "total": 620,
+        "boxes": 31,
+        "progress": 56
       },
       "batches": [
         {
           "id": 25062558,
-          "quantity": 600,
-          "boxes": 30
+          "quantity": 620,
+          "boxes": 31
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 600,
+          "production": 620,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 1099,
-          "progress": 55
+          "progress": 56
         }
       ],
       "timeline": [
@@ -768,9 +899,9 @@
         {
           "hour": "12:30",
           "target": 136,
-          "actual": 100,
+          "actual": 120,
           "cumTarget": 634,
-          "cumActual": 600,
+          "cumActual": 620,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -991,6 +1122,13 @@
         "progress": 45
       },
       {
+        "id": "EV-L1-DS",
+        "name": "EV L1 DS",
+        "totalProduction": 100,
+        "totalTarget": 1361,
+        "progress": 7
+      },
+      {
         "id": "EV-L1-NS",
         "name": "EV L1 NS",
         "totalProduction": 1600,
@@ -1035,9 +1173,9 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 600,
+        "totalProduction": 620,
         "totalTarget": 1100,
-        "progress": 55
+        "progress": 56
       },
       {
         "id": "Scalpel-Assembly",
@@ -1058,14 +1196,15 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 5300,
-        "totalTarget": 1726,
-        "progress": 307,
+        "totalProduction": 5400,
+        "totalTarget": 2344,
+        "progress": 230,
         "variants": [
           "EV-L1-NS-BC01",
           "EV-L2-NS-BC01",
           "EV-L3-NS-BC01",
-          "EV-L4-NS-BC01"
+          "EV-L4-NS-BC01",
+          "EV-L1-DS-BC01"
         ]
       },
       {
@@ -1081,9 +1220,9 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 600,
+        "totalProduction": 620,
         "totalTarget": 1099,
-        "progress": 55,
+        "progress": 56,
         "variants": [
           "SUM-500V2"
         ]
