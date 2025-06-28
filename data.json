@@ -1,13 +1,98 @@
 {
   "metadata": {
-    "timestamp": "2025-06-28T04:45:04.774Z",
+    "timestamp": "2025-06-28T04:46:19.087Z",
     "date": "2025-06-28",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "night-shift",
+      "name": "11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11
+    }
+  ],
+  "production": [
+    {
+      "id": "EV-L1-NS-BC01",
+      "product": {
+        "id": "EV-L1-NS",
+        "name": "EV L1 NS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L1 NS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 86
+      },
+      "shiftId": "night-shift",
+      "targets": {
+        "hourly": 123,
+        "daily": 1361,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 500,
+        "boxes": 5,
+        "progress": 37
+      },
+      "batches": [
+        {
+          "id": 25062663,
+          "quantity": 500,
+          "boxes": 5
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 500,
+          "startTime": "18:00",
+          "endTime": "06:00",
+          "target": 1361,
+          "progress": 37
+        }
+      ],
+      "timeline": []
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "EV-L1-NS",
+        "name": "EV L1 NS",
+        "totalProduction": 500,
+        "totalTarget": 1361,
+        "progress": 37
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Nosi",
+        "name": "Nosi",
+        "totalProduction": 500,
+        "totalTarget": 1361,
+        "progress": 37,
+        "variants": [
+          "EV-L1-NS-BC01"
+        ]
+      }
+    ]
   }
 }
