@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-30T18:39:05.568Z",
+    "timestamp": "2025-06-30T18:40:27.071Z",
     "date": "2025-06-30",
     "facility": "Main Plant"
   },
@@ -42,6 +42,30 @@
         }
       ],
       "availableWorkHours": 8.09
+    },
+    {
+      "id": "overtime",
+      "name": "10h OT",
+      "startTime": "07:30",
+      "endTime": "18:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "17:40",
+          "endTime": "18:00"
+        }
+      ],
+      "availableWorkHours": 9.76
     }
   ],
   "production": [
@@ -1061,16 +1085,16 @@
         "devicesPerBox": 12,
         "actualCycleTime": 48
       },
-      "shiftId": "normal-time",
+      "shiftId": "overtime",
       "targets": {
         "hourly": 122,
-        "daily": 990,
-        "boxes": 82
+        "daily": 1194,
+        "boxes": 99
       },
       "actual": {
         "total": 420,
         "boxes": 35,
-        "progress": 42
+        "progress": 35
       },
       "batches": [
         {
@@ -1189,6 +1213,28 @@
           "previousVariant": "SCD-XS50+",
           "previousVariantMinutes": 57,
           "currentVariantMinutes": 3
+        },
+        {
+          "hour": "17:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 986,
+          "cumActual": 420,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "18:30",
+          "target": 81,
+          "actual": 0,
+          "cumTarget": 1067,
+          "cumActual": 420,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
         }
       ]
     },
@@ -1204,18 +1250,18 @@
         "fullName": "SCD XL200SC",
         "cycleTime": 36.36,
         "devicesPerBox": 15,
-        "actualCycleTime": 34
+        "actualCycleTime": 42
       },
-      "shiftId": "normal-time",
+      "shiftId": "overtime",
       "targets": {
         "hourly": 99,
-        "daily": 800,
-        "boxes": 53
+        "daily": 966,
+        "boxes": 64
       },
       "actual": {
         "total": 675,
         "boxes": 45,
-        "progress": 84
+        "progress": 70
       },
       "batches": [
         {
@@ -1230,9 +1276,9 @@
           "name": "Michaela",
           "production": 675,
           "startTime": "09:18",
-          "endTime": "16:30",
-          "target": 622,
-          "progress": 109
+          "endTime": "18:30",
+          "target": 787,
+          "progress": 86
         }
       ],
       "timeline": [
@@ -1250,9 +1296,9 @@
         {
           "hour": "09:30",
           "target": 19,
-          "actual": 20,
+          "actual": 15,
           "cumTarget": 118,
-          "cumActual": 20,
+          "cumActual": 15,
           "transitionTarget": 19,
           "previousVariant": "SCD-XS50+",
           "previousVariantMinutes": 48,
@@ -1261,9 +1307,9 @@
         {
           "hour": "10:30",
           "target": 90,
-          "actual": 61,
+          "actual": 45,
           "cumTarget": 208,
-          "cumActual": 81,
+          "cumActual": 60,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -1272,9 +1318,9 @@
         {
           "hour": "11:30",
           "target": 74,
-          "actual": 82,
+          "actual": 60,
           "cumTarget": 282,
-          "cumActual": 163,
+          "cumActual": 120,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -1283,9 +1329,9 @@
         {
           "hour": "12:30",
           "target": 99,
-          "actual": 123,
+          "actual": 90,
           "cumTarget": 381,
-          "cumActual": 286,
+          "cumActual": 210,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -1294,9 +1340,9 @@
         {
           "hour": "13:30",
           "target": 99,
-          "actual": 102,
+          "actual": 75,
           "cumTarget": 480,
-          "cumActual": 388,
+          "cumActual": 285,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -1305,9 +1351,9 @@
         {
           "hour": "14:30",
           "target": 41,
-          "actual": 41,
+          "actual": 30,
           "cumTarget": 521,
-          "cumActual": 429,
+          "cumActual": 315,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -1316,9 +1362,9 @@
         {
           "hour": "15:30",
           "target": 99,
-          "actual": 164,
+          "actual": 120,
           "cumTarget": 620,
-          "cumActual": 593,
+          "cumActual": 435,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -1327,13 +1373,35 @@
         {
           "hour": "16:30",
           "target": 99,
-          "actual": 82,
+          "actual": 60,
           "cumTarget": 719,
-          "cumActual": 675,
+          "cumActual": 495,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "17:30",
+          "target": 99,
+          "actual": 120,
+          "cumTarget": 818,
+          "cumActual": 615,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "18:30",
+          "target": 66,
+          "actual": 60,
+          "cumTarget": 884,
+          "cumActual": 675,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
         }
       ]
     },
@@ -1351,16 +1419,16 @@
         "devicesPerBox": 15,
         "actualCycleTime": 44
       },
-      "shiftId": "normal-time",
+      "shiftId": "overtime",
       "targets": {
         "hourly": 122,
-        "daily": 990,
-        "boxes": 66
+        "daily": 1194,
+        "boxes": 79
       },
       "actual": {
         "total": 345,
         "boxes": 23,
-        "progress": 35
+        "progress": 29
       },
       "batches": [
         {
@@ -1493,6 +1561,28 @@
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 57
+        },
+        {
+          "hour": "17:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 961,
+          "cumActual": 345,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "18:30",
+          "target": 81,
+          "actual": 0,
+          "cumTarget": 1042,
+          "cumActual": 345,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
         }
       ]
     },
@@ -1980,8 +2070,8 @@
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 1440,
-        "totalTarget": 2780,
-        "progress": 52
+        "totalTarget": 3354,
+        "progress": 43
       },
       {
         "id": "SUM",
@@ -2020,8 +2110,8 @@
         "id": "Michaela",
         "name": "Michaela",
         "totalProduction": 705,
-        "totalTarget": 842,
-        "progress": 84,
+        "totalTarget": 1007,
+        "progress": 70,
         "variants": [
           "SCD-XS50+",
           "SCD-XL200SC"
