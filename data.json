@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-06-30T08:05:06.808Z",
+    "timestamp": "2025-06-30T08:06:13.996Z",
     "date": "2025-06-30",
     "facility": "Main Plant"
   },
@@ -26,6 +26,63 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XS50+",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XS50+",
+        "name": "XS50+",
+        "fullName": "SCD XS50+",
+        "cycleTime": 29.41,
+        "devicesPerBox": 15,
+        "actualCycleTime": 1940
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 122,
+        "daily": 990,
+        "boxes": 66
+      },
+      "actual": {
+        "total": 15,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25062765,
+          "quantity": 15,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 15,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 989,
+          "progress": 2
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 15,
+          "cumTarget": 122,
+          "cumActual": 15,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SUM-500V2",
       "product": {
@@ -87,6 +144,13 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 15,
+        "totalTarget": 990,
+        "progress": 2
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 20,
@@ -103,6 +167,16 @@
         "progress": 2,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 15,
+        "totalTarget": 989,
+        "progress": 2,
+        "variants": [
+          "SCD-XS50+"
         ]
       }
     ]
