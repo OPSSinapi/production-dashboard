@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-07-01T07:42:03.221Z",
+    "timestamp": "2025-07-01T07:43:04.283Z",
     "date": "2025-07-01",
     "facility": "Main Plant"
   },
@@ -23,6 +23,25 @@
         }
       ],
       "availableWorkHours": 11
+    },
+    {
+      "id": "normal-time",
+      "name": "8.25h NT",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.09
     }
   ],
   "production": [
@@ -196,6 +215,63 @@
           "currentVariantMinutes": 0
         }
       ]
+    },
+    {
+      "id": "LEVO-XL2200S+",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL2200S+",
+        "name": "XL2200S+",
+        "fullName": "LEVO XL2200S+",
+        "cycleTime": 97.06,
+        "devicesPerBox": 8,
+        "actualCycleTime": 1819
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 37,
+        "daily": 300,
+        "boxes": 37
+      },
+      "actual": {
+        "total": 16,
+        "boxes": 2,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25063072,
+          "quantity": 16,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 16,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 299,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 37,
+          "actual": 16,
+          "cumTarget": 37,
+          "cumActual": 16,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -220,6 +296,13 @@
         "totalProduction": 900,
         "totalTarget": 1361,
         "progress": 66
+      },
+      {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 16,
+        "totalTarget": 300,
+        "progress": 5
       }
     ],
     "supervisors": [
@@ -233,6 +316,16 @@
           "EV-L1-NS-BC01",
           "EV-L2-NS-BC01",
           "EV-L4-NS-BC01"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 16,
+        "totalTarget": 299,
+        "progress": 5,
+        "variants": [
+          "LEVO-XL2200S+"
         ]
       }
     ]
