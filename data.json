@@ -1,10 +1,34 @@
 {
   "metadata": {
-    "timestamp": "2025-07-04T08:07:05.334Z",
+    "timestamp": "2025-07-04T08:08:05.615Z",
     "date": "2025-07-04",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "overtime",
+      "name": "8.5h OT",
+      "startTime": "07:30",
+      "endTime": "17:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "16:15",
+          "endTime": "16:35"
+        },
+        {
+          "type": "lunch",
+          "startTime": "12:00",
+          "endTime": "12:35"
+        },
+        {
+          "type": "otTea",
+          "startTime": "16:25",
+          "endTime": "16:45"
+        }
+      ],
+      "availableWorkHours": 8.26
+    },
     {
       "id": "day-shift",
       "name": "11h DS",
@@ -45,6 +69,63 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL1000SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SC",
+        "name": "XL1000SC",
+        "fullName": "SCD XL1000SC",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 1238
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 122,
+        "daily": 1011,
+        "boxes": 84
+      },
+      "actual": {
+        "total": 24,
+        "boxes": 2,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25070206,
+          "quantity": 24,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 24,
+          "startTime": "07:30",
+          "endTime": "17:00",
+          "target": 1009,
+          "progress": 2
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 24,
+          "cumTarget": 122,
+          "cumActual": 24,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "EV-L1-DS-BC01",
       "product": {
@@ -549,6 +630,13 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 24,
+        "totalTarget": 1011,
+        "progress": 2
+      },
+      {
         "id": "EV-L1-DS",
         "name": "EV L1 DS",
         "totalProduction": 300,
@@ -630,6 +718,16 @@
           "EV-L2-DS-BC01",
           "EV-L3-DS-BC01",
           "EV-L4-DS-BC01"
+        ]
+      },
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 24,
+        "totalTarget": 1009,
+        "progress": 2,
+        "variants": [
+          "SCD-XL1000SC"
         ]
       }
     ]
