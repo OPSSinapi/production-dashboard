@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-07-04T05:04:00.782Z",
+    "timestamp": "2025-07-04T05:05:02.173Z",
     "date": "2025-07-04",
     "facility": "Main Plant"
   },
@@ -38,7 +38,7 @@
         "fullName": "EV L1 NS BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 36
+        "actualCycleTime": 31
       },
       "shiftId": "night-shift",
       "targets": {
@@ -47,26 +47,71 @@
         "boxes": 13
       },
       "actual": {
-        "total": 1200,
-        "boxes": 12,
-        "progress": 88
+        "total": 1400,
+        "boxes": 14,
+        "progress": 103
       },
       "batches": [
         {
           "id": 25070312,
-          "quantity": 1200,
-          "boxes": 12
+          "quantity": 1400,
+          "boxes": 14
         }
       ],
       "supervisors": [
         {
           "id": "Nosi",
           "name": "Nosi",
-          "production": 1200,
+          "production": 1400,
           "startTime": "18:00",
           "endTime": "06:00",
           "target": 1361,
-          "progress": 88
+          "progress": 103
+        }
+      ],
+      "timeline": []
+    },
+    {
+      "id": "EV-L2-NS-BC01",
+      "product": {
+        "id": "EV-L2-NS",
+        "name": "EV L2 NS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L2 NS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 8
+      },
+      "shiftId": "night-shift",
+      "targets": {
+        "hourly": 123,
+        "daily": 1361,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 400,
+        "boxes": 4,
+        "progress": 29
+      },
+      "batches": [
+        {
+          "id": 25070312,
+          "quantity": 400,
+          "boxes": 4
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 400,
+          "startTime": "05:04",
+          "endTime": "06:00",
+          "target": 115,
+          "progress": 348
         }
       ],
       "timeline": []
@@ -77,20 +122,28 @@
       {
         "id": "EV-L1-NS",
         "name": "EV L1 NS",
-        "totalProduction": 1200,
+        "totalProduction": 1400,
         "totalTarget": 1361,
-        "progress": 88
+        "progress": 103
+      },
+      {
+        "id": "EV-L2-NS",
+        "name": "EV L2 NS",
+        "totalProduction": 400,
+        "totalTarget": 1361,
+        "progress": 29
       }
     ],
     "supervisors": [
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 1200,
-        "totalTarget": 1361,
-        "progress": 88,
+        "totalProduction": 1800,
+        "totalTarget": 1476,
+        "progress": 122,
         "variants": [
-          "EV-L1-NS-BC01"
+          "EV-L1-NS-BC01",
+          "EV-L2-NS-BC01"
         ]
       }
     ]
