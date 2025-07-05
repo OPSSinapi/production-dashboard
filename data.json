@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-07-05T09:33:02.521Z",
+    "timestamp": "2025-07-05T09:34:04.024Z",
     "date": "2025-07-05",
     "facility": "Main Plant"
   },
@@ -193,6 +193,96 @@
       ]
     },
     {
+      "id": "EV-L2-DS-BC01",
+      "product": {
+        "id": "EV-L2-DS",
+        "name": "EV L2 DS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L2 DS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 54
+      },
+      "shiftId": "day-shift",
+      "targets": {
+        "hourly": 123,
+        "daily": 1371,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 500,
+        "boxes": 5,
+        "progress": 36
+      },
+      "batches": [
+        {
+          "id": 25070312,
+          "quantity": 500,
+          "boxes": 5
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Ayanda",
+          "name": "Ayanda",
+          "production": 500,
+          "startTime": "09:32",
+          "endTime": "18:00",
+          "target": 934,
+          "progress": 54
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "07:30",
+          "target": 185,
+          "actual": 0,
+          "cumTarget": 185,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 90
+        },
+        {
+          "hour": "08:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 308,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 431,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 113,
+          "actual": 500,
+          "cumTarget": 544,
+          "cumActual": 500,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ]
+    },
+    {
       "id": "EV-L2-NS-BC01",
       "product": {
         "id": "EV-L2-NS",
@@ -381,6 +471,13 @@
         "progress": 109
       },
       {
+        "id": "EV-L2-DS",
+        "name": "EV L2 DS",
+        "totalProduction": 500,
+        "totalTarget": 1371,
+        "progress": 36
+      },
+      {
         "id": "EV-L2-NS",
         "name": "EV L2 NS",
         "totalProduction": 1200,
@@ -419,11 +516,12 @@
       {
         "id": "Ayanda",
         "name": "Ayanda",
-        "totalProduction": 400,
-        "totalTarget": 1371,
-        "progress": 29,
+        "totalProduction": 900,
+        "totalTarget": 2305,
+        "progress": 39,
         "variants": [
-          "EV-L1-DS-BC01"
+          "EV-L1-DS-BC01",
+          "EV-L2-DS-BC01"
         ]
       }
     ]
