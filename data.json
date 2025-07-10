@@ -1,13 +1,98 @@
 {
   "metadata": {
-    "timestamp": "2025-07-11T01:49:08.102Z",
+    "timestamp": "2025-07-11T01:50:11.415Z",
     "date": "2025-07-10",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "night-shift",
+      "name": "11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "20:25",
+          "endTime": "20:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "23:20",
+          "endTime": "23:55"
+        }
+      ],
+      "availableWorkHours": 11.083333333333334
+    }
+  ],
+  "production": [
+    {
+      "id": "EV-L1-NS-BC01",
+      "product": {
+        "id": "EV-L1-NS",
+        "name": "EV L1 NS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L1 NS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 432
+      },
+      "shiftId": "night-shift",
+      "targets": {
+        "hourly": 123,
+        "daily": 1371,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 7
+      },
+      "batches": [
+        {
+          "id": 25070922,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Ayanda",
+          "name": "Ayanda",
+          "production": 100,
+          "startTime": "18:00",
+          "endTime": "06:00",
+          "target": 1371,
+          "progress": 7
+        }
+      ],
+      "timeline": []
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "EV-L1-NS",
+        "name": "EV L1 NS",
+        "totalProduction": 100,
+        "totalTarget": 1371,
+        "progress": 7
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Ayanda",
+        "name": "Ayanda",
+        "totalProduction": 100,
+        "totalTarget": 1371,
+        "progress": 7,
+        "variants": [
+          "EV-L1-NS-BC01"
+        ]
+      }
+    ]
   }
 }
