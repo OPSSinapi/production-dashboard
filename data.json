@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-07-10T08:37:03.276Z",
+    "timestamp": "2025-07-10T08:38:07.055Z",
     "date": "2025-07-10",
     "facility": "Main Plant"
   },
@@ -377,7 +377,7 @@
         "fullName": "SCD XL1000+",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 418
+        "actualCycleTime": 366
       },
       "shiftId": "overtime",
       "targets": {
@@ -386,26 +386,26 @@
         "boxes": 99
       },
       "actual": {
-        "total": 84,
-        "boxes": 7,
-        "progress": 7
+        "total": 96,
+        "boxes": 8,
+        "progress": 8
       },
       "batches": [
         {
           "id": 25070920,
-          "quantity": 84,
-          "boxes": 7
+          "quantity": 96,
+          "boxes": 8
         }
       ],
       "supervisors": [
         {
           "id": "Michaela",
           "name": "Michaela",
-          "production": 84,
+          "production": 96,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1193,
-          "progress": 7
+          "progress": 8
         }
       ],
       "timeline": [
@@ -423,9 +423,9 @@
         {
           "hour": "09:30",
           "target": 122,
-          "actual": 0,
+          "actual": 12,
           "cumTarget": 244,
-          "cumActual": 84,
+          "cumActual": 96,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -500,6 +500,74 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "UBT-",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "UBT UBT",
+        "cycleTime": 59.4,
+        "devicesPerBox": 25,
+        "actualCycleTime": 1164
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 60,
+        "daily": 489,
+        "boxes": 19
+      },
+      "actual": {
+        "total": 25,
+        "boxes": 1,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25070205,
+          "quantity": 25,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 25,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 489,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 60,
+          "actual": 0,
+          "cumTarget": 60,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 60,
+          "actual": 25,
+          "cumTarget": 120,
+          "cumActual": 25,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -542,15 +610,22 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 84,
+        "totalProduction": 96,
         "totalTarget": 1193,
-        "progress": 7
+        "progress": 8
       },
       {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 60,
         "totalTarget": 1099,
+        "progress": 5
+      },
+      {
+        "id": "UBT",
+        "name": "UBT",
+        "totalProduction": 25,
+        "totalTarget": 489,
         "progress": 5
       }
     ],
@@ -571,9 +646,9 @@
       {
         "id": "Michaela",
         "name": "Michaela",
-        "totalProduction": 84,
+        "totalProduction": 96,
         "totalTarget": 1193,
-        "progress": 7,
+        "progress": 8,
         "variants": [
           "SCD-XL1000+"
         ]
@@ -596,6 +671,16 @@
         "progress": 14,
         "variants": [
           "LEVO-XL1150SCi"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 25,
+        "totalTarget": 489,
+        "progress": 5,
+        "variants": [
+          "UBT-"
         ]
       }
     ]
