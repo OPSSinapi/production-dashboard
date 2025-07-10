@@ -1,10 +1,29 @@
 {
   "metadata": {
-    "timestamp": "2025-07-10T12:00:09.661Z",
+    "timestamp": "2025-07-10T12:01:09.501Z",
     "date": "2025-07-10",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "day-shift",
+      "name": "11h DS",
+      "startTime": "06:00",
+      "endTime": "18:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11.083333333333334
+    },
     {
       "id": "night-shift",
       "name": "11h NS",
@@ -69,6 +88,118 @@
     }
   ],
   "production": [
+    {
+      "id": "EV-L1-DS-BC01",
+      "product": {
+        "id": "EV-L1-DS",
+        "name": "EV L1 DS"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "EV L1 DS BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 196
+      },
+      "shiftId": "day-shift",
+      "targets": {
+        "hourly": 123,
+        "daily": 1371,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 7
+      },
+      "batches": [
+        {
+          "id": 25070922,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 100,
+          "startTime": "11:59",
+          "endTime": "18:00",
+          "target": 672,
+          "progress": 15
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "07:30",
+          "target": 185,
+          "actual": 0,
+          "cumTarget": 185,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 90
+        },
+        {
+          "hour": "08:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 308,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 431,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 113,
+          "actual": 0,
+          "cumTarget": 544,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 92,
+          "actual": 0,
+          "cumTarget": 636,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        },
+        {
+          "hour": "12:30",
+          "target": 123,
+          "actual": 100,
+          "cumTarget": 759,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "EV-L1-NS-BC01",
       "product": {
@@ -410,7 +541,7 @@
         "fullName": "SCD XL1000+",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 199
+        "actualCycleTime": 195
       },
       "shiftId": "overtime",
       "targets": {
@@ -419,26 +550,26 @@
         "boxes": 99
       },
       "actual": {
-        "total": 528,
-        "boxes": 44,
-        "progress": 44
+        "total": 540,
+        "boxes": 45,
+        "progress": 45
       },
       "batches": [
         {
           "id": 25070920,
-          "quantity": 528,
-          "boxes": 44
+          "quantity": 540,
+          "boxes": 45
         }
       ],
       "supervisors": [
         {
           "id": "Michaela",
           "name": "Michaela",
-          "production": 372,
+          "production": 384,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1193,
-          "progress": 31
+          "progress": 32
         },
         {
           "id": "Incoming",
@@ -507,9 +638,9 @@
         {
           "hour": "12:30",
           "target": 122,
-          "actual": 36,
+          "actual": 48,
           "cumTarget": 569,
-          "cumActual": 528,
+          "cumActual": 540,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -723,6 +854,13 @@
   "summary": {
     "products": [
       {
+        "id": "EV-L1-DS",
+        "name": "EV L1 DS",
+        "totalProduction": 100,
+        "totalTarget": 1371,
+        "progress": 7
+      },
+      {
         "id": "EV-L1-NS",
         "name": "EV L1 NS",
         "totalProduction": 1500,
@@ -760,9 +898,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 528,
+        "totalProduction": 540,
         "totalTarget": 1193,
-        "progress": 44
+        "progress": 45
       },
       {
         "id": "SUM",
@@ -783,22 +921,23 @@
       {
         "id": "Nosi",
         "name": "Nosi",
-        "totalProduction": 5700,
-        "totalTarget": 1568,
-        "progress": 364,
+        "totalProduction": 5800,
+        "totalTarget": 2240,
+        "progress": 259,
         "variants": [
           "EV-L1-NS-BC01",
           "EV-L2-NS-BC01",
           "EV-L3-NS-BC01",
-          "EV-L4-NS-BC01"
+          "EV-L4-NS-BC01",
+          "EV-L1-DS-BC01"
         ]
       },
       {
         "id": "Michaela",
         "name": "Michaela",
-        "totalProduction": 372,
+        "totalProduction": 384,
         "totalTarget": 1193,
-        "progress": 31,
+        "progress": 32,
         "variants": [
           "SCD-XL1000+"
         ]
