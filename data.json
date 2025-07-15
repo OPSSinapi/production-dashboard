@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-07-15T08:25:12.044Z",
+    "timestamp": "2025-07-15T08:26:08.915Z",
     "date": "2025-07-15",
     "facility": "Main Plant"
   },
@@ -309,7 +309,7 @@
         "fullName": "SCD XL1000S",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 1463
+        "actualCycleTime": 135
       },
       "shiftId": "overtime",
       "targets": {
@@ -335,22 +335,79 @@
           "name": "Michaela",
           "production": 24,
           "startTime": "07:30",
-          "endTime": "18:30",
-          "target": 1193,
-          "progress": 2
+          "endTime": "08:24",
+          "target": 110,
+          "progress": 22
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
-          "target": 122,
+          "target": 110,
           "actual": 24,
-          "cumTarget": 122,
+          "cumTarget": 110,
           "cumActual": 24,
-          "transitionTarget": 0,
+          "transitionTarget": 110,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
+          "currentVariantMinutes": 54
+        }
+      ]
+    },
+    {
+      "id": "SCD-XL1000SCP",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SCP",
+        "name": "XL1000SCP",
+        "fullName": "SCD XL1000SCP",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 2655
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 122,
+        "daily": 1193,
+        "boxes": 99
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 25071533,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 12,
+          "startTime": "08:24",
+          "endTime": "18:30",
+          "target": 1083,
+          "progress": 1
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 12,
+          "actual": 36,
+          "cumTarget": 12,
+          "cumActual": 36,
+          "transitionTarget": 12,
+          "previousVariant": "SCD-XL1000S",
+          "previousVariantMinutes": 54,
+          "currentVariantMinutes": 6
         }
       ]
     },
@@ -445,8 +502,8 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 24,
-        "totalTarget": 1193,
+        "totalProduction": 36,
+        "totalTarget": 2386,
         "progress": 2
       },
       {
@@ -474,11 +531,12 @@
       {
         "id": "Michaela",
         "name": "Michaela",
-        "totalProduction": 24,
+        "totalProduction": 36,
         "totalTarget": 1193,
-        "progress": 2,
+        "progress": 3,
         "variants": [
-          "SCD-XL1000S"
+          "SCD-XL1000S",
+          "SCD-XL1000SCP"
         ]
       },
       {
