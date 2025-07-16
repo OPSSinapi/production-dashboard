@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-07-16T08:41:08.278Z",
+    "timestamp": "2025-07-16T08:42:07.462Z",
     "date": "2025-07-16",
     "facility": "Main Plant"
   },
@@ -25,6 +25,25 @@
       "availableWorkHours": 11.083333333333334
     },
     {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
+    },
+    {
       "id": "overtime",
       "name": "10h OT A",
       "startTime": "07:30",
@@ -47,25 +66,6 @@
         }
       ],
       "availableWorkHours": 9.75
-    },
-    {
-      "id": "normal-time",
-      "name": "8.25h NT B",
-      "startTime": "07:30",
-      "endTime": "16:30",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        }
-      ],
-      "availableWorkHours": 8.083333333333334
     }
   ],
   "production": [
@@ -294,6 +294,74 @@
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": -720
+        }
+      ]
+    },
+    {
+      "id": "PopUp-MP50",
+      "product": {
+        "id": "PopUp",
+        "name": "PopUp"
+      },
+      "variant": {
+        "id": "MP50",
+        "name": "MP50",
+        "fullName": "PopUp MP50",
+        "cycleTime": 0,
+        "devicesPerBox": 0,
+        "actualCycleTime": 0
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 0,
+        "daily": 480,
+        "boxes": 0
+      },
+      "actual": {
+        "total": 0,
+        "boxes": 1,
+        "progress": 0
+      },
+      "batches": [
+        {
+          "id": 25070923,
+          "quantity": 0,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosi",
+          "name": "Nosi",
+          "production": 0,
+          "startTime": "08:39",
+          "endTime": "16:30",
+          "target": 480,
+          "progress": 0
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
         }
       ]
     },
@@ -533,6 +601,13 @@
         "progress": 109
       },
       {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 0,
+        "totalTarget": 480,
+        "progress": 0
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 132,
@@ -552,13 +627,14 @@
         "id": "Nosi",
         "name": "Nosi",
         "totalProduction": 5800,
-        "totalTarget": 1607,
-        "progress": 361,
+        "totalTarget": 2087,
+        "progress": 278,
         "variants": [
           "EV-L1-NS-BC01",
           "EV-L2-NS-BC01",
           "EV-L3-NS-BC01",
-          "EV-L4-NS-BC01"
+          "EV-L4-NS-BC01",
+          "PopUp-MP50"
         ]
       },
       {
