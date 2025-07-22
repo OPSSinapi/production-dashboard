@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-07-22T14:33:54.990Z",
+    "timestamp": "2025-07-22T14:35:04.249Z",
     "date": "2025-07-22",
     "facility": "Main Plant"
   },
@@ -172,7 +172,7 @@
         "fullName": "SCD XL1000SCP",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 38
+        "actualCycleTime": 47
       },
       "shiftId": "normal-time",
       "targets": {
@@ -181,15 +181,20 @@
         "boxes": 82
       },
       "actual": {
-        "total": 756,
-        "boxes": 63,
-        "progress": 76
+        "total": 768,
+        "boxes": 64,
+        "progress": 78
       },
       "batches": [
         {
           "id": 25071533,
           "quantity": 756,
           "boxes": 63
+        },
+        {
+          "id": 25072245,
+          "quantity": 12,
+          "boxes": 1
         }
       ],
       "supervisors": [
@@ -201,6 +206,15 @@
           "endTime": "16:30",
           "target": 989,
           "progress": 76
+        },
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 12,
+          "startTime": "14:30",
+          "endTime": "16:30",
+          "target": 244,
+          "progress": 5
         }
       ],
       "timeline": [
@@ -273,22 +287,22 @@
         {
           "hour": "14:30",
           "target": 51,
-          "actual": 216,
+          "actual": 228,
           "cumTarget": 742,
-          "cumActual": 756,
+          "cumActual": 768,
           "transitionTarget": 0,
-          "previousVariant": null,
-          "previousVariantMinutes": 0,
-          "currentVariantMinutes": 25
+          "previousVariant": "SCD-XL2000S",
+          "previousVariantMinutes": 60,
+          "currentVariantMinutes": 0
         },
         {
           "hour": "15:30",
           "target": 122,
           "actual": 0,
           "cumTarget": 864,
-          "cumActual": 756,
-          "transitionTarget": 0,
-          "previousVariant": null,
+          "cumActual": 768,
+          "transitionTarget": 122,
+          "previousVariant": "SCD-XL2000S",
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
         }
@@ -306,7 +320,7 @@
         "fullName": "SCD XL2000S",
         "cycleTime": 117.86,
         "devicesPerBox": 6,
-        "actualCycleTime": 167
+        "actualCycleTime": 126
       },
       "shiftId": "normal-time",
       "targets": {
@@ -332,9 +346,9 @@
           "name": "Mvokwe",
           "production": 174,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 246,
-          "progress": 71
+          "endTime": "14:30",
+          "target": 185,
+          "progress": 94
         }
       ],
       "timeline": [
@@ -410,10 +424,10 @@
           "actual": 24,
           "cumTarget": 181,
           "cumActual": 174,
-          "transitionTarget": 0,
+          "transitionTarget": 12,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 25
+          "currentVariantMinutes": 60
         },
         {
           "hour": "15:30",
@@ -424,7 +438,7 @@
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
+          "currentVariantMinutes": 0
         }
       ]
     },
@@ -575,9 +589,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 930,
+        "totalProduction": 942,
         "totalTarget": 1235,
-        "progress": 75
+        "progress": 76
       },
       {
         "id": "SUM",
@@ -621,11 +635,12 @@
       {
         "id": "Mvokwe",
         "name": "Mvokwe",
-        "totalProduction": 174,
-        "totalTarget": 246,
-        "progress": 71,
+        "totalProduction": 186,
+        "totalTarget": 429,
+        "progress": 43,
         "variants": [
-          "SCD-XL2000S"
+          "SCD-XL2000S",
+          "SCD-XL1000SCP"
         ]
       }
     ]
