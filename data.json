@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-07-29T08:21:58.368Z",
+    "timestamp": "2025-07-29T08:22:54.483Z",
     "date": "2025-07-29",
     "facility": "Main Plant"
   },
@@ -119,7 +119,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 92
+        "actualCycleTime": 88
       },
       "shiftId": "overtime",
       "targets": {
@@ -128,35 +128,92 @@
         "boxes": 66
       },
       "actual": {
-        "total": 380,
-        "boxes": 19,
-        "progress": 29
+        "total": 400,
+        "boxes": 20,
+        "progress": 30
       },
       "batches": [
         {
           "id": 25072850,
-          "quantity": 380,
-          "boxes": 19
+          "quantity": 400,
+          "boxes": 20
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 380,
+          "production": 400,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1326,
-          "progress": 29
+          "progress": 30
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 136,
-          "actual": 380,
+          "actual": 400,
           "cumTarget": 136,
-          "cumActual": 380,
+          "cumActual": 400,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-PAMS15NS",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PAMS15NS",
+        "name": "PAMS15NS",
+        "fullName": "Scalpel PAMS15NS",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 29
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12763,
+        "boxes": 12
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 1,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 25071841,
+          "quantity": 1000,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 1000,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 12763,
+          "progress": 8
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 1578,
+          "cumActual": 1000,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -177,18 +234,25 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 380,
+        "totalProduction": 400,
         "totalTarget": 1326,
-        "progress": 29
+        "progress": 30
+      },
+      {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 1000,
+        "totalTarget": 25526,
+        "progress": 4
       }
     ],
     "supervisors": [
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 380,
+        "totalProduction": 400,
         "totalTarget": 1326,
-        "progress": 29,
+        "progress": 30,
         "variants": [
           "SUM-500V2"
         ]
@@ -201,6 +265,16 @@
         "progress": 6,
         "variants": [
           "SCD-XL200SC"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 1000,
+        "totalTarget": 12763,
+        "progress": 8,
+        "variants": [
+          "Scalpel-PAMS15NS"
         ]
       }
     ]
