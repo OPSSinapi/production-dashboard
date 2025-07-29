@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-07-29T08:26:17.673Z",
+    "timestamp": "2025-07-29T08:27:44.708Z",
     "date": "2025-07-29",
     "facility": "Main Plant"
   },
@@ -51,6 +51,63 @@
   ],
   "production": [
     {
+      "id": "SCD-XL200S",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL200S",
+        "name": "XL200S",
+        "fullName": "SCD XL200S",
+        "cycleTime": 35.82,
+        "devicesPerBox": 15,
+        "actualCycleTime": 1940
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 100,
+        "daily": 812,
+        "boxes": 54
+      },
+      "actual": {
+        "total": 15,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25072347,
+          "quantity": 15,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 15,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 812,
+          "progress": 2
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 100,
+          "actual": 15,
+          "cumTarget": 100,
+          "cumActual": 15,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "SCD-XL200SC",
       "product": {
         "id": "SCD",
@@ -62,7 +119,7 @@
         "fullName": "SCD XL200SC",
         "cycleTime": 35.82,
         "devicesPerBox": 15,
-        "actualCycleTime": 647
+        "actualCycleTime": 485
       },
       "shiftId": "normal-time",
       "targets": {
@@ -71,35 +128,35 @@
         "boxes": 54
       },
       "actual": {
-        "total": 45,
-        "boxes": 3,
-        "progress": 6
+        "total": 60,
+        "boxes": 4,
+        "progress": 7
       },
       "batches": [
         {
           "id": 25072851,
-          "quantity": 45,
-          "boxes": 3
+          "quantity": 60,
+          "boxes": 4
         }
       ],
       "supervisors": [
         {
           "id": "Michaela",
           "name": "Michaela",
-          "production": 45,
+          "production": 60,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 812,
-          "progress": 6
+          "progress": 7
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 100,
-          "actual": 45,
+          "actual": 60,
           "cumTarget": 100,
-          "cumActual": 45,
+          "cumActual": 60,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -227,9 +284,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 45,
-        "totalTarget": 812,
-        "progress": 6
+        "totalProduction": 75,
+        "totalTarget": 1624,
+        "progress": 5
       },
       {
         "id": "SUM",
@@ -260,9 +317,9 @@
       {
         "id": "Michaela",
         "name": "Michaela",
-        "totalProduction": 45,
+        "totalProduction": 60,
         "totalTarget": 812,
-        "progress": 6,
+        "progress": 7,
         "variants": [
           "SCD-XL200SC"
         ]
@@ -275,6 +332,16 @@
         "progress": 8,
         "variants": [
           "Scalpel-PAMS15NS"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 15,
+        "totalTarget": 812,
+        "progress": 2,
+        "variants": [
+          "SCD-XL200S"
         ]
       }
     ]
