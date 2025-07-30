@@ -1,10 +1,29 @@
 {
   "metadata": {
-    "timestamp": "2025-07-30T07:59:56.877Z",
+    "timestamp": "2025-07-30T08:01:09.429Z",
     "date": "2025-07-30",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
+    },
     {
       "id": "overtime",
       "name": "10h OT B",
@@ -31,6 +50,63 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL200S",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL200S",
+        "name": "XL200S",
+        "fullName": "SCD XL200S",
+        "cycleTime": 35.82,
+        "devicesPerBox": 15,
+        "actualCycleTime": 1940
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 100,
+        "daily": 812,
+        "boxes": 54
+      },
+      "actual": {
+        "total": 15,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25072954,
+          "quantity": 15,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 15,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 812,
+          "progress": 2
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 100,
+          "actual": 15,
+          "cumTarget": 100,
+          "cumActual": 15,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SUM-500V2",
       "product": {
@@ -97,6 +173,13 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 15,
+        "totalTarget": 812,
+        "progress": 2
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 380,
@@ -113,6 +196,16 @@
         "progress": 29,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 15,
+        "totalTarget": 812,
+        "progress": 2,
+        "variants": [
+          "SCD-XL200S"
         ]
       }
     ]
