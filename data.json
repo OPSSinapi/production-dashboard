@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-08-15T08:49:53.602Z",
+    "timestamp": "2025-08-15T08:50:54.231Z",
     "date": "2025-08-15",
     "facility": "Main Plant"
   },
@@ -26,6 +26,74 @@
     }
   ],
   "production": [
+    {
+      "id": "FC-",
+      "product": {
+        "id": "FC",
+        "name": "FC"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "FC FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 123
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "daily": 496,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 200,
+        "boxes": 2,
+        "progress": 40
+      },
+      "batches": [
+        {
+          "id": 25080711,
+          "quantity": 200,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosie",
+          "name": "Nosie",
+          "production": 200,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 496,
+          "progress": 40
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 72,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 72,
+          "actual": 200,
+          "cumTarget": 144,
+          "cumActual": 200,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XL1000SCP",
       "product": {
@@ -248,6 +316,13 @@
   "summary": {
     "products": [
       {
+        "id": "FC",
+        "name": "FC",
+        "totalProduction": 200,
+        "totalTarget": 496,
+        "progress": 40
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 150,
@@ -301,6 +376,16 @@
         "progress": 6,
         "variants": [
           "SCD-XS50+"
+        ]
+      },
+      {
+        "id": "Nosie",
+        "name": "Nosie",
+        "totalProduction": 200,
+        "totalTarget": 496,
+        "progress": 40,
+        "variants": [
+          "FC-"
         ]
       }
     ]
