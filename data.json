@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-08-22T08:29:03.220Z",
+    "timestamp": "2025-08-22T08:29:57.718Z",
     "date": "2025-08-22",
     "facility": "Main Plant"
   },
@@ -119,7 +119,7 @@
         "fullName": "SCD XL2000SD",
         "cycleTime": 145.59,
         "devicesPerBox": 6,
-        "actualCycleTime": 4100
+        "actualCycleTime": 2050
       },
       "shiftId": "normal-time",
       "targets": {
@@ -128,35 +128,35 @@
         "boxes": 28
       },
       "actual": {
-        "total": 6,
-        "boxes": 1,
-        "progress": 4
+        "total": 12,
+        "boxes": 2,
+        "progress": 7
       },
       "batches": [
         {
           "id": 25082134,
-          "quantity": 6,
-          "boxes": 1
+          "quantity": 12,
+          "boxes": 2
         }
       ],
       "supervisors": [
         {
           "id": "Mvokwe",
           "name": "Mvokwe",
-          "production": 6,
+          "production": 12,
           "startTime": "07:30",
           "endTime": "15:15",
           "target": 168,
-          "progress": 4
+          "progress": 7
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 24,
-          "actual": 6,
+          "actual": 12,
           "cumTarget": 24,
-          "cumActual": 6,
+          "cumActual": 12,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -277,6 +277,63 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "Scalpel-PARC11NS",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PARC11NS",
+        "name": "PARC11NS",
+        "fullName": "Scalpel PARC11NS",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 25
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 10789,
+        "boxes": 10
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 1,
+        "progress": 9
+      },
+      "batches": [
+        {
+          "id": 25081523,
+          "quantity": 1000,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 1000,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 10789,
+          "progress": 9
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 1578,
+          "cumActual": 1000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -284,7 +341,7 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 96,
+        "totalProduction": 102,
         "totalTarget": 1583,
         "progress": 6
       },
@@ -294,6 +351,13 @@
         "totalProduction": 20,
         "totalTarget": 929,
         "progress": 2
+      },
+      {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 1000,
+        "totalTarget": 21578,
+        "progress": 5
       }
     ],
     "supervisors": [
@@ -330,11 +394,21 @@
       {
         "id": "Mvokwe",
         "name": "Mvokwe",
-        "totalProduction": 6,
+        "totalProduction": 12,
         "totalTarget": 168,
-        "progress": 4,
+        "progress": 7,
         "variants": [
           "SCD-XL2000SD"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 1000,
+        "totalTarget": 10789,
+        "progress": 9,
+        "variants": [
+          "Scalpel-PARC11NS"
         ]
       }
     ]
