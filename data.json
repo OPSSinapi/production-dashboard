@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-08-25T09:16:54.727Z",
+    "timestamp": "2025-08-25T09:17:13.842Z",
     "date": "2025-08-25",
     "facility": "Main Plant"
   },
@@ -26,6 +26,74 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL2000SD",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL2000SD",
+        "name": "XL2000SD",
+        "fullName": "SCD XL2000SD",
+        "cycleTime": 145.59,
+        "devicesPerBox": 6,
+        "actualCycleTime": 4850
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 24,
+        "daily": 199,
+        "boxes": 33
+      },
+      "actual": {
+        "total": 6,
+        "boxes": 1,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 25082134,
+          "quantity": 6,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 6,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 199,
+          "progress": 3
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 24,
+          "actual": 0,
+          "cumTarget": 24,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 24,
+          "actual": 6,
+          "cumTarget": 48,
+          "cumActual": 6,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XL200S",
       "product": {
@@ -100,8 +168,8 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 15,
-        "totalTarget": 444,
+        "totalProduction": 21,
+        "totalTarget": 643,
         "progress": 3
       }
     ],
@@ -114,6 +182,16 @@
         "progress": 3,
         "variants": [
           "SCD-XL200S"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 6,
+        "totalTarget": 199,
+        "progress": 3,
+        "variants": [
+          "SCD-XL2000SD"
         ]
       }
     ]
