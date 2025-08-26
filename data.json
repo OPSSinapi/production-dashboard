@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-08-26T08:15:48.891Z",
+    "timestamp": "2025-08-26T08:16:53.241Z",
     "date": "2025-08-26",
     "facility": "Main Plant"
   },
@@ -31,14 +31,14 @@
     },
     {
       "id": "normal-time",
-      "name": "8.25h NT B",
+      "name": "8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
+          "startTime": "10:25",
+          "endTime": "10:45"
         },
         {
           "type": "lunch",
@@ -100,6 +100,63 @@
           "actual": 48,
           "cumTarget": 122,
           "cumActual": 48,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "SCD-XL2000SD",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL2000SD",
+        "name": "XL2000SD",
+        "fullName": "SCD XL2000SD",
+        "cycleTime": 145.59,
+        "devicesPerBox": 6,
+        "actualCycleTime": 4850
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 24,
+        "daily": 199,
+        "boxes": 33
+      },
+      "actual": {
+        "total": 6,
+        "boxes": 1,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 25082134,
+          "quantity": 6,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 6,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 199,
+          "progress": 3
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 24,
+          "actual": 6,
+          "cumTarget": 24,
+          "cumActual": 6,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -170,8 +227,8 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 48,
-        "totalTarget": 1193,
+        "totalProduction": 54,
+        "totalTarget": 1392,
         "progress": 4
       },
       {
@@ -201,6 +258,16 @@
         "progress": 4,
         "variants": [
           "SCD-XL1000SC"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 6,
+        "totalTarget": 199,
+        "progress": 3,
+        "variants": [
+          "SCD-XL2000SD"
         ]
       }
     ]
