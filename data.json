@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-08-26T11:40:47.667Z",
+    "timestamp": "2025-08-26T11:41:47.382Z",
     "date": "2025-08-26",
     "facility": "Main Plant"
   },
@@ -370,7 +370,7 @@
         "fullName": "SCD XL200S",
         "cycleTime": 65.45,
         "devicesPerBox": 15,
-        "actualCycleTime": 485
+        "actualCycleTime": 230
       },
       "shiftId": "normal-time",
       "targets": {
@@ -396,9 +396,9 @@
           "name": "Siyabonga",
           "production": 60,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 444,
-          "progress": 14
+          "endTime": "11:40",
+          "target": 210,
+          "progress": 29
         }
       ],
       "timeline": [
@@ -448,14 +448,115 @@
         },
         {
           "hour": "12:30",
+          "target": 9,
+          "actual": 0,
+          "cumTarget": 210,
+          "cumActual": 60,
+          "transitionTarget": 9,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 10
+        }
+      ]
+    },
+    {
+      "id": "SCD-XL200SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL200SC",
+        "name": "XL200SC",
+        "fullName": "SCD XL200SC",
+        "cycleTime": 65.45,
+        "devicesPerBox": 15,
+        "actualCycleTime": 1020
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 55,
+        "daily": 444,
+        "boxes": 29
+      },
+      "actual": {
+        "total": 15,
+        "boxes": 1,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 25082643,
+          "quantity": 15,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 15,
+          "startTime": "11:40",
+          "endTime": "16:30",
+          "target": 233,
+          "progress": 6
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
           "target": 55,
           "actual": 0,
-          "cumTarget": 256,
-          "cumActual": 60,
+          "cumTarget": 55,
+          "cumActual": 0,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 55,
+          "actual": 0,
+          "cumTarget": 110,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 50,
+          "actual": 0,
+          "cumTarget": 160,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 41,
+          "actual": 0,
+          "cumTarget": 201,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        },
+        {
+          "hour": "12:30",
+          "target": 45,
+          "actual": 15,
+          "cumTarget": 246,
+          "cumActual": 15,
+          "transitionTarget": 45,
+          "previousVariant": "SCD-XL200S",
+          "previousVariantMinutes": 10,
+          "currentVariantMinutes": 50
         }
       ]
     },
@@ -566,9 +667,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 330,
-        "totalTarget": 1836,
-        "progress": 18
+        "totalProduction": 345,
+        "totalTarget": 2280,
+        "progress": 15
       },
       {
         "id": "SBM3",
@@ -629,11 +730,12 @@
       {
         "id": "Siyabonga",
         "name": "Siyabonga",
-        "totalProduction": 60,
-        "totalTarget": 444,
-        "progress": 14,
+        "totalProduction": 75,
+        "totalTarget": 443,
+        "progress": 17,
         "variants": [
-          "SCD-XL200S"
+          "SCD-XL200S",
+          "SCD-XL200SC"
         ]
       }
     ]
