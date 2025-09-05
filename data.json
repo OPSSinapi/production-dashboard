@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-09-05T07:51:50.956Z",
+    "timestamp": "2025-09-05T07:53:07.303Z",
     "date": "2025-09-05",
     "facility": "Main Plant"
   },
@@ -31,19 +31,19 @@
     },
     {
       "id": "normal-time",
-      "name": "7h NT B",
+      "name": "7h NT A",
       "startTime": "07:30",
       "endTime": "15:15",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
+          "startTime": "10:25",
+          "endTime": "10:45"
         },
         {
           "type": "lunch",
-          "startTime": "13:00",
-          "endTime": "13:35"
+          "startTime": "13:40",
+          "endTime": "14:15"
         }
       ],
       "availableWorkHours": 6.833333333333333
@@ -100,6 +100,63 @@
           "actual": 12,
           "cumTarget": 122,
           "cumActual": 12,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "SCD-XL200S",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL200S",
+        "name": "XL200S",
+        "fullName": "SCD XL200S",
+        "cycleTime": 65.45,
+        "devicesPerBox": 15,
+        "actualCycleTime": 1640
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 55,
+        "daily": 375,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 15,
+        "boxes": 1,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 25090409,
+          "quantity": 15,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 15,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 375,
+          "progress": 4
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 55,
+          "actual": 15,
+          "cumTarget": 55,
+          "cumActual": 15,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -170,9 +227,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 12,
-        "totalTarget": 1040,
-        "progress": 1
+        "totalProduction": 27,
+        "totalTarget": 1415,
+        "progress": 2
       },
       {
         "id": "SUM",
@@ -201,6 +258,16 @@
         "progress": 1,
         "variants": [
           "SCD-XL1000+"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 15,
+        "totalTarget": 375,
+        "progress": 4,
+        "variants": [
+          "SCD-XL200S"
         ]
       }
     ]
