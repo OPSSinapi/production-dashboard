@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-09-11T08:10:47.777Z",
+    "timestamp": "2025-09-11T08:12:00.543Z",
     "date": "2025-09-11",
     "facility": "Main Plant"
   },
@@ -163,6 +163,63 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "Scalpel-PARC10S",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PARC10S",
+        "name": "PARC10S",
+        "fullName": "Scalpel PARC10S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 29
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12763,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 2,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 25090510,
+          "quantity": 1000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 1000,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 12763,
+          "progress": 8
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 1578,
+          "cumActual": 1000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -180,6 +237,13 @@
         "totalProduction": 80,
         "totalTarget": 1099,
         "progress": 7
+      },
+      {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 1000,
+        "totalTarget": 25526,
+        "progress": 4
       }
     ],
     "supervisors": [
@@ -201,6 +265,16 @@
         "progress": 6,
         "variants": [
           "SCD-XL1000SC"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 1000,
+        "totalTarget": 12763,
+        "progress": 8,
+        "variants": [
+          "Scalpel-PARC10S"
         ]
       }
     ]
