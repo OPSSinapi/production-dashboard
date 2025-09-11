@@ -1,13 +1,110 @@
 {
   "metadata": {
-    "timestamp": "2025-09-11T08:03:00.605Z",
+    "timestamp": "2025-09-11T08:03:51.603Z",
     "date": "2025-09-11",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "normal-time",
+      "name": "8.25h NT B",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:00",
+          "endTime": "10:20"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
+    }
+  ],
+  "production": [
+    {
+      "id": "SUM-500V2",
+      "product": {
+        "id": "SUM",
+        "name": "SUM"
+      },
+      "variant": {
+        "id": "500V2",
+        "name": "500V2",
+        "fullName": "SUM SUM500V2",
+        "cycleTime": 26.47,
+        "devicesPerBox": 20,
+        "actualCycleTime": 485
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 136,
+        "daily": 1099,
+        "boxes": 54
+      },
+      "actual": {
+        "total": 60,
+        "boxes": 3,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25090814,
+          "quantity": 60,
+          "boxes": 3
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Luthando",
+          "name": "Luthando",
+          "production": 60,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 1099,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 136,
+          "actual": 60,
+          "cumTarget": 136,
+          "cumActual": 60,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 60,
+        "totalTarget": 1099,
+        "progress": 5
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Luthando",
+        "name": "Luthando",
+        "totalProduction": 60,
+        "totalTarget": 1099,
+        "progress": 5,
+        "variants": [
+          "SUM-500V2"
+        ]
+      }
+    ]
   }
 }
