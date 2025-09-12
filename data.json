@@ -1,13 +1,115 @@
 {
   "metadata": {
-    "timestamp": "2025-09-12T08:02:19.280Z",
+    "timestamp": "2025-09-12T08:03:09.810Z",
     "date": "2025-09-12",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "overtime",
+      "name": "8.5h OT A",
+      "startTime": "07:30",
+      "endTime": "17:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "16:55",
+          "endTime": "17:15"
+        }
+      ],
+      "availableWorkHours": 8.5
+    }
+  ],
+  "production": [
+    {
+      "id": "SCD-XL1000S",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000S",
+        "name": "XL1000S",
+        "fullName": "SCD XL1000S",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 170
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 122,
+        "daily": 1040,
+        "boxes": 86
+      },
+      "actual": {
+        "total": 180,
+        "boxes": 15,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 25091122,
+          "quantity": 180,
+          "boxes": 15
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 180,
+          "startTime": "07:30",
+          "endTime": "17:15",
+          "target": 1040,
+          "progress": 17
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 180,
+          "cumTarget": 122,
+          "cumActual": 180,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 180,
+        "totalTarget": 1040,
+        "progress": 17
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 180,
+        "totalTarget": 1040,
+        "progress": 17,
+        "variants": [
+          "SCD-XL1000S"
+        ]
+      }
+    ]
   }
 }
