@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-09-12T08:25:00.420Z",
+    "timestamp": "2025-09-12T08:26:01.197Z",
     "date": "2025-09-12",
     "facility": "Main Plant"
   },
@@ -108,6 +108,63 @@
       ]
     },
     {
+      "id": "SUM-500V2",
+      "product": {
+        "id": "SUM",
+        "name": "SUM"
+      },
+      "variant": {
+        "id": "500V2",
+        "name": "500V2",
+        "fullName": "SUM SUM500V2",
+        "cycleTime": 26.47,
+        "devicesPerBox": 20,
+        "actualCycleTime": 1230
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 136,
+        "daily": 929,
+        "boxes": 46
+      },
+      "actual": {
+        "total": 20,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25091120,
+          "quantity": 20,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Luthando",
+          "name": "Luthando",
+          "production": 20,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 929,
+          "progress": 2
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 136,
+          "actual": 20,
+          "cumTarget": 136,
+          "cumActual": 20,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "Scalpel-PARC11S",
       "product": {
         "id": "Scalpel",
@@ -175,6 +232,13 @@
         "progress": 17
       },
       {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 20,
+        "totalTarget": 929,
+        "progress": 2
+      },
+      {
         "id": "Scalpel",
         "name": "Scalpel",
         "totalProduction": 4000,
@@ -201,6 +265,16 @@
         "progress": 37,
         "variants": [
           "Scalpel-PARC11S"
+        ]
+      },
+      {
+        "id": "Luthando",
+        "name": "Luthando",
+        "totalProduction": 20,
+        "totalTarget": 929,
+        "progress": 2,
+        "variants": [
+          "SUM-500V2"
         ]
       }
     ]
