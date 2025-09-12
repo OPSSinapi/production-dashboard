@@ -1,10 +1,29 @@
 {
   "metadata": {
-    "timestamp": "2025-09-12T10:21:55.235Z",
+    "timestamp": "2025-09-12T10:23:15.570Z",
     "date": "2025-09-12",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "normal-time",
+      "name": "7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 6.833333333333333
+    },
     {
       "id": "overtime",
       "name": "8.5h OT A",
@@ -28,28 +47,88 @@
         }
       ],
       "availableWorkHours": 8.5
-    },
-    {
-      "id": "normal-time",
-      "name": "7h NT A",
-      "startTime": "07:30",
-      "endTime": "15:15",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:25",
-          "endTime": "10:45"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        }
-      ],
-      "availableWorkHours": 6.833333333333333
     }
   ],
   "production": [
+    {
+      "id": "CON021.2-",
+      "product": {
+        "id": "CON021.2",
+        "name": "CON021.2"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "CON021.2 CON021.2",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 246
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "daily": 496,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 20
+      },
+      "batches": [
+        {
+          "id": 25080814,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosie",
+          "name": "Nosie",
+          "production": 100,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 496,
+          "progress": 20
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 72,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 144,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 66,
+          "actual": 100,
+          "cumTarget": 210,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ]
+    },
     {
       "id": "SCD-XL1000S",
       "product": {
@@ -370,6 +449,13 @@
   "summary": {
     "products": [
       {
+        "id": "CON021.2",
+        "name": "CON021.2",
+        "totalProduction": 100,
+        "totalTarget": 496,
+        "progress": 20
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 644,
@@ -430,6 +516,16 @@
         "progress": 37,
         "variants": [
           "SCD-XL200SC"
+        ]
+      },
+      {
+        "id": "Nosie",
+        "name": "Nosie",
+        "totalProduction": 100,
+        "totalTarget": 496,
+        "progress": 20,
+        "variants": [
+          "CON021.2-"
         ]
       }
     ]
