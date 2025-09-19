@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-09-19T11:17:58.238Z",
+    "timestamp": "2025-09-19T11:19:37.280Z",
     "date": "2025-09-19",
     "facility": "Main Plant"
   },
@@ -157,7 +157,7 @@
         "fullName": "CON021.2 CON021.2",
         "cycleTime": 49.5,
         "devicesPerBox": 100,
-        "actualCycleTime": 246
+        "actualCycleTime": 123
       },
       "shiftId": "normal-time",
       "targets": {
@@ -166,26 +166,26 @@
         "boxes": 4
       },
       "actual": {
-        "total": 100,
-        "boxes": 1,
-        "progress": 20
+        "total": 200,
+        "boxes": 2,
+        "progress": 40
       },
       "batches": [
         {
           "id": 25080814,
-          "quantity": 100,
-          "boxes": 1
+          "quantity": 200,
+          "boxes": 2
         }
       ],
       "supervisors": [
         {
           "id": "Nosie",
           "name": "Nosie",
-          "production": 100,
+          "production": 200,
           "startTime": "07:30",
           "endTime": "15:15",
           "target": 496,
-          "progress": 20
+          "progress": 40
         }
       ],
       "timeline": [
@@ -225,9 +225,9 @@
         {
           "hour": "11:30",
           "target": 54,
-          "actual": 0,
+          "actual": 100,
           "cumTarget": 264,
-          "cumActual": 100,
+          "cumActual": 200,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -504,6 +504,96 @@
           "currentVariantMinutes": 45
         }
       ]
+    },
+    {
+      "id": "Scalpel-PARC11NS",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PARC11NS",
+        "name": "PARC11NS",
+        "fullName": "Scalpel PARC11NS",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 8
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 10789,
+        "boxes": 10
+      },
+      "actual": {
+        "total": 3000,
+        "boxes": 3,
+        "progress": 28
+      },
+      "batches": [
+        {
+          "id": 25091733,
+          "quantity": 3000,
+          "boxes": 3
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 3000,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 10789,
+          "progress": 28
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1052,
+          "actual": 0,
+          "cumTarget": 4208,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
+        },
+        {
+          "hour": "11:30",
+          "target": 1578,
+          "actual": 3000,
+          "cumTarget": 5786,
+          "cumActual": 3000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -518,9 +608,9 @@
       {
         "id": "CON021.2",
         "name": "CON021.2",
-        "totalProduction": 100,
+        "totalProduction": 200,
         "totalTarget": 496,
-        "progress": 20
+        "progress": 40
       },
       {
         "id": "SUM",
@@ -535,6 +625,13 @@
         "totalProduction": 150,
         "totalTarget": 422,
         "progress": 36
+      },
+      {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 3000,
+        "totalTarget": 21578,
+        "progress": 14
       }
     ],
     "supervisors": [
@@ -581,11 +678,21 @@
       {
         "id": "Nosie",
         "name": "Nosie",
-        "totalProduction": 100,
+        "totalProduction": 200,
         "totalTarget": 496,
-        "progress": 20,
+        "progress": 40,
         "variants": [
           "CON021.2-"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 3000,
+        "totalTarget": 10789,
+        "progress": 28,
+        "variants": [
+          "Scalpel-PARC11NS"
         ]
       }
     ]
