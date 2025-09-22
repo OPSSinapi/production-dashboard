@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-09-22T10:06:54.642Z",
+    "timestamp": "2025-09-22T10:09:10.988Z",
     "date": "2025-09-22",
     "facility": "Main Plant"
   },
@@ -50,6 +50,85 @@
     }
   ],
   "production": [
+    {
+      "id": "D001-",
+      "product": {
+        "id": "D001",
+        "name": "D001"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "D001 D001",
+        "cycleTime": 29.7,
+        "devicesPerBox": 240,
+        "actualCycleTime": 83
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 121,
+        "daily": 979,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 240,
+        "boxes": 1,
+        "progress": 25
+      },
+      "batches": [
+        {
+          "id": 25091940,
+          "quantity": 240,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosie",
+          "name": "Nosie",
+          "production": 240,
+          "startTime": "10:05",
+          "endTime": "16:30",
+          "target": 666,
+          "progress": 36
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 121,
+          "actual": 0,
+          "cumTarget": 121,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 121,
+          "actual": 0,
+          "cumTarget": 242,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 111,
+          "actual": 240,
+          "cumTarget": 353,
+          "cumActual": 240,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ]
+    },
     {
       "id": "FC-",
       "product": {
@@ -220,7 +299,7 @@
         "fullName": "SCD XL200SC",
         "cycleTime": 65.45,
         "devicesPerBox": 15,
-        "actualCycleTime": 388
+        "actualCycleTime": 323
       },
       "shiftId": "normal-time",
       "targets": {
@@ -229,26 +308,26 @@
         "boxes": 29
       },
       "actual": {
-        "total": 75,
-        "boxes": 5,
-        "progress": 17
+        "total": 90,
+        "boxes": 6,
+        "progress": 20
       },
       "batches": [
         {
           "id": 25091837,
-          "quantity": 75,
-          "boxes": 5
+          "quantity": 90,
+          "boxes": 6
         }
       ],
       "supervisors": [
         {
           "id": "Siyabonga",
           "name": "Siyabonga",
-          "production": 75,
+          "production": 90,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 444,
-          "progress": 17
+          "progress": 20
         }
       ],
       "timeline": [
@@ -277,9 +356,9 @@
         {
           "hour": "10:30",
           "target": 50,
-          "actual": 30,
+          "actual": 45,
           "cumTarget": 160,
-          "cumActual": 75,
+          "cumActual": 90,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -449,6 +528,13 @@
   "summary": {
     "products": [
       {
+        "id": "D001",
+        "name": "D001",
+        "totalProduction": 240,
+        "totalTarget": 979,
+        "progress": 25
+      },
+      {
         "id": "FC",
         "name": "FC",
         "totalProduction": 400,
@@ -458,9 +544,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 315,
+        "totalProduction": 330,
         "totalTarget": 1637,
-        "progress": 19
+        "progress": 20
       },
       {
         "id": "UBT",
@@ -481,11 +567,12 @@
       {
         "id": "Nosie",
         "name": "Nosie",
-        "totalProduction": 400,
-        "totalTarget": 587,
-        "progress": 68,
+        "totalProduction": 640,
+        "totalTarget": 1253,
+        "progress": 51,
         "variants": [
-          "FC-"
+          "FC-",
+          "D001-"
         ]
       },
       {
@@ -511,9 +598,9 @@
       {
         "id": "Siyabonga",
         "name": "Siyabonga",
-        "totalProduction": 75,
+        "totalProduction": 90,
         "totalTarget": 444,
-        "progress": 17,
+        "progress": 20,
         "variants": [
           "SCD-XL200SC"
         ]
