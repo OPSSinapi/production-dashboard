@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-09-22T09:20:46.712Z",
+    "timestamp": "2025-09-22T09:21:58.835Z",
     "date": "2025-09-22",
     "facility": "Main Plant"
   },
@@ -198,7 +198,7 @@
         "fullName": "SCD XL200SC",
         "cycleTime": 65.45,
         "devicesPerBox": 15,
-        "actualCycleTime": 970
+        "actualCycleTime": 647
       },
       "shiftId": "normal-time",
       "targets": {
@@ -207,26 +207,26 @@
         "boxes": 29
       },
       "actual": {
-        "total": 30,
-        "boxes": 2,
-        "progress": 7
+        "total": 45,
+        "boxes": 3,
+        "progress": 10
       },
       "batches": [
         {
           "id": 25091837,
-          "quantity": 30,
-          "boxes": 2
+          "quantity": 45,
+          "boxes": 3
         }
       ],
       "supervisors": [
         {
           "id": "Siyabonga",
           "name": "Siyabonga",
-          "production": 30,
+          "production": 45,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 444,
-          "progress": 7
+          "progress": 10
         }
       ],
       "timeline": [
@@ -244,9 +244,77 @@
         {
           "hour": "09:30",
           "target": 55,
-          "actual": 30,
+          "actual": 45,
           "cumTarget": 110,
-          "cumActual": 30,
+          "cumActual": 45,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "UBT-",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "UBT UBT",
+        "cycleTime": 58.24,
+        "devicesPerBox": 25,
+        "actualCycleTime": 388
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 61,
+        "daily": 499,
+        "boxes": 19
+      },
+      "actual": {
+        "total": 75,
+        "boxes": 3,
+        "progress": 15
+      },
+      "batches": [
+        {
+          "id": 25091630,
+          "quantity": 75,
+          "boxes": 3
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 75,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 499,
+          "progress": 15
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 61,
+          "actual": 0,
+          "cumTarget": 61,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 61,
+          "actual": 75,
+          "cumTarget": 122,
+          "cumActual": 75,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -335,9 +403,16 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 186,
+        "totalProduction": 201,
         "totalTarget": 1637,
-        "progress": 11
+        "progress": 12
+      },
+      {
+        "id": "UBT",
+        "name": "UBT",
+        "totalProduction": 75,
+        "totalTarget": 499,
+        "progress": 15
       },
       {
         "id": "Scalpel",
@@ -381,11 +456,21 @@
       {
         "id": "Siyabonga",
         "name": "Siyabonga",
-        "totalProduction": 30,
+        "totalProduction": 45,
         "totalTarget": 444,
-        "progress": 7,
+        "progress": 10,
         "variants": [
           "SCD-XL200SC"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 75,
+        "totalTarget": 499,
+        "progress": 15,
+        "variants": [
+          "UBT-"
         ]
       }
     ]
