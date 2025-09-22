@@ -1,13 +1,110 @@
 {
   "metadata": {
-    "timestamp": "2025-09-22T08:07:51.921Z",
+    "timestamp": "2025-09-22T08:08:56.608Z",
     "date": "2025-09-22",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
+    }
+  ],
+  "production": [
+    {
+      "id": "FC-",
+      "product": {
+        "id": "FC",
+        "name": "FC"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "FC FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 291
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "daily": 587,
+        "boxes": 5
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 25091941,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosie",
+          "name": "Nosie",
+          "production": 100,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 587,
+          "progress": 17
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 100,
+          "cumTarget": 72,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "FC",
+        "name": "FC",
+        "totalProduction": 100,
+        "totalTarget": 587,
+        "progress": 17
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Nosie",
+        "name": "Nosie",
+        "totalProduction": 100,
+        "totalTarget": 587,
+        "progress": 17,
+        "variants": [
+          "FC-"
+        ]
+      }
+    ]
   }
 }
