@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-09-25T09:02:58.623Z",
+    "timestamp": "2025-09-25T09:04:08.637Z",
     "date": "2025-09-25",
     "facility": "Main Plant"
   },
@@ -31,14 +31,14 @@
     },
     {
       "id": "normal-time",
-      "name": "8.25h NT B",
+      "name": "8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
+          "startTime": "10:25",
+          "endTime": "10:45"
         },
         {
           "type": "lunch",
@@ -111,6 +111,74 @@
           "actual": 24,
           "cumTarget": 244,
           "cumActual": 48,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "CON021.2-",
+      "product": {
+        "id": "CON021.2",
+        "name": "CON021.2"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "CON021.2 CON021.2",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 236
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "daily": 587,
+        "boxes": 5
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 25092350,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 100,
+          "startTime": "09:02",
+          "endTime": "16:30",
+          "target": 476,
+          "progress": 21
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 72,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 72,
+          "actual": 100,
+          "cumTarget": 144,
+          "cumActual": 100,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -333,6 +401,13 @@
         "progress": 4
       },
       {
+        "id": "CON021.2",
+        "name": "CON021.2",
+        "totalProduction": 100,
+        "totalTarget": 587,
+        "progress": 17
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 80,
@@ -388,11 +463,12 @@
       {
         "id": "Mvokwe",
         "name": "Mvokwe",
-        "totalProduction": 25,
-        "totalTarget": 499,
-        "progress": 5,
+        "totalProduction": 125,
+        "totalTarget": 975,
+        "progress": 13,
         "variants": [
-          "UBT-"
+          "UBT-",
+          "CON021.2-"
         ]
       }
     ]
