@@ -1,10 +1,29 @@
 {
   "metadata": {
-    "timestamp": "2025-10-01T07:51:58.499Z",
+    "timestamp": "2025-10-01T07:52:59.327Z",
     "date": "2025-10-01",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
+    },
     {
       "id": "overtime",
       "name": "10h OT A",
@@ -31,6 +50,63 @@
     }
   ],
   "production": [
+    {
+      "id": "EFB-",
+      "product": {
+        "id": "EFB",
+        "name": "EFB"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "EFB EFB",
+        "cycleTime": 0,
+        "devicesPerBox": 50,
+        "actualCycleTime": 582
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 0,
+        "daily": 480,
+        "boxes": 9
+      },
+      "actual": {
+        "total": 50,
+        "boxes": 1,
+        "progress": 10
+      },
+      "batches": [
+        {
+          "id": 25093060,
+          "quantity": 50,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 50,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 480,
+          "progress": 10
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 0,
+          "actual": 50,
+          "cumTarget": 0,
+          "cumActual": 50,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XL1000S",
       "product": {
@@ -92,6 +168,13 @@
   "summary": {
     "products": [
       {
+        "id": "EFB",
+        "name": "EFB",
+        "totalProduction": 50,
+        "totalTarget": 480,
+        "progress": 10
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 120,
@@ -108,6 +191,16 @@
         "progress": 10,
         "variants": [
           "SCD-XL1000S"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 50,
+        "totalTarget": 480,
+        "progress": 10,
+        "variants": [
+          "EFB-"
         ]
       }
     ]
