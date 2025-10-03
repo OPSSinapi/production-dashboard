@@ -1,31 +1,88 @@
 {
   "metadata": {
-    "timestamp": "2025-10-03T08:15:12.611Z",
+    "timestamp": "2025-10-03T08:16:39.189Z",
     "date": "2025-10-03",
     "facility": "Main Plant"
   },
   "shifts": [
     {
       "id": "normal-time",
-      "name": "7h NT B",
+      "name": "7h NT A",
       "startTime": "07:30",
       "endTime": "15:15",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
+          "startTime": "10:25",
+          "endTime": "10:45"
         },
         {
           "type": "lunch",
-          "startTime": "13:00",
-          "endTime": "13:35"
+          "startTime": "13:40",
+          "endTime": "14:15"
         }
       ],
       "availableWorkHours": 6.833333333333333
     }
   ],
   "production": [
+    {
+      "id": "ORS-",
+      "product": {
+        "id": "ORS",
+        "name": "ORS"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "ORS ORS",
+        "cycleTime": 0,
+        "devicesPerBox": 0,
+        "actualCycleTime": 984
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 0,
+        "daily": 480,
+        "boxes": 0
+      },
+      "actual": {
+        "total": 25,
+        "boxes": 1,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25093061,
+          "quantity": 25,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Nosie",
+          "name": "Nosie",
+          "production": 25,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 480,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 0,
+          "actual": 25,
+          "cumTarget": 0,
+          "cumActual": 25,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SUM-500V2",
       "product": {
@@ -144,6 +201,13 @@
   "summary": {
     "products": [
       {
+        "id": "ORS",
+        "name": "ORS",
+        "totalProduction": 25,
+        "totalTarget": 480,
+        "progress": 5
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 80,
@@ -177,6 +241,16 @@
         "progress": 12,
         "variants": [
           "UBT-"
+        ]
+      },
+      {
+        "id": "Nosie",
+        "name": "Nosie",
+        "totalProduction": 25,
+        "totalTarget": 480,
+        "progress": 5,
+        "variants": [
+          "ORS-"
         ]
       }
     ]
