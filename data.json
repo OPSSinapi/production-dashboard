@@ -1,10 +1,29 @@
 {
   "metadata": {
-    "timestamp": "2025-10-06T08:26:54.892Z",
+    "timestamp": "2025-10-06T08:28:11.235Z",
     "date": "2025-10-06",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
+    },
     {
       "id": "overtime",
       "name": "10h OT A",
@@ -28,28 +47,66 @@
         }
       ],
       "availableWorkHours": 9.75
-    },
-    {
-      "id": "normal-time",
-      "name": "8.25h NT B",
-      "startTime": "07:30",
-      "endTime": "16:30",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        }
-      ],
-      "availableWorkHours": 8.083333333333334
     }
   ],
   "production": [
+    {
+      "id": "ORS-",
+      "product": {
+        "id": "ORS",
+        "name": "ORS"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "ORS ORS",
+        "cycleTime": 0,
+        "devicesPerBox": 0,
+        "actualCycleTime": 1032
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 0,
+        "daily": 480,
+        "boxes": 0
+      },
+      "actual": {
+        "total": 25,
+        "boxes": 1,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25093061,
+          "quantity": 25,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 25,
+          "startTime": "08:25",
+          "endTime": "16:30",
+          "target": 480,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 0,
+          "actual": 25,
+          "cumTarget": 0,
+          "cumActual": 25,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XL1000S",
       "product": {
@@ -225,6 +282,13 @@
   "summary": {
     "products": [
       {
+        "id": "ORS",
+        "name": "ORS",
+        "totalProduction": 25,
+        "totalTarget": 480,
+        "progress": 5
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 12,
@@ -270,11 +334,12 @@
       {
         "id": "Mvokwe",
         "name": "Mvokwe",
-        "totalProduction": 25,
-        "totalTarget": 499,
+        "totalProduction": 50,
+        "totalTarget": 979,
         "progress": 5,
         "variants": [
-          "UBT-"
+          "UBT-",
+          "ORS-"
         ]
       }
     ]
