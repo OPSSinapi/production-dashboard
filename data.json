@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-10-15T08:17:50.662Z",
+    "timestamp": "2025-10-15T08:19:10.169Z",
     "date": "2025-10-15",
     "facility": "Main Plant"
   },
@@ -31,14 +31,14 @@
     },
     {
       "id": "normal-time",
-      "name": "8.25h NT B",
+      "name": "8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
+          "startTime": "10:25",
+          "endTime": "10:45"
         },
         {
           "type": "lunch",
@@ -100,6 +100,63 @@
           "actual": 72,
           "cumTarget": 122,
           "cumActual": 72,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "SBM3-",
+      "product": {
+        "id": "SBM3",
+        "name": "SBM3"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "SBM3 SBM3",
+        "cycleTime": 0,
+        "devicesPerBox": 100,
+        "actualCycleTime": 291
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 0,
+        "daily": 480,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 21
+      },
+      "batches": [
+        {
+          "id": 25101427,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 100,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 480,
+          "progress": 21
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 0,
+          "actual": 100,
+          "cumTarget": 0,
+          "cumActual": 100,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -175,6 +232,13 @@
         "progress": 6
       },
       {
+        "id": "SBM3",
+        "name": "SBM3",
+        "totalProduction": 100,
+        "totalTarget": 480,
+        "progress": 21
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 140,
@@ -201,6 +265,16 @@
         "progress": 13,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 100,
+        "totalTarget": 480,
+        "progress": 21,
+        "variants": [
+          "SBM3-"
         ]
       }
     ]
