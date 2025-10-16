@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-10-16T09:40:52.347Z",
+    "timestamp": "2025-10-16T09:41:47.796Z",
     "date": "2025-10-16",
     "facility": "Main Plant"
   },
@@ -31,7 +31,7 @@
     },
     {
       "id": "normal-time",
-      "name": "8.25h NT",
+      "name": "8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
       "breaks": [
@@ -130,6 +130,85 @@
       ]
     },
     {
+      "id": "LEVO-XL1150SC",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL1150SC",
+        "name": "XL1150SC",
+        "fullName": "LEVO XL1150SC",
+        "cycleTime": 97.06,
+        "devicesPerBox": 14,
+        "actualCycleTime": 761
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 37,
+        "daily": 299,
+        "boxes": 21
+      },
+      "actual": {
+        "total": 28,
+        "boxes": 2,
+        "progress": 9
+      },
+      "batches": [
+        {
+          "id": 25101429,
+          "quantity": 28,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 28,
+          "startTime": "09:40",
+          "endTime": "16:30",
+          "target": 219,
+          "progress": 13
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 37,
+          "actual": 0,
+          "cumTarget": 37,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 37,
+          "actual": 0,
+          "cumTarget": 74,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 30,
+          "actual": 28,
+          "cumTarget": 104,
+          "cumActual": 28,
+          "transitionTarget": 30,
+          "previousVariant": "LEVO-XS100",
+          "previousVariantMinutes": 10,
+          "currentVariantMinutes": 50
+        }
+      ]
+    },
+    {
       "id": "LEVO-XS100",
       "product": {
         "id": "LEVO",
@@ -141,7 +220,7 @@
         "fullName": "LEVO XS100",
         "cycleTime": 97.06,
         "devicesPerBox": 10,
-        "actualCycleTime": 485
+        "actualCycleTime": 130
       },
       "shiftId": "normal-time",
       "targets": {
@@ -167,9 +246,9 @@
           "name": "Siyabonga",
           "production": 60,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 299,
-          "progress": 20
+          "endTime": "09:40",
+          "target": 80,
+          "progress": 75
         }
       ],
       "timeline": [
@@ -197,14 +276,14 @@
         },
         {
           "hour": "10:30",
-          "target": 33,
+          "target": 6,
           "actual": 0,
-          "cumTarget": 107,
+          "cumTarget": 80,
           "cumActual": 60,
-          "transitionTarget": 0,
+          "transitionTarget": 6,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 55
+          "currentVariantMinutes": 10
         }
       ]
     },
@@ -458,9 +537,9 @@
       {
         "id": "LEVO",
         "name": "LEVO",
-        "totalProduction": 60,
-        "totalTarget": 299,
-        "progress": 20
+        "totalProduction": 88,
+        "totalTarget": 598,
+        "progress": 15
       },
       {
         "id": "D001",
@@ -488,11 +567,12 @@
       {
         "id": "Siyabonga",
         "name": "Siyabonga",
-        "totalProduction": 60,
+        "totalProduction": 88,
         "totalTarget": 299,
-        "progress": 20,
+        "progress": 29,
         "variants": [
-          "LEVO-XS100"
+          "LEVO-XS100",
+          "LEVO-XL1150SC"
         ]
       },
       {
