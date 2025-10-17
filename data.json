@@ -1,13 +1,98 @@
 {
   "metadata": {
-    "timestamp": "2025-10-17T06:58:57.085Z",
+    "timestamp": "2025-10-17T06:59:49.538Z",
     "date": "2025-10-17",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "normal-time",
+      "name": "7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 6.833333333333333
+    }
+  ],
+  "production": [
+    {
+      "id": "D001-",
+      "product": {
+        "id": "D001",
+        "name": "D001"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "D001 D001",
+        "cycleTime": 29.7,
+        "devicesPerBox": 240,
+        "actualCycleTime": 103
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 121,
+        "daily": 828,
+        "boxes": 3
+      },
+      "actual": {
+        "total": 240,
+        "boxes": 1,
+        "progress": 29
+      },
+      "batches": [
+        {
+          "id": 25101530,
+          "quantity": 240,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 240,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 828,
+          "progress": 29
+        }
+      ],
+      "timeline": []
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "D001",
+        "name": "D001",
+        "totalProduction": 240,
+        "totalTarget": 828,
+        "progress": 29
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 240,
+        "totalTarget": 828,
+        "progress": 29,
+        "variants": [
+          "D001-"
+        ]
+      }
+    ]
   }
 }
