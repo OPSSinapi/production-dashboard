@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-10-23T08:14:58.394Z",
+    "timestamp": "2025-10-23T08:15:55.309Z",
     "date": "2025-10-23",
     "facility": "Main Plant"
   },
@@ -50,6 +50,63 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL200SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL200SC",
+        "name": "XL200SC",
+        "fullName": "SCD XL200SC",
+        "cycleTime": 65.45,
+        "devicesPerBox": 15,
+        "actualCycleTime": 1940
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 55,
+        "daily": 444,
+        "boxes": 29
+      },
+      "actual": {
+        "total": 15,
+        "boxes": 1,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 25102243,
+          "quantity": 15,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 15,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 444,
+          "progress": 3
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 55,
+          "actual": 15,
+          "cumTarget": 55,
+          "cumActual": 15,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XS50+",
       "product": {
@@ -227,8 +284,8 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 15,
-        "totalTarget": 989,
+        "totalProduction": 30,
+        "totalTarget": 1433,
         "progress": 2
       },
       {
@@ -275,6 +332,16 @@
         "progress": 2,
         "variants": [
           "SCD-XS50+"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 15,
+        "totalTarget": 444,
+        "progress": 3,
+        "variants": [
+          "SCD-XL200SC"
         ]
       }
     ]
