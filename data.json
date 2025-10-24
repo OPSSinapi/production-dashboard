@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-10-24T08:18:03.532Z",
+    "timestamp": "2025-10-24T08:19:07.371Z",
     "date": "2025-10-24",
     "facility": "Main Plant"
   },
@@ -50,6 +50,63 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL200SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL200SC",
+        "name": "XL200SC",
+        "fullName": "SCD XL200SC",
+        "cycleTime": 65.45,
+        "devicesPerBox": 15,
+        "actualCycleTime": 820
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 55,
+        "daily": 375,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 30,
+        "boxes": 2,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 25102346,
+          "quantity": 30,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 30,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 375,
+          "progress": 8
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 55,
+          "actual": 30,
+          "cumTarget": 55,
+          "cumActual": 30,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XS50+",
       "product": {
@@ -170,9 +227,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 15,
-        "totalTarget": 836,
-        "progress": 2
+        "totalProduction": 45,
+        "totalTarget": 1211,
+        "progress": 4
       },
       {
         "id": "SUM",
@@ -201,6 +258,16 @@
         "progress": 3,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 30,
+        "totalTarget": 375,
+        "progress": 8,
+        "variants": [
+          "SCD-XL200SC"
         ]
       }
     ]
