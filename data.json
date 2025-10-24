@@ -1,13 +1,110 @@
 {
   "metadata": {
-    "timestamp": "2025-10-24T08:15:57.000Z",
+    "timestamp": "2025-10-24T08:17:29.381Z",
     "date": "2025-10-24",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "normal-time",
+      "name": "7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 6.833333333333333
+    }
+  ],
+  "production": [
+    {
+      "id": "SCD-XS50+",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XS50+",
+        "name": "XS50+",
+        "fullName": "SCD XS50+",
+        "cycleTime": 29.41,
+        "devicesPerBox": 15,
+        "actualCycleTime": 1640
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 122,
+        "daily": 836,
+        "boxes": 55
+      },
+      "actual": {
+        "total": 15,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25102244,
+          "quantity": 15,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 15,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 836,
+          "progress": 2
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 15,
+          "cumTarget": 122,
+          "cumActual": 15,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 15,
+        "totalTarget": 836,
+        "progress": 2
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 15,
+        "totalTarget": 836,
+        "progress": 2,
+        "variants": [
+          "SCD-XS50+"
+        ]
+      }
+    ]
   }
 }
