@@ -1,13 +1,110 @@
 {
   "metadata": {
-    "timestamp": "2025-10-31T07:54:15.188Z",
+    "timestamp": "2025-10-31T07:54:52.633Z",
     "date": "2025-10-31",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "normal-time",
+      "name": "7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 6.833333333333333
+    }
+  ],
+  "production": [
+    {
+      "id": "SCD-XL1000SCP",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SCP",
+        "name": "XL1000SCP",
+        "fullName": "SCD XL1000SCP",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 683
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 122,
+        "daily": 836,
+        "boxes": 69
+      },
+      "actual": {
+        "total": 36,
+        "boxes": 3,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 25102750,
+          "quantity": 36,
+          "boxes": 3
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 36,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 836,
+          "progress": 4
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 36,
+          "cumTarget": 122,
+          "cumActual": 36,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 36,
+        "totalTarget": 836,
+        "progress": 4
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Michaela",
+        "name": "Michaela",
+        "totalProduction": 36,
+        "totalTarget": 836,
+        "progress": 4,
+        "variants": [
+          "SCD-XL1000SCP"
+        ]
+      }
+    ]
   }
 }
