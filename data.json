@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-10-31T09:31:59.803Z",
+    "timestamp": "2025-10-31T09:32:59.563Z",
     "date": "2025-10-31",
     "facility": "Main Plant"
   },
@@ -444,6 +444,85 @@
           "currentVariantMinutes": 40
         }
       ]
+    },
+    {
+      "id": "Scalpel-PAMC15S",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PAMC15S",
+        "name": "PAMC15S",
+        "fullName": "Scalpel PAMC15S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 25
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 10789,
+        "boxes": 21
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 1,
+        "progress": 9
+      },
+      "batches": [
+        {
+          "id": 25103166,
+          "quantity": 1000,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 1000,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 10789,
+          "progress": 9
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 3156,
+          "cumActual": 1000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1052,
+          "actual": 0,
+          "cumTarget": 4208,
+          "cumActual": 1000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
+        }
+      ]
     }
   ],
   "summary": {
@@ -475,6 +554,13 @@
         "totalProduction": 180,
         "totalTarget": 1156,
         "progress": 16
+      },
+      {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 1000,
+        "totalTarget": 21578,
+        "progress": 5
       }
     ],
     "supervisors": [
@@ -526,6 +612,16 @@
         "progress": 29,
         "variants": [
           "D001-"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 1000,
+        "totalTarget": 10789,
+        "progress": 9,
+        "variants": [
+          "Scalpel-PAMC15S"
         ]
       }
     ]
