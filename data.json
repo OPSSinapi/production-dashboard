@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-11-05T09:39:02.385Z",
+    "timestamp": "2025-11-05T09:40:00.676Z",
     "date": "2025-11-05",
     "facility": "Main Plant"
   },
@@ -305,7 +305,7 @@
         "fullName": "SCD XL1000+",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 121
+        "actualCycleTime": 32
       },
       "shiftId": "normal-time",
       "targets": {
@@ -325,9 +325,9 @@
           "name": "Michaela",
           "production": 240,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 989,
-          "progress": 24
+          "endTime": "09:36",
+          "target": 257,
+          "progress": 93
         }
       ],
       "timeline": [
@@ -355,14 +355,14 @@
         },
         {
           "hour": "10:30",
-          "target": 112,
+          "target": 12,
           "actual": 0,
-          "cumTarget": 356,
+          "cumTarget": 256,
           "cumActual": 240,
-          "transitionTarget": 0,
+          "transitionTarget": 12,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 55
+          "currentVariantMinutes": 6
         }
       ]
     },
@@ -378,7 +378,7 @@
         "fullName": "SCD XL1000S",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 2425
+        "actualCycleTime": 1329
       },
       "shiftId": "normal-time",
       "targets": {
@@ -387,26 +387,44 @@
         "boxes": 82
       },
       "actual": {
-        "total": 12,
-        "boxes": 1,
-        "progress": 1
+        "total": 60,
+        "boxes": 5,
+        "progress": 6
       },
       "batches": [
         {
           "id": 25110507,
-          "quantity": 12,
-          "boxes": 1
+          "quantity": 60,
+          "boxes": 5
         }
       ],
       "supervisors": [
         {
           "id": "Likona",
           "name": "Likona",
-          "production": 12,
+          "production": 24,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 989,
-          "progress": 1
+          "progress": 2
+        },
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 12,
+          "startTime": "09:36",
+          "endTime": "16:30",
+          "target": 732,
+          "progress": 2
+        },
+        {
+          "id": "Kyle",
+          "name": "Kyle",
+          "production": 24,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 989,
+          "progress": 2
         }
       ],
       "timeline": [
@@ -434,14 +452,14 @@
         },
         {
           "hour": "10:30",
-          "target": 112,
-          "actual": 0,
-          "cumTarget": 356,
-          "cumActual": 12,
-          "transitionTarget": 0,
-          "previousVariant": null,
-          "previousVariantMinutes": 0,
-          "currentVariantMinutes": 55
+          "target": 110,
+          "actual": 48,
+          "cumTarget": 354,
+          "cumActual": 60,
+          "transitionTarget": 110,
+          "previousVariant": "SCD-XL1000+",
+          "previousVariantMinutes": 6,
+          "currentVariantMinutes": 54
         }
       ]
     },
@@ -695,9 +713,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 252,
+        "totalProduction": 300,
         "totalTarget": 1978,
-        "progress": 13
+        "progress": 15
       },
       {
         "id": "SUM",
@@ -755,11 +773,12 @@
       {
         "id": "Michaela",
         "name": "Michaela",
-        "totalProduction": 240,
+        "totalProduction": 252,
         "totalTarget": 989,
-        "progress": 24,
+        "progress": 25,
         "variants": [
-          "SCD-XL1000+"
+          "SCD-XL1000+",
+          "SCD-XL1000S"
         ]
       },
       {
@@ -785,9 +804,19 @@
       {
         "id": "Likona",
         "name": "Likona",
-        "totalProduction": 12,
+        "totalProduction": 24,
         "totalTarget": 989,
-        "progress": 1,
+        "progress": 2,
+        "variants": [
+          "SCD-XL1000S"
+        ]
+      },
+      {
+        "id": "Kyle",
+        "name": "Kyle",
+        "totalProduction": 24,
+        "totalTarget": 989,
+        "progress": 2,
         "variants": [
           "SCD-XL1000S"
         ]
