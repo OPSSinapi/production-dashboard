@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-11-06T08:41:08.967Z",
+    "timestamp": "2025-11-06T08:42:16.664Z",
     "date": "2025-11-06",
     "facility": "Main Plant"
   },
@@ -50,6 +50,74 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL1000SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SC",
+        "name": "XL1000SC",
+        "fullName": "SCD XL1000SC",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 87
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 122,
+        "daily": 989,
+        "boxes": 82
+      },
+      "actual": {
+        "total": 336,
+        "boxes": 28,
+        "progress": 34
+      },
+      "batches": [
+        {
+          "id": 25110510,
+          "quantity": 336,
+          "boxes": 28
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Ayanda",
+          "name": "Ayanda",
+          "production": 336,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 989,
+          "progress": 34
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 122,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 122,
+          "actual": 336,
+          "cumTarget": 244,
+          "cumActual": 336,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XL1000S",
       "product": {
@@ -192,9 +260,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 132,
-        "totalTarget": 989,
-        "progress": 13
+        "totalProduction": 468,
+        "totalTarget": 1978,
+        "progress": 24
       },
       {
         "id": "SUM",
@@ -223,6 +291,16 @@
         "progress": 11,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Ayanda",
+        "name": "Ayanda",
+        "totalProduction": 336,
+        "totalTarget": 989,
+        "progress": 34,
+        "variants": [
+          "SCD-XL1000SC"
         ]
       }
     ]
