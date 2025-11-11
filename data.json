@@ -1,10 +1,42 @@
 {
   "metadata": {
-    "timestamp": "2025-11-11T16:35:49.533Z",
+    "timestamp": "2025-11-11T16:37:12.916Z",
     "date": "2025-11-11",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "overtime",
+      "name": "10h OT A",
+      "startTime": "07:30",
+      "endTime": "18:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "17:30",
+          "endTime": "17:50"
+        }
+      ],
+      "availableWorkHours": 9.75
+    },
+    {
+      "id": "standard",
+      "name": "",
+      "startTime": "",
+      "endTime": "",
+      "breaks": [],
+      "availableWorkHours": 8
+    },
     {
       "id": "normal-time",
       "name": "8.25h NT A",
@@ -23,38 +55,6 @@
         }
       ],
       "availableWorkHours": 8.083333333333334
-    },
-    {
-      "id": "standard",
-      "name": "",
-      "startTime": "",
-      "endTime": "",
-      "breaks": [],
-      "availableWorkHours": 8
-    },
-    {
-      "id": "overtime",
-      "name": "10h OT B",
-      "startTime": "07:30",
-      "endTime": "18:30",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        },
-        {
-          "type": "otTea",
-          "startTime": "17:30",
-          "endTime": "17:50"
-        }
-      ],
-      "availableWorkHours": 9.75
     }
   ],
   "production": [
@@ -70,18 +70,18 @@
         "fullName": "SCD XL1000SC",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 30
+        "actualCycleTime": 36
       },
-      "shiftId": "normal-time",
+      "shiftId": "overtime",
       "targets": {
         "hourly": 122,
-        "daily": 989,
-        "boxes": 82
+        "daily": 1193,
+        "boxes": 99
       },
       "actual": {
         "total": 984,
         "boxes": 82,
-        "progress": 99
+        "progress": 82
       },
       "batches": [
         {
@@ -96,9 +96,9 @@
           "name": "Michaela",
           "production": 984,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 989,
-          "progress": 99
+          "endTime": "18:30",
+          "target": 1193,
+          "progress": 82
         }
       ],
       "timeline": [
@@ -200,6 +200,17 @@
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "17:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 1108,
+          "cumActual": 984,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
         }
       ]
     },
@@ -215,7 +226,7 @@
         "fullName": "LEVO D1150",
         "cycleTime": 0,
         "devicesPerBox": 0,
-        "actualCycleTime": 170
+        "actualCycleTime": 171
       },
       "shiftId": "standard",
       "targets": {
@@ -1625,8 +1636,8 @@
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 996,
-        "totalTarget": 1188,
-        "progress": 84
+        "totalTarget": 1392,
+        "progress": 72
       },
       {
         "id": "LEVO",
@@ -1676,8 +1687,8 @@
         "id": "Michaela",
         "name": "Michaela",
         "totalProduction": 984,
-        "totalTarget": 989,
-        "progress": 99,
+        "totalTarget": 1193,
+        "progress": 82,
         "variants": [
           "SCD-XL1000SC"
         ]
