@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-11-14T10:05:58.731Z",
+    "timestamp": "2025-11-14T10:06:55.777Z",
     "date": "2025-11-14",
     "facility": "Main Plant"
   },
@@ -28,6 +28,25 @@
         }
       ],
       "availableWorkHours": 8.5
+    },
+    {
+      "id": "normal-time",
+      "name": "7h NT B",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:00",
+          "endTime": "10:20"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:00",
+          "endTime": "13:35"
+        }
+      ],
+      "availableWorkHours": 6.833333333333333
     }
   ],
   "production": [
@@ -267,6 +286,85 @@
           "currentVariantMinutes": 55
         }
       ]
+    },
+    {
+      "id": "Scalpel-PARC11S",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PARC11S",
+        "name": "PARC11S",
+        "fullName": "Scalpel PARC11S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 12
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 10789,
+        "boxes": 21
+      },
+      "actual": {
+        "total": 2000,
+        "boxes": 2,
+        "progress": 19
+      },
+      "batches": [
+        {
+          "id": 25111442,
+          "quantity": 2000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 2000,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 10789,
+          "progress": 19
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1052,
+          "actual": 2000,
+          "cumTarget": 4208,
+          "cumActual": 2000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
+        }
+      ]
     }
   ],
   "summary": {
@@ -291,6 +389,13 @@
         "totalProduction": 200,
         "totalTarget": 525,
         "progress": 38
+      },
+      {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 2000,
+        "totalTarget": 21578,
+        "progress": 9
       }
     ],
     "supervisors": [
@@ -322,6 +427,16 @@
         "progress": 38,
         "variants": [
           "UBT-"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 2000,
+        "totalTarget": 10789,
+        "progress": 19,
+        "variants": [
+          "Scalpel-PARC11S"
         ]
       }
     ]
