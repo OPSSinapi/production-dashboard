@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-11-17T10:20:02.132Z",
+    "timestamp": "2025-11-17T10:21:01.596Z",
     "date": "2025-11-17",
     "facility": "Main Plant"
   },
@@ -28,6 +28,25 @@
         }
       ],
       "availableWorkHours": 9.75
+    },
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
     }
   ],
   "production": [
@@ -103,6 +122,85 @@
           "actual": 144,
           "cumTarget": 356,
           "cumActual": 276,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ]
+    },
+    {
+      "id": "FC-",
+      "product": {
+        "id": "FC",
+        "name": "FC"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "FC FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 21
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "daily": 587,
+        "boxes": 5
+      },
+      "actual": {
+        "total": 1400,
+        "boxes": 14,
+        "progress": 239
+      },
+      "batches": [
+        {
+          "id": 25111022,
+          "quantity": 1400,
+          "boxes": 14
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "PopUp",
+          "name": "PopUp",
+          "production": 1400,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 587,
+          "progress": 239
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 72,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 144,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 66,
+          "actual": 1400,
+          "cumTarget": 210,
+          "cumActual": 1400,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -358,6 +456,13 @@
         "progress": 17
       },
       {
+        "id": "FC",
+        "name": "FC",
+        "totalProduction": 1400,
+        "totalTarget": 587,
+        "progress": 239
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 320,
@@ -411,6 +516,16 @@
         "progress": 11,
         "variants": [
           "SCD-XL1000SCP"
+        ]
+      },
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 1400,
+        "totalTarget": 587,
+        "progress": 239,
+        "variants": [
+          "FC-"
         ]
       }
     ]
