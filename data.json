@@ -1,13 +1,110 @@
 {
   "metadata": {
-    "timestamp": "2025-11-18T07:46:28.273Z",
+    "timestamp": "2025-11-18T07:47:01.686Z",
     "date": "2025-11-18",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
+    }
+  ],
+  "production": [
+    {
+      "id": "LEVO-XL1150S",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL1150S",
+        "name": "XL1150S",
+        "fullName": "LEVO XL1150S",
+        "cycleTime": 97.06,
+        "devicesPerBox": 14,
+        "actualCycleTime": 2079
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 37,
+        "daily": 299,
+        "boxes": 21
+      },
+      "actual": {
+        "total": 14,
+        "boxes": 1,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25111235,
+          "quantity": 14,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 14,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 299,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 37,
+          "actual": 14,
+          "cumTarget": 37,
+          "cumActual": 14,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 14,
+        "totalTarget": 299,
+        "progress": 5
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 14,
+        "totalTarget": 299,
+        "progress": 5,
+        "variants": [
+          "LEVO-XL1150S"
+        ]
+      }
+    ]
   }
 }
