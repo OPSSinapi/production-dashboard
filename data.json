@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-11-18T11:14:57.076Z",
+    "timestamp": "2025-11-18T11:16:01.497Z",
     "date": "2025-11-18",
     "facility": "Main Plant"
   },
@@ -517,7 +517,7 @@
         "fullName": "Scalpel PAMC15S",
         "cycleTime": 2.28,
         "devicesPerBox": 500,
-        "actualCycleTime": 6
+        "actualCycleTime": 2
       },
       "shiftId": "normal-time",
       "targets": {
@@ -543,9 +543,9 @@
           "name": "Apelele",
           "production": 5000,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 12763,
-          "progress": 39
+          "endTime": "11:14",
+          "target": 5368,
+          "progress": 93
         }
       ],
       "timeline": [
@@ -584,14 +584,104 @@
         },
         {
           "hour": "11:30",
+          "target": 1157,
+          "actual": 0,
+          "cumTarget": 5365,
+          "cumActual": 5000,
+          "transitionTarget": 1157,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 44
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-PARC11S",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PARC11S",
+        "name": "PARC11S",
+        "fullName": "Scalpel PARC11S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 17
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12763,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 2,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 25111442,
+          "quantity": 1000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 1000,
+          "startTime": "11:14",
+          "endTime": "16:30",
+          "target": 7394,
+          "progress": 14
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
           "target": 1578,
           "actual": 0,
-          "cumTarget": 5786,
-          "cumActual": 5000,
+          "cumTarget": 1578,
+          "cumActual": 0,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1052,
+          "actual": 0,
+          "cumTarget": 4208,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
+        },
+        {
+          "hour": "11:30",
+          "target": 421,
+          "actual": 1000,
+          "cumTarget": 4629,
+          "cumActual": 1000,
+          "transitionTarget": 421,
+          "previousVariant": "Scalpel-PAMC15S",
+          "previousVariantMinutes": 44,
+          "currentVariantMinutes": 16
         }
       ]
     }
@@ -629,9 +719,9 @@
       {
         "id": "Scalpel",
         "name": "Scalpel",
-        "totalProduction": 5000,
-        "totalTarget": 25526,
-        "progress": 20
+        "totalProduction": 6000,
+        "totalTarget": 51052,
+        "progress": 12
       }
     ],
     "supervisors": [
@@ -678,11 +768,12 @@
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 5000,
-        "totalTarget": 12763,
-        "progress": 39,
+        "totalProduction": 6000,
+        "totalTarget": 12762,
+        "progress": 47,
         "variants": [
-          "Scalpel-PAMC15S"
+          "Scalpel-PAMC15S",
+          "Scalpel-PARC11S"
         ]
       },
       {
