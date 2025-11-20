@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-11-20T08:33:11.819Z",
+    "timestamp": "2025-11-20T08:34:11.819Z",
     "date": "2025-11-20",
     "facility": "Main Plant"
   },
@@ -196,6 +196,74 @@
           "actual": 0,
           "cumTarget": 0,
           "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "LEVO-XL1150S",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL1150S",
+        "name": "XL1150S",
+        "fullName": "LEVO XL1150S",
+        "cycleTime": 97.06,
+        "devicesPerBox": 14,
+        "actualCycleTime": 2079
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 37,
+        "daily": 299,
+        "boxes": 21
+      },
+      "actual": {
+        "total": 14,
+        "boxes": 1,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 25111848,
+          "quantity": 14,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 14,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 299,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 37,
+          "actual": 0,
+          "cumTarget": 37,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 37,
+          "actual": 14,
+          "cumTarget": 74,
+          "cumActual": 14,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -419,7 +487,7 @@
         "fullName": "SCD XL1000SCP",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 1463
+        "actualCycleTime": 975
       },
       "shiftId": "overtime",
       "targets": {
@@ -428,26 +496,26 @@
         "boxes": 99
       },
       "actual": {
-        "total": 24,
-        "boxes": 2,
-        "progress": 2
+        "total": 36,
+        "boxes": 3,
+        "progress": 3
       },
       "batches": [
         {
           "id": 25111339,
-          "quantity": 24,
-          "boxes": 2
+          "quantity": 36,
+          "boxes": 3
         }
       ],
       "supervisors": [
         {
           "id": "Rework",
           "name": "Rework",
-          "production": 24,
+          "production": 36,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1193,
-          "progress": 2
+          "progress": 3
         }
       ],
       "timeline": [
@@ -465,9 +533,9 @@
         {
           "hour": "09:30",
           "target": 122,
-          "actual": 0,
+          "actual": 12,
           "cumTarget": 244,
-          "cumActual": 24,
+          "cumActual": 36,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -549,9 +617,9 @@
       {
         "id": "LEVO",
         "name": "LEVO",
-        "totalProduction": 150,
-        "totalTarget": 480,
-        "progress": 31
+        "totalProduction": 164,
+        "totalTarget": 779,
+        "progress": 21
       },
       {
         "id": "FC",
@@ -570,7 +638,7 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 84,
+        "totalProduction": 96,
         "totalTarget": 2386,
         "progress": 4
       },
@@ -618,11 +686,21 @@
       {
         "id": "Rework",
         "name": "Rework",
-        "totalProduction": 24,
+        "totalProduction": 36,
         "totalTarget": 1193,
-        "progress": 2,
+        "progress": 3,
         "variants": [
           "SCD-XL1000SCP"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 14,
+        "totalTarget": 299,
+        "progress": 5,
+        "variants": [
+          "LEVO-XL1150S"
         ]
       }
     ]
