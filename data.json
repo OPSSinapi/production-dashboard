@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-11-20T08:16:08.301Z",
+    "timestamp": "2025-11-20T08:17:04.015Z",
     "date": "2025-11-20",
     "facility": "Main Plant"
   },
@@ -70,7 +70,7 @@
         "fullName": "LEVO D1150",
         "cycleTime": 0,
         "devicesPerBox": 30,
-        "actualCycleTime": 1
+        "actualCycleTime": 2
       },
       "shiftId": "standard",
       "targets": {
@@ -250,6 +250,63 @@
       ]
     },
     {
+      "id": "SBM3-",
+      "product": {
+        "id": "SBM3",
+        "name": "SBM3"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "SBM3 SBM3",
+        "cycleTime": 0,
+        "devicesPerBox": 100,
+        "actualCycleTime": 12
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 0,
+        "daily": 480,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 2300,
+        "boxes": 23,
+        "progress": 479
+      },
+      "batches": [
+        {
+          "id": 25111747,
+          "quantity": 2300,
+          "boxes": 23
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Ellavi_Drape_PopUp",
+          "name": "Ellavi_Drape_PopUp",
+          "production": 2300,
+          "startTime": "08:14",
+          "endTime": "16:30",
+          "target": 480,
+          "progress": 479
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 0,
+          "actual": 2300,
+          "cumTarget": 0,
+          "cumActual": 2300,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "SUM-500V2",
       "product": {
         "id": "SUM",
@@ -324,6 +381,13 @@
         "progress": 273
       },
       {
+        "id": "SBM3",
+        "name": "SBM3",
+        "totalProduction": 2300,
+        "totalTarget": 480,
+        "progress": 479
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 100,
@@ -345,12 +409,13 @@
       {
         "id": "Ellavi_Drape_PopUp",
         "name": "Ellavi_Drape_PopUp",
-        "totalProduction": 1750,
-        "totalTarget": 1067,
-        "progress": 164,
+        "totalProduction": 4050,
+        "totalTarget": 1547,
+        "progress": 262,
         "variants": [
           "FC-",
-          "LEVO-D1150"
+          "LEVO-D1150",
+          "SBM3-"
         ]
       }
     ]
