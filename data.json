@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-11-20T08:57:43.455Z",
+    "timestamp": "2025-11-20T08:57:50.484Z",
     "date": "2025-11-20",
     "facility": "Main Plant"
   },
@@ -544,6 +544,74 @@
       ]
     },
     {
+      "id": "SCD-XL2000SP",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL2000SP",
+        "name": "XL2000SP",
+        "fullName": "SCD XL2000SP",
+        "cycleTime": 117.86,
+        "devicesPerBox": 6,
+        "actualCycleTime": 3990
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 30,
+        "daily": 246,
+        "boxes": 41
+      },
+      "actual": {
+        "total": 6,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 25111949,
+          "quantity": 6,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 6,
+          "startTime": "08:56",
+          "endTime": "16:30",
+          "target": 203,
+          "progress": 3
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 30,
+          "actual": 0,
+          "cumTarget": 30,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 30,
+          "actual": 6,
+          "cumTarget": 60,
+          "cumActual": 6,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "SUM-500V2",
       "product": {
         "id": "SUM",
@@ -555,7 +623,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 219
+        "actualCycleTime": 195
       },
       "shiftId": "overtime",
       "targets": {
@@ -564,26 +632,26 @@
         "boxes": 66
       },
       "actual": {
-        "total": 160,
-        "boxes": 8,
-        "progress": 12
+        "total": 180,
+        "boxes": 9,
+        "progress": 14
       },
       "batches": [
         {
           "id": 25111743,
-          "quantity": 160,
-          "boxes": 8
+          "quantity": 180,
+          "boxes": 9
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 160,
+          "production": 180,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1326,
-          "progress": 12
+          "progress": 14
         }
       ],
       "timeline": [
@@ -601,9 +669,9 @@
         {
           "hour": "09:30",
           "target": 136,
-          "actual": 40,
+          "actual": 60,
           "cumTarget": 272,
-          "cumActual": 160,
+          "cumActual": 180,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -706,16 +774,16 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 168,
-        "totalTarget": 2386,
+        "totalProduction": 174,
+        "totalTarget": 2632,
         "progress": 7
       },
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 160,
+        "totalProduction": 180,
         "totalTarget": 1326,
-        "progress": 12
+        "progress": 14
       },
       {
         "id": "UBT",
@@ -729,9 +797,9 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 160,
+        "totalProduction": 180,
         "totalTarget": 1326,
-        "progress": 12,
+        "progress": 14,
         "variants": [
           "SUM-500V2"
         ]
@@ -781,11 +849,12 @@
       {
         "id": "Mvokwe",
         "name": "Mvokwe",
-        "totalProduction": 72,
-        "totalTarget": 602,
-        "progress": 12,
+        "totalProduction": 78,
+        "totalTarget": 805,
+        "progress": 10,
         "variants": [
-          "UBT-"
+          "UBT-",
+          "SCD-XL2000SP"
         ]
       }
     ]
