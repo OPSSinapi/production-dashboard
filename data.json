@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-11-28T09:34:15.506Z",
+    "timestamp": "2025-11-28T09:35:07.602Z",
     "date": "2025-11-28",
     "facility": "Main Plant"
   },
@@ -31,19 +31,19 @@
     },
     {
       "id": "normal-time",
-      "name": "7h NT B",
+      "name": "7h NT A",
       "startTime": "07:30",
       "endTime": "15:15",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
+          "startTime": "10:25",
+          "endTime": "10:45"
         },
         {
           "type": "lunch",
-          "startTime": "13:00",
-          "endTime": "13:35"
+          "startTime": "13:40",
+          "endTime": "14:15"
         }
       ],
       "availableWorkHours": 6.833333333333333
@@ -122,6 +122,85 @@
           "actual": 0,
           "cumTarget": 356,
           "cumActual": 216,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ]
+    },
+    {
+      "id": "LEVO-XL1150SC",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL1150SC",
+        "name": "XL1150SC",
+        "fullName": "LEVO XL1150SC",
+        "cycleTime": 97.06,
+        "devicesPerBox": 14,
+        "actualCycleTime": 1757
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 37,
+        "daily": 253,
+        "boxes": 18
+      },
+      "actual": {
+        "total": 14,
+        "boxes": 1,
+        "progress": 6
+      },
+      "batches": [
+        {
+          "id": 25112764,
+          "quantity": 14,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 14,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 253,
+          "progress": 6
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 37,
+          "actual": 0,
+          "cumTarget": 37,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 37,
+          "actual": 0,
+          "cumTarget": 74,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 33,
+          "actual": 14,
+          "cumTarget": 107,
+          "cumActual": 14,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -377,6 +456,13 @@
         "progress": 21
       },
       {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 14,
+        "totalTarget": 253,
+        "progress": 6
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 200,
@@ -437,6 +523,16 @@
         "progress": 42,
         "variants": [
           "Scalpel-PARC11S"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 14,
+        "totalTarget": 253,
+        "progress": 6,
+        "variants": [
+          "LEVO-XL1150SC"
         ]
       }
     ]
