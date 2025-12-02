@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-12-02T10:48:55.889Z",
+    "timestamp": "2025-12-02T10:49:53.617Z",
     "date": "2025-12-02",
     "facility": "Main Plant"
   },
@@ -31,14 +31,14 @@
     },
     {
       "id": "normal-time",
-      "name": "8.25h NT B",
+      "name": "8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
+          "startTime": "10:25",
+          "endTime": "10:45"
         },
         {
           "type": "lunch",
@@ -133,6 +133,96 @@
           "actual": 0,
           "cumTarget": 447,
           "cumActual": 312,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        }
+      ]
+    },
+    {
+      "id": "FC-",
+      "product": {
+        "id": "FC",
+        "name": "FC"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "FC FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 58
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "daily": 587,
+        "boxes": 5
+      },
+      "actual": {
+        "total": 500,
+        "boxes": 5,
+        "progress": 85
+      },
+      "batches": [
+        {
+          "id": 25111022,
+          "quantity": 500,
+          "boxes": 5
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Ellavi_Drape_PopUp",
+          "name": "Ellavi_Drape_PopUp",
+          "production": 500,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 587,
+          "progress": 85
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 72,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 144,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 66,
+          "actual": 0,
+          "cumTarget": 210,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 54,
+          "actual": 500,
+          "cumTarget": 264,
+          "cumActual": 500,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -426,6 +516,13 @@
         "progress": 26
       },
       {
+        "id": "FC",
+        "name": "FC",
+        "totalProduction": 500,
+        "totalTarget": 587,
+        "progress": 85
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 340,
@@ -486,6 +583,16 @@
         "progress": 27,
         "variants": [
           "UBT-"
+        ]
+      },
+      {
+        "id": "Ellavi_Drape_PopUp",
+        "name": "Ellavi_Drape_PopUp",
+        "totalProduction": 500,
+        "totalTarget": 587,
+        "progress": 85,
+        "variants": [
+          "FC-"
         ]
       }
     ]
