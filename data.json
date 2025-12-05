@@ -1,10 +1,29 @@
 {
   "metadata": {
-    "timestamp": "2025-12-05T08:55:11.078Z",
+    "timestamp": "2025-12-05T08:55:57.568Z",
     "date": "2025-12-05",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "normal-time",
+      "name": "7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 6.833333333333333
+    },
     {
       "id": "overtime",
       "name": "8.5h OT A",
@@ -28,28 +47,77 @@
         }
       ],
       "availableWorkHours": 8.5
-    },
-    {
-      "id": "normal-time",
-      "name": "7h NT B",
-      "startTime": "07:30",
-      "endTime": "15:15",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:00",
-          "endTime": "13:35"
-        }
-      ],
-      "availableWorkHours": 6.833333333333333
     }
   ],
   "production": [
+    {
+      "id": "SBM3-",
+      "product": {
+        "id": "SBM3",
+        "name": "SBM3"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "SBM3 SBM3",
+        "cycleTime": 0,
+        "devicesPerBox": 100,
+        "actualCycleTime": 246
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 0,
+        "daily": 480,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 21
+      },
+      "batches": [
+        {
+          "id": 25120309,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Ellavi_Drape_PopUp",
+          "name": "Ellavi_Drape_PopUp",
+          "production": 100,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 480,
+          "progress": 21
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 0,
+          "actual": 100,
+          "cumTarget": 0,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XL1000+",
       "product": {
@@ -62,7 +130,7 @@
         "fullName": "SCD XL1000+",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 364
+        "actualCycleTime": 319
       },
       "shiftId": "overtime",
       "targets": {
@@ -71,26 +139,26 @@
         "boxes": 86
       },
       "actual": {
-        "total": 84,
-        "boxes": 7,
-        "progress": 8
+        "total": 96,
+        "boxes": 8,
+        "progress": 9
       },
       "batches": [
         {
           "id": 25120410,
-          "quantity": 84,
-          "boxes": 7
+          "quantity": 96,
+          "boxes": 8
         }
       ],
       "supervisors": [
         {
           "id": "Michaela",
           "name": "Michaela",
-          "production": 84,
+          "production": 96,
           "startTime": "07:30",
           "endTime": "17:15",
           "target": 1040,
-          "progress": 8
+          "progress": 9
         }
       ],
       "timeline": [
@@ -108,9 +176,9 @@
         {
           "hour": "09:30",
           "target": 122,
-          "actual": 12,
+          "actual": 24,
           "cumTarget": 244,
-          "cumActual": 84,
+          "cumActual": 96,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -130,7 +198,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 255
+        "actualCycleTime": 219
       },
       "shiftId": "overtime",
       "targets": {
@@ -139,26 +207,26 @@
         "boxes": 57
       },
       "actual": {
-        "total": 120,
-        "boxes": 6,
-        "progress": 10
+        "total": 140,
+        "boxes": 7,
+        "progress": 12
       },
       "batches": [
         {
           "id": 25120411,
-          "quantity": 120,
-          "boxes": 6
+          "quantity": 140,
+          "boxes": 7
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 120,
+          "production": 140,
           "startTime": "07:30",
           "endTime": "17:15",
           "target": 1156,
-          "progress": 10
+          "progress": 12
         }
       ],
       "timeline": [
@@ -176,9 +244,9 @@
         {
           "hour": "09:30",
           "target": 136,
-          "actual": 40,
+          "actual": 60,
           "cumTarget": 272,
-          "cumActual": 120,
+          "cumActual": 140,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -326,18 +394,25 @@
   "summary": {
     "products": [
       {
+        "id": "SBM3",
+        "name": "SBM3",
+        "totalProduction": 100,
+        "totalTarget": 480,
+        "progress": 21
+      },
+      {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 84,
+        "totalProduction": 96,
         "totalTarget": 1040,
-        "progress": 8
+        "progress": 9
       },
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 120,
+        "totalProduction": 140,
         "totalTarget": 1156,
-        "progress": 10
+        "progress": 12
       },
       {
         "id": "UBT",
@@ -358,9 +433,9 @@
       {
         "id": "Michaela",
         "name": "Michaela",
-        "totalProduction": 84,
+        "totalProduction": 96,
         "totalTarget": 1040,
-        "progress": 8,
+        "progress": 9,
         "variants": [
           "SCD-XL1000+"
         ]
@@ -368,9 +443,9 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 120,
+        "totalProduction": 140,
         "totalTarget": 1156,
-        "progress": 10,
+        "progress": 12,
         "variants": [
           "SUM-500V2"
         ]
@@ -393,6 +468,16 @@
         "progress": 24,
         "variants": [
           "UBT-"
+        ]
+      },
+      {
+        "id": "Ellavi_Drape_PopUp",
+        "name": "Ellavi_Drape_PopUp",
+        "totalProduction": 100,
+        "totalTarget": 480,
+        "progress": 21,
+        "variants": [
+          "SBM3-"
         ]
       }
     ]
