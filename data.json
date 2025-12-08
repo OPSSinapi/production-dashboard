@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2025-12-08T08:16:07.767Z",
+    "timestamp": "2025-12-08T08:17:05.071Z",
     "date": "2025-12-08",
     "facility": "Main Plant"
   },
@@ -28,6 +28,25 @@
         }
       ],
       "availableWorkHours": 9.75
+    },
+    {
+      "id": "normal-time",
+      "name": "8.25h NT B",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:00",
+          "endTime": "10:20"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
     }
   ],
   "production": [
@@ -87,6 +106,63 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "Scalpel-PARC10S",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PARC10S",
+        "name": "PARC10S",
+        "fullName": "Scalpel PARC10S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 58
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12763,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 500,
+        "boxes": 1,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 25120103,
+          "quantity": 500,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 500,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 12763,
+          "progress": 4
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 500,
+          "cumTarget": 1578,
+          "cumActual": 500,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -97,6 +173,13 @@
         "totalProduction": 72,
         "totalTarget": 1193,
         "progress": 6
+      },
+      {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 500,
+        "totalTarget": 25526,
+        "progress": 2
       }
     ],
     "supervisors": [
@@ -108,6 +191,16 @@
         "progress": 6,
         "variants": [
           "SCD-XL1000+"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 500,
+        "totalTarget": 12763,
+        "progress": 4,
+        "variants": [
+          "Scalpel-PARC10S"
         ]
       }
     ]
