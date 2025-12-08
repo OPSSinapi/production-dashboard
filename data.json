@@ -1,29 +1,10 @@
 {
   "metadata": {
-    "timestamp": "2025-12-08T14:46:19.378Z",
+    "timestamp": "2025-12-08T14:47:08.050Z",
     "date": "2025-12-08",
     "facility": "Main Plant"
   },
   "shifts": [
-    {
-      "id": "normal-time",
-      "name": "8.25h NT A",
-      "startTime": "07:30",
-      "endTime": "16:30",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:25",
-          "endTime": "10:45"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        }
-      ],
-      "availableWorkHours": 8.083333333333334
-    },
     {
       "id": "overtime",
       "name": "10h OT A",
@@ -47,9 +28,162 @@
         }
       ],
       "availableWorkHours": 9.75
+    },
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL1000SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SC",
+        "name": "XL1000SC",
+        "fullName": "SCD XL1000SC",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 1025
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 122,
+        "daily": 1193,
+        "boxes": 99
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 25120812,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 12,
+          "startTime": "14:45",
+          "endTime": "18:30",
+          "target": 418,
+          "progress": 3
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 122,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 244,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 112,
+          "actual": 0,
+          "cumTarget": 356,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 91,
+          "actual": 0,
+          "cumTarget": 447,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        },
+        {
+          "hour": "12:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 569,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "13:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 691,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 51,
+          "actual": 0,
+          "cumTarget": 742,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
+        },
+        {
+          "hour": "15:30",
+          "target": 91,
+          "actual": 12,
+          "cumTarget": 833,
+          "cumActual": 12,
+          "transitionTarget": 91,
+          "previousVariant": "SCD-XL1000+",
+          "previousVariantMinutes": 15,
+          "currentVariantMinutes": 45
+        }
+      ]
+    },
     {
       "id": "FC-",
       "product": {
@@ -196,7 +330,7 @@
         "fullName": "SCD XL1000+",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 60
+        "actualCycleTime": 39
       },
       "shiftId": "overtime",
       "targets": {
@@ -222,9 +356,9 @@
           "name": "Michaela",
           "production": 588,
           "startTime": "07:30",
-          "endTime": "18:30",
-          "target": 1193,
-          "progress": 49
+          "endTime": "14:45",
+          "target": 775,
+          "progress": 76
         }
       ],
       "timeline": [
@@ -307,14 +441,14 @@
         },
         {
           "hour": "15:30",
-          "target": 122,
+          "target": 30,
           "actual": 0,
-          "cumTarget": 864,
+          "cumTarget": 772,
           "cumActual": 588,
-          "transitionTarget": 0,
+          "transitionTarget": 30,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
+          "currentVariantMinutes": 15
         }
       ]
     },
@@ -469,7 +603,7 @@
         "fullName": "UBT UBT",
         "cycleTime": 58.24,
         "devicesPerBox": 25,
-        "actualCycleTime": 100
+        "actualCycleTime": 88
       },
       "shiftId": "overtime",
       "targets": {
@@ -478,9 +612,9 @@
         "boxes": 24
       },
       "actual": {
-        "total": 350,
-        "boxes": 14,
-        "progress": 58
+        "total": 400,
+        "boxes": 16,
+        "progress": 66
       },
       "batches": [
         {
@@ -490,19 +624,19 @@
         },
         {
           "id": 25120815,
-          "quantity": 100,
-          "boxes": 4
+          "quantity": 150,
+          "boxes": 6
         }
       ],
       "supervisors": [
         {
           "id": "Mvokwe",
           "name": "Mvokwe",
-          "production": 350,
+          "production": 400,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 602,
-          "progress": 58
+          "progress": 66
         }
       ],
       "timeline": [
@@ -586,9 +720,9 @@
         {
           "hour": "15:30",
           "target": 61,
-          "actual": 0,
+          "actual": 50,
           "cumTarget": 432,
-          "cumActual": 350,
+          "cumActual": 400,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -734,18 +868,18 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 600,
+        "totalTarget": 2386,
+        "progress": 25
+      },
+      {
         "id": "FC",
         "name": "FC",
         "totalProduction": 800,
         "totalTarget": 587,
         "progress": 136
-      },
-      {
-        "id": "SCD",
-        "name": "SCD",
-        "totalProduction": 588,
-        "totalTarget": 1193,
-        "progress": 49
       },
       {
         "id": "SUM",
@@ -757,9 +891,9 @@
       {
         "id": "UBT",
         "name": "UBT",
-        "totalProduction": 350,
+        "totalProduction": 400,
         "totalTarget": 602,
-        "progress": 58
+        "progress": 66
       },
       {
         "id": "Scalpel",
@@ -773,11 +907,12 @@
       {
         "id": "Michaela",
         "name": "Michaela",
-        "totalProduction": 588,
+        "totalProduction": 600,
         "totalTarget": 1193,
-        "progress": 49,
+        "progress": 50,
         "variants": [
-          "SCD-XL1000+"
+          "SCD-XL1000+",
+          "SCD-XL1000SC"
         ]
       },
       {
@@ -793,9 +928,9 @@
       {
         "id": "Mvokwe",
         "name": "Mvokwe",
-        "totalProduction": 350,
+        "totalProduction": 400,
         "totalTarget": 602,
-        "progress": 58,
+        "progress": 66,
         "variants": [
           "UBT-"
         ]
