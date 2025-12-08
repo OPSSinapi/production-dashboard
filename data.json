@@ -1,10 +1,29 @@
 {
   "metadata": {
-    "timestamp": "2025-12-08T12:10:09.702Z",
+    "timestamp": "2025-12-08T12:11:01.255Z",
     "date": "2025-12-08",
     "facility": "Main Plant"
   },
   "shifts": [
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
+    },
     {
       "id": "overtime",
       "name": "10h OT A",
@@ -28,28 +47,110 @@
         }
       ],
       "availableWorkHours": 9.75
-    },
-    {
-      "id": "normal-time",
-      "name": "8.25h NT B",
-      "startTime": "07:30",
-      "endTime": "16:30",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        }
-      ],
-      "availableWorkHours": 8.083333333333334
     }
   ],
   "production": [
+    {
+      "id": "FC-",
+      "product": {
+        "id": "FC",
+        "name": "FC"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "FC FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 291
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "daily": 587,
+        "boxes": 5
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 25111022,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Ellavi_Drape_PopUp",
+          "name": "Ellavi_Drape_PopUp",
+          "production": 100,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 587,
+          "progress": 17
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 72,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 144,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 66,
+          "actual": 0,
+          "cumTarget": 210,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 54,
+          "actual": 0,
+          "cumTarget": 264,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        },
+        {
+          "hour": "12:30",
+          "target": 72,
+          "actual": 100,
+          "cumTarget": 336,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XL1000+",
       "product": {
@@ -463,6 +564,13 @@
   "summary": {
     "products": [
       {
+        "id": "FC",
+        "name": "FC",
+        "totalProduction": 100,
+        "totalTarget": 587,
+        "progress": 17
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 456,
@@ -530,6 +638,16 @@
         "progress": 35,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Ellavi_Drape_PopUp",
+        "name": "Ellavi_Drape_PopUp",
+        "totalProduction": 100,
+        "totalTarget": 587,
+        "progress": 17,
+        "variants": [
+          "FC-"
         ]
       }
     ]
