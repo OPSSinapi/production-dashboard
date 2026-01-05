@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-01-05T13:52:56.429Z",
+    "timestamp": "2026-01-05T13:53:50.766Z",
     "date": "2026-01-05",
     "facility": "Main Plant"
   },
@@ -28,6 +28,25 @@
         }
       ],
       "availableWorkHours": 9.75
+    },
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
     }
   ],
   "production": [
@@ -147,6 +166,129 @@
           "actual": 12,
           "cumTarget": 742,
           "cumActual": 120,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
+        }
+      ]
+    },
+    {
+      "id": "EFB-",
+      "product": {
+        "id": "EFB",
+        "name": "EFB"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "EFB EFB",
+        "cycleTime": 0,
+        "devicesPerBox": 50,
+        "actualCycleTime": 291
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 0,
+        "daily": 480,
+        "boxes": 9
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 2,
+        "progress": 21
+      },
+      "batches": [
+        {
+          "id": 26010504,
+          "quantity": 100,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "PopUp",
+          "name": "PopUp",
+          "production": 100,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 480,
+          "progress": 21
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        },
+        {
+          "hour": "12:30",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "13:30",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 0,
+          "actual": 100,
+          "cumTarget": 0,
+          "cumActual": 100,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -411,6 +553,13 @@
         "progress": 10
       },
       {
+        "id": "EFB",
+        "name": "EFB",
+        "totalProduction": 100,
+        "totalTarget": 480,
+        "progress": 21
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 320,
@@ -454,6 +603,16 @@
         "progress": 12,
         "variants": [
           "UBT-"
+        ]
+      },
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 100,
+        "totalTarget": 480,
+        "progress": 21,
+        "variants": [
+          "EFB-"
         ]
       }
     ]
