@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-01-08T08:27:20.694Z",
+    "timestamp": "2026-01-08T08:27:55.678Z",
     "date": "2026-01-08",
     "facility": "Main Plant"
   },
@@ -28,6 +28,25 @@
         }
       ],
       "availableWorkHours": 9.75
+    },
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
     }
   ],
   "production": [
@@ -89,6 +108,63 @@
       ]
     },
     {
+      "id": "FC-",
+      "product": {
+        "id": "FC",
+        "name": "FC"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "FC FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 291
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "daily": 587,
+        "boxes": 5
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 26010505,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "PopUp",
+          "name": "PopUp",
+          "production": 100,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 587,
+          "progress": 17
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 100,
+          "cumTarget": 72,
+          "cumActual": 100,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "SUM-500V2",
       "product": {
         "id": "SUM",
@@ -100,7 +176,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 293
+        "actualCycleTime": 251
       },
       "shiftId": "overtime",
       "targets": {
@@ -109,35 +185,92 @@
         "boxes": 66
       },
       "actual": {
-        "total": 120,
-        "boxes": 6,
-        "progress": 9
+        "total": 140,
+        "boxes": 7,
+        "progress": 11
       },
       "batches": [
         {
           "id": 26010707,
-          "quantity": 120,
-          "boxes": 6
+          "quantity": 140,
+          "boxes": 7
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 120,
+          "production": 140,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1326,
-          "progress": 9
+          "progress": 11
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 136,
-          "actual": 120,
+          "actual": 140,
           "cumTarget": 136,
-          "cumActual": 120,
+          "cumActual": 140,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "UBT-",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "UBT UBT",
+        "cycleTime": 58.24,
+        "devicesPerBox": 25,
+        "actualCycleTime": 702
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 61,
+        "daily": 602,
+        "boxes": 24
+      },
+      "actual": {
+        "total": 50,
+        "boxes": 2,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 26010710,
+          "quantity": 50,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 50,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 602,
+          "progress": 8
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 61,
+          "actual": 50,
+          "cumTarget": 61,
+          "cumActual": 50,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -156,20 +289,34 @@
         "progress": 5
       },
       {
+        "id": "FC",
+        "name": "FC",
+        "totalProduction": 100,
+        "totalTarget": 587,
+        "progress": 17
+      },
+      {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 120,
+        "totalProduction": 140,
         "totalTarget": 1326,
-        "progress": 9
+        "progress": 11
+      },
+      {
+        "id": "UBT",
+        "name": "UBT",
+        "totalProduction": 50,
+        "totalTarget": 602,
+        "progress": 8
       }
     ],
     "supervisors": [
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 120,
+        "totalProduction": 140,
         "totalTarget": 1326,
-        "progress": 9,
+        "progress": 11,
         "variants": [
           "SUM-500V2"
         ]
@@ -182,6 +329,26 @@
         "progress": 5,
         "variants": [
           "SCD-XL1000SC"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 50,
+        "totalTarget": 602,
+        "progress": 8,
+        "variants": [
+          "UBT-"
+        ]
+      },
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 100,
+        "totalTarget": 587,
+        "progress": 17,
+        "variants": [
+          "FC-"
         ]
       }
     ]
