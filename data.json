@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-01-19T12:48:15.741Z",
+    "timestamp": "2026-01-19T12:49:18.006Z",
     "date": "2026-01-19",
     "facility": "Main Plant"
   },
@@ -50,6 +50,118 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL1000SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SC",
+        "name": "XL1000SC",
+        "fullName": "SCD XL1000SC",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 315
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 122,
+        "daily": 989,
+        "boxes": 82
+      },
+      "actual": {
+        "total": 36,
+        "boxes": 3,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 26011930,
+          "quantity": 36,
+          "boxes": 3
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 36,
+          "startTime": "12:46",
+          "endTime": "16:30",
+          "target": 385,
+          "progress": 9
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 122,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 244,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 112,
+          "actual": 0,
+          "cumTarget": 356,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 91,
+          "actual": 0,
+          "cumTarget": 447,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        },
+        {
+          "hour": "12:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 569,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "13:30",
+          "target": 89,
+          "actual": 36,
+          "cumTarget": 658,
+          "cumActual": 36,
+          "transitionTarget": 89,
+          "previousVariant": "SCD-XL1000+",
+          "previousVariantMinutes": 16,
+          "currentVariantMinutes": 44
+        }
+      ]
+    },
     {
       "id": "LEVO-XL1150SCI",
       "product": {
@@ -174,7 +286,7 @@
         "fullName": "SCD XL1000+",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 69
+        "actualCycleTime": 42
       },
       "shiftId": "normal-time",
       "targets": {
@@ -200,9 +312,9 @@
           "name": "Michaela",
           "production": 420,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 989,
-          "progress": 42
+          "endTime": "12:46",
+          "target": 603,
+          "progress": 70
         }
       ],
       "timeline": [
@@ -263,14 +375,14 @@
         },
         {
           "hour": "13:30",
-          "target": 122,
+          "target": 32,
           "actual": 0,
-          "cumTarget": 691,
+          "cumTarget": 601,
           "cumActual": 420,
-          "transitionTarget": 0,
+          "transitionTarget": 32,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
+          "currentVariantMinutes": 16
         }
       ]
     },
@@ -614,18 +726,18 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 561,
+        "totalTarget": 2422,
+        "progress": 23
+      },
+      {
         "id": "LEVO",
         "name": "LEVO",
         "totalProduction": 140,
         "totalTarget": 299,
         "progress": 47
-      },
-      {
-        "id": "SCD",
-        "name": "SCD",
-        "totalProduction": 525,
-        "totalTarget": 1433,
-        "progress": 37
       },
       {
         "id": "SUM",
@@ -646,11 +758,12 @@
       {
         "id": "Michaela",
         "name": "Michaela",
-        "totalProduction": 420,
-        "totalTarget": 989,
-        "progress": 42,
+        "totalProduction": 456,
+        "totalTarget": 988,
+        "progress": 46,
         "variants": [
-          "SCD-XL1000+"
+          "SCD-XL1000+",
+          "SCD-XL1000SC"
         ]
       },
       {
