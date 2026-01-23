@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-01-23T07:56:07.581Z",
+    "timestamp": "2026-01-23T07:57:06.842Z",
     "date": "2026-01-23",
     "facility": "Main Plant"
   },
@@ -23,6 +23,30 @@
         }
       ],
       "availableWorkHours": 6.833333333333333
+    },
+    {
+      "id": "overtime",
+      "name": "8.5h OT B",
+      "startTime": "07:30",
+      "endTime": "17:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:00",
+          "endTime": "10:20"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:00",
+          "endTime": "13:35"
+        },
+        {
+          "type": "otTea",
+          "startTime": "16:55",
+          "endTime": "17:15"
+        }
+      ],
+      "availableWorkHours": 8.5
     }
   ],
   "production": [
@@ -82,6 +106,120 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "SUM-500V2",
+      "product": {
+        "id": "SUM",
+        "name": "SUM"
+      },
+      "variant": {
+        "id": "500V2",
+        "name": "500V2",
+        "fullName": "SUM SUM500V2",
+        "cycleTime": 26.47,
+        "devicesPerBox": 20,
+        "actualCycleTime": 765
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 136,
+        "daily": 1156,
+        "boxes": 57
+      },
+      "actual": {
+        "total": 40,
+        "boxes": 2,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 26012136,
+          "quantity": 40,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Luthando",
+          "name": "Luthando",
+          "production": 40,
+          "startTime": "07:30",
+          "endTime": "17:15",
+          "target": 1156,
+          "progress": 3
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 136,
+          "actual": 40,
+          "cumTarget": 136,
+          "cumActual": 40,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "UBT-",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "UBT UBT",
+        "cycleTime": 58.24,
+        "devicesPerBox": 25,
+        "actualCycleTime": 1224
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 61,
+        "daily": 525,
+        "boxes": 21
+      },
+      "actual": {
+        "total": 25,
+        "boxes": 1,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 26012240,
+          "quantity": 25,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 25,
+          "startTime": "07:30",
+          "endTime": "17:15",
+          "target": 525,
+          "progress": 5
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 61,
+          "actual": 25,
+          "cumTarget": 61,
+          "cumActual": 25,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "summary": {
@@ -92,6 +230,20 @@
         "totalProduction": 48,
         "totalTarget": 836,
         "progress": 6
+      },
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 40,
+        "totalTarget": 1156,
+        "progress": 3
+      },
+      {
+        "id": "UBT",
+        "name": "UBT",
+        "totalProduction": 25,
+        "totalTarget": 525,
+        "progress": 5
       }
     ],
     "supervisors": [
@@ -103,6 +255,26 @@
         "progress": 6,
         "variants": [
           "SCD-XL1000SC"
+        ]
+      },
+      {
+        "id": "Luthando",
+        "name": "Luthando",
+        "totalProduction": 40,
+        "totalTarget": 1156,
+        "progress": 3,
+        "variants": [
+          "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 25,
+        "totalTarget": 525,
+        "progress": 5,
+        "variants": [
+          "UBT-"
         ]
       }
     ]
