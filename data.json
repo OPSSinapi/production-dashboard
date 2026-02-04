@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-02-04T08:20:01.778Z",
+    "timestamp": "2026-02-04T08:21:00.021Z",
     "date": "2026-02-04",
     "facility": "Main Plant"
   },
@@ -43,7 +43,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 878
+        "actualCycleTime": 585
       },
       "shiftId": "overtime",
       "targets": {
@@ -52,35 +52,92 @@
         "boxes": 66
       },
       "actual": {
-        "total": 40,
-        "boxes": 2,
-        "progress": 3
+        "total": 60,
+        "boxes": 3,
+        "progress": 5
       },
       "batches": [
         {
           "id": 26020201,
-          "quantity": 40,
-          "boxes": 2
+          "quantity": 60,
+          "boxes": 3
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 40,
+          "production": 60,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1326,
-          "progress": 3
+          "progress": 5
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 136,
-          "actual": 40,
+          "actual": 60,
           "cumTarget": 136,
-          "cumActual": 40,
+          "cumActual": 60,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "UBT-",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "UBT UBT",
+        "cycleTime": 58.24,
+        "devicesPerBox": 25,
+        "actualCycleTime": 1404
+      },
+      "shiftId": "overtime",
+      "targets": {
+        "hourly": 61,
+        "daily": 602,
+        "boxes": 24
+      },
+      "actual": {
+        "total": 25,
+        "boxes": 1,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 26013054,
+          "quantity": 25,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Mvokwe",
+          "name": "Mvokwe",
+          "production": 25,
+          "startTime": "07:30",
+          "endTime": "18:30",
+          "target": 602,
+          "progress": 4
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 61,
+          "actual": 25,
+          "cumTarget": 61,
+          "cumActual": 25,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -94,20 +151,37 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 40,
+        "totalProduction": 60,
         "totalTarget": 1326,
-        "progress": 3
+        "progress": 5
+      },
+      {
+        "id": "UBT",
+        "name": "UBT",
+        "totalProduction": 25,
+        "totalTarget": 602,
+        "progress": 4
       }
     ],
     "supervisors": [
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 40,
+        "totalProduction": 60,
         "totalTarget": 1326,
-        "progress": 3,
+        "progress": 5,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Mvokwe",
+        "name": "Mvokwe",
+        "totalProduction": 25,
+        "totalTarget": 602,
+        "progress": 4,
+        "variants": [
+          "UBT-"
         ]
       }
     ]
