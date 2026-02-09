@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-02-09T08:44:13.447Z",
+    "timestamp": "2026-02-09T08:45:22.065Z",
     "date": "2026-02-09",
     "facility": "Main Plant"
   },
@@ -187,6 +187,74 @@
       ]
     },
     {
+      "id": "D001-",
+      "product": {
+        "id": "D001",
+        "name": "D001"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "D001 D001",
+        "cycleTime": 29.7,
+        "devicesPerBox": 240,
+        "actualCycleTime": 103
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 121,
+        "daily": 979,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 240,
+        "boxes": 1,
+        "progress": 25
+      },
+      "batches": [
+        {
+          "id": 26020407,
+          "quantity": 240,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "PopUp",
+          "name": "PopUp",
+          "production": 240,
+          "startTime": "08:43",
+          "endTime": "16:30",
+          "target": 832,
+          "progress": 29
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 121,
+          "actual": 0,
+          "cumTarget": 121,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 121,
+          "actual": 240,
+          "cumTarget": 242,
+          "cumActual": 240,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "EFB-",
       "product": {
         "id": "EFB",
@@ -334,7 +402,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 351
+        "actualCycleTime": 293
       },
       "shiftId": "overtime",
       "targets": {
@@ -343,26 +411,26 @@
         "boxes": 66
       },
       "actual": {
-        "total": 100,
-        "boxes": 5,
-        "progress": 8
+        "total": 120,
+        "boxes": 6,
+        "progress": 9
       },
       "batches": [
         {
           "id": 26020613,
-          "quantity": 100,
-          "boxes": 5
+          "quantity": 120,
+          "boxes": 6
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 100,
+          "production": 120,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1326,
-          "progress": 8
+          "progress": 9
         }
       ],
       "timeline": [
@@ -380,9 +448,9 @@
         {
           "hour": "09:30",
           "target": 136,
-          "actual": 0,
+          "actual": 20,
           "cumTarget": 272,
-          "cumActual": 100,
+          "cumActual": 120,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -408,6 +476,13 @@
         "progress": 5
       },
       {
+        "id": "D001",
+        "name": "D001",
+        "totalProduction": 240,
+        "totalTarget": 979,
+        "progress": 25
+      },
+      {
         "id": "EFB",
         "name": "EFB",
         "totalProduction": 150,
@@ -424,18 +499,18 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 100,
+        "totalProduction": 120,
         "totalTarget": 1326,
-        "progress": 8
+        "progress": 9
       }
     ],
     "supervisors": [
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 100,
+        "totalProduction": 120,
         "totalTarget": 1326,
-        "progress": 8,
+        "progress": 9,
         "variants": [
           "SUM-500V2"
         ]
@@ -453,12 +528,13 @@
       {
         "id": "PopUp",
         "name": "PopUp",
-        "totalProduction": 250,
-        "totalTarget": 960,
-        "progress": 26,
+        "totalProduction": 490,
+        "totalTarget": 1792,
+        "progress": 27,
         "variants": [
           "EFB-",
-          "SBM4-"
+          "SBM4-",
+          "D001-"
         ]
       },
       {
