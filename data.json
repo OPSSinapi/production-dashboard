@@ -1,13 +1,98 @@
 {
   "metadata": {
-    "timestamp": "2026-02-11T07:18:09.016Z",
+    "timestamp": "2026-02-11T07:18:50.337Z",
     "date": "2026-02-11",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
+    }
+  ],
+  "production": [
+    {
+      "id": "D001-",
+      "product": {
+        "id": "D001",
+        "name": "D001"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "D001 D001",
+        "cycleTime": 29.7,
+        "devicesPerBox": 240,
+        "actualCycleTime": 125
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 121,
+        "daily": 979,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 240,
+        "boxes": 1,
+        "progress": 25
+      },
+      "batches": [
+        {
+          "id": 26021030,
+          "quantity": 240,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "PopUp",
+          "name": "PopUp",
+          "production": 240,
+          "startTime": "07:16",
+          "endTime": "16:30",
+          "target": 1008,
+          "progress": 24
+        }
+      ],
+      "timeline": []
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "D001",
+        "name": "D001",
+        "totalProduction": 240,
+        "totalTarget": 979,
+        "progress": 25
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 240,
+        "totalTarget": 1008,
+        "progress": 24,
+        "variants": [
+          "D001-"
+        ]
+      }
+    ]
   }
 }
