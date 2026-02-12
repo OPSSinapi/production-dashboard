@@ -1,13 +1,110 @@
 {
   "metadata": {
-    "timestamp": "2026-02-12T07:30:58.617Z",
+    "timestamp": "2026-02-12T07:32:28.876Z",
     "date": "2026-02-12",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
+  "shifts": [
+    {
+      "id": "normal-time",
+      "name": "8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333333334
+    }
+  ],
+  "production": [
+    {
+      "id": "SCD-XL200SC",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL200SC",
+        "name": "XL200SC",
+        "fullName": "SCD XL200SC",
+        "cycleTime": 65.45,
+        "devicesPerBox": 15,
+        "actualCycleTime": 970
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 55,
+        "daily": 444,
+        "boxes": 29
+      },
+      "actual": {
+        "total": 30,
+        "boxes": 2,
+        "progress": 7
+      },
+      "batches": [
+        {
+          "id": 26021028,
+          "quantity": 30,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 30,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 444,
+          "progress": 7
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 55,
+          "actual": 30,
+          "cumTarget": 55,
+          "cumActual": 30,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
   "summary": {
-    "products": [],
-    "supervisors": []
+    "products": [
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 30,
+        "totalTarget": 444,
+        "progress": 7
+      }
+    ],
+    "supervisors": [
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 30,
+        "totalTarget": 444,
+        "progress": 7,
+        "variants": [
+          "SCD-XL200SC"
+        ]
+      }
+    ]
   }
 }
