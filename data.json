@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-02-12T09:55:07.531Z",
+    "timestamp": "2026-02-12T09:56:10.277Z",
     "date": "2026-02-12",
     "facility": "Main Plant"
   },
@@ -299,7 +299,7 @@
         "fullName": "Scalpel PAHS11S",
         "cycleTime": 2.28,
         "devicesPerBox": 500,
-        "actualCycleTime": 6
+        "actualCycleTime": 2
       },
       "shiftId": "normal-time",
       "targets": {
@@ -325,9 +325,9 @@
           "name": "Apelele",
           "production": 5000,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 12763,
-          "progress": 39
+          "endTime": "09:54",
+          "target": 3789,
+          "progress": 132
         }
       ],
       "timeline": [
@@ -355,14 +355,93 @@
         },
         {
           "hour": "10:30",
-          "target": 1052,
+          "target": 631,
           "actual": 0,
-          "cumTarget": 4208,
+          "cumTarget": 3787,
           "cumActual": 5000,
+          "transitionTarget": 631,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 24
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-PAHS15S",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PAHS15S",
+        "name": "PAHS15S",
+        "fullName": "Scalpel PAHS15S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 5
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12763,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 4500,
+        "boxes": 9,
+        "progress": 35
+      },
+      "batches": [
+        {
+          "id": 26021027,
+          "quantity": 4500,
+          "boxes": 9
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 4500,
+          "startTime": "09:54",
+          "endTime": "16:30",
+          "target": 8973,
+          "progress": 50
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 40
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 947,
+          "actual": 4500,
+          "cumTarget": 4103,
+          "cumActual": 4500,
+          "transitionTarget": 947,
+          "previousVariant": "Scalpel-PAHS11S",
+          "previousVariantMinutes": 24,
+          "currentVariantMinutes": 36
         }
       ]
     }
@@ -386,9 +465,9 @@
       {
         "id": "Scalpel",
         "name": "Scalpel",
-        "totalProduction": 5000,
-        "totalTarget": 25526,
-        "progress": 20
+        "totalProduction": 9500,
+        "totalTarget": 51052,
+        "progress": 19
       }
     ],
     "supervisors": [
@@ -425,11 +504,12 @@
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 5000,
-        "totalTarget": 12763,
-        "progress": 39,
+        "totalProduction": 9500,
+        "totalTarget": 12762,
+        "progress": 74,
         "variants": [
-          "Scalpel-PAHS11S"
+          "Scalpel-PAHS11S",
+          "Scalpel-PAHS15S"
         ]
       }
     ]
