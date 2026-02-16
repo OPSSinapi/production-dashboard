@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-02-16T09:42:56.873Z",
+    "timestamp": "2026-02-16T09:43:50.629Z",
     "date": "2026-02-16",
     "facility": "Main Plant"
   },
@@ -130,6 +130,85 @@
       ]
     },
     {
+      "id": "SCD-XL200S",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL200S",
+        "name": "XL200S",
+        "fullName": "SCD XL200S",
+        "cycleTime": 65.45,
+        "devicesPerBox": 15,
+        "actualCycleTime": 1940
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 55,
+        "daily": 444,
+        "boxes": 29
+      },
+      "actual": {
+        "total": 15,
+        "boxes": 1,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 26021337,
+          "quantity": 15,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 15,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 444,
+          "progress": 3
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 55,
+          "actual": 0,
+          "cumTarget": 55,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 55,
+          "actual": 0,
+          "cumTarget": 110,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 50,
+          "actual": 15,
+          "cumTarget": 160,
+          "cumActual": 15,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ]
+    },
+    {
       "id": "SUM-500V2",
       "product": {
         "id": "SUM",
@@ -207,6 +286,85 @@
           "currentVariantMinutes": 40
         }
       ]
+    },
+    {
+      "id": "Scalpel-PARC11S",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PARC11S",
+        "name": "PARC11S",
+        "fullName": "Scalpel PARC11S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 29
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12763,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 1,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 26021235,
+          "quantity": 1000,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 1000,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 12763,
+          "progress": 8
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 3156,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 1052,
+          "actual": 1000,
+          "cumTarget": 4208,
+          "cumActual": 1000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
+        }
+      ]
     }
   ],
   "summary": {
@@ -214,9 +372,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 228,
-        "totalTarget": 989,
-        "progress": 23
+        "totalProduction": 243,
+        "totalTarget": 1433,
+        "progress": 17
       },
       {
         "id": "SUM",
@@ -224,6 +382,13 @@
         "totalProduction": 220,
         "totalTarget": 1326,
         "progress": 17
+      },
+      {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 1000,
+        "totalTarget": 25526,
+        "progress": 4
       }
     ],
     "supervisors": [
@@ -245,6 +410,26 @@
         "progress": 17,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 15,
+        "totalTarget": 444,
+        "progress": 3,
+        "variants": [
+          "SCD-XL200S"
+        ]
+      },
+      {
+        "id": "Apelele",
+        "name": "Apelele",
+        "totalProduction": 1000,
+        "totalTarget": 12763,
+        "progress": 8,
+        "variants": [
+          "Scalpel-PARC11S"
         ]
       }
     ]
