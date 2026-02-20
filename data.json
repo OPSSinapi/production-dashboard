@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-02-20T09:35:19.512Z",
+    "timestamp": "2026-02-20T09:36:29.930Z",
     "date": "2026-02-20",
     "facility": "Main Plant"
   },
@@ -26,6 +26,85 @@
     }
   ],
   "production": [
+    {
+      "id": "SCD-XL1000",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000",
+        "name": "XL1000",
+        "fullName": "SCD XL1000",
+        "cycleTime": 29.41,
+        "devicesPerBox": 20,
+        "actualCycleTime": 410
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 122,
+        "daily": 836,
+        "boxes": 41
+      },
+      "actual": {
+        "total": 60,
+        "boxes": 3,
+        "progress": 7
+      },
+      "batches": [
+        {
+          "id": 26021961,
+          "quantity": 60,
+          "boxes": 3
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Rework",
+          "name": "Rework",
+          "production": 60,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "target": 836,
+          "progress": 7
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 122,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 122,
+          "actual": 0,
+          "cumTarget": 244,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 112,
+          "actual": 60,
+          "cumTarget": 356,
+          "cumActual": 60,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ]
+    },
     {
       "id": "SCD-XL1000+",
       "product": {
@@ -190,9 +269,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 192,
-        "totalTarget": 836,
-        "progress": 23
+        "totalProduction": 252,
+        "totalTarget": 1672,
+        "progress": 15
       },
       {
         "id": "Scalpel",
@@ -221,6 +300,16 @@
         "progress": 23,
         "variants": [
           "SCD-XL1000+"
+        ]
+      },
+      {
+        "id": "Rework",
+        "name": "Rework",
+        "totalProduction": 60,
+        "totalTarget": 836,
+        "progress": 7,
+        "variants": [
+          "SCD-XL1000"
         ]
       }
     ]
