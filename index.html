@@ -2534,23 +2534,20 @@ body {
             
             const progressPercentage = totalTarget > 0 ? Math.round((totalProduction / totalTarget) * 100) : 0;
             
-            // Keep 2 decimal places for target cycle time — Math.round destroys sub-second precision (e.g. 2.28s → 2)
+            // Keep 2 decimal places for target cycle time
             const avgCycleTime = totalCycleTimeWeight > 0 ? 
                 parseFloat((weightedCycleTime / totalCycleTimeWeight).toFixed(2)) : 0;
             
             const actualCycleTime = calculateActualCycleTime(group.variants);
             
-            // Determine production status colour.
-            // For units/boxes: compare actual vs the EXPECTED cumulative target at the current time,
-            // not the full daily target — otherwise we're always "behind" until shift end.
-            // We derive expected-so-far by summing the cumTarget of the current (or most recent past) 
-            // timeline slot across all variants for this supervisor.
+            // Single source of truth for colour: is cumulative actual >= cumulative target right now?
+            // This is exactly what the line chart shows — so all cards always match the line.
+            // We derive it the same way the chart does: sum per-slot targets up to the most recent
+            // passed slot, compare against total production so far.
             const now = new Date();
             const nowMinutes = now.getHours() * 60 + now.getMinutes();
             
-            let expectedSoFarUnits = 0;
-            let expectedSoFarBoxes = 0;
-            
+            let cumTargetSoFar = 0;
             group.variants.forEach(variant => {
                 const supervisorVariant = group.supervisorData.variants[variant.variant];
                 if (!supervisorVariant) return;
@@ -2558,63 +2555,40 @@ body {
                 const supervisorData = prodItem?.supervisors?.find(s => s.name === currentSupervisor);
                 if (!supervisorData) return;
                 
-                // Find the most recent past timeline slot's cumTarget for this variant
                 if (variant.hourlyTargets && variant.hourlyTargets.length > 0) {
-                    // hourlyTargets stores per-slot target (not cumulative), so accumulate up to now
                     let cumTarget = 0;
                     variant.hourlyTargets.forEach(slot => {
                         if (!slot.hour) return;
                         const [h, m] = slot.hour.split(':').map(Number);
-                        const slotMinutes = h * 60 + m;
-                        if (slotMinutes <= nowMinutes) {
-                            cumTarget += (slot.target || 0);
-                        }
+                        if ((h * 60 + m) <= nowMinutes) cumTarget += (slot.target || 0);
                     });
-                    // Scale by supervisor share if multiple supervisors
                     const supervisorRatio = (prodItem && prodItem.targets.daily > 0)
-                        ? supervisorVariant.dailyTarget / prodItem.targets.daily
-                        : 1;
-                    expectedSoFarUnits += Math.round(cumTarget * supervisorRatio);
-                    
-                    // Box expected-so-far: same ratio applied to box target proportionally
-                    const boxRatio = prodItem && prodItem.targets.daily > 0
-                        ? (variant.dailyBoxTarget || 0) / prodItem.targets.daily
-                        : 0;
-                    expectedSoFarBoxes += Math.round(cumTarget * boxRatio * supervisorRatio);
+                        ? supervisorVariant.dailyTarget / prodItem.targets.daily : 1;
+                    cumTargetSoFar += Math.round(cumTarget * supervisorRatio);
                 }
             });
             
-            // Colour logic:
-            // Units/Boxes: green when actual >= expected-so-far (on or ahead of pace)
-            // Cycle time: green when actual <= target (lower is faster = better)
-            const unitsAhead = expectedSoFarUnits === 0 || totalProduction >= expectedSoFarUnits;
-            const boxesAhead = expectedSoFarBoxes === 0 || totalBoxProduction >= expectedSoFarBoxes;
-            const ctGood     = actualCycleTime !== "N/A" && avgCycleTime > 0 && parseFloat(actualCycleTime) <= avgCycleTime;
-            
-            const unitsColor = unitsAhead ? 'var(--production-ahead)' : 'var(--production-behind)';
-            const boxesColor = boxesAhead ? 'var(--production-ahead)' : 'var(--production-behind)';
-            const ctColor    = (actualCycleTime === "N/A" || avgCycleTime === 0) ? 'var(--production-color)' : (ctGood ? 'var(--production-ahead)' : 'var(--production-behind)');
-            
-            // Overall status drives the legend swatch and progress %
-            const overallColor = unitsColor;
+            // One boolean drives everything: units, boxes, cycle time, legend, progress %
+            const isAhead = cumTargetSoFar === 0 || totalProduction >= cumTargetSoFar;
+            const statusColor = isAhead ? 'var(--production-ahead)' : 'var(--production-behind)';
             
             document.getElementById('current-units').textContent = totalProduction;
-            document.getElementById('current-units').style.color = unitsColor;
+            document.getElementById('current-units').style.color = statusColor;
             document.getElementById('target-units').textContent = totalTarget;
             document.getElementById('progress-percentage').textContent = `${progressPercentage}%`;
-            document.getElementById('progress-percentage').style.color = unitsColor;
+            document.getElementById('progress-percentage').style.color = statusColor;
             
             document.getElementById('current-boxes').textContent = totalBoxProduction;
-            document.getElementById('current-boxes').style.color = boxesColor;
+            document.getElementById('current-boxes').style.color = statusColor;
             document.getElementById('target-boxes').textContent = totalBoxTarget;
             
             document.getElementById('actual-cycle-time').textContent = actualCycleTime === "N/A" ? "N/A" : actualCycleTime;
-            document.getElementById('actual-cycle-time').style.color = ctColor;
+            document.getElementById('actual-cycle-time').style.color = statusColor;
             document.getElementById('target-cycle-time').textContent = avgCycleTime;
             
-            // Update legend production swatch to match current overall status
+            // Legend swatch matches status
             const legendSwatch = document.getElementById('legend-production-color');
-            if (legendSwatch) legendSwatch.style.backgroundColor = overallColor;
+            if (legendSwatch) legendSwatch.style.backgroundColor = statusColor;
         }
 
         function calculateActualCycleTime(variants) {
