@@ -1141,7 +1141,7 @@ body {
         <div id="supervisor-select-modal" class="supervisor-select-modal">
             <div class="supervisor-select-content">
                 <div class="supervisor-select-header">
-                    <h3>Select Supervisors to Display</h3>
+                    <h3>Select Lines to Display</h3>
                     <span class="supervisor-select-close">&times;</span>
                 </div>
                 <div class="supervisor-select-body">
@@ -1357,11 +1357,25 @@ body {
                 lineCards  = (data.lineCards  || []).sort((a, b) => a.id.localeCompare(b.id));
                 lineGroups = data.lineGroups || [];
 
+                // Build default selectedLines: individual (non-grouped) lines + all groups
+                const _groupCovered = new Set();
+                lineGroups.forEach(g => g.members.forEach(m => _groupCovered.add(m.lineCardId)));
+                const _defaultSel = [
+                    ...lineCards.filter(c => !_groupCovered.has(c.id)).map(c => c.id),
+                    ...lineGroups.map(g => 'group:' + g.groupId)
+                ];
+
                 if (selectedLines.length === 0) {
-                    selectedLines = lineCards.map(c => c.id);
+                    selectedLines = _defaultSel;
+                } else {
+                    // Keep valid entries only (line IDs still present, or group IDs still present)
+                    selectedLines = selectedLines.filter(sel =>
+                        sel.startsWith('group:')
+                            ? lineGroups.some(g => 'group:' + g.groupId === sel)
+                            : lineCards.some(c => c.id === sel)
+                    );
+                    if (selectedLines.length === 0) selectedLines = _defaultSel;
                 }
-                selectedLines = selectedLines.filter(id => lineCards.some(c => c.id === id));
-                if (selectedLines.length === 0) selectedLines = lineCards.map(c => c.id);
 
                 document.getElementById('last-update').textContent =
                     'Last updated: ' + new Date(ts).toLocaleTimeString('en-ZA', { hour12: false });
@@ -1379,30 +1393,60 @@ body {
         function applyFiltersAndDisplay() {
             if (!lineCards.length) { showError('No data available.'); return; }
 
-            // Check if a group view is selected
+            // Specific group selected from dropdown → show only that group, no cycling
             if (filterValue && filterValue.startsWith('group:')) {
                 const groupId = filterValue.slice(6);
                 const grp = lineGroups.find(g => g.groupId === groupId);
                 if (grp) {
-                    activeGroup = grp;
                     clearInterval(cycleInterval);
                     clearInterval(chartRotInterval);
+                    activeGroup = grp;
                     renderGroupCard(grp);
                     renderBatchTable();
                     return;
                 }
             }
-            activeGroup = null;
 
-            filteredCards = lineCards.filter(card => {
-                if (!selectedLines.includes(card.id)) return false;
-                if (filterValue === 'all') return true;
-                if (filterType === 'line')    return card.id === filterValue;
-                if (filterType === 'product') return card.variants.some(v => v.productName === filterValue);
-                if (filterType === 'variant') return card.variants.some(v => v.variantName === filterValue);
-                return true;
-            });
+            // Specific individual line selected from dropdown → show only that card, no cycling
+            if (filterValue !== 'all' && filterType === 'line') {
+                const card = lineCards.find(c => c.id === filterValue);
+                if (card) {
+                    clearInterval(cycleInterval);
+                    activeGroup = null;
+                    filteredCards = [card];
+                    displayCard(card);
+                    renderBatchTable();
+                    return;
+                }
+            }
 
+            // Product/variant filter: show matching cards only, no groups
+            if (filterValue !== 'all' && (filterType === 'product' || filterType === 'variant')) {
+                activeGroup = null;
+                filteredCards = lineCards.filter(card => {
+                    if (filterType === 'product') return card.variants.some(v => v.productName === filterValue);
+                    return card.variants.some(v => v.variantName === filterValue || v.variantFull === filterValue);
+                });
+                if (!filteredCards.length) { showError('No data for this filter.'); return; }
+                clearInterval(cycleInterval);
+                cycleIndex = 0;
+                if (filteredCards.length > 1) {
+                    cycleInterval = setInterval(() => {
+                        cycleIndex = (cycleIndex + 1) % filteredCards.length;
+                        displayCard(filteredCards[cycleIndex]);
+                    }, CYCLE_INTERVAL);
+                }
+                displayCard(filteredCards[0]);
+                renderBatchTable();
+                return;
+            }
+
+            // Default (filterValue === 'all'): cycle through selectedLines (mix of cards + groups)
+            cycleSelectedItems();
+            return;
+
+            // Dead code path kept for safety — unreachable
+            filteredCards = lineCards.filter(card => selectedLines.includes(card.id));
             if (!filteredCards.length) { showError('No data for this filter.'); return; }
 
             clearInterval(cycleInterval);
@@ -1417,6 +1461,51 @@ body {
 
             displayCard(filteredCards[0]);
             renderBatchTable();
+        }
+
+        // ── Cycle through selected items (lines + groups) ─────────────────────────
+        // selectedLines can contain line IDs and 'group:XYZ' entries.
+        // This builds the ordered display list and starts the cycle.
+        function cycleSelectedItems() {
+            clearInterval(cycleInterval);
+            activeGroup = null;
+
+            // Build ordered display queue: each entry is either a lineCard or a group
+            const displayQueue = [];
+            selectedLines.forEach(sel => {
+                if (sel.startsWith('group:')) {
+                    const grp = lineGroups.find(g => 'group:' + g.groupId === sel);
+                    if (grp) displayQueue.push({ type: 'group', data: grp });
+                } else {
+                    const card = lineCards.find(c => c.id === sel);
+                    if (card) displayQueue.push({ type: 'card', data: card });
+                }
+            });
+
+            if (!displayQueue.length) { showError('No items selected.'); return; }
+
+            let queueIdx = 0;
+            const showItem = item => {
+                if (item.type === 'group') {
+                    activeGroup = item.data;
+                    renderGroupCard(item.data);
+                } else {
+                    activeGroup = null;
+                    const navEl = document.querySelector('.chart-nav');
+                    if (navEl) navEl.style.display = '';
+                    displayCard(item.data);
+                }
+                renderBatchTable();
+            };
+
+            showItem(displayQueue[0]);
+
+            if (displayQueue.length > 1) {
+                cycleInterval = setInterval(() => {
+                    queueIdx = (queueIdx + 1) % displayQueue.length;
+                    showItem(displayQueue[queueIdx]);
+                }, CYCLE_INTERVAL);
+            }
         }
 
         function displayCurrentCard() {
@@ -1924,9 +2013,15 @@ body {
             document.getElementById('target-units').textContent        = totalTarget;
             document.getElementById('progress-percentage').textContent = progress + '%';
             document.getElementById('progress-percentage').style.color = statusColor;
-            document.getElementById('current-boxes').textContent       = '—';
-            document.getElementById('current-boxes').style.color       = '';
-            document.getElementById('target-boxes').textContent        = '—';
+            // Sum boxes from the underlying lineCards for this group
+            const memberCards = lineCards.filter(c => grp.members.some(m => m.lineCardId === c.id));
+            const totalBoxProd   = memberCards.reduce((s, c) =>
+                s + c.variants.reduce((vs, v) => vs + (v.boxes || 0), 0), 0);
+            const totalBoxTarget = memberCards.reduce((s, c) =>
+                s + c.variants.reduce((vs, v) => vs + Math.round((v.target || 0) / (v.devicesPerBox || 1)), 0), 0);
+            document.getElementById('current-boxes').textContent       = totalBoxProd;
+            document.getElementById('current-boxes').style.color       = statusColor;
+            document.getElementById('target-boxes').textContent        = totalBoxTarget || '—';
             document.getElementById('actual-cycle-time').textContent   = '—';
             document.getElementById('actual-cycle-time').style.color   = '';
             document.getElementById('target-cycle-time').textContent   = '—';
@@ -2207,11 +2302,23 @@ body {
             window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
 
             apply.addEventListener('click', () => {
-                selectedLines = [...document.querySelectorAll('.supervisor-checkbox:checked')].map(c => c.value);
-                if (!selectedLines.length) selectedLines = lineCards.map(c => c.id);
+                const checked = [...document.querySelectorAll('.supervisor-checkbox:checked')].map(c => c.value);
+                // Strip the line: prefix for individual lines; keep group: prefix for groups
+                selectedLines = checked.map(v => v.startsWith('line:') ? v.slice(5) : v);
+                if (!selectedLines.length) {
+                    // Default: all individual lines + all groups
+                    selectedLines = [
+                        ...lineCards.filter(c => {
+                            const groupCoveredIds = new Set();
+                            lineGroups.forEach(g => g.members.forEach(m => groupCoveredIds.add(m.lineCardId)));
+                            return !groupCoveredIds.has(c.id);
+                        }).map(c => c.id),
+                        ...lineGroups.map(g => 'group:' + g.groupId)
+                    ];
+                }
                 modal.style.display = 'none';
                 updateLineFilterButton();
-                applyFiltersAndDisplay();
+                cycleSelectedItems();
             });
             selAll.addEventListener('click', () =>
                 document.querySelectorAll('.supervisor-checkbox').forEach(c => c.checked = true));
@@ -2222,24 +2329,57 @@ body {
         function populateLineCheckboxes() {
             const box = document.getElementById('supervisor-checkboxes');
             box.innerHTML = '';
-            lineCards.forEach(card => {
-                const item = document.createElement('div');
-                item.className = 'supervisor-checkbox-item';
-                item.innerHTML = `
-                    <input type="checkbox" class="supervisor-checkbox"
-                           id="line-${card.id}" value="${card.id}"
-                           ${selectedLines.includes(card.id) ? 'checked' : ''}>
-                    <label for="line-${card.id}">${card.id}</label>
-                `;
-                box.appendChild(item);
-            });
+
+            // Build set of lineCard IDs covered by a group
+            const groupCoveredIds = new Set();
+            lineGroups.forEach(grp => grp.members.forEach(m => groupCoveredIds.add(m.lineCardId)));
+
+            // Individual lines (not covered by any group)
+            const individualCards = lineCards.filter(c => !groupCoveredIds.has(c.id));
+            if (individualCards.length > 0) {
+                const hdr = document.createElement('div');
+                hdr.style.cssText = 'font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;padding:4px 0 6px;letter-spacing:0.05em;';
+                hdr.textContent = 'Individual Lines';
+                box.appendChild(hdr);
+                individualCards.forEach(card => {
+                    const item = document.createElement('div');
+                    item.className = 'supervisor-checkbox-item';
+                    item.innerHTML =
+                        '<input type="checkbox" class="supervisor-checkbox line-checkbox"' +
+                        ' id="line-' + card.id + '" value="line:' + card.id + '"' +
+                        (selectedLines.includes(card.id) ? ' checked' : '') + '>' +
+                        '<label for="line-' + card.id + '">' + card.id + '</label>';
+                    box.appendChild(item);
+                });
+            }
+
+            // Group views
+            if (lineGroups.length > 0) {
+                const hdr = document.createElement('div');
+                hdr.style.cssText = 'font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;padding:10px 0 6px;letter-spacing:0.05em;';
+                hdr.textContent = 'Group Views';
+                box.appendChild(hdr);
+                lineGroups.forEach(grp => {
+                    const item = document.createElement('div');
+                    item.className = 'supervisor-checkbox-item';
+                    item.innerHTML =
+                        '<input type="checkbox" class="supervisor-checkbox group-checkbox"' +
+                        ' id="grp-' + grp.groupId + '" value="group:' + grp.groupId + '"' +
+                        (selectedLines.includes('group:' + grp.groupId) ? ' checked' : '') + '>' +
+                        '<label for="grp-' + grp.groupId + '">' + grp.label + '</label>';
+                    box.appendChild(item);
+                });
+            }
         }
 
         function updateLineFilterButton() {
             const btn = document.getElementById('supervisor-select-btn');
-            const total = lineCards.length;
+            const groupCoveredIds = new Set();
+            lineGroups.forEach(g => g.members.forEach(m => groupCoveredIds.add(m.lineCardId)));
+            const totalIndividual = lineCards.filter(c => !groupCoveredIds.has(c.id)).length;
+            const total = totalIndividual + lineGroups.length;
             if (selectedLines.length < total) {
-                btn.textContent = `Lines (${selectedLines.length}/${total})`;
+                btn.textContent = 'Lines (' + selectedLines.length + '/' + total + ')';
             } else {
                 btn.textContent = 'Select Lines';
             }
