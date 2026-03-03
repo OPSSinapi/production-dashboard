@@ -1645,6 +1645,9 @@ body {
                     
                     const transformedVariant = {
                         variant: item.id,
+                        productionLine: item.productionLine || "",
+                        productName: item.product.name,
+                        variantName: item.variant.name,
                         "Product Name": item.variant.fullName || `${item.product.name} ${item.variant.name}`,
                         cycleTime: item.variant.cycleTime,
                         actualCycleTime: item.variant.actualCycleTime,
@@ -1733,46 +1736,49 @@ body {
             productionData.supervisors.forEach(supervisor => {
                 if (!supervisor.variants) return;
                 
-                const productVariants = {};
+                // Group by productionLine so that:
+                // - Scalpel_Assembly and Scalpel_Packaging are separate cards
+                // - BC01 Line_1..4 are separate cards (each with their own supervisor)
+                const lineGroups = {};
                 
                 Object.keys(supervisor.variants).forEach(variantKey => {
-                    const product = extractProductFromVariant(variantKey);
-                    
-                    if (!productVariants[product]) {
-                        productVariants[product] = [];
-                    }
-                    
                     const variantData = productionData.variants.find(v => v.variant === variantKey);
+                    if (!variantData) return;
                     
-                    if (variantData) {
-                        productVariants[product].push({
-                            variantKey,
-                            variantData,
-                            supervisorVariant: supervisor.variants[variantKey]
-                        });
-                    }
+                    // Use productionLine stored on the item as the grouping key
+                    const prodLine = variantData.productionLine || extractProductFromVariant(variantKey);
+                    
+                    if (!lineGroups[prodLine]) lineGroups[prodLine] = [];
+                    lineGroups[prodLine].push({
+                        variantKey,
+                        variantData,
+                        supervisorVariant: supervisor.variants[variantKey]
+                    });
                 });
                 
-                Object.keys(productVariants).forEach(product => {
-                    const group = `${supervisor.name}:${product}`;
+                Object.keys(lineGroups).forEach(prodLine => {
+                    // Group key: supervisor:productionLine — guarantees uniqueness
+                    const groupKey = `${supervisor.name}:${prodLine}`;
                     
-                    const sortedVariants = productVariants[product].sort((a, b) => {
+                    const sorted = lineGroups[prodLine].sort((a, b) => {
                         const timeA = a.supervisorVariant.variantStartTime || a.variantData["Start Time"] || "00:00";
                         const timeB = b.supervisorVariant.variantStartTime || b.variantData["Start Time"] || "00:00";
-                        
-                        const [hoursA, minutesA] = timeA.split(':').map(Number);
-                        const [hoursB, minutesB] = timeB.split(':').map(Number);
-                        
-                        const totalMinutesA = hoursA * 60 + minutesA;
-                        const totalMinutesB = hoursB * 60 + minutesB;
-                        
-                        return totalMinutesA - totalMinutesB;
+                        const [hA, mA] = timeA.split(':').map(Number);
+                        const [hB, mB] = timeB.split(':').map(Number);
+                        return (hA * 60 + mA) - (hB * 60 + mB);
                     });
                     
-                    productSupervisorGroups[group] = {
+                    // Display label: productName from first variant, plus productionLine context
+                    const firstVariant = sorted[0].variantData;
+                    const productLabel = firstVariant.productName
+                        ? `${firstVariant.productionLine}-${firstVariant.productName}`
+                        : prodLine;
+                    
+                    productSupervisorGroups[groupKey] = {
                         supervisor: supervisor.name,
-                        product,
-                        variants: sortedVariants.map(v => v.variantData),
+                        product: productLabel,
+                        productionLine: prodLine,
+                        variants: sorted.map(v => v.variantData),
                         supervisorData: supervisor
                     };
                 });
@@ -2503,6 +2509,7 @@ body {
             let totalCycleTimeWeight = 0;
             
             const currentSupervisor = group.supervisor;
+            const groupProductionLine = group.productionLine || null;
             
             group.variants.forEach(variant => {
                 const supervisorVariant = group.supervisorData.variants[variant.variant];
@@ -2564,6 +2571,8 @@ body {
             let shiftEndMinutes = null;
             if (productionData.originalData?.production) {
                 productionData.originalData.production.forEach(prodItem => {
+                    if (groupProductionLine && prodItem.productionLine &&
+                        prodItem.productionLine !== groupProductionLine) return;
                     const supervisorData = prodItem.supervisors?.find(s => s.name === currentSupervisor);
                     if (!supervisorData) return;
                     const [sh, sm] = supervisorData.startTime.split(':').map(Number);
@@ -2617,8 +2626,13 @@ body {
             
             const supervisorProductionItems = [];
             
+            // Only include items for this group's productionLine.
+            const groupProductionLine = group.productionLine || null;
+
             if (productionData.originalData && productionData.originalData.production) {
                 productionData.originalData.production.forEach(prodItem => {
+                    if (groupProductionLine && prodItem.productionLine &&
+                        prodItem.productionLine !== groupProductionLine) return;
                     const supervisorData = prodItem.supervisors.find(s => s.name === currentSupervisor);
                     if (supervisorData) {
                         supervisorProductionItems.push({
