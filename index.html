@@ -2538,7 +2538,19 @@ body {
             const avgCycleTime = totalCycleTimeWeight > 0 ? 
                 parseFloat((weightedCycleTime / totalCycleTimeWeight).toFixed(2)) : 0;
             
-            const actualCycleTime = calculateActualCycleTime(group.variants);
+            // Actual cycle time is calculated server-side by the AppsScript and stored in
+            // data.json as variant.actualCycleTime (2 decimal places). Read it directly —
+            // weighted average across variants, weighted by daily box target as a proxy for volume.
+            let actualCTWeighted = 0;
+            let actualCTWeight = 0;
+            group.variants.forEach(variant => {
+                const ct = variant.actualCycleTime || 0;
+                const wt = variant.dailyBoxTarget || 1;
+                if (ct > 0) { actualCTWeighted += ct * wt; actualCTWeight += wt; }
+            });
+            const actualCycleTime = actualCTWeight > 0
+                ? parseFloat((actualCTWeighted / actualCTWeight).toFixed(2))
+                : "N/A";
             
             // Single source of truth for colour: is cumulative actual >= cumulative target right now?
             // Use IDENTICAL formula to the chart's target line: linear interpolation across the shift.
@@ -2592,112 +2604,6 @@ body {
             // Legend swatch matches status
             const legendSwatch = document.getElementById('legend-production-color');
             if (legendSwatch) legendSwatch.style.backgroundColor = statusColor;
-        }
-
-        function calculateActualCycleTime(variants) {
-            // Always recalculate fresh from raw time data in the browser.
-            // Formula: actual CT = total elapsed working seconds / total devices produced
-            // For each variant: elapsed = min(now, variantEndTime) - variantStartTime - breaks
-            // CRITICAL: cap at endTime for completed variants, otherwise finished variants
-            // keep accumulating phantom time long after the supervisor moved on.
-            
-            const now = new Date();
-            const nowMinutes = now.getHours() * 60 + now.getMinutes();
-            
-            let totalWorkingSeconds = 0;
-            let totalDevices = 0;
-            
-            variants.forEach(variant => {
-                const supervisor = productionData.supervisors.find(s => s.name === currentSupervisor);
-                if (!supervisor) return;
-                
-                const supervisorVariant = supervisor.variants[variant.variant];
-                if (!supervisorVariant) return;
-                
-                const devicesProduced = supervisorVariant.currentTotal || 0;
-                if (devicesProduced <= 0) return;
-                
-                const prodItem = productionData.originalData?.production?.find(p => p.id === variant.variant);
-                const supervisorRawData = prodItem?.supervisors?.find(s => s.name === currentSupervisor);
-                const startTimeStr = supervisorRawData?.startTime || supervisorVariant.variantStartTime || variant["Start Time"];
-                const endTimeStr   = supervisorRawData?.endTime   || supervisorVariant.variantEndTime   || variant["End Time"];
-                
-                if (!startTimeStr) return;
-                
-                const [startH, startM] = startTimeStr.split(':').map(Number);
-                const startMinutes = startH * 60 + startM;
-                
-                // Cap the "end" at the earlier of now or the variant's actual end time
-                let effectiveEndMinutes = nowMinutes;
-                if (endTimeStr) {
-                    const [endH, endM] = endTimeStr.split(':').map(Number);
-                    const endMinutes = endH * 60 + endM;
-                    effectiveEndMinutes = Math.min(nowMinutes, endMinutes);
-                }
-                
-                const elapsedMinutes = effectiveEndMinutes - startMinutes;
-                if (elapsedMinutes <= 0) return;
-                
-                const elapsedBreakMinutes = calculateElapsedBreakMinutes(variant, startTimeStr, effectiveEndMinutes);
-                const workingMinutes = elapsedMinutes - elapsedBreakMinutes;
-                
-                if (workingMinutes <= 0) return;
-                
-                totalWorkingSeconds += workingMinutes * 60;
-                totalDevices += devicesProduced;
-            });
-            
-            if (totalDevices <= 0 || totalWorkingSeconds <= 0) return "N/A";
-            
-            return parseFloat((totalWorkingSeconds / totalDevices).toFixed(2));
-        }
-        
-        function calculateElapsedBreakMinutes(variant, startTimeStr, endTime) {
-            let totalElapsedBreakMinutes = 0;
-            
-            let currentTime;
-            if (typeof endTime === 'number') {
-                currentTime = endTime;
-            } else if (endTime instanceof Date) {
-                currentTime = endTime.getHours() * 60 + endTime.getMinutes();
-            } else if (typeof endTime === 'string') {
-                const [h, m] = endTime.split(':').map(Number);
-                currentTime = h * 60 + m;
-            } else {
-                return 0;
-            }
-            
-            const getElapsedBreakMinutes = (breakStartStr, breakEndStr) => {
-                if (!breakStartStr || !breakEndStr) return 0;
-                if (breakStartStr === "-" || breakEndStr === "-") return 0;
-                
-                const [breakStartHour, breakStartMinute] = breakStartStr.split(':').map(Number);
-                const [breakEndHour, breakEndMinute] = breakEndStr.split(':').map(Number);
-                
-                const breakStartMinutes = breakStartHour * 60 + breakStartMinute;
-                const breakEndMinutes = breakEndHour * 60 + breakEndMinute;
-                
-                if (currentTime < breakStartMinutes) return 0;
-                
-                if (currentTime < breakEndMinutes) return currentTime - breakStartMinutes;
-                
-                return breakEndMinutes - breakStartMinutes;
-            };
-            
-            if (variant["Break Start (Lunch)"] && variant["Break End (Lunch)"]) {
-                totalElapsedBreakMinutes += getElapsedBreakMinutes(variant["Break Start (Lunch)"], variant["Break End (Lunch)"]);
-            }
-            
-            if (variant["Break Start (Tea)"] && variant["Break End (Tea)"]) {
-                totalElapsedBreakMinutes += getElapsedBreakMinutes(variant["Break Start (Tea)"], variant["Break End (Tea)"]);
-            }
-            
-            if (variant["OT Break Start (Tea)"] && variant["OT Break End (Tea)"] && 
-                variant["OT Break Start (Tea)"] !== "-" && variant["OT Break End (Tea)"] !== "-") {
-                totalElapsedBreakMinutes += getElapsedBreakMinutes(variant["OT Break Start (Tea)"], variant["OT Break End (Tea)"]);
-            }
-            
-            return totalElapsedBreakMinutes;
         }
 
         function renderCumulativeChart(group) {
