@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-03T13:25:19.421Z",
+    "timestamp": "2026-03-03T13:36:39.755Z",
     "date": "2026-03-03",
     "facility": "Main Plant"
   },
@@ -25,7 +25,64 @@
       "availableWorkHours": 8.083333333
     },
     {
-      "id": "day-shift",
+      "id": "day-shift-Line_1",
+      "name": "11h DS",
+      "startTime": "06:00",
+      "endTime": "18:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "day-shift-Line_2",
+      "name": "11h DS",
+      "startTime": "06:00",
+      "endTime": "18:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "day-shift-Line_3",
+      "name": "11h DS",
+      "startTime": "06:00",
+      "endTime": "18:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "day-shift-Line_4",
       "name": "11h DS",
       "startTime": "06:00",
       "endTime": "18:00",
@@ -70,18 +127,19 @@
   ],
   "production": [
     {
-      "id": "UBT-",
+      "id": "3rd_Line-UBT-UBT",
+      "productionLine": "3rd_Line",
       "product": {
         "id": "UBT",
         "name": "UBT"
       },
       "variant": {
-        "id": "",
-        "name": "",
+        "id": "UBT",
+        "name": "UBT",
         "fullName": "UBT UBT",
         "cycleTime": 58.24,
         "devicesPerBox": 25,
-        "actualCycleTime": 80.4
+        "actualCycleTime": 83.04
       },
       "shiftId": "normal-time",
       "targets": {
@@ -178,11 +236,23 @@
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 25,
+          "actual": 0,
+          "cumTarget": 371,
+          "cumActual": 250,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
         }
       ]
     },
     {
-      "id": "LEVO-XL2200SD",
+      "id": "LEVO-LEVO-XL2200SD",
+      "productionLine": "LEVO",
       "product": {
         "id": "LEVO",
         "name": "LEVO"
@@ -193,7 +263,7 @@
         "fullName": "LEVO XL2200SD",
         "cycleTime": 97.06,
         "devicesPerBox": 8,
-        "actualCycleTime": 628.13
+        "actualCycleTime": 648.75
       },
       "shiftId": "normal-time",
       "targets": {
@@ -290,11 +360,23 @@
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 15,
+          "actual": 0,
+          "cumTarget": 223,
+          "cumActual": 32,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
         }
       ]
     },
     {
-      "id": "Ellavi_Drape-BC01",
+      "id": "Line_1-Ellavi_Drape-BC01",
+      "productionLine": "Line_1",
       "product": {
         "id": "Ellavi_Drape",
         "name": "Ellavi_Drape"
@@ -305,35 +387,35 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 4.25
+        "actualCycleTime": 21.8
       },
-      "shiftId": "day-shift",
+      "shiftId": "day-shift-Line_1",
       "targets": {
         "hourly": 123,
         "daily": 999,
         "boxes": 9
       },
       "actual": {
-        "total": 6000,
-        "boxes": 60,
-        "progress": 601
+        "total": 1200,
+        "boxes": 12,
+        "progress": 120
       },
       "batches": [
         {
           "id": 26030206,
-          "quantity": 6000,
-          "boxes": 60
+          "quantity": 1200,
+          "boxes": 12
         }
       ],
       "supervisors": [
         {
           "id": "Bongani",
           "name": "Bongani",
-          "production": 6000,
+          "production": 1200,
           "startTime": "06:00",
           "endTime": "18:00",
           "target": 1371,
-          "progress": 438
+          "progress": 88
         }
       ],
       "timeline": [
@@ -406,29 +488,446 @@
         {
           "hour": "13:30",
           "target": 123,
-          "actual": 6000,
+          "actual": 1200,
           "cumTarget": 882,
-          "cumActual": 6000,
+          "cumActual": 1200,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 51,
+          "actual": 0,
+          "cumTarget": 933,
+          "cumActual": 1200,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
         }
       ]
     },
     {
-      "id": "D001-",
+      "id": "Line_2-Ellavi_Drape-BC01",
+      "productionLine": "Line_2",
+      "product": {
+        "id": "Ellavi_Drape",
+        "name": "Ellavi_Drape"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "Ellavi_Drape BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 16.35
+      },
+      "shiftId": "day-shift-Line_2",
+      "targets": {
+        "hourly": 123,
+        "daily": 999,
+        "boxes": 9
+      },
+      "actual": {
+        "total": 1600,
+        "boxes": 16,
+        "progress": 160
+      },
+      "batches": [
+        {
+          "id": 26030206,
+          "quantity": 1600,
+          "boxes": 16
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Bongani",
+          "name": "Bongani",
+          "production": 1600,
+          "startTime": "06:00",
+          "endTime": "18:00",
+          "target": 1371,
+          "progress": 117
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "07:30",
+          "target": 185,
+          "actual": 0,
+          "cumTarget": 185,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 90
+        },
+        {
+          "hour": "08:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 308,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 431,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 113,
+          "actual": 0,
+          "cumTarget": 544,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 92,
+          "actual": 0,
+          "cumTarget": 636,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        },
+        {
+          "hour": "12:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 759,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "13:30",
+          "target": 123,
+          "actual": 1600,
+          "cumTarget": 882,
+          "cumActual": 1600,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 51,
+          "actual": 0,
+          "cumTarget": 933,
+          "cumActual": 1600,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
+        }
+      ]
+    },
+    {
+      "id": "Line_3-Ellavi_Drape-BC01",
+      "productionLine": "Line_3",
+      "product": {
+        "id": "Ellavi_Drape",
+        "name": "Ellavi_Drape"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "Ellavi_Drape BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 14.53
+      },
+      "shiftId": "day-shift-Line_3",
+      "targets": {
+        "hourly": 123,
+        "daily": 999,
+        "boxes": 9
+      },
+      "actual": {
+        "total": 1800,
+        "boxes": 18,
+        "progress": 180
+      },
+      "batches": [
+        {
+          "id": 26030206,
+          "quantity": 1800,
+          "boxes": 18
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Bongani",
+          "name": "Bongani",
+          "production": 1800,
+          "startTime": "06:00",
+          "endTime": "18:00",
+          "target": 1371,
+          "progress": 131
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "07:30",
+          "target": 185,
+          "actual": 0,
+          "cumTarget": 185,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 90
+        },
+        {
+          "hour": "08:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 308,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 431,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 113,
+          "actual": 0,
+          "cumTarget": 544,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 92,
+          "actual": 0,
+          "cumTarget": 636,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        },
+        {
+          "hour": "12:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 759,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "13:30",
+          "target": 123,
+          "actual": 1800,
+          "cumTarget": 882,
+          "cumActual": 1800,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 51,
+          "actual": 0,
+          "cumTarget": 933,
+          "cumActual": 1800,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
+        }
+      ]
+    },
+    {
+      "id": "Line_4-Ellavi_Drape-BC01",
+      "productionLine": "Line_4",
+      "product": {
+        "id": "Ellavi_Drape",
+        "name": "Ellavi_Drape"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "Ellavi_Drape BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 18.69
+      },
+      "shiftId": "day-shift-Line_4",
+      "targets": {
+        "hourly": 123,
+        "daily": 999,
+        "boxes": 9
+      },
+      "actual": {
+        "total": 1400,
+        "boxes": 14,
+        "progress": 140
+      },
+      "batches": [
+        {
+          "id": 26030206,
+          "quantity": 1400,
+          "boxes": 14
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Bongani",
+          "name": "Bongani",
+          "production": 1400,
+          "startTime": "06:00",
+          "endTime": "18:00",
+          "target": 1371,
+          "progress": 102
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "07:30",
+          "target": 185,
+          "actual": 0,
+          "cumTarget": 185,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 90
+        },
+        {
+          "hour": "08:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 308,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 431,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 113,
+          "actual": 0,
+          "cumTarget": 544,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        },
+        {
+          "hour": "11:30",
+          "target": 92,
+          "actual": 0,
+          "cumTarget": 636,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 45
+        },
+        {
+          "hour": "12:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 759,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "13:30",
+          "target": 123,
+          "actual": 1400,
+          "cumTarget": 882,
+          "cumActual": 1400,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 51,
+          "actual": 0,
+          "cumTarget": 933,
+          "cumActual": 1400,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
+        }
+      ]
+    },
+    {
+      "id": "PopUp-D001-D001",
+      "productionLine": "PopUp",
       "product": {
         "id": "D001",
         "name": "D001"
       },
       "variant": {
-        "id": "",
-        "name": "",
+        "id": "D001",
+        "name": "D001",
         "fullName": "D001 D001",
         "cycleTime": 29.7,
         "devicesPerBox": 240,
-        "actualCycleTime": 41.88
+        "actualCycleTime": 43.25
       },
       "shiftId": "normal-time",
       "targets": {
@@ -525,11 +1024,147 @@
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 50,
+          "actual": 0,
+          "cumTarget": 735,
+          "cumActual": 480,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
         }
       ]
     },
     {
-      "id": "Scalpel-PAHS15S",
+      "id": "Scalpel_Assembly-Scalpel-PARC10S",
+      "productionLine": "Scalpel_Assembly",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PARC10S",
+        "name": "PARC10S",
+        "fullName": "Scalpel PARC10S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 5.92
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 13026,
+        "boxes": 26
+      },
+      "actual": {
+        "total": 3000,
+        "boxes": 0,
+        "progress": 23
+      },
+      "batches": [
+        {
+          "id": 26022681,
+          "quantity": 3000,
+          "boxes": 0
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 3000,
+          "startTime": "08:20",
+          "endTime": "16:30",
+          "target": 11447,
+          "progress": 26
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 3000,
+          "cumTarget": 1578,
+          "cumActual": 3000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1342,
+          "actual": 0,
+          "cumTarget": 2920,
+          "cumActual": 3000,
+          "transitionTarget": 1342,
+          "previousVariant": "Scalpel_Packaging-Scalpel-PAHS15S",
+          "previousVariantMinutes": 9,
+          "currentVariantMinutes": 51
+        },
+        {
+          "hour": "10:30",
+          "target": 1052,
+          "actual": 0,
+          "cumTarget": 3972,
+          "cumActual": 3000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
+        },
+        {
+          "hour": "11:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 5550,
+          "cumActual": 3000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "12:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 7128,
+          "cumActual": 3000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "13:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 8706,
+          "cumActual": 3000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 657,
+          "actual": 0,
+          "cumTarget": 9363,
+          "cumActual": 3000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
+        }
+      ]
+    },
+    {
+      "id": "Scalpel_Packaging-Scalpel-PAHS15S",
+      "productionLine": "Scalpel_Packaging",
       "product": {
         "id": "Scalpel",
         "name": "Scalpel"
@@ -540,7 +1175,7 @@
         "fullName": "Scalpel PAHS15S",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 20.1
+        "actualCycleTime": 20.76
       },
       "shiftId": "normal-time",
       "targets": {
@@ -562,8 +1197,8 @@
       ],
       "supervisors": [
         {
-          "id": "Nosie",
-          "name": "Nosie",
+          "id": "Apelele",
+          "name": "Apelele",
           "production": 1000,
           "startTime": "07:30",
           "endTime": "16:30",
@@ -574,20 +1209,9 @@
       "timeline": [
         {
           "hour": "08:30",
-          "target": 1315,
-          "actual": 0,
-          "cumTarget": 1315,
-          "cumActual": 0,
-          "transitionTarget": 1315,
-          "previousVariant": null,
-          "previousVariantMinutes": 0,
-          "currentVariantMinutes": 50
-        },
-        {
-          "hour": "09:30",
           "target": 1578,
           "actual": 0,
-          "cumTarget": 2893,
+          "cumTarget": 1578,
           "cumActual": 0,
           "transitionTarget": 0,
           "previousVariant": null,
@@ -595,10 +1219,21 @@
           "currentVariantMinutes": 60
         },
         {
+          "hour": "09:30",
+          "target": 236,
+          "actual": 0,
+          "cumTarget": 1814,
+          "cumActual": 0,
+          "transitionTarget": 236,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 9
+        },
+        {
           "hour": "10:30",
           "target": 1052,
           "actual": 0,
-          "cumTarget": 3945,
+          "cumTarget": 2866,
           "cumActual": 0,
           "transitionTarget": 0,
           "previousVariant": null,
@@ -609,7 +1244,7 @@
           "hour": "11:30",
           "target": 1578,
           "actual": 0,
-          "cumTarget": 5523,
+          "cumTarget": 4444,
           "cumActual": 0,
           "transitionTarget": 0,
           "previousVariant": null,
@@ -620,7 +1255,7 @@
           "hour": "12:30",
           "target": 1578,
           "actual": 0,
-          "cumTarget": 7101,
+          "cumTarget": 6022,
           "cumActual": 0,
           "transitionTarget": 0,
           "previousVariant": null,
@@ -631,17 +1266,29 @@
           "hour": "13:30",
           "target": 1578,
           "actual": 0,
-          "cumTarget": 8679,
+          "cumTarget": 7600,
           "cumActual": 0,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 657,
+          "actual": 0,
+          "cumTarget": 8257,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
         }
       ]
     },
     {
-      "id": "Scalpel-PARC10S",
+      "id": "Scalpel_Packaging-Scalpel-PARC10S",
+      "productionLine": "Scalpel_Packaging",
       "product": {
         "id": "Scalpel",
         "name": "Scalpel"
@@ -652,7 +1299,7 @@
         "fullName": "Scalpel PARC10S",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 1.49
+        "actualCycleTime": 1.96
       },
       "shiftId": "normal-time",
       "targets": {
@@ -661,46 +1308,46 @@
         "boxes": 13
       },
       "actual": {
-        "total": 11500,
+        "total": 8500,
         "boxes": 17,
-        "progress": 88
+        "progress": 65
       },
       "batches": [
         {
           "id": 26022681,
-          "quantity": 11500,
+          "quantity": 8500,
           "boxes": 17
         }
       ],
       "supervisors": [
         {
-          "id": "Nosie",
-          "name": "Nosie",
-          "production": 11500,
-          "startTime": "08:20",
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 8500,
+          "startTime": "08:39",
           "endTime": "16:30",
-          "target": 11447,
-          "progress": 100
+          "target": 10947,
+          "progress": 78
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
-          "target": 263,
-          "actual": 3000,
-          "cumTarget": 263,
-          "cumActual": 3000,
-          "transitionTarget": 263,
-          "previousVariant": "Scalpel-PAHS15S",
-          "previousVariantMinutes": 50,
-          "currentVariantMinutes": 10
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
         },
         {
           "hour": "09:30",
           "target": 1578,
           "actual": 1500,
-          "cumTarget": 1841,
-          "cumActual": 4500,
+          "cumTarget": 3156,
+          "cumActual": 1500,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -710,8 +1357,8 @@
           "hour": "10:30",
           "target": 1052,
           "actual": 1000,
-          "cumTarget": 2893,
-          "cumActual": 5500,
+          "cumTarget": 4208,
+          "cumActual": 2500,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -721,8 +1368,8 @@
           "hour": "11:30",
           "target": 1578,
           "actual": 3000,
-          "cumTarget": 4471,
-          "cumActual": 8500,
+          "cumTarget": 5786,
+          "cumActual": 5500,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -732,8 +1379,8 @@
           "hour": "12:30",
           "target": 1578,
           "actual": 1000,
-          "cumTarget": 6049,
-          "cumActual": 9500,
+          "cumTarget": 7364,
+          "cumActual": 6500,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -743,17 +1390,29 @@
           "hour": "13:30",
           "target": 1578,
           "actual": 2000,
-          "cumTarget": 7627,
-          "cumActual": 11500,
+          "cumTarget": 8942,
+          "cumActual": 8500,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 657,
+          "actual": 0,
+          "cumTarget": 9599,
+          "cumActual": 8500,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
         }
       ]
     },
     {
-      "id": "SCD-XL1000S",
+      "id": "SCD-SCD-XL1000S",
+      "productionLine": "SCD",
       "product": {
         "id": "SCD",
         "name": "SCD"
@@ -764,7 +1423,7 @@
         "fullName": "SCD XL1000S",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 31.02
+        "actualCycleTime": 30.35
       },
       "shiftId": "normal-time",
       "targets": {
@@ -773,26 +1432,26 @@
         "boxes": 102
       },
       "actual": {
-        "total": 648,
-        "boxes": 54,
-        "progress": 53
+        "total": 684,
+        "boxes": 57,
+        "progress": 56
       },
       "batches": [
         {
           "id": 26022677,
-          "quantity": 648,
-          "boxes": 54
+          "quantity": 684,
+          "boxes": 57
         }
       ],
       "supervisors": [
         {
-          "id": "Luthando",
-          "name": "Luthando",
-          "production": 648,
+          "id": "Michaela",
+          "name": "Michaela",
+          "production": 684,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 989,
-          "progress": 66
+          "progress": 69
         }
       ],
       "timeline": [
@@ -854,18 +1513,30 @@
         {
           "hour": "13:30",
           "target": 122,
-          "actual": 108,
+          "actual": 120,
           "cumTarget": 691,
-          "cumActual": 648,
+          "cumActual": 660,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 51,
+          "actual": 24,
+          "cumTarget": 742,
+          "cumActual": 684,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
         }
       ]
     },
     {
-      "id": "SUM-500V2",
+      "id": "SUM-SUM-500V2",
+      "productionLine": "SUM",
       "product": {
         "id": "SUM",
         "name": "SUM"
@@ -876,7 +1547,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 32.42
+        "actualCycleTime": 33.48
       },
       "shiftId": "overtime",
       "targets": {
@@ -898,8 +1569,8 @@
       ],
       "supervisors": [
         {
-          "id": "Michaela",
-          "name": "Michaela",
+          "id": "Luthando",
+          "name": "Luthando",
           "production": 620,
           "startTime": "07:30",
           "endTime": "18:30",
@@ -973,6 +1644,17 @@
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "14:30",
+          "target": 56,
+          "actual": 0,
+          "cumTarget": 826,
+          "cumActual": 620,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 25
         }
       ]
     }
@@ -1011,15 +1693,15 @@
         "id": "Scalpel",
         "name": "Scalpel",
         "totalProduction": 12500,
-        "totalTarget": 52104,
-        "progress": 24
+        "totalTarget": 39078,
+        "progress": 32
       },
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 648,
+        "totalProduction": 684,
         "totalTarget": 1224,
-        "progress": 53
+        "progress": 56
       },
       {
         "id": "SUM",
@@ -1031,34 +1713,35 @@
     ],
     "supervisors": [
       {
-        "id": "Nosie",
-        "name": "Nosie",
+        "id": "Apelele",
+        "name": "Apelele",
         "totalProduction": 12500,
-        "totalTarget": 24210,
-        "progress": 52,
+        "totalTarget": 35157,
+        "progress": 36,
         "variants": [
-          "Scalpel-PAHS15S",
-          "Scalpel-PARC10S"
-        ]
-      },
-      {
-        "id": "Luthando",
-        "name": "Luthando",
-        "totalProduction": 648,
-        "totalTarget": 989,
-        "progress": 66,
-        "variants": [
-          "SCD-XL1000S"
+          "Scalpel_Packaging-Scalpel-PAHS15S",
+          "Scalpel_Assembly-Scalpel-PARC10S",
+          "Scalpel_Packaging-Scalpel-PARC10S"
         ]
       },
       {
         "id": "Michaela",
         "name": "Michaela",
+        "totalProduction": 684,
+        "totalTarget": 989,
+        "progress": 69,
+        "variants": [
+          "SCD-SCD-XL1000S"
+        ]
+      },
+      {
+        "id": "Luthando",
+        "name": "Luthando",
         "totalProduction": 620,
         "totalTarget": 1326,
         "progress": 47,
         "variants": [
-          "SUM-500V2"
+          "SUM-SUM-500V2"
         ]
       },
       {
@@ -1068,7 +1751,7 @@
         "totalTarget": 979,
         "progress": 49,
         "variants": [
-          "D001-"
+          "PopUp-D001-D001"
         ]
       },
       {
@@ -1078,7 +1761,7 @@
         "totalTarget": 299,
         "progress": 11,
         "variants": [
-          "LEVO-XL2200SD"
+          "LEVO-LEVO-XL2200SD"
         ]
       },
       {
@@ -1088,17 +1771,20 @@
         "totalTarget": 499,
         "progress": 50,
         "variants": [
-          "UBT-"
+          "3rd_Line-UBT-UBT"
         ]
       },
       {
         "id": "Bongani",
         "name": "Bongani",
         "totalProduction": 6000,
-        "totalTarget": 1371,
-        "progress": 438,
+        "totalTarget": 5484,
+        "progress": 109,
         "variants": [
-          "Ellavi_Drape-BC01"
+          "Line_1-Ellavi_Drape-BC01",
+          "Line_2-Ellavi_Drape-BC01",
+          "Line_3-Ellavi_Drape-BC01",
+          "Line_4-Ellavi_Drape-BC01"
         ]
       }
     ]
