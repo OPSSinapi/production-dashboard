@@ -1612,16 +1612,48 @@ body {
                 timestamp: newData.metadata.timestamp || new Date().toISOString()
             };
             
+            // Build a lookup map from shiftId -> shift object so we can pull break times per variant
+            const shiftsLookup = {};
+            if (newData.shifts && Array.isArray(newData.shifts)) {
+                newData.shifts.forEach(shift => {
+                    shiftsLookup[shift.id] = shift;
+                });
+            }
+            
             if (newData.production && Array.isArray(newData.production)) {
                 
                 newData.production.forEach(item => {
+                    // Resolve the shift for this variant to get real start/end/break times
+                    const shift = shiftsLookup[item.shiftId] || {};
+                    const shiftStart = shift.startTime || "07:30";
+                    const shiftEnd = shift.endTime || "16:30";
+                    
+                    // Extract individual break times from the shift's breaks array
+                    let breakStartTea = "", breakEndTea = "";
+                    let breakStartLunch = "", breakEndLunch = "";
+                    let otBreakStartTea = "", otBreakEndTea = "";
+                    
+                    if (shift.breaks && Array.isArray(shift.breaks)) {
+                        shift.breaks.forEach(b => {
+                            if (b.type === "tea")    { breakStartTea = b.startTime;    breakEndTea = b.endTime; }
+                            if (b.type === "lunch")  { breakStartLunch = b.startTime;  breakEndLunch = b.endTime; }
+                            if (b.type === "otTea")  { otBreakStartTea = b.startTime;  otBreakEndTea = b.endTime; }
+                        });
+                    }
+                    
                     const transformedVariant = {
                         variant: item.id,
                         "Product Name": item.variant.fullName || `${item.product.name} ${item.variant.name}`,
                         cycleTime: item.variant.cycleTime,
                         actualCycleTime: item.variant.actualCycleTime,
-                        "Start Time": item.shiftId === "overtime" ? "07:30" : "07:30",
-                        "End Time": item.shiftId === "overtime" ? "18:30" : "16:30",
+                        "Start Time": shiftStart,
+                        "End Time": shiftEnd,
+                        "Break Start (Tea)": breakStartTea,
+                        "Break End (Tea)": breakEndTea,
+                        "Break Start (Lunch)": breakStartLunch,
+                        "Break End (Lunch)": breakEndLunch,
+                        "OT Break Start (Tea)": otBreakStartTea,
+                        "OT Break End (Tea)": otBreakEndTea,
                         dailyBoxTarget: item.targets.boxes,
                         currentBoxTotal: item.actual.boxes,
                         hourlyTargets: [],
@@ -2289,19 +2321,27 @@ body {
             
             const cumulativeData = {};
             
-            const standardHourMarks = [];
-            for (let hour = 7; hour <= 16; hour++) {
-                standardHourMarks.push(`${hour.toString().padStart(2, '0')}:30`);
-            }
-            
-            standardHourMarks.forEach(hour => {
-                cumulativeData[hour] = { target: 0, actual: 0 };
-            });
-            
             function parseTimeToMinutes(timeStr) {
                 const [hour, minute] = timeStr.split(':').map(Number);
                 return hour * 60 + minute;
             }
+            
+            // Build standardHourMarks dynamically from the actual timeline slot hours
+            // across all variants in this group, so OT/night shifts are fully represented
+            const allGroupSlotHours = new Set();
+            group.variants.forEach(variant => {
+                if (variant.hourlyProduction) {
+                    variant.hourlyProduction.forEach(p => { if (p.hour) allGroupSlotHours.add(p.hour); });
+                }
+                if (variant.hourlyTargets) {
+                    variant.hourlyTargets.forEach(t => { if (t.hour) allGroupSlotHours.add(t.hour); });
+                }
+            });
+            const standardHourMarks = Array.from(allGroupSlotHours).sort((a, b) => parseTimeToMinutes(a) - parseTimeToMinutes(b));
+            
+            standardHourMarks.forEach(hour => {
+                cumulativeData[hour] = { target: 0, actual: 0 };
+            });
             
             group.variants.forEach(variant => {
                 const supervisorVariant = group.supervisorData.variants[variant.variant];
@@ -2376,48 +2416,6 @@ body {
                 tbody.appendChild(row);
             });
             
-            const hasOvertime = group.variants.some(v => {
-                const supervisorVariant = group.supervisorData.variants[v.variant];
-                if (!supervisorVariant) return false;
-                const endTime = supervisorVariant.variantEndTime || v["End Time"];
-                return endTime && parseTimeToMinutes(endTime) > parseTimeToMinutes("16:30");
-            });
-            
-            if (hasOvertime) {
-                const otRow = document.createElement('tr');
-                
-                const otTimeCell = document.createElement('td');
-                otTimeCell.className = 'time-cell';
-                otTimeCell.textContent = 'Overtime';
-                otRow.appendChild(otTimeCell);
-                
-                const otTargetCell = document.createElement('td');
-                otTargetCell.className = 'target-cell';
-                otTargetCell.textContent = totalTarget;
-                otRow.appendChild(otTargetCell);
-                
-                const otActualCell = document.createElement('td');
-                otActualCell.className = 'actual-cell';
-                
-                let totalProduction = 0;
-                group.variants.forEach(variant => {
-                    const supervisorVariant = group.supervisorData.variants[variant.variant];
-                    if (supervisorVariant) {
-                        totalProduction += (supervisorVariant.currentTotal || 0);
-                    }
-                });
-                
-                otActualCell.textContent = totalProduction;
-                
-                if (totalProduction >= totalTarget) {
-                    otActualCell.classList.add('met');
-                } else {
-                    otActualCell.classList.add('not-met');
-                }
-                
-                otRow.appendChild(otActualCell);
-                tbody.appendChild(otRow);
-            }
         }
 
         function applySupervisorStyling(supervisorName) {
@@ -2722,11 +2720,6 @@ body {
             const startTimeMinutes = startHour * 60 + startMin;
             const endTimeMinutes = endHour * 60 + endMin;
             
-            const standardHourMarks = [];
-            for (let hour = 7; hour <= 16; hour++) {
-                standardHourMarks.push(`${hour.toString().padStart(2, '0')}:30`);
-            }
-            
             const now = new Date();
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
@@ -2736,6 +2729,18 @@ body {
                 const [hour, minute] = timeStr.split(':').map(Number);
                 return hour * 60 + minute;
             }
+            
+            // Build standardHourMarks dynamically from the actual timeline slots in data.json
+            // instead of hardcoding 07:30-16:30, so OT and night shifts render correctly
+            const allSlotHours = new Set();
+            supervisorProductionItems.forEach(item => {
+                if (item.prodItem.timeline) {
+                    item.prodItem.timeline.forEach(slot => {
+                        if (slot.hour) allSlotHours.add(slot.hour);
+                    });
+                }
+            });
+            const standardHourMarks = Array.from(allSlotHours).sort((a, b) => parseTimeToMinutes(a) - parseTimeToMinutes(b));
             
             const hourlyData = {};
             
