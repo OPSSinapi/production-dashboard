@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-03T08:19:16.403Z",
+    "timestamp": "2026-03-03T08:20:22.047Z",
     "date": "2026-03-03",
     "facility": "Main Plant"
   },
@@ -50,6 +50,63 @@
     }
   ],
   "production": [
+    {
+      "id": "D001-",
+      "product": {
+        "id": "D001",
+        "name": "D001"
+      },
+      "variant": {
+        "id": "",
+        "name": "",
+        "fullName": "D001 D001",
+        "cycleTime": 29.7,
+        "devicesPerBox": 240,
+        "actualCycleTime": 121
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 121,
+        "daily": 979,
+        "boxes": 4
+      },
+      "actual": {
+        "total": 240,
+        "boxes": 1,
+        "progress": 25
+      },
+      "batches": [
+        {
+          "id": 26030204,
+          "quantity": 240,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "PopUp",
+          "name": "PopUp",
+          "production": 240,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 979,
+          "progress": 25
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 121,
+          "actual": 240,
+          "cumTarget": 121,
+          "cumActual": 240,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-XL1000S",
       "product": {
@@ -119,7 +176,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 585
+        "actualCycleTime": 439
       },
       "shiftId": "overtime",
       "targets": {
@@ -128,35 +185,35 @@
         "boxes": 66
       },
       "actual": {
-        "total": 60,
-        "boxes": 3,
-        "progress": 5
+        "total": 80,
+        "boxes": 4,
+        "progress": 6
       },
       "batches": [
         {
           "id": 26030202,
-          "quantity": 60,
-          "boxes": 3
+          "quantity": 80,
+          "boxes": 4
         }
       ],
       "supervisors": [
         {
           "id": "Luthando",
           "name": "Luthando",
-          "production": 60,
+          "production": 80,
           "startTime": "07:30",
           "endTime": "18:30",
           "target": 1326,
-          "progress": 5
+          "progress": 6
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 136,
-          "actual": 60,
+          "actual": 80,
           "cumTarget": 136,
-          "cumActual": 60,
+          "cumActual": 80,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -225,6 +282,13 @@
   "summary": {
     "products": [
       {
+        "id": "D001",
+        "name": "D001",
+        "totalProduction": 240,
+        "totalTarget": 979,
+        "progress": 25
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 72,
@@ -234,9 +298,9 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 60,
+        "totalProduction": 80,
         "totalTarget": 1326,
-        "progress": 5
+        "progress": 6
       },
       {
         "id": "Scalpel",
@@ -270,11 +334,21 @@
       {
         "id": "Luthando",
         "name": "Luthando",
-        "totalProduction": 60,
+        "totalProduction": 80,
         "totalTarget": 1326,
-        "progress": 5,
+        "progress": 6,
         "variants": [
           "SUM-500V2"
+        ]
+      },
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 240,
+        "totalTarget": 979,
+        "progress": 25,
+        "variants": [
+          "D001-"
         ]
       }
     ]
