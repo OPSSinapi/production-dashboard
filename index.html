@@ -2596,16 +2596,14 @@ body {
 
         function calculateActualCycleTime(variants) {
             // Always recalculate fresh from raw time data in the browser.
-            // DO NOT use variant.actualCycleTime from data.json — the AppsScript stores it
-            // as Math.round() which destroys sub-second precision (2.28s → 2 or 3).
             // Formula: actual CT = total elapsed working seconds / total devices produced
-            // where elapsed working seconds = (now - variant start time - elapsed breaks) for each supervisor.
+            // For each variant: elapsed = min(now, variantEndTime) - variantStartTime - breaks
+            // CRITICAL: cap at endTime for completed variants, otherwise finished variants
+            // keep accumulating phantom time long after the supervisor moved on.
             
             const now = new Date();
             const nowMinutes = now.getHours() * 60 + now.getMinutes();
             
-            // Accumulate across all variants: total working seconds and total devices
-            // so that the result is a single weighted cycle time for the whole group.
             let totalWorkingSeconds = 0;
             let totalDevices = 0;
             
@@ -2619,22 +2617,28 @@ body {
                 const devicesProduced = supervisorVariant.currentTotal || 0;
                 if (devicesProduced <= 0) return;
                 
-                // Pull the supervisor's actual start time for this specific variant
-                // from data.json production[i].supervisors[].startTime
                 const prodItem = productionData.originalData?.production?.find(p => p.id === variant.variant);
                 const supervisorRawData = prodItem?.supervisors?.find(s => s.name === currentSupervisor);
                 const startTimeStr = supervisorRawData?.startTime || supervisorVariant.variantStartTime || variant["Start Time"];
+                const endTimeStr   = supervisorRawData?.endTime   || supervisorVariant.variantEndTime   || variant["End Time"];
                 
                 if (!startTimeStr) return;
                 
                 const [startH, startM] = startTimeStr.split(':').map(Number);
                 const startMinutes = startH * 60 + startM;
                 
-                const elapsedMinutes = nowMinutes - startMinutes;
+                // Cap the "end" at the earlier of now or the variant's actual end time
+                let effectiveEndMinutes = nowMinutes;
+                if (endTimeStr) {
+                    const [endH, endM] = endTimeStr.split(':').map(Number);
+                    const endMinutes = endH * 60 + endM;
+                    effectiveEndMinutes = Math.min(nowMinutes, endMinutes);
+                }
+                
+                const elapsedMinutes = effectiveEndMinutes - startMinutes;
                 if (elapsedMinutes <= 0) return;
                 
-                // Deduct elapsed break minutes — variant now has break times mapped from data.json shifts
-                const elapsedBreakMinutes = calculateElapsedBreakMinutes(variant, startTimeStr, now);
+                const elapsedBreakMinutes = calculateElapsedBreakMinutes(variant, startTimeStr, effectiveEndMinutes);
                 const workingMinutes = elapsedMinutes - elapsedBreakMinutes;
                 
                 if (workingMinutes <= 0) return;
@@ -2645,13 +2649,23 @@ body {
             
             if (totalDevices <= 0 || totalWorkingSeconds <= 0) return "N/A";
             
-            // Keep 2 decimal places so 2.28s target is meaningfully comparable
             return parseFloat((totalWorkingSeconds / totalDevices).toFixed(2));
         }
         
-        function calculateElapsedBreakMinutes(variant, startTimeStr, now) {
+        function calculateElapsedBreakMinutes(variant, startTimeStr, endTime) {
             let totalElapsedBreakMinutes = 0;
-            const currentTime = now.getHours() * 60 + now.getMinutes();
+            
+            let currentTime;
+            if (typeof endTime === 'number') {
+                currentTime = endTime;
+            } else if (endTime instanceof Date) {
+                currentTime = endTime.getHours() * 60 + endTime.getMinutes();
+            } else if (typeof endTime === 'string') {
+                const [h, m] = endTime.split(':').map(Number);
+                currentTime = h * 60 + m;
+            } else {
+                return 0;
+            }
             
             const getElapsedBreakMinutes = (breakStartStr, breakEndStr) => {
                 if (!breakStartStr || !breakEndStr) return 0;
