@@ -1191,6 +1191,57 @@ body {
             setInterval(fetchData, UPDATE_INTERVAL);
         }
 
+        // ── Legacy schema fallback ────────────────────────────────────────────────
+        // Builds lineCards[] from the old data.json (summary.supervisors) when the
+        // new AppsScript (which emits lineCards + lineGroups directly) is not yet deployed.
+        function buildLineCardsFromLegacy(data) {
+            const cards = [];
+            if (!data.production || !data.summary) return cards;
+            const shiftsLookup = {};
+            (data.shifts || []).forEach(s => { shiftsLookup[s.id] = s; });
+
+            (data.summary.supervisors || []).forEach(sup => {
+                const variants = [];
+                let totalProd = 0, totalTarget = 0;
+
+                (sup.variants || []).forEach(vid => {
+                    const item = data.production.find(p => p.id === vid);
+                    if (!item) return;
+                    const shift   = shiftsLookup[item.shiftId] || {};
+                    const supData = (item.supervisors || []).find(s => s.name === sup.name) || {};
+                    const startTime = supData.startTime || shift.startTime || '07:30';
+                    const endTime   = supData.endTime   || shift.endTime   || '16:30';
+                    const target    = supData.target    != null ? supData.target    : (item.targets.daily || 0);
+                    const prod      = supData.production != null ? supData.production : (item.actual.total || 0);
+                    totalProd += prod; totalTarget += target;
+                    variants.push({
+                        combinedId:    item.id,
+                        productName:   item.product.name,
+                        variantName:   item.variant.name || item.variant.id || item.product.name,
+                        variantFull:   item.variant.fullName || item.product.name,
+                        cycleTime:     item.variant.cycleTime  || 0,
+                        actualCT:      item.variant.actualCycleTime || 0,
+                        devicesPerBox: item.variant.devicesPerBox   || 0,
+                        target, production: prod, boxes: item.actual.boxes || 0,
+                        progress: target > 0 ? Math.round(prod / target * 100) : 0,
+                        startTime, endTime, timeline: item.timeline || []
+                    });
+                });
+
+                variants.sort((a, b) => parseMin(a.startTime) - parseMin(b.startTime));
+                const lineStart = variants.length ? variants[0].startTime : '07:30';
+                const lineEnd   = variants.length ? variants[variants.length-1].endTime : '16:30';
+                cards.push({
+                    id: sup.name, productionLine: sup.name, shiftId: null, shiftName: '',
+                    startTime: lineStart, endTime: lineEnd,
+                    totalProduction: totalProd, totalTarget,
+                    progress: totalTarget > 0 ? Math.round(totalProd/totalTarget*100) : 0,
+                    variants
+                });
+            });
+            return cards.sort((a, b) => a.id.localeCompare(b.id));
+        }
+
         // ── Data fetching ─────────────────────────────────────────────────────────
         async function fetchData() {
             try {
@@ -1204,7 +1255,13 @@ body {
                 rawData = data;
 
                 // Use lineCards from AppsScript output
-                lineCards = (data.lineCards || []).sort((a, b) => a.id.localeCompare(b.id));
+                // Use lineCards from new AppsScript, or fall back to building from
+                // the old schema (summary.supervisors) for backward compatibility.
+                if (data.lineCards && data.lineCards.length) {
+                    lineCards = data.lineCards.sort((a, b) => a.id.localeCompare(b.id));
+                } else {
+                    lineCards = buildLineCardsFromLegacy(data);
+                }
                 lineGroups = data.lineGroups || [];
 
                 // Restore or default line selection
@@ -1859,22 +1916,28 @@ body {
             yl.textContent = 'Units (cumulative)';
             g.appendChild(yl);
 
-            // Shared target line (from first member; all share the same target shape)
-            const refTL = grp.members[0] ? (grp.members[0].timeline || []) : [];
-            const tgtPts = slots.map((slot, i) => {
-                const s = refTL.find(t => t.hour === slot);
-                return s != null ? xScale(i) + ',' + yScale(s.cumTarget) : null;
-            }).filter(Boolean);
-            if (tgtPts.length > 1) {
-                g.appendChild(svgEl('polyline', {
-                    points: tgtPts.join(' '), fill:'none',
-                    stroke:'#9ca3af', 'stroke-width':2, 'stroke-dasharray':'6,3'
-                }));
-            }
+            // One target line per member (dashed, same colour as their production line)
+            // BC01 lines share the same target shape but we draw per-member anyway for consistency.
+            // For variant groups (PopUp etc.) each variant has its own target curve.
 
-            // One line per member
+            // One line per member: dashed target then solid actual
             grp.members.forEach(m => {
                 const tl  = m.timeline || [];
+
+                // Target line (dashed, same colour, lighter)
+                const tgtPts = slots.map((slot, i) => {
+                    const s = tl.find(t => t.hour === slot);
+                    return s != null ? xScale(i) + ',' + yScale(s.cumTarget) : null;
+                }).filter(Boolean);
+                if (tgtPts.length > 1) {
+                    g.appendChild(svgEl('polyline', {
+                        points: tgtPts.join(' '), fill:'none',
+                        stroke: m.colour, 'stroke-width':1.5,
+                        'stroke-dasharray':'5,3', opacity:'0.45'
+                    }));
+                }
+
+                // Production line (solid)
                 const pts = slots.map((slot, i) => {
                     const s = tl.find(t => t.hour === slot);
                     return s != null ? xScale(i) + ',' + yScale(s.cumActual) : null;
@@ -1938,7 +2001,12 @@ body {
             const nm = nowMin();
             const rows = [];
 
-            filteredCards.forEach(card => {
+            // When a group view is active, pull batches from the group members' lineCards
+            const cardsToScan = activeGroup
+                ? lineCards.filter(c => activeGroup.members.some(m => m.lineCardId === c.id))
+                : filteredCards;
+
+            cardsToScan.forEach(card => {
                 card.variants.forEach(v => {
                     // Find the production item in rawData for batch details
                     const prodItem = rawData.production.find(p => p.id === v.combinedId);
