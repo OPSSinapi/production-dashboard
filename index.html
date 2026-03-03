@@ -2013,26 +2013,26 @@ body {
             document.getElementById('target-units').textContent        = totalTarget;
             document.getElementById('progress-percentage').textContent = progress + '%';
             document.getElementById('progress-percentage').style.color = statusColor;
-            // Sum boxes from the underlying lineCards for this group
-            const memberCards = lineCards.filter(c => grp.members.some(m => m.lineCardId === c.id));
-            const totalBoxProd   = memberCards.reduce((s, c) =>
-                s + c.variants.reduce((vs, v) => vs + (v.boxes || 0), 0), 0);
-            const totalBoxTarget = memberCards.reduce((s, c) =>
-                s + c.variants.reduce((vs, v) => vs + Math.round((v.target || 0) / (v.devicesPerBox || 1)), 0), 0);
+            // Boxes and CT come from group members directly (shift-scoped, not full-day lineCard totals)
+            const totalBoxProd   = grp.members.reduce((s, m) => s + (m.boxes  || 0), 0);
+            const totalBoxTarget = grp.members.reduce((s, m) =>
+                s + Math.round((m.target || 0) / (m.devicesPerBox || 1)), 0);
             document.getElementById('current-boxes').textContent       = totalBoxProd;
             document.getElementById('current-boxes').style.color       = statusColor;
             document.getElementById('target-boxes').textContent        = totalBoxTarget || '—';
-            // Weighted average cycle time across all member variants
+            // Weighted average CT from members (actualCT only shown if group has production)
             let ctActualW = 0, ctPlanW = 0, ctWeight = 0;
-            memberCards.forEach(c => c.variants.forEach(v => {
-                const w = v.target || 1;
-                if (v.actualCT  > 0) ctActualW += v.actualCT  * w;
-                if (v.cycleTime > 0) { ctPlanW  += v.cycleTime * w; ctWeight += w; }
-            }));
-            const grpActualCT = ctWeight > 0 ? parseFloat((ctActualW / ctWeight).toFixed(2)) : '—';
-            const grpPlanCT   = ctWeight > 0 ? parseFloat((ctPlanW   / ctWeight).toFixed(2)) : '—';
+            grp.members.forEach(m => {
+                const w = m.target || 1;
+                if (m.actualCT  > 0) ctActualW += m.actualCT  * w;
+                if (m.cycleTime > 0) { ctPlanW  += m.cycleTime * w; ctWeight += w; }
+            });
+            const grpActualCT = (totalProd > 0 && ctWeight > 0)
+                ? parseFloat((ctActualW / ctWeight).toFixed(2)) : '—';
+            const grpPlanCT   = ctWeight > 0
+                ? parseFloat((ctPlanW   / ctWeight).toFixed(2)) : '—';
             document.getElementById('actual-cycle-time').textContent   = grpActualCT;
-            document.getElementById('actual-cycle-time').style.color   = statusColor;
+            document.getElementById('actual-cycle-time').style.color   = totalProd > 0 ? statusColor : '';
             document.getElementById('target-cycle-time').textContent   = grpPlanCT;
 
             const swatch = document.getElementById('legend-production-color');
@@ -2197,9 +2197,14 @@ body {
             const rows = [];
 
             // When a group view is active, pull batches from the group members' lineCards
+            // For shift-windowed groups (BC01 night), only show batches within the shift window
             const cardsToScan = activeGroup
                 ? lineCards.filter(c => activeGroup.members.some(m => m.lineCardId === c.id))
                 : filteredCards;
+            const grpShiftStart = activeGroup?.shiftWindow
+                ? parseMin(activeGroup.shiftWindow.startTime) : null;
+            const grpShiftEnd   = activeGroup?.shiftWindow
+                ? parseMin(activeGroup.shiftWindow.endTime)   : null;
 
             cardsToScan.forEach(card => {
                 card.variants.forEach(v => {
@@ -2210,6 +2215,15 @@ body {
                     const vStart = parseMin(v.startTime), vEnd = parseMin(v.endTime);
                     const isCurrent = nm >= vStart && nm <= vEnd;
 
+                    // For shift-windowed groups (e.g. BC01 Night 18:00-06:00),
+                    // only include this variant if its window overlaps the shift window.
+                    if (grpShiftStart !== null) {
+                        const isNightShift = grpShiftStart > grpShiftEnd; // crosses midnight
+                        const variantInShift = isNightShift
+                            ? (vStart >= grpShiftStart || vEnd <= grpShiftEnd)
+                            : (vStart >= grpShiftStart && vEnd <= grpShiftEnd);
+                        if (!variantInShift) return;
+                    }
                     prodItem.batches.forEach(b => {
                         rows.push({
                             line:       card.productionLine,
