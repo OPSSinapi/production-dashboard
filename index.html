@@ -924,6 +924,43 @@ body {
         padding: clamp(0.25rem, 0.5vh, 0.5rem) clamp(0.5rem, 1vw, 1rem);
     }
 }
+.date-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+.date-nav-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    width: 28px; height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    transition: background 0.2s;
+}
+.date-nav-btn:hover { background: rgba(255,255,255,0.28); }
+.date-nav-btn:disabled { opacity: 0.35; cursor: default; }
+.date-nav-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    min-width: 80px;
+    text-align: center;
+    letter-spacing: 0.02em;
+}
+.past-data-banner {
+    background: #d97706;
+    color: #fff;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 16px;
+    letter-spacing: 0.04em;
+}
     </style>
 </head>
 <body>
@@ -965,6 +1002,16 @@ body {
             <div class="date-time">
                 <div class="time" id="current-time">Loading...</div>
             </div>
+
+            <div class="date-nav" id="date-nav" style="display:none">
+                <button class="date-nav-btn" id="date-prev" title="Previous day">&#8592;</button>
+                <span class="date-nav-label" id="date-nav-label">Today</span>
+                <button class="date-nav-btn" id="date-next" title="Next day">&#8594;</button>
+            </div>
+        </div>
+
+        <div class="past-data-banner" id="past-data-banner" style="display:none">
+            &#9679; VIEWING PAST DATA: <span id="past-data-label"></span> &mdash; Not Live
         </div>
         
         <div class="legend-section">
@@ -1131,6 +1178,12 @@ body {
         let isFullscreen     = false;
         let isTargetBoard    = false;
 
+        // Date navigation state
+        const BASE_URL       = 'https://opssinapi.github.io/production-dashboard/';
+        let availableDates   = [];   // sorted desc: ['2026-03-03', '2026-03-02', ...]  (today first)
+        let viewingDateIdx   = 0;    // index into availableDates (0 = today/live)
+        let liveInterval     = null; // holds setInterval handle for live refresh
+
         // Filter state
         let filterType  = 'line';   // 'line' | 'product' | 'variant'
         let filterValue = 'all';
@@ -1187,15 +1240,113 @@ body {
             ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange']
                 .forEach(ev => document.addEventListener(ev, onFullscreenChange));
 
+            await discoverAvailableDates();
+            initDateNav();
             fetchData();
-            setInterval(fetchData, UPDATE_INTERVAL);
+            liveInterval = setInterval(fetchData, UPDATE_INTERVAL);
+        }
+
+        // ── Date discovery: probe GitHub Pages for last 5 dated archives ────────
+        async function discoverAvailableDates() {
+            // Today is always index 0 (live feed — data.json always exists)
+            const tz   = 'Africa/Johannesburg';
+            const today = new Date().toLocaleDateString('en-CA', { timeZone: tz }); // YYYY-MM-DD
+            availableDates = [today];
+
+            // Walk backwards through up to 30 calendar days, collect up to 4 more weekdays
+            const d = new Date();
+            let checked = 0;
+            while (availableDates.length < 5 && checked < 30) {
+                d.setDate(d.getDate() - 1);
+                checked++;
+                const dow = d.getDay();
+                if (dow === 0 || dow === 6) continue; // skip weekends
+                const ds = d.toLocaleDateString('en-CA', { timeZone: tz });
+                try {
+                    const probe = await fetch(BASE_URL + 'data-' + ds + '.json', { method: 'HEAD' });
+                    if (probe.ok) availableDates.push(ds);
+                } catch (_) {}
+            }
+        }
+
+        // ── Date nav UI ───────────────────────────────────────────────────────────
+        function initDateNav() {
+            const nav   = document.getElementById('date-nav');
+            const prev  = document.getElementById('date-prev');
+            const next  = document.getElementById('date-next');
+
+            if (availableDates.length > 1) nav.style.display = 'flex';
+
+            prev.addEventListener('click', () => {
+                if (viewingDateIdx < availableDates.length - 1) {
+                    viewingDateIdx++;
+                    switchToDate(viewingDateIdx);
+                }
+            });
+            next.addEventListener('click', () => {
+                if (viewingDateIdx > 0) {
+                    viewingDateIdx--;
+                    switchToDate(viewingDateIdx);
+                }
+            });
+
+            updateDateNav();
+        }
+
+        function updateDateNav() {
+            const prev   = document.getElementById('date-prev');
+            const next   = document.getElementById('date-next');
+            const label  = document.getElementById('date-nav-label');
+            if (!prev) return;
+
+            const isToday = viewingDateIdx === 0;
+            label.textContent = isToday ? 'Today' : formatDateLabel(availableDates[viewingDateIdx]);
+            prev.disabled  = viewingDateIdx >= availableDates.length - 1;
+            next.disabled  = viewingDateIdx <= 0;
+        }
+
+        function formatDateLabel(isoDate) {
+            // isoDate = 'YYYY-MM-DD' → 'Mon 3 Mar'
+            const d = new Date(isoDate + 'T12:00:00');
+            return d.toLocaleDateString('en-ZA', { weekday:'short', day:'numeric', month:'short' });
+        }
+
+        async function switchToDate(idx) {
+            viewingDateIdx = idx;
+            const isToday  = idx === 0;
+
+            // Banner
+            const banner = document.getElementById('past-data-banner');
+            const lbl    = document.getElementById('past-data-label');
+            if (isToday) {
+                banner.style.display = 'none';
+                // Re-enable live refresh
+                if (!liveInterval) liveInterval = setInterval(fetchData, UPDATE_INTERVAL);
+            } else {
+                const d = new Date(availableDates[idx] + 'T12:00:00');
+                lbl.textContent = d.toLocaleDateString('en-ZA',
+                    { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+                banner.style.display = 'block';
+                // Disable live refresh for past data
+                clearInterval(liveInterval);
+                liveInterval = null;
+            }
+
+            updateDateNav();
+            lastTimestamp = null;  // force re-render
+            await fetchData();
         }
 
         // ── Data fetching ─────────────────────────────────────────────────────────
         async function fetchData() {
             try {
-                const res  = await fetch(DATA_URL + '?_=' + Date.now());
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const isToday = viewingDateIdx === 0;
+                const url = isToday
+                    ? DATA_URL + '?_=' + Date.now()
+                    : BASE_URL + 'data-' + availableDates[viewingDateIdx] + '.json?_=' + Date.now();
+
+                const res  = await fetch(url);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
                 const data = await res.json();
 
                 const ts = data.metadata?.timestamp;
@@ -1203,15 +1354,12 @@ body {
                 lastTimestamp = ts;
                 rawData = data;
 
-                // Use lineCards from AppsScript output
-                lineCards = (data.lineCards || []).sort((a, b) => a.id.localeCompare(b.id));
+                lineCards  = (data.lineCards  || []).sort((a, b) => a.id.localeCompare(b.id));
                 lineGroups = data.lineGroups || [];
 
-                // Restore or default line selection
                 if (selectedLines.length === 0) {
                     selectedLines = lineCards.map(c => c.id);
                 }
-                // Remove stale entries
                 selectedLines = selectedLines.filter(id => lineCards.some(c => c.id === id));
                 if (selectedLines.length === 0) selectedLines = lineCards.map(c => c.id);
 
@@ -1223,7 +1371,7 @@ body {
 
             } catch (err) {
                 console.error('Fetch error:', err);
-                showError(`Failed to load data: ${err.message}`);
+                showError('Failed to load data: ' + err.message);
             }
         }
 
