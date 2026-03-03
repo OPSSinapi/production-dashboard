@@ -938,7 +938,7 @@ body {
             <div class="controls-section">
                 <div class="filter-container">
                     <select id="filter-type-select" class="filter-select">
-                        <option value="supervisor">Filter by Supervisor</option>
+                        <option value="supervisor">Filter by Line</option>
                         <option value="product">Filter by Product</option>
                         <option value="variant">Filter by Variant</option>
                     </select>
@@ -949,7 +949,7 @@ body {
                 
                 <div class="buttons-container">
                     <button id="supervisor-select-btn" class="supervisor-select-btn">
-                        Select Supervisors
+                        Select Lines
                     </button>
                     <button id="fullscreen-button" class="fullscreen-button">Fullscreen</button>
                     <div class="view-toggle-container">
@@ -985,7 +985,7 @@ body {
             <div class="main-content">
                 <div class="top-row">
                     <div class="supervisor-panel">
-                        <div class="supervisor-name" id="supervisor-name">SUPERVISOR: Loading...</div>
+                        <div class="supervisor-name" id="supervisor-name">LINE: Loading...</div>
                         <div class="product-name" id="product-name">PRODUCT: Loading...</div>
                         
                         <div class="variant-sequence" id="variant-sequence">
@@ -1058,7 +1058,7 @@ body {
             <div class="target-board-content">
                 <div class="target-board-left">
                     <div class="supervisor-info-box" id="board-supervisor-box">
-                        <div class="supervisor-info-label">SUPERVISOR</div>
+                        <div class="supervisor-info-label">LINE</div>
                         <div class="supervisor-info-value" id="board-supervisor-name">Loading...</div>
                     </div>
                     
@@ -1113,2392 +1113,873 @@ body {
     <script>
         const DATA_URL = 'https://opssinapi.github.io/production-dashboard/data.json';
         const UPDATE_INTERVAL = 30 * 1000;
-        const CYCLE_INTERVAL = 20000;
+        const CYCLE_INTERVAL  = 20 * 1000;
+        const CHART_ROTATION_INTERVAL = 10 * 1000;
 
-        let productionData = { variants: [], supervisors: [] };
-        let selectedFilterType = 'supervisor';
-        let selectedFilterValue = 'all';
-        let selectedHour = 'current';
-        let lastUpdateTime = null;
-        let isLoading = true;
-        let countdownInterval = null;
-        let commonChartPadding = { top: 20, right: 30, bottom: 50, left: 70 };
-        let isFullscreen = false;
-        let cycleInterval = null;
-        let cycleIndex = 0;
-        
-        let productSupervisorGroups = {};
-        let currentProduct = null;
-        let currentSupervisor = null;
-        let currentProductVariants = [];
-        let currentVariantKey = null;
-        let selectedSupervisors = [];
-        let supervisorFilterActive = false;
-        
-        let isTargetBoardView = false;
-        
-        let chartRotationInterval = null;
-        let currentChartIndex = 0;
-        const CHART_ROTATION_INTERVAL = 10000;
+        // ── State ─────────────────────────────────────────────────────────────────
+        let rawData          = null;   // parsed data.json (contains lineCards)
+        let lineCards        = [];     // data.json → lineCards array (one per Production_Line)
+        let selectedLines    = [];     // which line IDs are visible
+        let filteredCards    = [];     // cards currently shown after filters
+        let cycleIndex       = 0;      // which card in filteredCards is on screen
+        let cycleInterval    = null;
+        let chartRotInterval = null;
+        let currentChartIdx  = 0;      // 0 = cumulative, 1 = hourly
+        let lastTimestamp    = null;
+        let isFullscreen     = false;
+        let isTargetBoard    = false;
 
-        let viewportWidth, viewportHeight, chartWidth, chartHeight;
+        // Filter state
+        let filterType  = 'line';   // 'line' | 'product' | 'variant'
+        let filterValue = 'all';
 
-        let dashboardContainer, supervisorPanel, chartsRow;
-        let fullscreenButton;
+        // ── DOM refs (set in init) ────────────────────────────────────────────────
+        let $container, $fullscreenBtn;
 
+        // ── Helpers ───────────────────────────────────────────────────────────────
+        function parseMin(timeStr) {
+            if (!timeStr) return 0;
+            const [h, m] = timeStr.split(':').map(Number);
+            return h * 60 + m;
+        }
+
+        function nowMin() {
+            const n = new Date();
+            return n.getHours() * 60 + n.getMinutes();
+        }
+
+        // ── Init ──────────────────────────────────────────────────────────────────
         function initDashboard() {
-            dashboardContainer = document.querySelector('.dashboard-container');
-            supervisorPanel = document.querySelector('.supervisor-panel');
-            fullscreenButton = document.getElementById('fullscreen-button');
+            $container    = document.querySelector('.dashboard-container');
+            $fullscreenBtn = document.getElementById('fullscreen-button');
 
             updateDateTime();
-            updateViewportDimensions();
             setInterval(updateDateTime, 1000);
 
-            document.getElementById('filter-type-select').addEventListener('change', function() {
-                selectedFilterType = this.value;
-                updateFilterValueDropdown();
+            document.getElementById('filter-type-select').addEventListener('change', e => {
+                filterType = e.target.value;
+                populateFilterDropdown();
+            });
+            document.getElementById('filter-value-select').addEventListener('change', e => {
+                filterValue = e.target.value;
+                applyFiltersAndDisplay();
             });
 
-            document.getElementById('filter-value-select').addEventListener('change', function() {
-                selectedFilterValue = this.value;
-                updateDashboard();
+            initLineSelection();
+            setupChartNav();
+
+            document.getElementById('view-toggle').addEventListener('change', e => {
+                isTargetBoard = e.target.checked;
+                const content = document.querySelector('.content');
+                const board   = document.getElementById('target-board-container');
+                if (isTargetBoard) { content.style.display = 'none'; board.classList.add('active'); }
+                else               { content.style.display = 'flex'; board.classList.remove('active'); }
+                displayCurrentCard();
             });
 
-            initSupervisorSelection();
-            
-            setupChartNavigation();
-            
-            fetchProductionData();
-            setInterval(fetchProductionData, UPDATE_INTERVAL);
+            $fullscreenBtn.addEventListener('click', toggleFullscreen);
+            window.addEventListener('resize', () => {
+                clearTimeout(window._resizeTimer);
+                window._resizeTimer = setTimeout(redrawDashboard, 250);
+            });
+            ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange']
+                .forEach(ev => document.addEventListener(ev, onFullscreenChange));
 
-            fullscreenButton.addEventListener('click', toggleFullscreen);
-            window.addEventListener('resize', handleResize);
-            
-            document.getElementById('view-toggle').addEventListener('change', handleViewToggle);
-            
-            document.addEventListener('fullscreenchange', handleFullscreenChange);
-            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+            fetchData();
+            setInterval(fetchData, UPDATE_INTERVAL);
         }
-        
-        function setupChartNavigation() {
-            const navDots = document.querySelectorAll('.chart-nav-dot');
-            navDots.forEach(dot => {
-                dot.addEventListener('click', function() {
-                    const chartType = this.getAttribute('data-chart');
-                    showChart(chartType);
-                    
-                    if (chartRotationInterval) {
-                        clearInterval(chartRotationInterval);
-                        startChartRotation();
-                    }
+
+        // ── Data fetching ─────────────────────────────────────────────────────────
+        async function fetchData() {
+            try {
+                const res  = await fetch(DATA_URL + '?_=' + Date.now());
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                const ts = data.metadata?.timestamp;
+                if (ts === lastTimestamp) return;  // no change
+                lastTimestamp = ts;
+                rawData = data;
+
+                // Use lineCards from AppsScript output
+                lineCards = (data.lineCards || []).sort((a, b) => a.id.localeCompare(b.id));
+
+                // Restore or default line selection
+                if (selectedLines.length === 0) {
+                    selectedLines = lineCards.map(c => c.id);
+                }
+                // Remove stale entries
+                selectedLines = selectedLines.filter(id => lineCards.some(c => c.id === id));
+                if (selectedLines.length === 0) selectedLines = lineCards.map(c => c.id);
+
+                document.getElementById('last-update').textContent =
+                    'Last updated: ' + new Date(ts).toLocaleTimeString('en-ZA', { hour12: false });
+
+                populateFilterDropdown();
+                applyFiltersAndDisplay();
+
+            } catch (err) {
+                console.error('Fetch error:', err);
+                showError(`Failed to load data: ${err.message}`);
+            }
+        }
+
+        // ── Filtering & cycling ───────────────────────────────────────────────────
+        function applyFiltersAndDisplay() {
+            if (!lineCards.length) { showError('No data available.'); return; }
+
+            filteredCards = lineCards.filter(card => {
+                if (!selectedLines.includes(card.id)) return false;
+                if (filterValue === 'all') return true;
+                if (filterType === 'line')    return card.id === filterValue;
+                if (filterType === 'product') return card.variants.some(v => v.productName === filterValue);
+                if (filterType === 'variant') return card.variants.some(v => v.variantName === filterValue);
+                return true;
+            });
+
+            if (!filteredCards.length) { showError('No data for this filter.'); return; }
+
+            clearInterval(cycleInterval);
+            cycleIndex = 0;
+
+            if (filteredCards.length > 1) {
+                cycleInterval = setInterval(() => {
+                    cycleIndex = (cycleIndex + 1) % filteredCards.length;
+                    displayCard(filteredCards[cycleIndex]);
+                }, CYCLE_INTERVAL);
+            }
+
+            displayCard(filteredCards[0]);
+            renderBatchTable();
+        }
+
+        function displayCurrentCard() {
+            if (filteredCards.length) displayCard(filteredCards[cycleIndex]);
+        }
+
+        // ── Card display ──────────────────────────────────────────────────────────
+        function displayCard(card) {
+            if (isTargetBoard) {
+                renderTargetBoard(card);
+            } else {
+                renderLineInfo(card);
+                renderMetrics(card);
+                setTimeout(() => {
+                    renderCumulativeChart(card);
+                    renderHourlyChart(card);
+                }, 50);
+            }
+        }
+
+        function renderLineInfo(card) {
+            document.getElementById('supervisor-name').textContent = `LINE: ${card.productionLine}`;
+
+            // Show product names — may be multiple if the line runs more than one product
+            const products = [...new Set(card.variants.map(v => v.productName))];
+            document.getElementById('product-name').textContent = `PRODUCT: ${products.join(' / ')}`;
+
+            const seq = document.getElementById('variant-sequence');
+            seq.innerHTML = '';
+            if (!card.variants.length) { seq.innerHTML = '<div>No variants</div>'; return; }
+
+            const now = nowMin();
+
+            // Sort variants by their startTime
+            const sorted = [...card.variants].sort((a, b) => parseMin(a.startTime) - parseMin(b.startTime));
+
+            sorted.forEach((v, i) => {
+                const start = parseMin(v.startTime), end = parseMin(v.endTime);
+                const status = now < start ? 'upcoming' : now > end ? 'completed' : 'current';
+
+                const el = document.createElement('div');
+                el.className = `variant-item ${status}`;
+                el.textContent = v.variantName || v.variantFull;
+                seq.appendChild(el);
+
+                if (i < sorted.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow-right';
+                    arrow.textContent = '→';
+                    seq.appendChild(arrow);
+                }
+            });
+        }
+
+        function renderMetrics(card) {
+            const totalProd   = card.totalProduction || 0;
+            const totalTarget = card.totalTarget     || 0;
+            const progress    = totalTarget > 0 ? Math.round((totalProd / totalTarget) * 100) : 0;
+
+            // Box totals
+            let totalBoxProd = 0, totalBoxTarget = 0;
+            card.variants.forEach(v => {
+                totalBoxProd   += v.boxes   || 0;
+                totalBoxTarget += v.devicesPerBox > 0 ? Math.floor((v.target || 0) / v.devicesPerBox) : 0;
+            });
+
+            // Weighted actual & planned cycle time
+            let actualCTW = 0, planCTW = 0, ctWeight = 0;
+            card.variants.forEach(v => {
+                const wt = v.target || 1;
+                if (v.actualCT > 0)  { actualCTW += v.actualCT * wt; }
+                if (v.cycleTime > 0) { planCTW   += v.cycleTime * wt; ctWeight += wt; }
+            });
+            const actualCT = ctWeight > 0 ? parseFloat((actualCTW / ctWeight).toFixed(2)) : 'N/A';
+            const planCT   = ctWeight > 0 ? parseFloat((planCTW   / ctWeight).toFixed(2)) : 0;
+
+            // Ahead/behind: linear interpolation across the shift window
+            const shiftStart = Math.min(...card.variants.map(v => parseMin(v.startTime || card.startTime)));
+            const shiftEnd   = Math.max(...card.variants.map(v => parseMin(v.endTime   || card.endTime)));
+            const nm = nowMin();
+            let cumTargetNow = 0;
+            if (shiftEnd > shiftStart) {
+                const elapsed = Math.max(0, Math.min(nm, shiftEnd) - shiftStart);
+                cumTargetNow  = Math.round(totalTarget * elapsed / (shiftEnd - shiftStart));
+            }
+            const isAhead  = cumTargetNow === 0 || totalProd >= cumTargetNow;
+            const statusColor = isAhead ? 'var(--production-ahead)' : 'var(--production-behind)';
+
+            document.getElementById('current-units').textContent = totalProd;
+            document.getElementById('current-units').style.color = statusColor;
+            document.getElementById('target-units').textContent  = totalTarget;
+            document.getElementById('progress-percentage').textContent = `${progress}%`;
+            document.getElementById('progress-percentage').style.color = statusColor;
+
+            document.getElementById('current-boxes').textContent = totalBoxProd;
+            document.getElementById('current-boxes').style.color = statusColor;
+            document.getElementById('target-boxes').textContent  = totalBoxTarget;
+
+            document.getElementById('actual-cycle-time').textContent = actualCT;
+            document.getElementById('actual-cycle-time').style.color = statusColor;
+            document.getElementById('target-cycle-time').textContent = planCT;
+
+            const swatch = document.getElementById('legend-production-color');
+            if (swatch) swatch.style.backgroundColor = statusColor;
+        }
+
+        // ── Cumulative chart ──────────────────────────────────────────────────────
+        function renderCumulativeChart(card) {
+            const container = document.getElementById('cumulative-chart');
+            container.innerHTML = '';
+
+            const totalProd   = parseInt(document.getElementById('current-units').textContent, 10) || 0;
+            const totalTarget = parseInt(document.getElementById('target-units').textContent, 10)  || 0;
+
+            // Collect all hourly slot data across variants, within each variant's own window
+            const slotMap = {};   // "HH:MM" → { prod, minutes }
+
+            card.variants.forEach(v => {
+                const vStart = parseMin(v.startTime);
+                const vEnd   = parseMin(v.endTime);
+
+                if (!v.timeline) return;
+                v.timeline.forEach(slot => {
+                    const slotMin = parseMin(slot.hour);
+                    if (slotMin < vStart || slotMin > vEnd) return;
+                    if (!slotMap[slot.hour]) slotMap[slot.hour] = { prod: 0, minutes: slotMin };
+                    slotMap[slot.hour].prod += (slot.actual || 0);
                 });
             });
-            
-            startChartRotation();
-        }
-        
-        function startChartRotation() {
-            if (chartRotationInterval) {
-                clearInterval(chartRotationInterval);
-            }
-            
-            chartRotationInterval = setInterval(() => {
-                currentChartIndex = (currentChartIndex + 1) % 2;
-                const chartType = currentChartIndex === 0 ? 'cumulative' : 'hourly';
-                showChart(chartType);
-            }, CHART_ROTATION_INTERVAL);
-        }
-        
-        function showChart(chartType) {
-            const cumulativeChart = document.getElementById('cumulative-chart');
-            const hourlyChart = document.getElementById('hourly-chart');
-            const chartTitle = document.getElementById('chart-title');
-            const navDots = document.querySelectorAll('.chart-nav-dot');
-            
-            navDots.forEach(dot => {
-                if (dot.getAttribute('data-chart') === chartType) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
-                }
-            });
-            
-            if (chartType === 'cumulative') {
-                currentChartIndex = 0;
-                cumulativeChart.classList.remove('hidden');
-                hourlyChart.classList.add('hidden');
-                chartTitle.textContent = "TODAY'S PRODUCTION PROGRESS";
-            } else {
-                currentChartIndex = 1;
-                cumulativeChart.classList.add('hidden');
-                hourlyChart.classList.remove('hidden');
-                
-                const now = new Date();
-                const currentHour = now.getHours();
-                const currentMinute = now.getMinutes();
-                const displayHour = currentMinute < 30 ? currentHour : currentHour + 1;
-                const hourStr = `${displayHour.toString().padStart(2, '0')}:30`;
-                
-                chartTitle.textContent = `CURRENT HOUR: ${hourStr} PRODUCTION`;
-            }
-        }
 
-        function updateViewportDimensions() {
-            viewportWidth = window.innerWidth;
-            viewportHeight = window.innerHeight;
-        }
-
-        function handleResize() {
-            updateViewportDimensions();
-            
-            if (Math.abs(window.innerWidth - viewportWidth) > 20 || 
-                Math.abs(window.innerHeight - viewportHeight) > 20) {
-                
-                clearTimeout(window.resizeTimer);
-                window.resizeTimer = setTimeout(function() {
-                    redrawDashboard();
-                }, 250);
-            }
-        }
-
-        function redrawDashboard() {
-            dashboardContainer.style.display = 'none';
-            void dashboardContainer.offsetHeight;
-            dashboardContainer.style.display = 'flex';
-            
-            updateDashboard();
-        }
-        
-        function handleViewToggle(event) {
-            isTargetBoardView = event.target.checked;
-            
-            const content = document.querySelector('.content');
-            const targetBoardContainer = document.getElementById('target-board-container');
-            
-            if (isTargetBoardView) {
-                content.style.display = 'none';
-                targetBoardContainer.classList.add('active');
-                
-                updateDashboard();
-            } else {
-                content.style.display = 'flex';
-                targetBoardContainer.classList.remove('active');
-                
-                updateDashboard();
-            }
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement && 
-                !document.mozFullScreenElement && 
-                !document.webkitFullscreenElement && 
-                !document.msFullscreenElement) {
-                
-                try {
-                    dashboardContainer.classList.add('fullscreen-mode');
-                    isFullscreen = true;
-                    fullscreenButton.textContent = 'Exit Fullscreen';
-                    
-                    if (dashboardContainer.requestFullscreen) {
-                        dashboardContainer.requestFullscreen();
-                    } else if (dashboardContainer.msRequestFullscreen) {
-                        dashboardContainer.msRequestFullscreen();
-                    } else if (dashboardContainer.mozRequestFullScreen) {
-                        dashboardContainer.mozRequestFullScreen();
-                    } else if (dashboardContainer.webkitRequestFullscreen) {
-                        dashboardContainer.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-                    } else {
-                        simulatedFullscreen();
-                    }
-                } catch (error) {
-                    console.error('Fullscreen API error:', error);
-                    simulatedFullscreen();
-                }
-            } else {
-                try {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                        document.mozCancelFullScreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    } else {
-                        exitSimulatedFullscreen();
-                    }
-                } catch (error) {
-                    console.error('Exiting fullscreen error:', error);
-                    exitSimulatedFullscreen();
-                }
-            }
-        }
-
-        function handleFullscreenChange() {
-            if (!document.fullscreenElement && 
-                !document.webkitFullscreenElement && 
-                !document.mozFullScreenElement && 
-                !document.msFullscreenElement) {
-                
-                if (isFullscreen) {
-                    exitFullscreenMode();
-                }
-            } else {
-                enterFullscreenMode();
-            }
-        }
-
-        function enterFullscreenMode() {
-            if (!isFullscreen) {
-                dashboardContainer.classList.add('fullscreen-mode');
-                isFullscreen = true;
-                fullscreenButton.textContent = 'Exit Fullscreen';
-                
-                setTimeout(function() {
-                    updateViewportDimensions();
-                    updateDashboard();
-                }, 100);
-            }
-        }
-
-        function exitFullscreenMode() {
-            dashboardContainer.classList.remove('fullscreen-mode');
-            dashboardContainer.classList.remove('simulated-fullscreen');
-            isFullscreen = false;
-            fullscreenButton.textContent = 'Fullscreen';
-            
-            dashboardContainer.style.position = '';
-            dashboardContainer.style.top = '';
-            dashboardContainer.style.left = '';
-            dashboardContainer.style.width = '';
-            dashboardContainer.style.height = '';
-            dashboardContainer.style.zIndex = '';
-            document.body.style.overflow = '';
-            
-            setTimeout(function() {
-                updateViewportDimensions();
-                updateDashboard();
-            }, 100);
-        }
-
-        function simulatedFullscreen() {
-            dashboardContainer.classList.add('fullscreen-mode');
-            dashboardContainer.classList.add('simulated-fullscreen');
-            isFullscreen = true;
-            fullscreenButton.textContent = 'Exit Fullscreen';
-            
-            dashboardContainer.style.position = 'fixed';
-            dashboardContainer.style.top = '0';
-            dashboardContainer.style.left = '0';
-            dashboardContainer.style.width = '100vw';
-            dashboardContainer.style.height = '100vh';
-            dashboardContainer.style.zIndex = '9999';
-            document.body.style.overflow = 'hidden';
-            
-            setTimeout(function() {
-                updateViewportDimensions();
-                updateDashboard();
-            }, 100);
-        }
-
-        function exitSimulatedFullscreen() {
-            exitFullscreenMode();
-        }
-
-        function initSupervisorSelection() {
-            const selectBtn = document.getElementById('supervisor-select-btn');
-            const modal = document.getElementById('supervisor-select-modal');
-            const closeBtn = document.querySelector('.supervisor-select-close');
-            const applyBtn = document.getElementById('apply-supervisor-selection');
-            const selectAllBtn = document.getElementById('select-all-supervisors');
-            const deselectAllBtn = document.getElementById('deselect-all-supervisors');
-            
-            selectBtn.addEventListener('click', function() {
-                updateSupervisorCheckboxes();
-                modal.style.display = 'block';
-            });
-            
-            closeBtn.addEventListener('click', function() {
-                modal.style.display = 'none';
-            });
-            
-            window.addEventListener('click', function(event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-            
-            applyBtn.addEventListener('click', function() {
-                applySupervisorSelection();
-                modal.style.display = 'none';
-            });
-            
-            selectAllBtn.addEventListener('click', function() {
-                const checkboxes = document.querySelectorAll('.supervisor-checkbox');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = true;
-                });
-            });
-            
-            deselectAllBtn.addEventListener('click', function() {
-                const checkboxes = document.querySelectorAll('.supervisor-checkbox');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = false;
-                });
-            });
-            
-            if (productionData && productionData.supervisors) {
-                selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
-            }
-        }
-
-        function updateSupervisorCheckboxes() {
-            const checkboxContainer = document.getElementById('supervisor-checkboxes');
-            checkboxContainer.innerHTML = '';
-            
-            if (!productionData || !productionData.supervisors || productionData.supervisors.length === 0) {
-                checkboxContainer.innerHTML = '<p>No supervisors available</p>';
+            const hours = Object.keys(slotMap).sort((a, b) => parseMin(a) - parseMin(b));
+            if (!hours.length) {
+                container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available</div>';
                 return;
             }
-            
-            productionData.supervisors.forEach(supervisor => {
+
+            const startMin = Math.min(...card.variants.map(v => parseMin(v.startTime)));
+            const endMin   = Math.max(...card.variants.map(v => parseMin(v.endTime)));
+            const nm       = nowMin();
+
+            // Build cumulative series starting at zero at shiftStart
+            const points = [{ hour: null, minutes: startMin, prod: 0, target: 0 }];
+            let cumProd = 0;
+            hours.forEach(h => {
+                const min = parseMin(h);
+                if (min > nm + 60) return;
+                cumProd += slotMap[h].prod;
+                const target = Math.round(totalTarget * (min - startMin) / (endMin - startMin));
+                points.push({ hour: h, minutes: min, prod: cumProd, target });
+            });
+
+            // Ensure last point matches reported total
+            if (points.length > 1) points[points.length - 1].prod = totalProd;
+
+            // Add current-time point if not already present
+            if (nm > startMin && nm <= endMin) {
+                const exact = points.find(p => p.minutes === nm);
+                if (!exact) {
+                    const prev = [...points].reverse().find(p => p.minutes < nm);
+                    const target = Math.round(totalTarget * (nm - startMin) / (endMin - startMin));
+                    points.push({ hour: null, minutes: nm, prod: prev ? prev.prod : totalProd, target });
+                    points.sort((a, b) => a.minutes - b.minutes);
+                }
+            }
+
+            // Ensure final point represents totalProd
+            if (points.length > 1) points[points.length - 1].prod = totalProd;
+
+            drawLineChart(container, points, hours, startMin, endMin, totalTarget, nm, 'Units');
+        }
+
+        // ── Hourly chart ──────────────────────────────────────────────────────────
+        function renderHourlyChart(card) {
+            const container = document.getElementById('hourly-chart');
+            container.innerHTML = '';
+
+            const nm = nowMin();
+            const periodHour = Math.floor(nm / 60);
+            const periodSlot = nm < (periodHour * 60 + 30)
+                ? `${String(periodHour).padStart(2,'0')}:30`
+                : `${String(periodHour + 1).padStart(2,'0')}:30`;
+
+            let prodValue = 0, targetValue = 0;
+            card.variants.forEach(v => {
+                const vStart = parseMin(v.startTime);
+                const vEnd   = parseMin(v.endTime);
+                const slotMin = parseMin(periodSlot);
+                if (slotMin < vStart || slotMin > vEnd) return;
+                if (!v.timeline) return;
+                const slot = v.timeline.find(s => s.hour === periodSlot);
+                if (slot) {
+                    prodValue   += slot.actual  || 0;
+                    targetValue += slot.target  || 0;
+                }
+            });
+
+            if (prodValue === 0 && targetValue === 0) {
+                container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data for current hour</div>';
+                return;
+            }
+
+            drawBarChart(container, periodSlot, prodValue, targetValue);
+        }
+
+        // ── SVG chart primitives ──────────────────────────────────────────────────
+        function makeSVG(w, h) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '100%');
+            svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+            svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+            return svg;
+        }
+
+        function svgEl(tag, attrs) {
+            const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+            Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+            return el;
+        }
+
+        function drawAxesAndGrid(svg, pad, w, h, maxVal, label) {
+            const g = svgEl('g', {});
+            const fs = isFullscreen ? 14 : 12;
+            for (let i = 0; i <= 4; i++) {
+                const y = pad.top + (h * i / 4);
+                g.appendChild(svgEl('line', { x1: pad.left, y1: y, x2: w - pad.right, y2: y, stroke: '#ddd', 'stroke-width': 1 }));
+                const t = svgEl('text', { x: pad.left - 10, y: y + 5, 'text-anchor': 'end', 'font-size': fs, fill: '#666' });
+                t.textContent = Math.round(maxVal * (4 - i) / 4);
+                g.appendChild(t);
+            }
+            g.appendChild(svgEl('line', { x1: pad.left, y1: pad.top, x2: pad.left, y2: h - pad.bottom + pad.top, stroke: '#666', 'stroke-width': 1.5 }));
+            g.appendChild(svgEl('line', { x1: pad.left, y1: h - pad.bottom + pad.top, x2: w - pad.right, y2: h - pad.bottom + pad.top, stroke: '#666', 'stroke-width': 1.5 }));
+            // Y axis label
+            const yt = svgEl('text', { x: pad.left - 35, y: pad.top + (h - pad.top - pad.bottom) / 2, 'text-anchor': 'middle', 'font-size': fs + 2, 'font-weight': 'bold', fill: '#666', transform: `rotate(-90, ${pad.left - 35}, ${pad.top + (h - pad.top - pad.bottom) / 2})` });
+            yt.textContent = label;
+            g.appendChild(yt);
+            svg.appendChild(g);
+        }
+
+        function drawLineChart(container, points, hourMarks, startMin, endMin, totalTarget, nm, yLabel) {
+            const area = container.closest('.chart-area');
+            const W = area.clientWidth, H = area.clientHeight;
+            if (W <= 0 || H <= 0) { setTimeout(() => { /* will be called again on resize */ }, 100); return; }
+
+            const pad = {
+                top:    Math.max(10, Math.floor(H * 0.05)),
+                right:  Math.max(10, Math.floor(W * 0.05)),
+                bottom: Math.max(50, Math.floor(H * 0.18)),
+                left:   Math.max(40, Math.floor(W * 0.12))
+            };
+            const cW = W - pad.left - pad.right;
+            const cH = H - pad.top  - pad.bottom;
+
+            const maxVal = Math.max(...points.map(p => Math.max(p.prod, p.target))) * 1.1 || 100;
+            const svg = makeSVG(W, H);
+            container.appendChild(svg);
+
+            drawAxesAndGrid(svg, pad, W, H, maxVal, yLabel);
+
+            const tx = min => pad.left + cW * (min - startMin) / (endMin - startMin);
+            const ty = val => pad.top + cH  - cH * (val / maxVal);
+
+            const fs = isFullscreen ? 14 : 12;
+
+            // X-axis hour labels + status symbols
+            const xg = svgEl('g', {});
+            hourMarks.forEach(h => {
+                const min = parseMin(h);
+                if (min < startMin || min > endMin) return;
+                const x = tx(min), y = H - pad.bottom + 20;
+                xg.appendChild(svgEl('line', { x1: x, y1: H - pad.bottom, x2: x, y2: H - pad.bottom + 5, stroke: '#666', 'stroke-width': 1.5 }));
+                const label = svgEl('text', { x, y, 'text-anchor': 'middle', 'font-size': fs, fill: '#666' });
+                label.textContent = h;
+                xg.appendChild(label);
+
+                if (min <= nm) {
+                    const dp = points.find(p => p.minutes === min) || points.filter(p => p.minutes <= min).pop();
+                    const cumA = dp ? dp.prod : 0, cumT = dp ? dp.target : 0;
+                    let sym = '✗', color = '#e11d48';
+                    if (cumA >= cumT) { sym = '✓'; color = '#0d9488'; }
+                    if (min === (Math.floor(nm / 60) * 60 + 30)) { sym = '●'; color = '#ca8a04'; }
+                    const st = svgEl('text', { x, y: y + 20, 'text-anchor': 'middle', 'font-size': fs + 4, 'font-weight': 'bold', fill: color });
+                    st.textContent = sym;
+                    xg.appendChild(st);
+                }
+            });
+            svg.appendChild(xg);
+
+            // Target line
+            const tg = svgEl('g', {});
+            let tPathD = '';
+            points.forEach((p, i) => {
+                const x = tx(p.minutes), y = ty(p.target);
+                tPathD += i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
+            });
+            tg.appendChild(svgEl('path', { d: tPathD, stroke: 'var(--target-color)', 'stroke-width': 3, fill: 'none' }));
+            // Target dots at hour marks
+            hourMarks.forEach(h => {
+                const min = parseMin(h);
+                if (min > nm + 60) return;
+                const dp = points.find(p => p.minutes === min) || points.filter(p => p.minutes <= min).pop();
+                if (!dp) return;
+                const x = tx(min), y = ty(dp.target);
+                tg.appendChild(svgEl('circle', { cx: x, cy: y, r: isFullscreen ? 5 : 4, fill: 'var(--target-color)' }));
+                const lbl = svgEl('text', { x, y: y - 8, 'text-anchor': 'middle', 'font-size': fs, 'font-weight': 'bold', fill: 'var(--target-color)' });
+                lbl.textContent = dp.target;
+                tg.appendChild(lbl);
+            });
+            // Final target dot
+            const lastT = points[points.length - 1];
+            tg.appendChild(svgEl('circle', { cx: tx(lastT.minutes), cy: ty(lastT.target), r: isFullscreen ? 7 : 6, fill: 'var(--target-color)', stroke: '#fff', 'stroke-width': 2 }));
+            const lastTlbl = svgEl('text', { x: tx(lastT.minutes), y: ty(lastT.target) - 10, 'text-anchor': 'middle', 'font-size': fs + 2, 'font-weight': 'bold', fill: 'var(--target-color)' });
+            lastTlbl.textContent = lastT.target;
+            tg.appendChild(lastTlbl);
+            svg.appendChild(tg);
+
+            // Production line — per-segment coloured ahead/behind
+            const pg = svgEl('g', {});
+            for (let i = 1; i < points.length; i++) {
+                const prev = points[i - 1], curr = points[i];
+                const col = curr.prod >= curr.target ? 'var(--production-ahead)' : 'var(--production-behind)';
+                pg.appendChild(svgEl('path', { d: `M ${tx(prev.minutes)} ${ty(prev.prod)} L ${tx(curr.minutes)} ${ty(curr.prod)}`, stroke: col, 'stroke-width': 3, fill: 'none' }));
+            }
+            // Production dots at hour marks
+            hourMarks.forEach(h => {
+                const min = parseMin(h);
+                if (min > nm) return;
+                const dp = points.find(p => p.minutes === min) || points.filter(p => p.minutes <= min).pop();
+                if (!dp) return;
+                const col = dp.prod >= dp.target ? 'var(--production-ahead)' : 'var(--production-behind)';
+                const x = tx(min), y = ty(dp.prod);
+                pg.appendChild(svgEl('circle', { cx: x, cy: y, r: isFullscreen ? 5 : 4, fill: col }));
+                const lbl = svgEl('text', { x, y: y - 8, 'text-anchor': 'middle', 'font-size': fs, 'font-weight': 'bold', fill: col });
+                lbl.textContent = dp.prod;
+                pg.appendChild(lbl);
+            });
+            // Final production dot (larger)
+            if (points.length > 1) {
+                const lp = points[points.length - 1];
+                const col = lp.prod >= lp.target ? 'var(--production-ahead)' : 'var(--production-behind)';
+                pg.appendChild(svgEl('circle', { cx: tx(lp.minutes), cy: ty(lp.prod), r: isFullscreen ? 8 : 7, fill: col, stroke: '#fff', 'stroke-width': 2 }));
+                const lbl = svgEl('text', { x: tx(lp.minutes), y: ty(lp.prod) - 12, 'text-anchor': 'middle', 'font-size': fs + 4, 'font-weight': 'bold', fill: col });
+                lbl.textContent = lp.prod;
+                pg.appendChild(lbl);
+            }
+            svg.appendChild(pg);
+        }
+
+        function drawBarChart(container, periodSlot, prodValue, targetValue) {
+            const area = container.closest('.chart-area');
+            const W = area.clientWidth, H = area.clientHeight;
+            if (W <= 0 || H <= 0) return;
+
+            const pad = {
+                top:    Math.max(10, Math.floor(H * 0.05)),
+                right:  Math.max(10, Math.floor(W * 0.05)),
+                bottom: Math.max(50, Math.floor(H * 0.1)),
+                left:   Math.max(40, Math.floor(W * 0.12))
+            };
+            const cW = W - pad.left - pad.right;
+            const cH = H - pad.top  - pad.bottom;
+            const maxVal = Math.max(prodValue, targetValue) * 1.1 || 100;
+            const fs = isFullscreen ? 14 : 12;
+
+            const svg = makeSVG(W, H);
+            container.appendChild(svg);
+
+            drawAxesAndGrid(svg, pad, W, H, maxVal, 'Units per Hour');
+
+            // X label
+            const xg = svgEl('g', {});
+            const cx = pad.left + cW / 2;
+            xg.appendChild(svgEl('line', { x1: cx, y1: H - pad.bottom, x2: cx, y2: H - pad.bottom + 5, stroke: '#666', 'stroke-width': 1.5 }));
+            const xl = svgEl('text', { x: cx, y: H - pad.bottom + 20, 'text-anchor': 'middle', 'font-size': fs + 2, 'font-weight': 'bold', fill: '#666' });
+            xl.textContent = periodSlot;
+            xg.appendChild(xl);
+            svg.appendChild(xg);
+
+            // Bars
+            const barGroupW = cW * 0.3;
+            const barW      = barGroupW * 0.42;
+            const groupX    = pad.left + (cW - barGroupW) / 2;
+
+            const prodColor = targetValue > 0
+                ? (prodValue >= targetValue ? 'var(--production-ahead)' : 'var(--production-behind)')
+                : 'var(--production-color)';
+
+            const bg = svgEl('g', {});
+            [[prodValue, prodColor, groupX + barGroupW * 0.08, 'Production'],
+             [targetValue, 'var(--target-color)', groupX + barGroupW * 0.5, 'Target']].forEach(([val, col, bx, lbl]) => {
+                const bh = (val / maxVal) * cH;
+                const by = H - pad.bottom - bh;
+                bg.appendChild(svgEl('rect', { x: bx, y: by, width: barW, height: bh, rx: 2, ry: 2, fill: col }));
+                const vl = svgEl('text', { x: bx + barW / 2, y: by - 5, 'text-anchor': 'middle', 'font-size': fs, 'font-weight': 'bold', fill: col });
+                vl.textContent = val;
+                bg.appendChild(vl);
+            });
+            svg.appendChild(bg);
+
+            // Mini legend
+            const lg = svgEl('g', {});
+            [[prodColor, 'Production', pad.left], ['var(--target-color)', 'Target', pad.left + 110]].forEach(([col, lbl, lx]) => {
+                lg.appendChild(svgEl('rect', { x: lx, y: pad.top - 25, width: 12, height: 12, fill: col }));
+                const lt = svgEl('text', { x: lx + 18, y: pad.top - 15, 'font-size': fs, fill: '#666' });
+                lt.textContent = lbl;
+                lg.appendChild(lt);
+            });
+            svg.appendChild(lg);
+        }
+
+        // ── Target board ──────────────────────────────────────────────────────────
+        function renderTargetBoard(card) {
+            document.getElementById('board-supervisor-name').textContent = card.productionLine;
+            document.getElementById('board-product-name').textContent =
+                [...new Set(card.variants.map(v => v.productName))].join(' / ');
+            document.getElementById('board-daily-target').textContent = card.totalTarget || 0;
+
+            const tbody = document.getElementById('target-board-tbody');
+            tbody.innerHTML = '';
+
+            const nm = nowMin();
+            const periodHour = Math.floor(nm / 60);
+            const periodStr  = nm < (periodHour * 60 + 30)
+                ? `${String(periodHour).padStart(2,'0')}:30`
+                : `${String(periodHour + 1).padStart(2,'0')}:30`;
+
+            // Collect all slot hours
+            const slotSet = new Set();
+            card.variants.forEach(v => v.timeline && v.timeline.forEach(s => slotSet.add(s.hour)));
+            const slots = [...slotSet].sort((a, b) => parseMin(a) - parseMin(b));
+
+            // Build cumulative actuals/targets across variants per slot
+            let cumA = 0, cumT = 0;
+            slots.forEach(h => {
+                const hMin = parseMin(h);
+                let slotA = 0, slotT = 0;
+                card.variants.forEach(v => {
+                    const vS = parseMin(v.startTime), vE = parseMin(v.endTime);
+                    if (hMin < vS || hMin > vE) return;
+                    const sl = v.timeline && v.timeline.find(s => s.hour === h);
+                    if (sl) { slotA += sl.actual || 0; slotT += sl.target || 0; }
+                });
+                cumA += slotA; cumT += slotT;
+
+                const tr = document.createElement('tr');
+                if (h === periodStr) tr.classList.add('current-hour');
+
+                const timeCell = document.createElement('td'); timeCell.className = 'time-cell'; timeCell.textContent = h;
+                const targetCell = document.createElement('td'); targetCell.className = 'target-cell'; targetCell.textContent = cumT;
+                const actualCell = document.createElement('td'); actualCell.className = 'actual-cell';
+                actualCell.textContent = cumA;
+                actualCell.classList.add(hMin > nm ? 'pending' : cumA >= cumT ? 'met' : 'not-met');
+
+                tr.appendChild(timeCell); tr.appendChild(targetCell); tr.appendChild(actualCell);
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ── Batch table ───────────────────────────────────────────────────────────
+        function renderBatchTable() {
+            const tbody = document.getElementById('batch-info-tbody');
+            const thead = document.getElementById('batch-info-thead');
+            if (!tbody || !thead) return;
+
+            tbody.innerHTML = '';
+            thead.innerHTML = `<tr>
+                <th>Line</th><th>Variant</th><th>Batch</th><th>Units</th><th>Boxes</th>
+            </tr>`;
+
+            if (!rawData?.production) {
+                tbody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
+                return;
+            }
+
+            const nm = nowMin();
+            const rows = [];
+
+            filteredCards.forEach(card => {
+                card.variants.forEach(v => {
+                    // Find the production item in rawData for batch details
+                    const prodItem = rawData.production.find(p => p.id === v.combinedId);
+                    if (!prodItem || !prodItem.batches?.length) return;
+
+                    const vStart = parseMin(v.startTime), vEnd = parseMin(v.endTime);
+                    const isCurrent = nm >= vStart && nm <= vEnd;
+
+                    prodItem.batches.forEach(b => {
+                        rows.push({
+                            line:       card.productionLine,
+                            variant:    v.variantName || v.variantFull,
+                            batchId:    b.id,
+                            units:      b.quantity,
+                            boxes:      b.boxes,
+                            isCurrent,
+                            sortKey:    card.id + '_' + String(vStart).padStart(5,'0')
+                        });
+                    });
+                });
+            });
+
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="5">No batch information available for selected lines</td></tr>';
+                return;
+            }
+
+            rows.sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+
+            rows.forEach(r => {
+                const tr = document.createElement('tr');
+                if (r.isCurrent) tr.className = 'current';
+                tr.innerHTML = `
+                    <td>${r.line}</td>
+                    <td>${r.variant}</td>
+                    <td class="batch-number">${r.batchId}</td>
+                    <td>${r.units}</td>
+                    <td>${r.boxes}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ── Dropdown filters ──────────────────────────────────────────────────────
+        function populateFilterDropdown() {
+            const sel = document.getElementById('filter-value-select');
+            const cur = sel.value;
+            while (sel.options.length > 1) sel.remove(1);
+
+            const options = new Set();
+            if (filterType === 'line') {
+                lineCards.forEach(c => options.add(c.id));
+            } else if (filterType === 'product') {
+                lineCards.forEach(c => c.variants.forEach(v => options.add(v.productName)));
+            } else if (filterType === 'variant') {
+                lineCards.forEach(c => c.variants.forEach(v => options.add(v.variantName || v.variantFull)));
+            }
+
+            options.forEach(o => {
+                const opt = document.createElement('option');
+                opt.value = opt.textContent = o;
+                sel.appendChild(opt);
+            });
+
+            sel.value = [...sel.options].some(o => o.value === cur) ? cur : 'all';
+            filterValue = sel.value;
+        }
+
+        // ── Line selection modal ──────────────────────────────────────────────────
+        function initLineSelection() {
+            const btn     = document.getElementById('supervisor-select-btn');
+            const modal   = document.getElementById('supervisor-select-modal');
+            const closeX  = document.querySelector('.supervisor-select-close');
+            const apply   = document.getElementById('apply-supervisor-selection');
+            const selAll  = document.getElementById('select-all-supervisors');
+            const deselAll= document.getElementById('deselect-all-supervisors');
+
+            btn.addEventListener('click', () => { populateLineCheckboxes(); modal.style.display = 'block'; });
+            closeX.addEventListener('click', () => { modal.style.display = 'none'; });
+            window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+
+            apply.addEventListener('click', () => {
+                selectedLines = [...document.querySelectorAll('.supervisor-checkbox:checked')].map(c => c.value);
+                if (!selectedLines.length) selectedLines = lineCards.map(c => c.id);
+                modal.style.display = 'none';
+                updateLineFilterButton();
+                applyFiltersAndDisplay();
+            });
+            selAll.addEventListener('click', () =>
+                document.querySelectorAll('.supervisor-checkbox').forEach(c => c.checked = true));
+            deselAll.addEventListener('click', () =>
+                document.querySelectorAll('.supervisor-checkbox').forEach(c => c.checked = false));
+        }
+
+        function populateLineCheckboxes() {
+            const box = document.getElementById('supervisor-checkboxes');
+            box.innerHTML = '';
+            lineCards.forEach(card => {
                 const item = document.createElement('div');
                 item.className = 'supervisor-checkbox-item';
-                
-                const colorDiv = document.createElement('div');
-                colorDiv.className = 'legend-color';
-                colorDiv.style.backgroundColor = getSupervisorColor(supervisor.name);
-                colorDiv.style.width = '16px';
-                colorDiv.style.height = '16px';
-                item.appendChild(colorDiv);
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.className = 'supervisor-checkbox';
-                checkbox.id = `supervisor-${supervisor.name.toLowerCase().replace(/\s+/g, '-')}`;
-                checkbox.value = supervisor.name;
-                checkbox.checked = selectedSupervisors.includes(supervisor.name);
-                
-                const label = document.createElement('label');
-                label.htmlFor = checkbox.id;
-                label.textContent = supervisor.name;
-                
-                item.appendChild(checkbox);
-                item.appendChild(label);
-                checkboxContainer.appendChild(item);
+                item.innerHTML = `
+                    <input type="checkbox" class="supervisor-checkbox"
+                           id="line-${card.id}" value="${card.id}"
+                           ${selectedLines.includes(card.id) ? 'checked' : ''}>
+                    <label for="line-${card.id}">${card.id}</label>
+                `;
+                box.appendChild(item);
             });
         }
 
-        function applySupervisorSelection() {
-            const checkboxes = document.querySelectorAll('.supervisor-checkbox');
-            selectedSupervisors = [];
-            
-            checkboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    selectedSupervisors.push(checkbox.value);
-                }
-            });
-            
-            localStorage.setItem('selectedSupervisors', JSON.stringify(selectedSupervisors));
-            
-            supervisorFilterActive = selectedSupervisors.length < productionData.supervisors.length;
-            const selectBtn = document.getElementById('supervisor-select-btn');
-            
-            if (supervisorFilterActive) {
-                selectBtn.textContent = `Supervisors (${selectedSupervisors.length}/${productionData.supervisors.length})`;
-                selectBtn.classList.add('filtered');
+        function updateLineFilterButton() {
+            const btn = document.getElementById('supervisor-select-btn');
+            const total = lineCards.length;
+            if (selectedLines.length < total) {
+                btn.textContent = `Lines (${selectedLines.length}/${total})`;
             } else {
-                selectBtn.textContent = 'Select Supervisors';
-                selectBtn.classList.remove('filtered');
-            }
-            
-            updateDashboard();
-        }
-
-        function getSupervisorColor(supervisorName) {
-            const colorMap = {
-                'Luthando': 'var(--supervisor-luthando)',
-                'Apelele': 'var(--supervisor-apelele)',
-                'Siyabonga': 'var(--supervisor-siyabonga)',
-                'Nosi': 'var(--supervisor-nosi)',
-                'Mvokwe': 'var(--supervisor-mvokwe)',
-                'Michaela': 'var(--supervisor-michaela)'
-            };
-            
-            return colorMap[supervisorName] || '#e2e8f0';
-        }
-
-        function loadSelectedSupervisors() {
-            const stored = localStorage.getItem('selectedSupervisors');
-            if (stored) {
-                try {
-                    selectedSupervisors = JSON.parse(stored);
-                    
-                    if (productionData && productionData.supervisors) {
-                        const validSupervisors = productionData.supervisors.map(s => s.name);
-                        selectedSupervisors = selectedSupervisors.filter(s => validSupervisors.includes(s));
-                        
-                        if (selectedSupervisors.length === 0) {
-                            selectedSupervisors = validSupervisors;
-                        }
-                    }
-                    
-                    supervisorFilterActive = selectedSupervisors.length < productionData.supervisors.length;
-                    const selectBtn = document.getElementById('supervisor-select-btn');
-                    
-                    if (supervisorFilterActive) {
-                        selectBtn.textContent = `Supervisors (${selectedSupervisors.length}/${productionData.supervisors.length})`;
-                        selectBtn.classList.add('filtered');
-                    }
-                } catch (e) {
-                    console.error('Error parsing stored supervisors:', e);
-                    if (productionData && productionData.supervisors) {
-                        selectedSupervisors = productionData.supervisors.map(s => s.name);
-                    }
-                }
+                btn.textContent = 'Select Lines';
             }
         }
 
-        async function fetchProductionData() {
-            try {
-                const cacheBuster = '?_=' + new Date().getTime();
-                const response = await fetch(DATA_URL + cacheBuster);
-                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                const data = await response.json();
-                
-                if (!data) {
-                    throw new Error('Empty data received from data.json');
-                }
-                
-                const transformedData = transformDataFormat(data);
-                
-                if (!transformedData.variants || !Array.isArray(transformedData.variants) || 
-                    !transformedData.supervisors || !Array.isArray(transformedData.supervisors)) {
-                    throw new Error('Failed to transform data into the required format');
-                }
-                
-                if (!lastUpdateTime || lastUpdateTime !== transformedData.timestamp) {
-                    productionData = transformedData;
-                    lastUpdateTime = transformedData.timestamp;
-                    
-                    productionData.originalData = data;
-                    
-                    document.getElementById('last-update').textContent = 'Last updated: ' + transformedData.timestamp;
-                    
-                    processProductSupervisorGroups();
-                    
-                    if (selectedSupervisors.length === 0) {
-                        selectedSupervisors = productionData.supervisors.map(supervisor => supervisor.name);
-                        loadSelectedSupervisors();
-                    }
-                    
-                    updateFilterValueDropdown();
-                    updateDashboard();
-                }
-                
-                isLoading = false;
-            } catch (error) {
-                console.error(`Fetch failed:`, error);
-                isLoading = false;
-                showLoadingOrError(`Failed to load data: ${error.message}`);
-            }
-        }
-
-        function transformDataFormat(newData) {
-            const transformedData = {
-                variants: [],
-                supervisors: [],
-                timestamp: newData.metadata.timestamp || new Date().toISOString()
-            };
-            
-            // Build a lookup map from shiftId -> shift object so we can pull break times per variant
-            const shiftsLookup = {};
-            if (newData.shifts && Array.isArray(newData.shifts)) {
-                newData.shifts.forEach(shift => {
-                    shiftsLookup[shift.id] = shift;
-                });
-            }
-            
-            if (newData.production && Array.isArray(newData.production)) {
-                
-                newData.production.forEach(item => {
-                    // Resolve the shift for this variant to get real start/end/break times
-                    const shift = shiftsLookup[item.shiftId] || {};
-                    const shiftStart = shift.startTime || "07:30";
-                    const shiftEnd = shift.endTime || "16:30";
-                    
-                    // Extract individual break times from the shift's breaks array
-                    let breakStartTea = "", breakEndTea = "";
-                    let breakStartLunch = "", breakEndLunch = "";
-                    let otBreakStartTea = "", otBreakEndTea = "";
-                    
-                    if (shift.breaks && Array.isArray(shift.breaks)) {
-                        shift.breaks.forEach(b => {
-                            if (b.type === "tea")    { breakStartTea = b.startTime;    breakEndTea = b.endTime; }
-                            if (b.type === "lunch")  { breakStartLunch = b.startTime;  breakEndLunch = b.endTime; }
-                            if (b.type === "otTea")  { otBreakStartTea = b.startTime;  otBreakEndTea = b.endTime; }
-                        });
-                    }
-                    
-                    const transformedVariant = {
-                        variant: item.id,
-                        productionLine: item.productionLine || "",
-                        productName: item.product.name,
-                        variantName: item.variant.name,
-                        "Product Name": item.variant.fullName || `${item.product.name} ${item.variant.name}`,
-                        cycleTime: item.variant.cycleTime,
-                        actualCycleTime: item.variant.actualCycleTime,
-                        "Start Time": shiftStart,
-                        "End Time": shiftEnd,
-                        "Break Start (Tea)": breakStartTea,
-                        "Break End (Tea)": breakEndTea,
-                        "Break Start (Lunch)": breakStartLunch,
-                        "Break End (Lunch)": breakEndLunch,
-                        "OT Break Start (Tea)": otBreakStartTea,
-                        "OT Break End (Tea)": otBreakEndTea,
-                        dailyBoxTarget: item.targets.boxes,
-                        currentBoxTotal: item.actual.boxes,
-                        hourlyTargets: [],
-                        hourlyProduction: []
-                    };
-                    
-                    if (item.timeline && Array.isArray(item.timeline)) {
-                        item.timeline.forEach(hour => {
-                            transformedVariant.hourlyTargets.push({
-                                hour: hour.hour,
-                                target: hour.target
-                            });
-                            
-                            transformedVariant.hourlyProduction.push({
-                                hour: hour.hour,
-                                production: hour.actual
-                            });
-                        });
-                    }
-                    
-                    transformedData.variants.push(transformedVariant);
-                });
-                
-                if (newData.summary && newData.summary.supervisors && Array.isArray(newData.summary.supervisors)) {
-                    newData.summary.supervisors.forEach(supervisor => {
-                        const transformedSupervisor = {
-                            name: supervisor.name,
-                            variants: {}
-                        };
-                        
-                        if (supervisor.variants && Array.isArray(supervisor.variants)) {
-                            supervisor.variants.forEach(variantId => {
-                                const prodItem = newData.production.find(p => p.id === variantId);
-                                
-                                if (prodItem) {
-                                    const assignment = prodItem.supervisors.find(s => s.id === supervisor.id);
-                                    
-                                    if (assignment) {
-                                        transformedSupervisor.variants[variantId] = {
-                                            variantStartTime: assignment.startTime,
-                                            variantEndTime: assignment.endTime,
-                                            dailyTarget: assignment.target,
-                                            currentTotal: assignment.production,
-                                            variance: assignment.production - assignment.target,
-                                            percentage: assignment.progress
-                                        };
-                                    } else {
-                                        transformedSupervisor.variants[variantId] = {
-                                            variantStartTime: prodItem.supervisors[0]?.startTime || "07:30",
-                                            variantEndTime: prodItem.supervisors[0]?.endTime || "18:30",
-                                            dailyTarget: prodItem.targets.daily,
-                                            currentTotal: prodItem.actual.total,
-                                            variance: prodItem.actual.total - prodItem.targets.daily,
-                                            percentage: prodItem.actual.progress
-                                        };
-                                    }
-                                }
-                            });
-                        }
-                        
-                        transformedData.supervisors.push(transformedSupervisor);
-                    });
-                }
-            } else if (newData.variants && Array.isArray(newData.variants)) {
-                transformedData.variants = newData.variants;
-                transformedData.supervisors = newData.supervisors;
-            }
-            
-            return transformedData;
-        }
-        
-        function processProductSupervisorGroups() {
-            productSupervisorGroups = {};
-            
-            productionData.supervisors.forEach(supervisor => {
-                if (!supervisor.variants) return;
-                
-                // Group by productionLine so that:
-                // - Scalpel_Assembly and Scalpel_Packaging are separate cards
-                // - BC01 Line_1..4 are separate cards (each with their own supervisor)
-                const lineGroups = {};
-                
-                Object.keys(supervisor.variants).forEach(variantKey => {
-                    const variantData = productionData.variants.find(v => v.variant === variantKey);
-                    if (!variantData) return;
-                    
-                    // Use productionLine stored on the item as the grouping key
-                    const prodLine = variantData.productionLine || extractProductFromVariant(variantKey);
-                    
-                    if (!lineGroups[prodLine]) lineGroups[prodLine] = [];
-                    lineGroups[prodLine].push({
-                        variantKey,
-                        variantData,
-                        supervisorVariant: supervisor.variants[variantKey]
-                    });
-                });
-                
-                Object.keys(lineGroups).forEach(prodLine => {
-                    // Group key: supervisor:productionLine — guarantees uniqueness
-                    const groupKey = `${supervisor.name}:${prodLine}`;
-                    
-                    const sorted = lineGroups[prodLine].sort((a, b) => {
-                        const timeA = a.supervisorVariant.variantStartTime || a.variantData["Start Time"] || "00:00";
-                        const timeB = b.supervisorVariant.variantStartTime || b.variantData["Start Time"] || "00:00";
-                        const [hA, mA] = timeA.split(':').map(Number);
-                        const [hB, mB] = timeB.split(':').map(Number);
-                        return (hA * 60 + mA) - (hB * 60 + mB);
-                    });
-                    
-                    // Display label: productName from first variant, plus productionLine context
-                    const firstVariant = sorted[0].variantData;
-                    const productLabel = firstVariant.productName
-                        ? `${firstVariant.productionLine}-${firstVariant.productName}`
-                        : prodLine;
-                    
-                    productSupervisorGroups[groupKey] = {
-                        supervisor: supervisor.name,
-                        product: productLabel,
-                        productionLine: prodLine,
-                        variants: sorted.map(v => v.variantData),
-                        supervisorData: supervisor
-                    };
+        // ── Chart navigation ──────────────────────────────────────────────────────
+        function setupChartNav() {
+            document.querySelectorAll('.chart-nav-dot').forEach(dot => {
+                dot.addEventListener('click', function() {
+                    showChart(this.getAttribute('data-chart'));
+                    clearInterval(chartRotInterval);
+                    startChartRotation();
                 });
             });
+            startChartRotation();
         }
 
-        function extractProductFromVariant(variantId) {
-            if (variantId.includes('-')) {
-                const parts = variantId.split('-');
-                
-                if (parts.length > 2) {
-                    return parts.slice(0, -1).join('-');
-                } else if (parts.length === 2) {
-                    return parts[0];
-                }
-            }
-
-            const parts = variantId.split(' ');
-            
-            if (parts.length === 1) return variantId;
-            if (parts.length === 2) return parts[0];
-            
-            const match = variantId.match(/^([A-Za-z\s]+)[\d]/);
-            if (match && match[1]) {
-                return match[1].trim();
-            }
-            
-            return parts[0];
+        function startChartRotation() {
+            clearInterval(chartRotInterval);
+            chartRotInterval = setInterval(() => {
+                currentChartIdx = (currentChartIdx + 1) % 2;
+                showChart(currentChartIdx === 0 ? 'cumulative' : 'hourly');
+            }, CHART_ROTATION_INTERVAL);
         }
 
-        function updateFilterValueDropdown() {
-            const filterValueSelect = document.getElementById('filter-value-select');
-            const currentValue = filterValueSelect.value;
-            
-            while (filterValueSelect.options.length > 1) {
-                filterValueSelect.remove(1);
-            }
-            
-            if (selectedFilterType === 'supervisor' && productionData.supervisors?.length > 0) {
-                productionData.supervisors.forEach(supervisor => {
-                    const option = document.createElement('option');
-                    option.value = supervisor.name;
-                    option.textContent = supervisor.name;
-                    filterValueSelect.appendChild(option);
-                });
-            } else if (selectedFilterType === 'product') {
-                const uniqueProducts = new Set();
-                
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    const group = productSupervisorGroups[key];
-                    uniqueProducts.add(group.product);
-                });
-                
-                uniqueProducts.forEach(product => {
-                    const option = document.createElement('option');
-                    option.value = product;
-                    option.textContent = product;
-                    filterValueSelect.appendChild(option);
-                });
-            } else if (selectedFilterType === 'variant' && productionData.variants?.length > 0) {
-                const uniqueVariants = new Set(productionData.variants.map(v => v.variant));
-                uniqueVariants.forEach(variantName => {
-                    const option = document.createElement('option');
-                    option.value = variantName;
-                    option.textContent = variantName;
-                    filterValueSelect.appendChild(option);
-                });
-            }
-            
-            filterValueSelect.value = Array.from(filterValueSelect.options).some(opt => opt.value === currentValue) 
-                ? currentValue 
-                : 'all';
-                
-            selectedFilterValue = filterValueSelect.value;
-        }
-
-        function showLoadingOrError(message) {
-            const supervisorName = document.getElementById('supervisor-name');
-            const productName = document.getElementById('product-name');
-            const variantSequence = document.getElementById('variant-sequence');
-            
-            if (supervisorName) supervisorName.textContent = 'SUPERVISOR: Loading...';
-            if (productName) productName.textContent = 'PRODUCT: Loading...';
-            if (variantSequence) variantSequence.innerHTML = '<div class="loading">Loading variants...</div>';
-            
-            const elementIds = [
-                'current-units', 'target-units', 'progress-percentage', 
-                'current-boxes', 'target-boxes', 'actual-cycle-time', 'target-cycle-time'
-            ];
-            
-            elementIds.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) element.textContent = '0';
+        function showChart(type) {
+            const cum  = document.getElementById('cumulative-chart');
+            const hrly = document.getElementById('hourly-chart');
+            const title = document.getElementById('chart-title');
+            document.querySelectorAll('.chart-nav-dot').forEach(d => {
+                d.classList.toggle('active', d.getAttribute('data-chart') === type);
             });
-            
-            const progressElement = document.getElementById('progress-percentage');
-            if (progressElement) progressElement.textContent = '0%';
-            
-            const cumulativeChart = document.getElementById('cumulative-chart');
-            const hourlyChart = document.getElementById('hourly-chart');
-            
-            if (cumulativeChart) {
-                cumulativeChart.innerHTML = 
-                    `<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;">${message}</div>`;
-            }
-            
-            if (hourlyChart) {
-                hourlyChart.innerHTML = 
-                    `<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;">${message}</div>`;
-            }
-            
-            const batchInfoTable = document.getElementById('batch-info-tbody');
-            if (batchInfoTable) {
-                batchInfoTable.innerHTML = `<tr><td colspan="5">${message}</td></tr>`;
+            if (type === 'cumulative') {
+                currentChartIdx = 0;
+                cum.classList.remove('hidden'); hrly.classList.add('hidden');
+                title.textContent = "TODAY'S PRODUCTION PROGRESS";
+            } else {
+                currentChartIdx = 1;
+                cum.classList.add('hidden'); hrly.classList.remove('hidden');
+                const nm = nowMin();
+                const h = Math.floor(nm / 60), m = nm % 60;
+                const slot = m < 30 ? `${String(h).padStart(2,'0')}:30` : `${String(h+1).padStart(2,'0')}:30`;
+                title.textContent = `CURRENT HOUR: ${slot} PRODUCTION`;
             }
         }
 
+        // ── DateTime ──────────────────────────────────────────────────────────────
         function updateDateTime() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', {
-                hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
-            });
-            
-            document.getElementById('current-time').textContent = timeString;
-            
+            document.getElementById('current-time').textContent =
+                now.toLocaleTimeString('en-ZA', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             updateCurrentHourInfo();
-            
-            if (currentProductVariants && currentProductVariants.length > 1) {
-                const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-                let needsUpdate = false;
-                
-                currentProductVariants.forEach(variant => {
-                    const supervisorVariant = currentSupervisor ? 
-                        productionData.supervisors.find(s => s.name === currentSupervisor)?.variants[variant.variant] : null;
-                    
-                    if (!supervisorVariant) return;
-                    
-                    const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                    const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-                    
-                    if (!startTimeStr || !endTimeStr) return;
-                    
-                    const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                    const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                    
-                    const startTimeMinutes = startHour * 60 + startMinute;
-                    const endTimeMinutes = endHour * 60 + endMinute;
-                    
-                    if (currentTimeMinutes === startTimeMinutes || currentTimeMinutes === endTimeMinutes) {
-                        needsUpdate = true;
-                    }
-                });
-                
-                if (needsUpdate) {
-                    updateDashboard();
-                }
-            }
         }
 
         function updateCurrentHourInfo() {
             const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            
-            const nextHourMinute = 30;
-            const nextHour = currentMinute < nextHourMinute ? currentHour : currentHour + 1;
-            
-            let minutesRemaining;
-            if (currentMinute < nextHourMinute) {
-                minutesRemaining = nextHourMinute - currentMinute;
+            const h = now.getHours(), m = now.getMinutes();
+            const nextSlotH = m < 30 ? h : h + 1;
+            const minsLeft  = m < 30 ? 30 - m : 90 - m;
+            const slot = `${String(nextSlotH).padStart(2,'0')}:30`;
+            document.getElementById('current-hour-info').textContent =
+                `CURRENT HOUR: ${slot} (${minsLeft} MIN LEFT)`;
+        }
+
+        // ── Fullscreen ────────────────────────────────────────────────────────────
+        function toggleFullscreen() {
+            const el = document.fullscreenElement || document.webkitFullscreenElement ||
+                       document.mozFullScreenElement || document.msFullscreenElement;
+            if (!el) {
+                $container.classList.add('fullscreen-mode');
+                isFullscreen = true;
+                $fullscreenBtn.textContent = 'Exit Fullscreen';
+                ($container.requestFullscreen || $container.webkitRequestFullscreen ||
+                 $container.mozRequestFullScreen || $container.msRequestFullscreen ||
+                 (() => simulatedFullscreen())).call($container);
             } else {
-                minutesRemaining = (60 - currentMinute) + nextHourMinute;
+                (document.exitFullscreen || document.webkitExitFullscreen ||
+                 document.mozCancelFullScreen || document.msExitFullscreen ||
+                 (() => exitSimulatedFullscreen())).call(document);
             }
-            
-            const hourStr = currentMinute < 30 ? 
-                `${currentHour.toString().padStart(2, '0')}:30` : 
-                `${(currentHour + 1).toString().padStart(2, '0')}:30`;
-            
-            document.getElementById('current-hour-info').textContent = 
-                `CURRENT HOUR: ${hourStr} (${minutesRemaining} MIN LEFT)`;
         }
 
-        function updateDashboard() {
-            let filteredGroups = {};
-            
-            if (selectedFilterValue === 'all') {
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    if (selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
-                        filteredGroups[key] = productSupervisorGroups[key];
-                    }
-                });
-            } else if (selectedFilterType === 'supervisor') {
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    if (productSupervisorGroups[key].supervisor === selectedFilterValue &&
-                        selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
-                        filteredGroups[key] = productSupervisorGroups[key];
-                    }
-                });
-            } else if (selectedFilterType === 'product') {
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    if (productSupervisorGroups[key].product === selectedFilterValue &&
-                        selectedSupervisors.includes(productSupervisorGroups[key].supervisor)) {
-                        filteredGroups[key] = productSupervisorGroups[key];
-                    }
-                });
-            } else if (selectedFilterType === 'variant') {
-                Object.keys(productSupervisorGroups).forEach(key => {
-                    const group = productSupervisorGroups[key];
-                    if (group.variants.some(v => v.variant === selectedFilterValue) &&
-                        selectedSupervisors.includes(group.supervisor)) {
-                        filteredGroups[key] = group;
-                    }
-                });
-            }
-            
-            if (Object.keys(filteredGroups).length === 0) {
-                showLoadingOrError('No data available for this filter or selected supervisors.');
-                if (cycleInterval) clearInterval(cycleInterval);
-                cycleInterval = null;
-                return;
-            }
-            
-            const groupKeys = Object.keys(filteredGroups);
-            if (groupKeys.length > 1) {
-                if (cycleInterval) clearInterval(cycleInterval);
-                
-                cycleIndex = 0;
-                cycleInterval = setInterval(() => {
-                    cycleIndex = (cycleIndex + 1) % groupKeys.length;
-                    displayGroup(filteredGroups[groupKeys[cycleIndex]]);
-                }, CYCLE_INTERVAL);
+        function onFullscreenChange() {
+            const inFS = !!(document.fullscreenElement || document.webkitFullscreenElement ||
+                            document.mozFullScreenElement || document.msFullscreenElement);
+            if (inFS) {
+                $container.classList.add('fullscreen-mode');
+                isFullscreen = true;
+                $fullscreenBtn.textContent = 'Exit Fullscreen';
             } else {
-                if (cycleInterval) clearInterval(cycleInterval);
-                cycleInterval = null;
+                $container.classList.remove('fullscreen-mode', 'simulated-fullscreen');
+                Object.assign($container.style, { position: '', top: '', left: '', width: '', height: '', zIndex: '' });
+                document.body.style.overflow = '';
+                isFullscreen = false;
+                $fullscreenBtn.textContent = 'Fullscreen';
             }
-            
-            displayGroup(filteredGroups[groupKeys[0]]);
-            
-            updateBatchInfoTable(filteredGroups);
+            setTimeout(redrawDashboard, 100);
         }
 
-        function updateBatchInfoTable(filteredGroups) {
-            const batchInfoTableBody = document.getElementById('batch-info-tbody');
-            const batchInfoTableHead = document.getElementById('batch-info-thead');
-            
-            if (!batchInfoTableBody || !batchInfoTableHead) return;
-            
-            batchInfoTableBody.innerHTML = '';
-            batchInfoTableHead.innerHTML = '';
-            
-            const headerRow = document.createElement('tr');
-            headerRow.innerHTML = `
-                <th>Product</th>
-                <th>Variant</th>
-                <th>Batch</th>
-                <th>Units</th>
-                <th>Boxes</th>
-            `;
-            batchInfoTableHead.appendChild(headerRow);
-            
-            if (!productionData.originalData || !productionData.originalData.production) {
-                batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available</td></tr>';
-                return;
-            }
-            
-            const now = new Date();
-            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-            
-            if (!selectedSupervisors || selectedSupervisors.length === 0) {
-                batchInfoTableBody.innerHTML = '<tr><td colspan="5">No supervisors selected</td></tr>';
-                return;
-            }
-            
-            const processedBatches = [];
-            
-            selectedSupervisors.forEach(supervisorName => {
-                const supervisorOriginal = productionData.originalData.summary.supervisors.find(
-                    s => s.name === supervisorName
-                );
-                
-                if (!supervisorOriginal) return;
-                
-                const supervisorVariantIds = supervisorOriginal.variants || [];
-                
-                supervisorVariantIds.forEach(variantId => {
-                    const productionItem = productionData.originalData.production.find(p => p.id === variantId);
-                    
-                    if (!productionItem || !productionItem.batches || productionItem.batches.length === 0) return;
-                    
-                    const supervisorData = productionItem.supervisors.find(s => s.name === supervisorName);
-                    
-                    if (!supervisorData) return;
-                    
-                    const productName = productionItem.product?.name || '';
-                    const variantName = productionItem.variant?.name || '';
-                    
-                    let isCurrentVariant = false;
-                    const startTimeStr = supervisorData.startTime;
-                    const endTimeStr = supervisorData.endTime;
-                    
-                    if (startTimeStr && endTimeStr) {
-                        const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                        const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                        
-                        const startTimeMinutes = startHour * 60 + startMinute;
-                        const endTimeMinutes = endHour * 60 + endMinute;
-                        
-                        isCurrentVariant = (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes);
-                    }
-                    
-                    const totalProduction = productionItem.actual.total || 0;
-                    const supervisorProduction = supervisorData.production || 0;
-                    const supervisorRatio = totalProduction > 0 ? supervisorProduction / totalProduction : 0;
-                    
-                    productionItem.batches.forEach(batch => {
-                        let batchBelongsToSupervisor = false;
-                        let supervisorUnits = 0;
-                        let supervisorBoxes = 0;
-                        
-                        const supervisorIndex = productionItem.supervisors.findIndex(s => s.name === supervisorName);
-                        
-                        if (supervisorIndex === 0 && productionItem.supervisors.length === 1) {
-                            batchBelongsToSupervisor = true;
-                            supervisorUnits = batch.quantity;
-                            supervisorBoxes = batch.boxes;
-                        } else if (supervisorIndex !== -1) {
-                            if (supervisorIndex < productionItem.batches.length) {
-                                if (productionItem.batches[supervisorIndex].id === batch.id) {
-                                    batchBelongsToSupervisor = true;
-                                    supervisorUnits = batch.quantity;
-                                    supervisorBoxes = batch.boxes;
-                                }
-                            } else {
-                                supervisorUnits = Math.round(batch.quantity * supervisorRatio);
-                                supervisorBoxes = Math.round(batch.boxes * supervisorRatio);
-                                batchBelongsToSupervisor = supervisorUnits > 0 || supervisorBoxes > 0;
-                            }
-                        }
-                        
-                        if (batchBelongsToSupervisor) {
-                            processedBatches.push({
-                                supervisor: supervisorName,
-                                product: productName,
-                                variant: variantName,
-                                batchId: batch.id,
-                                units: supervisorUnits,
-                                boxes: supervisorBoxes,
-                                isCurrent: isCurrentVariant,
-                                isAssembly: productName.toLowerCase().includes('assembly'),
-                                supervisorOrder: selectedSupervisors.indexOf(supervisorName),
-                                startTimeMinutes: startTimeStr ? 
-                                    (parseInt(startTimeStr.split(':')[0]) * 60 + parseInt(startTimeStr.split(':')[1])) : 0
-                            });
-                        }
-                    });
-                });
-            });
-            
-            if (processedBatches.length === 0) {
-                batchInfoTableBody.innerHTML = '<tr><td colspan="5">No batch information available for selected supervisors</td></tr>';
-                return;
-            }
-            
-            processedBatches.sort((a, b) => {
-                if (a.supervisorOrder !== b.supervisorOrder) {
-                    return a.supervisorOrder - b.supervisorOrder;
-                }
-                
-                if (a.startTimeMinutes !== b.startTimeMinutes) {
-                    return a.startTimeMinutes - b.startTimeMinutes;
-                }
-                
-                if (a.product !== b.product) {
-                    return a.product.localeCompare(b.product);
-                }
-                
-                if (a.variant !== b.variant) {
-                    return a.variant.localeCompare(b.variant);
-                }
-                
-                return a.batchId - b.batchId;
-            });
-            
-            let currentSupervisor = null;
-            let currentProduct = null;
-            
-            processedBatches.forEach(batch => {
-                if (batch.supervisor !== currentSupervisor) {
-                    currentSupervisor = batch.supervisor;
-                    currentProduct = null;
-                    
-                    const supervisorRow = document.createElement('tr');
-                    supervisorRow.className = 'supervisor-header';
-                    supervisorRow.style.backgroundColor = getSupervisorColor(batch.supervisor);
-                    
-                    const supervisorCell = document.createElement('td');
-                    supervisorCell.colSpan = 5;
-                    supervisorCell.textContent = `SUPERVISOR: ${batch.supervisor}`;
-                    
-                    supervisorRow.appendChild(supervisorCell);
-                    batchInfoTableBody.appendChild(supervisorRow);
-                }
-                
-                if (batch.product !== currentProduct) {
-                    currentProduct = batch.product;
-                    
-                    const productRow = document.createElement('tr');
-                    productRow.className = 'product-header';
-                    
-                    const productCell = document.createElement('td');
-                    productCell.colSpan = 5;
-                    productCell.textContent = batch.product;
-                    
-                    productRow.appendChild(productCell);
-                    batchInfoTableBody.appendChild(productRow);
-                }
-                
-                const row = document.createElement('tr');
-                if (batch.isCurrent) {
-                    row.className = 'current';
-                }
-                
-                const productCell = document.createElement('td');
-                productCell.style.opacity = '0.5';
-                productCell.textContent = batch.product;
-                row.appendChild(productCell);
-                
-                const variantCell = document.createElement('td');
-                variantCell.textContent = batch.variant;
-                row.appendChild(variantCell);
-                
-                const batchCell = document.createElement('td');
-                batchCell.className = 'batch-number';
-                batchCell.textContent = batch.batchId;
-                row.appendChild(batchCell);
-                
-                const unitsCell = document.createElement('td');
-                unitsCell.textContent = batch.units;
-                row.appendChild(unitsCell);
-                
-                const containerCell = document.createElement('td');
-                if (batch.isAssembly) {
-                    containerCell.textContent = `${batch.boxes} Bags`;
-                } else {
-                    containerCell.textContent = batch.boxes;
-                }
-                row.appendChild(containerCell);
-                
-                batchInfoTableBody.appendChild(row);
-            });
-        }
-        
-        function displayGroup(group) {
-            currentProduct = group.product;
-            currentSupervisor = group.supervisor;
-            currentProductVariants = group.variants;
-            
-            const now = new Date();
-            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-            
-            const sortedVariants = [...currentProductVariants].sort((a, b) => {
-                const supervisorA = group.supervisorData.variants[a.variant];
-                const supervisorB = group.supervisorData.variants[b.variant];
-                
-                const timeA = supervisorA.variantStartTime || a["Start Time"] || "00:00";
-                const timeB = supervisorB.variantStartTime || b["Start Time"] || "00:00";
-                
-                const [hoursA, minutesA] = timeA.split(':').map(Number);
-                const [hoursB, minutesB] = timeB.split(':').map(Number);
-                
-                return (hoursA * 60 + minutesA) - (hoursB * 60 + minutesB);
-            });
-            
-            let currentVariantIndex = -1;
-            
-            for (let i = 0; i < sortedVariants.length; i++) {
-                const variant = sortedVariants[i];
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                
-                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-                
-                if (!startTimeStr || !endTimeStr) continue;
-                
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                
-                const startTimeMinutes = startHour * 60 + startMinute;
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                if (currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes) {
-                    currentVariantIndex = i;
-                    break;
-                }
-            }
-            
-            if (currentVariantIndex === -1 && sortedVariants.length > 0) {
-                currentVariantIndex = sortedVariants.length - 1;
-            }
-            
-            currentVariantKey = currentVariantIndex >= 0 ? sortedVariants[currentVariantIndex].variant : null;
-            
-            applySupervisorStyling(currentSupervisor);
-            
-            if (isTargetBoardView) {
-                renderTargetBoard(group);
-            } else {
-                updateSupervisorInfo(group);
-                updateMetrics(group);
-                
-                setTimeout(() => {
-                    renderCumulativeChart(group);
-                    renderHourlyChart(group);
-                }, 50);
-            }
-        }
-        
-        function renderTargetBoard(group) {
-            const supervisorBox = document.getElementById('board-supervisor-box');
-            const supervisorNameEl = document.getElementById('board-supervisor-name');
-            const productNameEl = document.getElementById('board-product-name');
-            const dailyTargetEl = document.getElementById('board-daily-target');
-            
-            supervisorBox.style.background = `linear-gradient(135deg, ${getSupervisorColor(group.supervisor)} 0%, ${getSupervisorColor(group.supervisor)} 100%)`;
-            supervisorNameEl.textContent = group.supervisor;
-            productNameEl.textContent = group.product;
-            
-            let totalTarget = 0;
-            group.variants.forEach(variant => {
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                if (supervisorVariant) {
-                    totalTarget += (supervisorVariant.dailyTarget || 0);
-                }
-            });
-            
-            dailyTargetEl.textContent = totalTarget;
-            
-            const tbody = document.getElementById('target-board-tbody');
-            tbody.innerHTML = '';
-            
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentTimeMinutes = currentHour * 60 + currentMinute;
-            
-            const currentPeriodHour = currentMinute < 30 ? currentHour : currentHour + 1;
-            const currentPeriodStr = `${currentPeriodHour.toString().padStart(2, '0')}:30`;
-            
-            const cumulativeData = {};
-            
-            function parseTimeToMinutes(timeStr) {
-                const [hour, minute] = timeStr.split(':').map(Number);
-                return hour * 60 + minute;
-            }
-            
-            // Build standardHourMarks dynamically from the actual timeline slot hours
-            // across all variants in this group, so OT/night shifts are fully represented
-            const allGroupSlotHours = new Set();
-            group.variants.forEach(variant => {
-                if (variant.hourlyProduction) {
-                    variant.hourlyProduction.forEach(p => { if (p.hour) allGroupSlotHours.add(p.hour); });
-                }
-                if (variant.hourlyTargets) {
-                    variant.hourlyTargets.forEach(t => { if (t.hour) allGroupSlotHours.add(t.hour); });
-                }
-            });
-            const standardHourMarks = Array.from(allGroupSlotHours).sort((a, b) => parseTimeToMinutes(a) - parseTimeToMinutes(b));
-            
-            standardHourMarks.forEach(hour => {
-                cumulativeData[hour] = { target: 0, actual: 0 };
-            });
-            
-            group.variants.forEach(variant => {
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                if (!supervisorVariant) return;
-                
-                const variantStartMin = parseTimeToMinutes(supervisorVariant.variantStartTime || variant["Start Time"]);
-                const variantEndMin = parseTimeToMinutes(supervisorVariant.variantEndTime || variant["End Time"]);
-                
-                if (variant.hourlyProduction && variant.hourlyTargets) {
-                    standardHourMarks.forEach(hourMark => {
-                        const hourMinutes = parseTimeToMinutes(hourMark);
-                        
-                        if (hourMinutes >= variantStartMin && hourMinutes <= variantEndMin) {
-                            const prodData = variant.hourlyProduction.find(p => p.hour === hourMark);
-                            const targetData = variant.hourlyTargets.find(t => t.hour === hourMark);
-                            
-                            if (prodData) {
-                                cumulativeData[hourMark].actual += (prodData.production || 0);
-                            }
-                            if (targetData) {
-                                cumulativeData[hourMark].target += (targetData.target || 0);
-                            }
-                        }
-                    });
-                }
-            });
-            
-            let runningTarget = 0;
-            let runningActual = 0;
-            
-            standardHourMarks.forEach(hourMark => {
-                runningTarget += cumulativeData[hourMark].target;
-                runningActual += cumulativeData[hourMark].actual;
-                
-                cumulativeData[hourMark].cumTarget = runningTarget;
-                cumulativeData[hourMark].cumActual = runningActual;
-            });
-            
-            standardHourMarks.forEach(hourMark => {
-                const data = cumulativeData[hourMark];
-                const hourMinutes = parseTimeToMinutes(hourMark);
-                
-                const row = document.createElement('tr');
-                
-                if (hourMark === currentPeriodStr) {
-                    row.classList.add('current-hour');
-                }
-                
-                const timeCell = document.createElement('td');
-                timeCell.className = 'time-cell';
-                timeCell.textContent = hourMark;
-                row.appendChild(timeCell);
-                
-                const targetCell = document.createElement('td');
-                targetCell.className = 'target-cell';
-                targetCell.textContent = data.cumTarget;
-                row.appendChild(targetCell);
-                
-                const actualCell = document.createElement('td');
-                actualCell.className = 'actual-cell';
-                actualCell.textContent = data.cumActual;
-                
-                if (hourMinutes > currentTimeMinutes) {
-                    actualCell.classList.add('pending');
-                } else if (data.cumActual >= data.cumTarget) {
-                    actualCell.classList.add('met');
-                } else {
-                    actualCell.classList.add('not-met');
-                }
-                
-                row.appendChild(actualCell);
-                tbody.appendChild(row);
-            });
-            
+        function simulatedFullscreen() {
+            $container.classList.add('fullscreen-mode', 'simulated-fullscreen');
+            Object.assign($container.style, { position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh', zIndex: '9999' });
+            document.body.style.overflow = 'hidden';
+            isFullscreen = true;
+            $fullscreenBtn.textContent = 'Exit Fullscreen';
+            setTimeout(redrawDashboard, 100);
         }
 
-        function applySupervisorStyling(supervisorName) {
-            const supervisorColorBanner = document.querySelector('.supervisor-color-banner');
-            supervisorPanel = document.querySelector('.supervisor-panel');
-            
-            if (supervisorName) {
-                const color = getSupervisorColor(supervisorName);
-                supervisorColorBanner.style.backgroundColor = color;
-                supervisorPanel.style.backgroundColor = color;
-            }
+        function exitSimulatedFullscreen() {
+            onFullscreenChange();
         }
 
-        function updateSupervisorInfo(group) {
-            document.getElementById('supervisor-name').textContent = `SUPERVISOR: ${group.supervisor}`;
-            document.getElementById('product-name').textContent = `PRODUCT: ${group.product}`;
-            
-            const sequenceContainer = document.getElementById('variant-sequence');
-            sequenceContainer.innerHTML = '';
-            
-            if (group.variants.length === 0) {
-                sequenceContainer.innerHTML = '<div>No variants available</div>';
-                return;
-            }
-            
-            const now = new Date();
-            const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
-            
-            group.variants.forEach((variant, index) => {
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                
-                if (!supervisorVariant) return;
-                
-                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-                
-                if (!startTimeStr || !endTimeStr) return;
-                
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                
-                const startTimeMinutes = startHour * 60 + startMinute;
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                let status = '';
-                if (currentTimeMinutes < startTimeMinutes) {
-                    status = 'upcoming';
-                } else if (currentTimeMinutes > endTimeMinutes) {
-                    status = 'completed';
-                } else {
-                    status = 'current';
-                }
-                
-                let displayName = variant.variant;
-                
-                if (variant.variant.includes('-')) {
-                    displayName = variant.variant.split('-').pop();
-                } else if (variant.variant.startsWith(group.product + ' ')) {
-                    displayName = variant.variant.substring(group.product.length + 1);
-                }
-                
-                const variantElement = document.createElement('div');
-                variantElement.className = `variant-item ${status}`;
-                variantElement.textContent = displayName;
-                
-                sequenceContainer.appendChild(variantElement);
-                
-                if (index < group.variants.length - 1) {
-                    const arrow = document.createElement('div');
-                    arrow.className = 'arrow-right';
-                    arrow.textContent = '→';
-                    sequenceContainer.appendChild(arrow);
-                }
-            });
+        function redrawDashboard() {
+            $container.style.display = 'none';
+            void $container.offsetHeight;
+            $container.style.display = 'flex';
+            displayCurrentCard();
+            renderBatchTable();
         }
 
-        function updateMetrics(group) {
-            let totalTarget = 0;
-            let totalProduction = 0;
-            let totalBoxTarget = 0;
-            let totalBoxProduction = 0;
-            let weightedCycleTime = 0;
-            let totalCycleTimeWeight = 0;
-            
-            const currentSupervisor = group.supervisor;
-            const groupProductionLine = group.productionLine || null;
-            
-            group.variants.forEach(variant => {
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                
-                if (supervisorVariant) {
-                    const prodItem = productionData.originalData.production.find(p => p.id === variant.variant);
-                    const supervisorData = prodItem?.supervisors.find(s => s.name === currentSupervisor);
-                    
-                    if (supervisorData) {
-                        totalTarget += (supervisorVariant.dailyTarget || 0);
-                        totalProduction += (supervisorVariant.currentTotal || 0);
-                        
-                        if (prodItem && prodItem.actual.total > 0) {
-                            const supervisorRatio = supervisorData.production / prodItem.actual.total;
-                            totalBoxProduction += Math.round((variant.currentBoxTotal || 0) * supervisorRatio);
-                            totalBoxTarget += Math.round((variant.dailyBoxTarget || 0) * (supervisorVariant.dailyTarget / prodItem.targets.daily));
-                        }
-                        
-                        const cycleTime = variant.cycleTime || 0;
-                        const target = supervisorVariant.dailyTarget || 0;
-                        
-                        if (cycleTime > 0 && target > 0) {
-                            weightedCycleTime += cycleTime * target;
-                            totalCycleTimeWeight += target;
-                        }
-                    }
-                }
+        // ── Error display ─────────────────────────────────────────────────────────
+        function showError(msg) {
+            ['cumulative-chart', 'hourly-chart'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;">${msg}</div>`;
             });
-            
-            const progressPercentage = totalTarget > 0 ? Math.round((totalProduction / totalTarget) * 100) : 0;
-            
-            // Keep 2 decimal places for target cycle time
-            const avgCycleTime = totalCycleTimeWeight > 0 ? 
-                parseFloat((weightedCycleTime / totalCycleTimeWeight).toFixed(2)) : 0;
-            
-            // Actual cycle time is calculated server-side by the AppsScript and stored in
-            // data.json as variant.actualCycleTime (2 decimal places). Read it directly —
-            // weighted average across variants, weighted by daily box target as a proxy for volume.
-            let actualCTWeighted = 0;
-            let actualCTWeight = 0;
-            group.variants.forEach(variant => {
-                const ct = variant.actualCycleTime || 0;
-                const wt = variant.dailyBoxTarget || 1;
-                if (ct > 0) { actualCTWeighted += ct * wt; actualCTWeight += wt; }
-            });
-            const actualCycleTime = actualCTWeight > 0
-                ? parseFloat((actualCTWeighted / actualCTWeight).toFixed(2))
-                : "N/A";
-            
-            // Single source of truth for colour: is cumulative actual >= cumulative target right now?
-            // Use IDENTICAL formula to the chart's target line: linear interpolation across the shift.
-            // target at time T = totalTarget * (T - shiftStart) / (shiftEnd - shiftStart)
-            // This guarantees the card colours always match the line chart.
-            const now = new Date();
-            const nowMinutes = now.getHours() * 60 + now.getMinutes();
-            
-            // Derive supervisor's earliest start and latest end from originalData (same as chart)
-            let shiftStartMinutes = null;
-            let shiftEndMinutes = null;
-            if (productionData.originalData?.production) {
-                productionData.originalData.production.forEach(prodItem => {
-                    if (groupProductionLine && prodItem.productionLine &&
-                        prodItem.productionLine !== groupProductionLine) return;
-                    const supervisorData = prodItem.supervisors?.find(s => s.name === currentSupervisor);
-                    if (!supervisorData) return;
-                    const [sh, sm] = supervisorData.startTime.split(':').map(Number);
-                    const [eh, em] = supervisorData.endTime.split(':').map(Number);
-                    const sMin = sh * 60 + sm;
-                    const eMin = eh * 60 + em;
-                    if (shiftStartMinutes === null || sMin < shiftStartMinutes) shiftStartMinutes = sMin;
-                    if (shiftEndMinutes === null || eMin > shiftEndMinutes) shiftEndMinutes = eMin;
-                });
-            }
-            
-            let cumTargetSoFar = 0;
-            if (shiftStartMinutes !== null && shiftEndMinutes !== null && shiftEndMinutes > shiftStartMinutes) {
-                const elapsed = Math.min(nowMinutes, shiftEndMinutes) - shiftStartMinutes;
-                const workDuration = shiftEndMinutes - shiftStartMinutes;
-                const elapsedProportion = Math.max(0, elapsed / workDuration);
-                cumTargetSoFar = Math.round(totalTarget * elapsedProportion);
-            }
-            
-            // One boolean drives everything: units, boxes, cycle time, legend, progress %
-            const isAhead = cumTargetSoFar === 0 || totalProduction >= cumTargetSoFar;
-            const statusColor = isAhead ? 'var(--production-ahead)' : 'var(--production-behind)';
-            
-            document.getElementById('current-units').textContent = totalProduction;
-            document.getElementById('current-units').style.color = statusColor;
-            document.getElementById('target-units').textContent = totalTarget;
-            document.getElementById('progress-percentage').textContent = `${progressPercentage}%`;
-            document.getElementById('progress-percentage').style.color = statusColor;
-            
-            document.getElementById('current-boxes').textContent = totalBoxProduction;
-            document.getElementById('current-boxes').style.color = statusColor;
-            document.getElementById('target-boxes').textContent = totalBoxTarget;
-            
-            document.getElementById('actual-cycle-time').textContent = actualCycleTime === "N/A" ? "N/A" : actualCycleTime;
-            document.getElementById('actual-cycle-time').style.color = statusColor;
-            document.getElementById('target-cycle-time').textContent = avgCycleTime;
-            
-            // Legend swatch matches status
-            const legendSwatch = document.getElementById('legend-production-color');
-            if (legendSwatch) legendSwatch.style.backgroundColor = statusColor;
+            const tb = document.getElementById('batch-info-tbody');
+            if (tb) tb.innerHTML = `<tr><td colspan="5">${msg}</td></tr>`;
         }
 
-        function renderCumulativeChart(group) {
-            const chartContainer = document.getElementById('cumulative-chart');
-            chartContainer.innerHTML = '';
-            
-            const currentSupervisor = group.supervisor;
-            
-            const supervisorTotalProduction = parseInt(document.getElementById('current-units').textContent, 10) || 0;
-            const supervisorTotalTarget = parseInt(document.getElementById('target-units').textContent, 10) || 0;
-            
-            const supervisorProductionItems = [];
-            
-            // Only include items for this group's productionLine.
-            const groupProductionLine = group.productionLine || null;
-
-            if (productionData.originalData && productionData.originalData.production) {
-                productionData.originalData.production.forEach(prodItem => {
-                    if (groupProductionLine && prodItem.productionLine &&
-                        prodItem.productionLine !== groupProductionLine) return;
-                    const supervisorData = prodItem.supervisors.find(s => s.name === currentSupervisor);
-                    if (supervisorData) {
-                        supervisorProductionItems.push({
-                            prodItem,
-                            supervisorData,
-                            variantId: prodItem.id,
-                            startTime: supervisorData.startTime,
-                            endTime: supervisorData.endTime,
-                            production: supervisorData.production
-                        });
-                    }
-                });
-            }
-            
-            if (supervisorProductionItems.length === 0) {
-                chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available for this supervisor</div>';
-                return;
-            }
-            
-            supervisorProductionItems.sort((a, b) => {
-                const [aHour, aMin] = a.startTime.split(':').map(Number);
-                const [bHour, bMin] = b.startTime.split(':').map(Number);
-                return (aHour * 60 + aMin) - (bHour * 60 + bMin);
-            });
-            
-            let earliestStart = "23:59";
-            let latestEnd = "00:00";
-            
-            supervisorProductionItems.forEach(item => {
-                if (item.startTime < earliestStart) earliestStart = item.startTime;
-                if (item.endTime > latestEnd) latestEnd = item.endTime;
-            });
-            
-            const [startHour, startMin] = earliestStart.split(':').map(Number);
-            const [endHour, endMin] = latestEnd.split(':').map(Number);
-            const startTimeMinutes = startHour * 60 + startMin;
-            const endTimeMinutes = endHour * 60 + endMin;
-            
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            const currentTimeMinutes = currentHour * 60 + currentMinute;
-            
-            function parseTimeToMinutes(timeStr) {
-                const [hour, minute] = timeStr.split(':').map(Number);
-                return hour * 60 + minute;
-            }
-            
-            // Build standardHourMarks dynamically from the actual timeline slots in data.json
-            // instead of hardcoding 07:30-16:30, so OT and night shifts render correctly
-            const allSlotHours = new Set();
-            supervisorProductionItems.forEach(item => {
-                if (item.prodItem.timeline) {
-                    item.prodItem.timeline.forEach(slot => {
-                        if (slot.hour) allSlotHours.add(slot.hour);
-                    });
-                }
-            });
-            const standardHourMarks = Array.from(allSlotHours).sort((a, b) => parseTimeToMinutes(a) - parseTimeToMinutes(b));
-            
-            const hourlyData = {};
-            
-            standardHourMarks.forEach(hour => {
-                hourlyData[hour] = {
-                    hour,
-                    production: 0,
-                    minutes: parseTimeToMinutes(hour)
-                };
-            });
-            
-            supervisorProductionItems.forEach(item => {
-                if (!item.prodItem.timeline) return;
-                
-                const variantStartMin = parseTimeToMinutes(item.startTime);
-                const variantEndMin = parseTimeToMinutes(item.endTime);
-                
-                const totalVariantProduction = item.prodItem.actual.total || 0;
-                const supervisorVariantProduction = item.supervisorData.production || 0;
-                const supervisorRatio = totalVariantProduction > 0 ? supervisorVariantProduction / totalVariantProduction : 0;
-                
-                item.prodItem.timeline.forEach(timeSlot => {
-                    if (!timeSlot.hour || !timeSlot.actual) return;
-                    
-                    const slotMinutes = parseTimeToMinutes(timeSlot.hour);
-                    
-                    if (slotMinutes >= variantStartMin && slotMinutes <= variantEndMin) {
-                        let productionPortion = 0;
-                        
-                        if (item.prodItem.supervisors.length === 1) {
-                            productionPortion = timeSlot.actual;
-                        } else {
-                            productionPortion = Math.round(timeSlot.actual * supervisorRatio);
-                        }
-                        
-                        if (hourlyData[timeSlot.hour]) {
-                            hourlyData[timeSlot.hour].production += productionPortion;
-                        }
-                    }
-                });
-            });
-            
-            const hourlyDataArray = Object.values(hourlyData)
-                .filter(item => item.minutes >= startTimeMinutes && item.minutes <= endTimeMinutes)
-                .sort((a, b) => a.minutes - b.minutes);
-            
-            let runningProduction = 0;
-            const cumulativeData = [];
-            
-            cumulativeData.push({
-                hour: earliestStart,
-                minutes: startTimeMinutes,
-                production: 0,
-                target: 0
-            });
-            
-            hourlyDataArray.forEach(hourData => {
-                runningProduction += hourData.production;
-                
-                cumulativeData.push({
-                    hour: hourData.hour,
-                    minutes: hourData.minutes,
-                    production: runningProduction,
-                    target: 0
-                });
-            });
-            
-            if (cumulativeData.length > 1 && runningProduction !== supervisorTotalProduction) {
-                const difference = supervisorTotalProduction - runningProduction;
-                
-                cumulativeData[cumulativeData.length - 1].production = supervisorTotalProduction;
-                
-                if (Math.abs(difference) > 5 && hourlyDataArray.length > 0) {
-                    console.log(`Adjusting production for ${currentSupervisor}: Timeline total ${runningProduction}, Metrics total ${supervisorTotalProduction}, Difference ${difference}`);
-                    
-                    const adjustment = difference / hourlyDataArray.length;
-                    runningProduction = 0;
-                    
-                    for (let i = 1; i < cumulativeData.length; i++) {
-                        const hourIndex = i - 1;
-                        hourlyDataArray[hourIndex].production += adjustment;
-                        runningProduction += hourlyDataArray[hourIndex].production;
-                        cumulativeData[i].production = Math.round(runningProduction);
-                    }
-                    
-                    cumulativeData[cumulativeData.length - 1].production = supervisorTotalProduction;
-                }
-            }
-            
-            const workDuration = endTimeMinutes - startTimeMinutes;
-            
-            cumulativeData.forEach(dataPoint => {
-                const elapsedProportion = (dataPoint.minutes - startTimeMinutes) / workDuration;
-                dataPoint.target = Math.round(supervisorTotalTarget * elapsedProportion);
-            });
-            
-            const currentTimePlusBuffer = currentTimeMinutes + 60;
-            let filteredData = cumulativeData.filter(item => item.minutes <= currentTimePlusBuffer);
-            
-            const currentTimePoint = filteredData.find(item => item.minutes === currentTimeMinutes);
-            if (!currentTimePoint && filteredData.length > 0) {
-                const prevPoints = filteredData.filter(item => item.minutes < currentTimeMinutes);
-                const nextPoints = filteredData.filter(item => item.minutes > currentTimeMinutes);
-                
-                let currentProduction = supervisorTotalProduction;
-                let currentTarget = Math.round(supervisorTotalTarget * ((currentTimeMinutes - startTimeMinutes) / workDuration));
-                
-                if (prevPoints.length > 0 && nextPoints.length > 0) {
-                    const prevPoint = prevPoints[prevPoints.length - 1];
-                    const nextPoint = nextPoints[0];
-                    
-                    const ratio = (currentTimeMinutes - prevPoint.minutes) / (nextPoint.minutes - prevPoint.minutes);
-                    currentProduction = Math.round(prevPoint.production + (nextPoint.production - prevPoint.production) * ratio);
-                } else if (prevPoints.length > 0) {
-                    currentProduction = prevPoints[prevPoints.length - 1].production;
-                }
-                
-                const currentHourStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
-                filteredData.push({
-                    hour: currentHourStr,
-                    minutes: currentTimeMinutes,
-                    production: currentProduction,
-                    target: currentTarget
-                });
-                
-                filteredData.sort((a, b) => a.minutes - b.minutes);
-            }
-            
-            if (filteredData.length > 0) {
-                filteredData[filteredData.length - 1].production = supervisorTotalProduction;
-            }
-            
-            if (filteredData.length === 0) {
-                chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available for current time period</div>';
-                return;
-            }
-            
-            const chartArea = chartContainer.closest('.chart-area');
-            const svgWidth = chartArea.clientWidth;
-            const svgHeight = chartArea.clientHeight;
-            
-            if (svgWidth <= 0 || svgHeight <= 0) {
-                setTimeout(() => renderCumulativeChart(group), 100);
-                return;
-            }
-            
-            const padding = {
-                top: Math.max(10, Math.floor(svgHeight * 0.05)),
-                right: Math.max(10, Math.floor(svgWidth * 0.05)),
-                bottom: Math.max(50, Math.floor(svgHeight * 0.18)),
-                left: Math.max(40, Math.floor(svgWidth * 0.12))
-            };
-            
-            const chartWidth = svgWidth - padding.left - padding.right;
-            const chartHeight = svgHeight - padding.top - padding.bottom;
-            
-            const maxValue = Math.max(
-                ...filteredData.map(item => Math.max(item.target || 0, item.production || 0))
-            ) * 1.1;
-            
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', '100%');
-            svg.setAttribute('height', '100%');
-            svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
-            svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-            chartContainer.appendChild(svg);
-            
-            const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            for (let i = 0; i <= 4; i++) {
-                const y = padding.top + (chartHeight * i / 4);
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', padding.left);
-                line.setAttribute('y1', y);
-                line.setAttribute('x2', svgWidth - padding.right);
-                line.setAttribute('y2', y);
-                line.setAttribute('stroke', '#ddd');
-                line.setAttribute('stroke-width', '1');
-                gridGroup.appendChild(line);
-                
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', padding.left - 10);
-                text.setAttribute('y', y + 5);
-                text.setAttribute('text-anchor', 'end');
-                text.setAttribute('font-size', isFullscreen ? '14' : '12');
-                text.setAttribute('fill', '#666');
-                text.textContent = Math.round(maxValue * (4 - i) / 4);
-                gridGroup.appendChild(text);
-            }
-            
-            const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            yAxisTitle.setAttribute('x', padding.left - 35);
-            yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
-            yAxisTitle.setAttribute('text-anchor', 'middle');
-            yAxisTitle.setAttribute('font-size', isFullscreen ? '16' : '14');
-            yAxisTitle.setAttribute('font-weight', 'bold');
-            yAxisTitle.setAttribute('fill', '#666');
-            yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 35}, ${padding.top + chartHeight / 2})`);
-            yAxisTitle.textContent = 'Units';
-            gridGroup.appendChild(yAxisTitle);
-            
-            const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            yAxis.setAttribute('x1', padding.left);
-            yAxis.setAttribute('y1', padding.top);
-            yAxis.setAttribute('x2', padding.left);
-            yAxis.setAttribute('y2', svgHeight - padding.bottom);
-            yAxis.setAttribute('stroke', '#666');
-            yAxis.setAttribute('stroke-width', '1.5');
-            gridGroup.appendChild(yAxis);
-            
-            const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            xAxis.setAttribute('x1', padding.left);
-            xAxis.setAttribute('y1', svgHeight - padding.bottom);
-            xAxis.setAttribute('x2', svgWidth - padding.right);
-            xAxis.setAttribute('y2', svgHeight - padding.bottom);
-            xAxis.setAttribute('stroke', '#666');
-            xAxis.setAttribute('stroke-width', '1.5');
-            gridGroup.appendChild(xAxis);
-            
-            svg.appendChild(gridGroup);
-            
-            function timeToXPosition(minutes) {
-                const normalizedTime = (minutes - startTimeMinutes) / (endTimeMinutes - startTimeMinutes);
-                return padding.left + (chartWidth * normalizedTime);
-            }
-            
-            const visibleHourMarks = standardHourMarks.filter(hourMark => {
-                const minutes = parseTimeToMinutes(hourMark);
-                return minutes >= startTimeMinutes && minutes <= endTimeMinutes;
-            });
-            
-            const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            
-            visibleHourMarks.forEach(hourMark => {
-                const minutes = parseTimeToMinutes(hourMark);
-                const x = timeToXPosition(minutes);
-                const y = svgHeight - padding.bottom + 20;
-                
-                const tickLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                tickLine.setAttribute('x1', x);
-                tickLine.setAttribute('y1', svgHeight - padding.bottom);
-                tickLine.setAttribute('x2', x);
-                tickLine.setAttribute('y2', svgHeight - padding.bottom + 5);
-                tickLine.setAttribute('stroke', '#666');
-                tickLine.setAttribute('stroke-width', '1.5');
-                xLabelsGroup.appendChild(tickLine);
-                
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', x);
-                text.setAttribute('y', y);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('font-size', isFullscreen ? '14' : '12');
-                text.setAttribute('fill', '#666');
-                text.textContent = hourMark;
-                xLabelsGroup.appendChild(text);
-                
-                if (minutes < currentTimeMinutes) {
-                    // Use cumulative actual vs cumulative target at this hour mark
-                    // (not hourly slot production, which would be a delta vs a running total)
-                    const dataPoint = filteredData.find(dp => dp.hour === hourMark);
-                    let cumActual = 0;
-                    let cumTarget = 0;
-                    
-                    if (dataPoint) {
-                        cumActual = dataPoint.production;
-                        cumTarget = dataPoint.target;
-                    } else {
-                        // Interpolate between surrounding data points
-                        const prevPoints = filteredData.filter(dp => dp.minutes <= minutes);
-                        const nextPoints = filteredData.filter(dp => dp.minutes > minutes);
-                        
-                        if (prevPoints.length > 0 && nextPoints.length > 0) {
-                            const prevPoint = prevPoints[prevPoints.length - 1];
-                            const nextPoint = nextPoints[0];
-                            const ratio = (minutes - prevPoint.minutes) / (nextPoint.minutes - prevPoint.minutes);
-                            cumActual = Math.round(prevPoint.production + (nextPoint.production - prevPoint.production) * ratio);
-                            cumTarget = Math.round(prevPoint.target + (nextPoint.target - prevPoint.target) * ratio);
-                        } else if (prevPoints.length > 0) {
-                            cumActual = prevPoints[prevPoints.length - 1].production;
-                            cumTarget = prevPoints[prevPoints.length - 1].target;
-                        }
-                    }
-                    
-                    let statusSymbol = '';
-                    let fillColor = '#94a3b8';
-                    
-                    if (cumActual >= cumTarget) {
-                        statusSymbol = '✓';
-                        fillColor = '#0d9488';
-                    } else {
-                        statusSymbol = '✗';
-                        fillColor = '#e11d48';
-                    }
-                    
-                    if (parseTimeToMinutes(hourMark) === (Math.floor(currentTimeMinutes / 60) * 60 + 30)) {
-                        statusSymbol = '●';
-                        fillColor = '#ca8a04';
-                    }
-                    
-                    const statusText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    statusText.setAttribute('x', x);
-                    statusText.setAttribute('y', y + 20);
-                    statusText.setAttribute('text-anchor', 'middle');
-                    statusText.setAttribute('font-size', isFullscreen ? '18' : '16');
-                    statusText.setAttribute('font-weight', 'bold');
-                    statusText.setAttribute('fill', fillColor);
-                    statusText.textContent = statusSymbol;
-                    xLabelsGroup.appendChild(statusText);
-                }
-            });
-            svg.appendChild(xLabelsGroup);
-            
-            const productionLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            
-            // Build enriched point list with x, y, production, target for colour decisions
-            const productionPoints = [];
-            filteredData.forEach(dataPoint => {
-                const x = timeToXPosition(dataPoint.minutes);
-                const y = padding.top + chartHeight - (chartHeight * (dataPoint.production / maxValue));
-                productionPoints.push({ x, y, production: dataPoint.production, target: dataPoint.target, hour: dataPoint.hour, minutes: dataPoint.minutes });
-            });
-            
-            // Draw the production line as per-segment paths coloured by ahead/behind at the END point of each segment
-            for (let i = 1; i < productionPoints.length; i++) {
-                const prev = productionPoints[i - 1];
-                const curr = productionPoints[i];
-                const segmentColor = curr.production >= curr.target ? 'var(--production-ahead)' : 'var(--production-behind)';
-                const seg = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                seg.setAttribute('d', `M ${prev.x} ${prev.y} L ${curr.x} ${curr.y}`);
-                seg.setAttribute('stroke', segmentColor);
-                seg.setAttribute('stroke-width', '3');
-                seg.setAttribute('fill', 'none');
-                productionLineGroup.appendChild(seg);
-            }
-            
-            // Draw dots and labels at each visible hour mark
-            visibleHourMarks.forEach(hourMark => {
-                const minutes = parseTimeToMinutes(hourMark);
-                if (minutes > currentTimeMinutes) return;
-                
-                let productionValue = 0;
-                let targetAtMark = 0;
-                let x = timeToXPosition(minutes);
-                let y = padding.top + chartHeight;
-                
-                const exactMatch = filteredData.find(dp => dp.hour === hourMark);
-                if (exactMatch) {
-                    productionValue = exactMatch.production;
-                    targetAtMark = exactMatch.target;
-                    y = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
-                } else {
-                    const prevPoints = filteredData.filter(dp => dp.minutes <= minutes);
-                    const nextPoints = filteredData.filter(dp => dp.minutes > minutes);
-                    if (prevPoints.length > 0 && nextPoints.length > 0) {
-                        const prevPoint = prevPoints[prevPoints.length - 1];
-                        const nextPoint = nextPoints[0];
-                        const ratio = (minutes - prevPoint.minutes) / (nextPoint.minutes - prevPoint.minutes);
-                        productionValue = Math.round(prevPoint.production + (nextPoint.production - prevPoint.production) * ratio);
-                        targetAtMark = Math.round(prevPoint.target + (nextPoint.target - prevPoint.target) * ratio);
-                        y = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
-                    } else if (prevPoints.length > 0) {
-                        productionValue = prevPoints[prevPoints.length - 1].production;
-                        targetAtMark = prevPoints[prevPoints.length - 1].target;
-                        y = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
-                    }
-                }
-                
-                const dotColor = productionValue >= targetAtMark ? 'var(--production-ahead)' : 'var(--production-behind)';
-                
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', x);
-                circle.setAttribute('cy', y);
-                circle.setAttribute('r', isFullscreen ? '5' : '4');
-                circle.setAttribute('fill', dotColor);
-                productionLineGroup.appendChild(circle);
-                
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', x);
-                text.setAttribute('y', y - 8);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('font-size', isFullscreen ? '14' : '12');
-                text.setAttribute('font-weight', 'bold');
-                text.setAttribute('fill', dotColor);
-                text.textContent = productionValue;
-                productionLineGroup.appendChild(text);
-            });
-            
-            // Emphasised final point
-            if (productionPoints.length > 0) {
-                const lastPoint = productionPoints[productionPoints.length - 1];
-                const lastColor = lastPoint.production >= lastPoint.target ? 'var(--production-ahead)' : 'var(--production-behind)';
-                
-                const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                emphasizedCircle.setAttribute('cx', lastPoint.x);
-                emphasizedCircle.setAttribute('cy', lastPoint.y);
-                emphasizedCircle.setAttribute('r', isFullscreen ? '8' : '7');
-                emphasizedCircle.setAttribute('fill', lastColor);
-                emphasizedCircle.setAttribute('stroke', '#ffffff');
-                emphasizedCircle.setAttribute('stroke-width', '2');
-                productionLineGroup.appendChild(emphasizedCircle);
-                
-                const emphasizedText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                emphasizedText.setAttribute('x', lastPoint.x);
-                emphasizedText.setAttribute('y', lastPoint.y - 12);
-                emphasizedText.setAttribute('text-anchor', 'middle');
-                emphasizedText.setAttribute('font-size', isFullscreen ? '18' : '16');
-                emphasizedText.setAttribute('font-weight', 'bold');
-                emphasizedText.setAttribute('fill', lastColor);
-                emphasizedText.textContent = lastPoint.production;
-                productionLineGroup.appendChild(emphasizedText);
-            }
-            
-            svg.appendChild(productionLineGroup);
-            
-            const targetLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            
-            let targetPathD = '';
-            const targetPoints = [];
-            
-            filteredData.forEach((dataPoint, index) => {
-                const x = timeToXPosition(dataPoint.minutes);
-                
-                const y = padding.top + chartHeight - (chartHeight * (dataPoint.target / maxValue));
-                
-                if (index === 0) {
-                    targetPathD = `M ${x} ${y}`;
-                } else {
-                    targetPathD += ` L ${x} ${y}`;
-                }
-                
-                targetPoints.push({
-                    x, y,
-                    target: dataPoint.target,
-                    hour: dataPoint.hour
-                });
-            });
-            
-            const targetPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            targetPath.setAttribute('d', targetPathD);
-            targetPath.setAttribute('stroke', 'var(--target-color)');
-            targetPath.setAttribute('stroke-width', '3');
-            targetPath.setAttribute('fill', 'none');
-            targetLineGroup.appendChild(targetPath);
-            
-            visibleHourMarks.forEach(hourMark => {
-                const minutes = parseTimeToMinutes(hourMark);
-                
-                if (minutes > currentTimeMinutes + 60) return;
-                
-                let targetValue = 0;
-                let x = timeToXPosition(minutes);
-                let y = padding.top + chartHeight;
-                
-                const exactMatch = filteredData.find(dp => dp.hour === hourMark);
-                if (exactMatch) {
-                    targetValue = exactMatch.target;
-                    y = padding.top + chartHeight - (chartHeight * (targetValue / maxValue));
-                } else {
-                    const prevPoints = filteredData.filter(dp => dp.minutes <= minutes);
-                    const nextPoints = filteredData.filter(dp => dp.minutes > minutes);
-                    
-                    if (prevPoints.length > 0 && nextPoints.length > 0) {
-                        const prevPoint = prevPoints[prevPoints.length - 1];
-                        const nextPoint = nextPoints[0];
-                        
-                        const ratio = (minutes - prevPoint.minutes) / (nextPoint.minutes - prevPoint.minutes);
-                        targetValue = Math.round(prevPoint.target + (nextPoint.target - prevPoint.target) * ratio);
-                        y = padding.top + chartHeight - (chartHeight * (targetValue / maxValue));
-                    } else if (prevPoints.length > 0) {
-                        targetValue = prevPoints[prevPoints.length - 1].target;
-                        y = padding.top + chartHeight - (chartHeight * (targetValue / maxValue));
-                    }
-                }
-                
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', x);
-                circle.setAttribute('cy', y);
-                circle.setAttribute('r', isFullscreen ? '5' : '4');
-                circle.setAttribute('fill', 'var(--target-color)');
-                targetLineGroup.appendChild(circle);
-                
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', x);
-                text.setAttribute('y', y - 8);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('font-size', isFullscreen ? '14' : '12');
-                text.setAttribute('font-weight', 'bold');
-                text.setAttribute('fill', 'var(--target-color)');
-                text.textContent = targetValue;
-                targetLineGroup.appendChild(text);
-            });
-            
-            if (targetPoints.length > 0) {
-                const lastPoint = targetPoints[targetPoints.length - 1];
-                
-                const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                emphasizedCircle.setAttribute('cx', lastPoint.x);
-                emphasizedCircle.setAttribute('cy', lastPoint.y);
-                emphasizedCircle.setAttribute('r', isFullscreen ? '7' : '6');
-                emphasizedCircle.setAttribute('fill', 'var(--target-color)');
-                emphasizedCircle.setAttribute('stroke', '#ffffff');
-                emphasizedCircle.setAttribute('stroke-width', '2');
-                targetLineGroup.appendChild(emphasizedCircle);
-                
-                const emphasizedText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                emphasizedText.setAttribute('x', lastPoint.x);
-                emphasizedText.setAttribute('y', lastPoint.y - 10);
-                emphasizedText.setAttribute('text-anchor', 'middle');
-                emphasizedText.setAttribute('font-size', isFullscreen ? '16' : '14');
-                emphasizedText.setAttribute('font-weight', 'bold');
-                emphasizedText.setAttribute('fill', 'var(--target-color)');
-                emphasizedText.textContent = lastPoint.target;
-                targetLineGroup.appendChild(emphasizedText);
-            }
-            
-            svg.appendChild(targetLineGroup);
-        }
-             
-        function renderHourlyChart(group) {
-            const chartContainer = document.getElementById('hourly-chart');
-            chartContainer.innerHTML = '';
-            
-            const now = new Date();
-            const currentHour = now.getHours();
-            const currentMinute = now.getMinutes();
-            
-            const currentPeriodHour = currentMinute < 30 ? currentHour : currentHour + 1;
-            const currentPeriodMinute = 30;
-            const currentPeriodStr = `${currentPeriodHour.toString().padStart(2, '0')}:${currentPeriodMinute.toString().padStart(2, '0')}`;
-            
-            const hourlyProductionMap = new Map();
-            const hourlyTargetMap = new Map();
-            
-            group.variants.forEach(variant => {
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                if (!supervisorVariant) return;
-                
-                const startTimeStr = supervisorVariant.variantStartTime || variant["Start Time"];
-                const endTimeStr = supervisorVariant.variantEndTime || variant["End Time"];
-                
-                if (!startTimeStr || !endTimeStr) return;
-                
-                const [startHour, startMinute] = startTimeStr.split(':').map(Number);
-                const [endHour, endMinute] = endTimeStr.split(':').map(Number);
-                
-                const startTimeMinutes = startHour * 60 + startMinute;
-                const endTimeMinutes = endHour * 60 + endMinute;
-                
-                if (variant.hourlyProduction) {
-                    variant.hourlyProduction.forEach(item => {
-                        if (!item.hour || item.hour !== currentPeriodStr) return;
-                        
-                        const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                        const itemTimeMinutes = itemHour * 60 + itemMinute;
-                        
-                        if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                            if (!hourlyProductionMap.has(item.hour)) {
-                                hourlyProductionMap.set(item.hour, 0);
-                            }
-                            hourlyProductionMap.set(item.hour, hourlyProductionMap.get(item.hour) + (item.production || 0));
-                        }
-                    });
-                }
-                
-                if (variant.hourlyTargets) {
-                    variant.hourlyTargets.forEach(item => {
-                        if (!item.hour || item.hour !== currentPeriodStr) return;
-                        
-                        const [itemHour, itemMinute] = item.hour.split(':').map(Number);
-                        const itemTimeMinutes = itemHour * 60 + itemMinute;
-                        
-                        if (itemTimeMinutes >= startTimeMinutes && itemTimeMinutes <= endTimeMinutes) {
-                            if (!hourlyTargetMap.has(item.hour)) {
-                                hourlyTargetMap.set(item.hour, 0);
-                            }
-                            hourlyTargetMap.set(item.hour, hourlyTargetMap.get(item.hour) + (item.target || 0));
-                        }
-                    });
-                }
-            });
-            
-            const sortedHours = [currentPeriodStr];
-            
-            if (hourlyProductionMap.size === 0 && hourlyTargetMap.size === 0) {
-                chartContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data available for current hour period</div>';
-                return;
-            }
-            
-            const chartArea = chartContainer.closest('.chart-area');
-            const svgWidth = chartArea.clientWidth;
-            const svgHeight = chartArea.clientHeight;
-            
-            if (svgWidth <= 0 || svgHeight <= 0) {
-                setTimeout(() => renderHourlyChart(group), 100);
-                return;
-            }
-            
-            const padding = {
-                top: Math.max(10, Math.floor(svgHeight * 0.05)),
-                right: Math.max(10, Math.floor(svgWidth * 0.05)),
-                bottom: Math.max(50, Math.floor(svgHeight * 0.1)),
-                left: Math.max(40, Math.floor(svgWidth * 0.12))
-            };
-            
-            const chartWidth = svgWidth - padding.left - padding.right;
-            const chartHeight = svgHeight - padding.top - padding.bottom;
-            
-            const maxValue = Math.max(
-                hourlyProductionMap.get(currentPeriodStr) || 0,
-                hourlyTargetMap.get(currentPeriodStr) || 0
-            ) * 1.1 || 100;
-            
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', '100%');
-            svg.setAttribute('height', '100%');
-            svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
-            svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-            chartContainer.appendChild(svg);
-            
-            const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            for (let i = 0; i <= 4; i++) {
-                const y = padding.top + (chartHeight * i / 4);
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                line.setAttribute('x1', padding.left);
-                line.setAttribute('y1', y);
-                line.setAttribute('x2', svgWidth - padding.right);
-                line.setAttribute('y2', y);
-                line.setAttribute('stroke', '#ddd');
-                line.setAttribute('stroke-width', '1');
-                gridGroup.appendChild(line);
-                
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', padding.left - 10);
-                text.setAttribute('y', y + 5);
-                text.setAttribute('text-anchor', 'end');
-                text.setAttribute('font-size', isFullscreen ? '14' : '12');
-                text.setAttribute('fill', '#666');
-                text.textContent = Math.round(maxValue * (4 - i) / 4);
-                gridGroup.appendChild(text);
-            }
-            
-            const yAxisTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            yAxisTitle.setAttribute('x', padding.left - 35);
-            yAxisTitle.setAttribute('y', padding.top + chartHeight / 2);
-            yAxisTitle.setAttribute('text-anchor', 'middle');
-            yAxisTitle.setAttribute('font-size', isFullscreen ? '16' : '14');
-            yAxisTitle.setAttribute('font-weight', 'bold');
-            yAxisTitle.setAttribute('fill', '#666');
-            yAxisTitle.setAttribute('transform', `rotate(-90, ${padding.left - 35}, ${padding.top + chartHeight / 2})`);
-            yAxisTitle.textContent = 'Units per Hour';
-            gridGroup.appendChild(yAxisTitle);
-            
-            const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            yAxis.setAttribute('x1', padding.left);
-            yAxis.setAttribute('y1', padding.top);
-            yAxis.setAttribute('x2', padding.left);
-            yAxis.setAttribute('y2', svgHeight - padding.bottom);
-            yAxis.setAttribute('stroke', '#666');
-            yAxis.setAttribute('stroke-width', '1.5');
-            gridGroup.appendChild(yAxis);
-            
-            const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            xAxis.setAttribute('x1', padding.left);
-            xAxis.setAttribute('y1', svgHeight - padding.bottom);
-            xAxis.setAttribute('x2', svgWidth - padding.right);
-            xAxis.setAttribute('y2', svgHeight - padding.bottom);
-            xAxis.setAttribute('stroke', '#666');
-            xAxis.setAttribute('stroke-width', '1.5');
-            gridGroup.appendChild(xAxis);
-            
-            svg.appendChild(gridGroup);
-            
-            const barGroupWidth = chartWidth * 0.3;
-            const barWidth = barGroupWidth * 0.42;
-            
-            const xLabelsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            const x = padding.left + chartWidth / 2;
-            const y = svgHeight - padding.bottom + 20;
-            
-            const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            tick.setAttribute('x1', x);
-            tick.setAttribute('y1', svgHeight - padding.bottom);
-            tick.setAttribute('x2', x);
-            tick.setAttribute('y2', svgHeight - padding.bottom + 5);
-            tick.setAttribute('stroke', '#666');
-            tick.setAttribute('stroke-width', '1.5');
-            xLabelsGroup.appendChild(tick);
-            
-            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.setAttribute('x', x);
-            text.setAttribute('y', y);
-            text.setAttribute('text-anchor', 'middle');
-            text.setAttribute('font-size', isFullscreen ? '16' : '14');
-            text.setAttribute('font-weight', 'bold');
-            text.setAttribute('fill', '#666');
-            text.textContent = currentPeriodStr;
-            xLabelsGroup.appendChild(text);
-            
-            svg.appendChild(xLabelsGroup);
-            
-            const barsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            
-            const barGroupX = padding.left + (chartWidth - barGroupWidth) / 2;
-            
-            const productionValue = hourlyProductionMap.get(currentPeriodStr) || 0;
-            const productionHeight = (productionValue / maxValue) * chartHeight;
-            const productionY = svgHeight - padding.bottom - productionHeight;
-            
-            const productionBarX = barGroupX + (barGroupWidth * 0.08);
-            
-            // Colour the production bar based on whether this hour's actual >= target
-            const hourTargetForColor = hourlyTargetMap.get(currentPeriodStr) || 0;
-            const barProductionColor = hourTargetForColor > 0
-                ? (productionValue >= hourTargetForColor ? 'var(--production-ahead)' : 'var(--production-behind)')
-                : 'var(--production-color)';
-            
-            const productionBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            productionBar.setAttribute('x', productionBarX);
-            productionBar.setAttribute('y', productionY);
-            productionBar.setAttribute('width', barWidth);
-            productionBar.setAttribute('height', productionHeight);
-            productionBar.setAttribute('rx', '2');
-            productionBar.setAttribute('ry', '2');
-            productionBar.setAttribute('fill', barProductionColor);
-            barsGroup.appendChild(productionBar);
-            
-            const productionLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            productionLabel.setAttribute('x', productionBarX + (barWidth / 2));
-            productionLabel.setAttribute('y', productionY - 5);
-            productionLabel.setAttribute('text-anchor', 'middle');
-            productionLabel.setAttribute('font-size', isFullscreen ? '14' : '12');
-            productionLabel.setAttribute('font-weight', 'bold');
-            productionLabel.setAttribute('fill', barProductionColor);
-            productionLabel.textContent = productionValue;
-            barsGroup.appendChild(productionLabel);
-            
-            const targetValue = hourlyTargetMap.get(currentPeriodStr) || 0;
-            const targetHeight = (targetValue / maxValue) * chartHeight;
-            const targetY = svgHeight - padding.bottom - targetHeight;
-            
-            const targetBarX = barGroupX + (barGroupWidth * 0.5);
-            
-            const targetBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            targetBar.setAttribute('x', targetBarX);
-            targetBar.setAttribute('y', targetY);
-            targetBar.setAttribute('width', barWidth);
-            targetBar.setAttribute('height', targetHeight);
-            targetBar.setAttribute('rx', '2');
-            targetBar.setAttribute('ry', '2');
-            targetBar.setAttribute('fill', 'var(--target-color)');
-            barsGroup.appendChild(targetBar);
-            
-            const targetLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            targetLabel.setAttribute('x', targetBarX + (barWidth / 2));
-            targetLabel.setAttribute('y', targetY - 5);
-            targetLabel.setAttribute('text-anchor', 'middle');
-            targetLabel.setAttribute('font-size', isFullscreen ? '14' : '12');
-            targetLabel.setAttribute('font-weight', 'bold');
-            targetLabel.setAttribute('fill', 'var(--target-color)');
-            targetLabel.textContent = targetValue;
-            barsGroup.appendChild(targetLabel);
-            
-            svg.appendChild(barsGroup);
-            
-            const legendGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            
-            const prodLegendRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            prodLegendRect.setAttribute('x', padding.left);
-            prodLegendRect.setAttribute('y', padding.top - 25);
-            prodLegendRect.setAttribute('width', 12);
-            prodLegendRect.setAttribute('height', 12);
-            prodLegendRect.setAttribute('fill', barProductionColor);
-            legendGroup.appendChild(prodLegendRect);
-            
-            const prodLegendText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            prodLegendText.setAttribute('x', padding.left + 18);
-            prodLegendText.setAttribute('y', padding.top - 15);
-            prodLegendText.setAttribute('font-size', isFullscreen ? '14' : '12');
-            prodLegendText.setAttribute('fill', '#666');
-            prodLegendText.textContent = 'Production';
-            legendGroup.appendChild(prodLegendText);
-            
-            const targetLegendRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            targetLegendRect.setAttribute('x', padding.left + 100);
-            targetLegendRect.setAttribute('y', padding.top - 25);
-            targetLegendRect.setAttribute('width', 12);
-            targetLegendRect.setAttribute('height', 12);
-            targetLegendRect.setAttribute('fill', 'var(--target-color)');
-            legendGroup.appendChild(targetLegendRect);
-            
-            const targetLegendText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            targetLegendText.setAttribute('x', padding.left + 118);
-            targetLegendText.setAttribute('y', padding.top - 15);
-            targetLegendText.setAttribute('font-size', isFullscreen ? '14' : '12');
-            targetLegendText.setAttribute('fill', '#666');
-            targetLegendText.textContent = 'Target';
-            legendGroup.appendChild(targetLegendText);
-            
-            svg.appendChild(legendGroup);
-        }
-
+        // ── Boot ──────────────────────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', initDashboard);
-
-        window.addEventListener('beforeunload', function() {
-            if (cycleInterval) clearInterval(cycleInterval);
-            if (chartRotationInterval) clearInterval(chartRotationInterval);
-            if (countdownInterval) clearInterval(countdownInterval);
+        window.addEventListener('beforeunload', () => {
+            clearInterval(cycleInterval);
+            clearInterval(chartRotInterval);
         });
+
     </script>
 </body>
-</html>
