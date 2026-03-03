@@ -1119,8 +1119,10 @@ body {
         // ── State ─────────────────────────────────────────────────────────────────
         let rawData          = null;   // parsed data.json (contains lineCards)
         let lineCards        = [];     // data.json → lineCards array (one per Production_Line)
+        let lineGroups       = [];     // data.json → lineGroups array (multi-chart group views)
         let selectedLines    = [];     // which line IDs are visible
         let filteredCards    = [];     // cards currently shown after filters
+        let activeGroup      = null;   // currently displayed lineGroup (or null for single-card mode)
         let cycleIndex       = 0;      // which card in filteredCards is on screen
         let cycleInterval    = null;
         let chartRotInterval = null;
@@ -1203,6 +1205,7 @@ body {
 
                 // Use lineCards from AppsScript output
                 lineCards = (data.lineCards || []).sort((a, b) => a.id.localeCompare(b.id));
+                lineGroups = data.lineGroups || [];
 
                 // Restore or default line selection
                 if (selectedLines.length === 0) {
@@ -1227,6 +1230,21 @@ body {
         // ── Filtering & cycling ───────────────────────────────────────────────────
         function applyFiltersAndDisplay() {
             if (!lineCards.length) { showError('No data available.'); return; }
+
+            // Check if a group view is selected
+            if (filterValue && filterValue.startsWith('group:')) {
+                const groupId = filterValue.slice(6);
+                const grp = lineGroups.find(g => g.groupId === groupId);
+                if (grp) {
+                    activeGroup = grp;
+                    clearInterval(cycleInterval);
+                    clearInterval(chartRotInterval);
+                    renderGroupCard(grp);
+                    renderBatchTable();
+                    return;
+                }
+            }
+            activeGroup = null;
 
             filteredCards = lineCards.filter(card => {
                 if (!selectedLines.includes(card.id)) return false;
@@ -1259,6 +1277,10 @@ body {
 
         // ── Card display ──────────────────────────────────────────────────────────
         function displayCard(card) {
+            // Restore chart nav if we're coming back from a group view
+            const navEl = document.querySelector('.chart-nav');
+            if (navEl) navEl.style.display = '';
+
             if (isTargetBoard) {
                 renderTargetBoard(card);
             } else {
@@ -1709,6 +1731,194 @@ body {
             });
         }
 
+        // ── Group card (multi-line view) ──────────────────────────────────────────
+        // Renders one overlaid cumulative chart with one line per group member.
+        // Reuses the same DOM layout; hides the hourly chart and nav dots.
+        function renderGroupCard(grp) {
+            // Left panel: group label + member colour tags
+            document.getElementById('supervisor-name').textContent = grp.label;
+            document.getElementById('product-name').textContent    = grp.shiftWindow
+                ? grp.shiftWindow.startTime + ' – ' + grp.shiftWindow.endTime : '';
+
+            const seq = document.getElementById('variant-sequence');
+            seq.innerHTML = '';
+            grp.members.forEach(m => {
+                const tag = document.createElement('span');
+                tag.className = 'variant-tag active';
+                tag.style.cssText = 'background:' + m.colour + ';color:#fff;border:none;';
+                tag.textContent = m.label;
+                seq.appendChild(tag);
+            });
+
+            // Aggregate metrics
+            const totalProd   = grp.members.reduce((s, m) => s + (m.production || 0), 0);
+            const totalTarget = grp.members.reduce((s, m) => s + (m.target     || 0), 0);
+            const progress    = totalTarget > 0 ? Math.round(totalProd / totalTarget * 100) : 0;
+
+            let shiftStartM = 0, shiftEndM = 1440;
+            if (grp.shiftWindow) {
+                shiftStartM = parseMin(grp.shiftWindow.startTime);
+                shiftEndM   = parseMin(grp.shiftWindow.endTime);
+                if (shiftEndM <= shiftStartM) shiftEndM += 1440; // overnight
+            }
+            const nm = nowMin();
+            let cumTargetNow = 0;
+            if (shiftEndM > shiftStartM) {
+                const nmAdj = (nm < shiftStartM) ? nm + 1440 : nm;
+                const elapsed = Math.max(0, Math.min(nmAdj, shiftEndM) - shiftStartM);
+                cumTargetNow  = Math.round(totalTarget * elapsed / (shiftEndM - shiftStartM));
+            }
+            const isAhead     = cumTargetNow === 0 || totalProd >= cumTargetNow;
+            const statusColor = isAhead ? 'var(--production-ahead)' : 'var(--production-behind)';
+
+            document.getElementById('current-units').textContent       = totalProd;
+            document.getElementById('current-units').style.color       = statusColor;
+            document.getElementById('target-units').textContent        = totalTarget;
+            document.getElementById('progress-percentage').textContent = progress + '%';
+            document.getElementById('progress-percentage').style.color = statusColor;
+            document.getElementById('current-boxes').textContent       = '—';
+            document.getElementById('current-boxes').style.color       = '';
+            document.getElementById('target-boxes').textContent        = '—';
+            document.getElementById('actual-cycle-time').textContent   = '—';
+            document.getElementById('actual-cycle-time').style.color   = '';
+            document.getElementById('target-cycle-time').textContent   = '—';
+
+            const swatch = document.getElementById('legend-production-color');
+            if (swatch) swatch.style.backgroundColor = statusColor;
+
+            // Show only cumulative chart; hide hourly + nav dots
+            document.getElementById('chart-title').textContent = grp.label + ' — Cumulative Progress';
+            const cumEl  = document.getElementById('cumulative-chart');
+            const hourEl = document.getElementById('hourly-chart');
+            const navEl  = document.querySelector('.chart-nav');
+            hourEl.classList.add('hidden');
+            cumEl.classList.remove('hidden');
+            if (navEl) navEl.style.display = 'none';
+
+            cumEl.innerHTML = '';
+            renderGroupChart(grp, cumEl);
+        }
+
+        // Draws a shared SVG with one cumulative line per group member + one shared target line.
+        function renderGroupChart(grp, container) {
+            const W   = container.clientWidth  || 700;
+            const H   = container.clientHeight || 340;
+            const pad = { top:24, right:56, bottom:56, left:62 };
+            const cW  = W - pad.left - pad.right;
+            const cH  = H - pad.top  - pad.bottom;
+
+            // Union of all time slots, sorted
+            const slotSet = new Set();
+            grp.members.forEach(m => (m.timeline || []).forEach(s => slotSet.add(s.hour)));
+            const slots = [...slotSet].sort();
+            if (slots.length < 2) {
+                container.innerHTML = '<div style="text-align:center;padding:40px;color:#888">No timeline data</div>';
+                return;
+            }
+
+            let maxVal = 10;
+            grp.members.forEach(m => (m.timeline || []).forEach(s => {
+                maxVal = Math.max(maxVal, s.cumActual || 0, s.cumTarget || 0);
+            }));
+
+            const xScale = i => (i / (slots.length - 1)) * cW;
+            const yScale = v => cH - (v / maxVal) * cH;
+
+            const svg = makeSVG(W, H);
+            const g   = svgEl('g', { transform: 'translate(' + pad.left + ',' + pad.top + ')' });
+            svg.appendChild(g);
+
+            // Grid + Y labels
+            for (let i = 0; i <= 5; i++) {
+                const y = cH * i / 5;
+                g.appendChild(svgEl('line', { x1:0, y1:y, x2:cW, y2:y,
+                    stroke:'#e5e7eb', 'stroke-width':1 }));
+                const t = svgEl('text', { x:-6, y:y+4, 'text-anchor':'end',
+                    'font-size':10, fill:'#6b7280' });
+                t.textContent = Math.round(maxVal * (5 - i) / 5);
+                g.appendChild(t);
+            }
+
+            // X labels
+            const step = slots.length > 12 ? Math.ceil(slots.length / 10) : 1;
+            slots.forEach((slot, i) => {
+                const x = xScale(i);
+                g.appendChild(svgEl('line', { x1:x, y1:0, x2:x, y2:cH,
+                    stroke:'#f3f4f6', 'stroke-width':1 }));
+                if (i % step === 0) {
+                    const t = svgEl('text', { x:x, y:cH+14, 'text-anchor':'middle',
+                        'font-size':9, fill:'#9ca3af' });
+                    t.textContent = slot;
+                    g.appendChild(t);
+                }
+            });
+
+            // Y-axis label
+            const yl = svgEl('text', { transform:'rotate(-90)',
+                x:-(cH/2), y:-48, 'text-anchor':'middle', 'font-size':10, fill:'#6b7280' });
+            yl.textContent = 'Units (cumulative)';
+            g.appendChild(yl);
+
+            // Shared target line (from first member; all share the same target shape)
+            const refTL = grp.members[0] ? (grp.members[0].timeline || []) : [];
+            const tgtPts = slots.map((slot, i) => {
+                const s = refTL.find(t => t.hour === slot);
+                return s != null ? xScale(i) + ',' + yScale(s.cumTarget) : null;
+            }).filter(Boolean);
+            if (tgtPts.length > 1) {
+                g.appendChild(svgEl('polyline', {
+                    points: tgtPts.join(' '), fill:'none',
+                    stroke:'#9ca3af', 'stroke-width':2, 'stroke-dasharray':'6,3'
+                }));
+            }
+
+            // One line per member
+            grp.members.forEach(m => {
+                const tl  = m.timeline || [];
+                const pts = slots.map((slot, i) => {
+                    const s = tl.find(t => t.hour === slot);
+                    return s != null ? xScale(i) + ',' + yScale(s.cumActual) : null;
+                }).filter(Boolean);
+                if (pts.length < 2) return;
+
+                g.appendChild(svgEl('polyline', {
+                    points: pts.join(' '), fill:'none',
+                    stroke: m.colour, 'stroke-width':2.5
+                }));
+
+                // Dots + value labels
+                slots.forEach((slot, i) => {
+                    const s = tl.find(t => t.hour === slot);
+                    if (s == null) return;
+                    const x = xScale(i), y = yScale(s.cumActual);
+                    g.appendChild(svgEl('circle', { cx:x, cy:y, r:3.5,
+                        fill:m.colour, stroke:'#fff', 'stroke-width':1.5 }));
+                    if (i % step === 0 || i === slots.length - 1) {
+                        const t = svgEl('text', { x:x, y:y-7, 'text-anchor':'middle',
+                            'font-size':9, fill:m.colour, 'font-weight':'bold' });
+                        t.textContent = s.cumActual;
+                        g.appendChild(t);
+                    }
+                });
+            });
+
+            // Legend strip at bottom
+            const legendY   = cH + 38;
+            const totalW    = grp.members.length * 90;
+            const legendStartX = Math.max(0, (cW - totalW) / 2);
+            grp.members.forEach((m, i) => {
+                const lx = legendStartX + i * 90;
+                g.appendChild(svgEl('rect', { x:lx, y:legendY, width:12, height:12,
+                    fill:m.colour, rx:2 }));
+                const t = svgEl('text', { x:lx+16, y:legendY+10,
+                    'font-size':10, fill:'#374151' });
+                t.textContent = m.label;
+                g.appendChild(t);
+            });
+
+            container.appendChild(svg);
+        }
+
         // ── Batch table ───────────────────────────────────────────────────────────
         function renderBatchTable() {
             const tbody = document.getElementById('batch-info-tbody');
@@ -1778,20 +1988,38 @@ body {
             const cur = sel.value;
             while (sel.options.length > 1) sel.remove(1);
 
-            const options = new Set();
             if (filterType === 'line') {
-                lineCards.forEach(c => options.add(c.id));
-            } else if (filterType === 'product') {
-                lineCards.forEach(c => c.variants.forEach(v => options.add(v.productName)));
-            } else if (filterType === 'variant') {
-                lineCards.forEach(c => c.variants.forEach(v => options.add(v.variantName || v.variantFull)));
+                // Individual lines
+                lineCards.forEach(card => {
+                    const opt = document.createElement('option');
+                    opt.value = opt.textContent = card.id;
+                    sel.appendChild(opt);
+                });
+                // Group views (if any) — separated by optgroup
+                if (lineGroups.length > 0) {
+                    const grpLabel = document.createElement('optgroup');
+                    grpLabel.label = '── Group Views ──';
+                    sel.appendChild(grpLabel);
+                    lineGroups.forEach(grp => {
+                        const opt = document.createElement('option');
+                        opt.value = 'group:' + grp.groupId;
+                        opt.textContent = grp.label;
+                        sel.appendChild(opt);
+                    });
+                }
+            } else {
+                const options = new Set();
+                if (filterType === 'product') {
+                    lineCards.forEach(c => c.variants.forEach(v => options.add(v.productName)));
+                } else if (filterType === 'variant') {
+                    lineCards.forEach(c => c.variants.forEach(v => options.add(v.variantName || v.variantFull)));
+                }
+                options.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = opt.textContent = o;
+                    sel.appendChild(opt);
+                });
             }
-
-            options.forEach(o => {
-                const opt = document.createElement('option');
-                opt.value = opt.textContent = o;
-                sel.appendChild(opt);
-            });
 
             sel.value = [...sel.options].some(o => o.value === cur) ? cur : 'all';
             filterValue = sel.value;
