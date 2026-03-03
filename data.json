@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-03T09:06:46.986Z",
+    "timestamp": "2026-03-03T09:07:08.781Z",
     "date": "2026-03-03",
     "facility": "Main Plant"
   },
@@ -50,6 +50,74 @@
     }
   ],
   "production": [
+    {
+      "id": "LEVO-XL2200SD",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL2200SD",
+        "name": "XL2200SD",
+        "fullName": "LEVO XL2200SD",
+        "cycleTime": 97.06,
+        "devicesPerBox": 8,
+        "actualCycleTime": 3638
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 37,
+        "daily": 299,
+        "boxes": 37
+      },
+      "actual": {
+        "total": 8,
+        "boxes": 1,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 26022573,
+          "quantity": 8,
+          "boxes": 1
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Siyabonga",
+          "name": "Siyabonga",
+          "production": 8,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "target": 299,
+          "progress": 3
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 37,
+          "actual": 0,
+          "cumTarget": 37,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 37,
+          "actual": 8,
+          "cumTarget": 74,
+          "cumActual": 8,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "D001-",
       "product": {
@@ -343,26 +411,26 @@
         "boxes": 25
       },
       "actual": {
-        "total": 3500,
-        "boxes": 4,
-        "progress": 27
+        "total": 4000,
+        "boxes": 5,
+        "progress": 31
       },
       "batches": [
         {
           "id": 26022681,
-          "quantity": 3500,
-          "boxes": 4
+          "quantity": 4000,
+          "boxes": 5
         }
       ],
       "supervisors": [
         {
           "id": "Apelele",
           "name": "Apelele",
-          "production": 3500,
+          "production": 4000,
           "startTime": "08:20",
           "endTime": "16:30",
           "target": 11447,
-          "progress": 31
+          "progress": 35
         }
       ],
       "timeline": [
@@ -380,9 +448,9 @@
         {
           "hour": "09:30",
           "target": 1578,
-          "actual": 500,
+          "actual": 1000,
           "cumTarget": 1841,
-          "cumActual": 3500,
+          "cumActual": 4000,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -393,6 +461,13 @@
   ],
   "summary": {
     "products": [
+      {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 8,
+        "totalTarget": 299,
+        "progress": 3
+      },
       {
         "id": "D001",
         "name": "D001",
@@ -417,18 +492,18 @@
       {
         "id": "Scalpel",
         "name": "Scalpel",
-        "totalProduction": 4500,
+        "totalProduction": 5000,
         "totalTarget": 51052,
-        "progress": 9
+        "progress": 10
       }
     ],
     "supervisors": [
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 4500,
+        "totalProduction": 5000,
         "totalTarget": 12762,
-        "progress": 35,
+        "progress": 39,
         "variants": [
           "Scalpel-PAHS15S",
           "Scalpel-PARC10S"
@@ -462,6 +537,16 @@
         "progress": 25,
         "variants": [
           "D001-"
+        ]
+      },
+      {
+        "id": "Siyabonga",
+        "name": "Siyabonga",
+        "totalProduction": 8,
+        "totalTarget": 299,
+        "progress": 3,
+        "variants": [
+          "LEVO-XL2200SD"
         ]
       }
     ]
