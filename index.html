@@ -22,8 +22,10 @@
     --supervisor-nosi: #D6EAF8;
     --supervisor-mvokwe: #D5F5E3;
     --supervisor-michaela: #F9E79F;
-    --production-color: #e74c3c;
-    --target-color: #10B981;
+    --production-color: #111111;
+    --production-ahead: #10B981;
+    --production-behind: #e74c3c;
+    --target-color: #555555;
     --current-indicator: #F59E0B;
     --completed-variant: #D1E7DD;
     --current-variant: #FFF3CD;
@@ -968,7 +970,7 @@ body {
         <div class="legend-section">
             <div class="legend-container">
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: var(--production-color);"></div>
+                    <div class="legend-color" id="legend-production-color" style="background-color: var(--production-color);"></div>
                     <div class="legend-label">PRODUCTION</div>
                 </div>
                 <div class="legend-item">
@@ -2538,15 +2540,37 @@ body {
             
             const actualCycleTime = calculateActualCycleTime(group.variants);
             
+            // Determine production status colour:
+            // Units/Boxes: green when actual >= target, red when behind
+            // Cycle time: green when actual <= target (faster is better), red when slower
+            const unitsAhead   = totalTarget > 0 && totalProduction >= totalTarget;
+            const boxesAhead   = totalBoxTarget > 0 && totalBoxProduction >= totalBoxTarget;
+            const ctGood       = actualCycleTime !== "N/A" && avgCycleTime > 0 && parseFloat(actualCycleTime) <= avgCycleTime;
+            
+            const unitsColor  = totalTarget === 0   ? 'var(--production-color)' : (unitsAhead ? 'var(--production-ahead)' : 'var(--production-behind)');
+            const boxesColor  = totalBoxTarget === 0 ? 'var(--production-color)' : (boxesAhead ? 'var(--production-ahead)' : 'var(--production-behind)');
+            const ctColor     = (actualCycleTime === "N/A" || avgCycleTime === 0) ? 'var(--production-color)' : (ctGood ? 'var(--production-ahead)' : 'var(--production-behind)');
+            
+            // Overall status drives the legend swatch and progress %
+            const overallColor = unitsColor;
+            
             document.getElementById('current-units').textContent = totalProduction;
+            document.getElementById('current-units').style.color = unitsColor;
             document.getElementById('target-units').textContent = totalTarget;
             document.getElementById('progress-percentage').textContent = `${progressPercentage}%`;
+            document.getElementById('progress-percentage').style.color = unitsColor;
             
             document.getElementById('current-boxes').textContent = totalBoxProduction;
+            document.getElementById('current-boxes').style.color = boxesColor;
             document.getElementById('target-boxes').textContent = totalBoxTarget;
             
             document.getElementById('actual-cycle-time').textContent = actualCycleTime === "N/A" ? "N/A" : actualCycleTime;
+            document.getElementById('actual-cycle-time').style.color = ctColor;
             document.getElementById('target-cycle-time').textContent = avgCycleTime;
+            
+            // Update legend production swatch to match current overall status
+            const legendSwatch = document.getElementById('legend-production-color');
+            if (legendSwatch) legendSwatch.style.backgroundColor = overallColor;
         }
 
         function calculateActualCycleTime(variants) {
@@ -3021,69 +3045,66 @@ body {
             
             const productionLineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
             
-            let productionPathD = '';
+            // Build enriched point list with x, y, production, target for colour decisions
             const productionPoints = [];
-            
-            filteredData.forEach((dataPoint, index) => {
+            filteredData.forEach(dataPoint => {
                 const x = timeToXPosition(dataPoint.minutes);
-                
                 const y = padding.top + chartHeight - (chartHeight * (dataPoint.production / maxValue));
-                
-                if (index === 0) {
-                    productionPathD = `M ${x} ${y}`;
-                } else {
-                    productionPathD += ` L ${x} ${y}`;
-                }
-                
-                productionPoints.push({
-                    x, y,
-                    production: dataPoint.production,
-                    hour: dataPoint.hour
-                });
+                productionPoints.push({ x, y, production: dataPoint.production, target: dataPoint.target, hour: dataPoint.hour, minutes: dataPoint.minutes });
             });
             
-            const productionPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            productionPath.setAttribute('d', productionPathD);
-            productionPath.setAttribute('stroke', 'var(--production-color)');
-            productionPath.setAttribute('stroke-width', '3');
-            productionPath.setAttribute('fill', 'none');
-            productionLineGroup.appendChild(productionPath);
+            // Draw the production line as per-segment paths coloured by ahead/behind at the END point of each segment
+            for (let i = 1; i < productionPoints.length; i++) {
+                const prev = productionPoints[i - 1];
+                const curr = productionPoints[i];
+                const segmentColor = curr.production >= curr.target ? 'var(--production-ahead)' : 'var(--production-behind)';
+                const seg = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                seg.setAttribute('d', `M ${prev.x} ${prev.y} L ${curr.x} ${curr.y}`);
+                seg.setAttribute('stroke', segmentColor);
+                seg.setAttribute('stroke-width', '3');
+                seg.setAttribute('fill', 'none');
+                productionLineGroup.appendChild(seg);
+            }
             
+            // Draw dots and labels at each visible hour mark
             visibleHourMarks.forEach(hourMark => {
                 const minutes = parseTimeToMinutes(hourMark);
-                
                 if (minutes > currentTimeMinutes) return;
                 
                 let productionValue = 0;
+                let targetAtMark = 0;
                 let x = timeToXPosition(minutes);
                 let y = padding.top + chartHeight;
                 
                 const exactMatch = filteredData.find(dp => dp.hour === hourMark);
                 if (exactMatch) {
                     productionValue = exactMatch.production;
+                    targetAtMark = exactMatch.target;
                     y = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
                 } else {
                     const prevPoints = filteredData.filter(dp => dp.minutes <= minutes);
                     const nextPoints = filteredData.filter(dp => dp.minutes > minutes);
-                    
                     if (prevPoints.length > 0 && nextPoints.length > 0) {
                         const prevPoint = prevPoints[prevPoints.length - 1];
                         const nextPoint = nextPoints[0];
-                        
                         const ratio = (minutes - prevPoint.minutes) / (nextPoint.minutes - prevPoint.minutes);
                         productionValue = Math.round(prevPoint.production + (nextPoint.production - prevPoint.production) * ratio);
+                        targetAtMark = Math.round(prevPoint.target + (nextPoint.target - prevPoint.target) * ratio);
                         y = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
                     } else if (prevPoints.length > 0) {
                         productionValue = prevPoints[prevPoints.length - 1].production;
+                        targetAtMark = prevPoints[prevPoints.length - 1].target;
                         y = padding.top + chartHeight - (chartHeight * (productionValue / maxValue));
                     }
                 }
+                
+                const dotColor = productionValue >= targetAtMark ? 'var(--production-ahead)' : 'var(--production-behind)';
                 
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 circle.setAttribute('cx', x);
                 circle.setAttribute('cy', y);
                 circle.setAttribute('r', isFullscreen ? '5' : '4');
-                circle.setAttribute('fill', 'var(--production-color)');
+                circle.setAttribute('fill', dotColor);
                 productionLineGroup.appendChild(circle);
                 
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -3092,19 +3113,21 @@ body {
                 text.setAttribute('text-anchor', 'middle');
                 text.setAttribute('font-size', isFullscreen ? '14' : '12');
                 text.setAttribute('font-weight', 'bold');
-                text.setAttribute('fill', 'var(--production-color)');
+                text.setAttribute('fill', dotColor);
                 text.textContent = productionValue;
                 productionLineGroup.appendChild(text);
             });
             
+            // Emphasised final point
             if (productionPoints.length > 0) {
                 const lastPoint = productionPoints[productionPoints.length - 1];
+                const lastColor = lastPoint.production >= lastPoint.target ? 'var(--production-ahead)' : 'var(--production-behind)';
                 
                 const emphasizedCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 emphasizedCircle.setAttribute('cx', lastPoint.x);
                 emphasizedCircle.setAttribute('cy', lastPoint.y);
                 emphasizedCircle.setAttribute('r', isFullscreen ? '8' : '7');
-                emphasizedCircle.setAttribute('fill', 'var(--production-color)');
+                emphasizedCircle.setAttribute('fill', lastColor);
                 emphasizedCircle.setAttribute('stroke', '#ffffff');
                 emphasizedCircle.setAttribute('stroke-width', '2');
                 productionLineGroup.appendChild(emphasizedCircle);
@@ -3115,7 +3138,7 @@ body {
                 emphasizedText.setAttribute('text-anchor', 'middle');
                 emphasizedText.setAttribute('font-size', isFullscreen ? '18' : '16');
                 emphasizedText.setAttribute('font-weight', 'bold');
-                emphasizedText.setAttribute('fill', 'var(--production-color)');
+                emphasizedText.setAttribute('fill', lastColor);
                 emphasizedText.textContent = lastPoint.production;
                 productionLineGroup.appendChild(emphasizedText);
             }
@@ -3418,6 +3441,12 @@ body {
             
             const productionBarX = barGroupX + (barGroupWidth * 0.08);
             
+            // Colour the production bar based on whether this hour's actual >= target
+            const hourTargetForColor = hourlyTargetMap.get(currentPeriodStr) || 0;
+            const barProductionColor = hourTargetForColor > 0
+                ? (productionValue >= hourTargetForColor ? 'var(--production-ahead)' : 'var(--production-behind)')
+                : 'var(--production-color)';
+            
             const productionBar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             productionBar.setAttribute('x', productionBarX);
             productionBar.setAttribute('y', productionY);
@@ -3425,7 +3454,7 @@ body {
             productionBar.setAttribute('height', productionHeight);
             productionBar.setAttribute('rx', '2');
             productionBar.setAttribute('ry', '2');
-            productionBar.setAttribute('fill', 'var(--production-color)');
+            productionBar.setAttribute('fill', barProductionColor);
             barsGroup.appendChild(productionBar);
             
             const productionLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -3434,7 +3463,7 @@ body {
             productionLabel.setAttribute('text-anchor', 'middle');
             productionLabel.setAttribute('font-size', isFullscreen ? '14' : '12');
             productionLabel.setAttribute('font-weight', 'bold');
-            productionLabel.setAttribute('fill', 'var(--production-color)');
+            productionLabel.setAttribute('fill', barProductionColor);
             productionLabel.textContent = productionValue;
             barsGroup.appendChild(productionLabel);
             
@@ -3473,7 +3502,7 @@ body {
             prodLegendRect.setAttribute('y', padding.top - 25);
             prodLegendRect.setAttribute('width', 12);
             prodLegendRect.setAttribute('height', 12);
-            prodLegendRect.setAttribute('fill', 'var(--production-color)');
+            prodLegendRect.setAttribute('fill', barProductionColor);
             legendGroup.appendChild(prodLegendRect);
             
             const prodLegendText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
