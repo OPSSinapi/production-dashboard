@@ -2541,32 +2541,35 @@ body {
             const actualCycleTime = calculateActualCycleTime(group.variants);
             
             // Single source of truth for colour: is cumulative actual >= cumulative target right now?
-            // This is exactly what the line chart shows — so all cards always match the line.
-            // We derive it the same way the chart does: sum per-slot targets up to the most recent
-            // passed slot, compare against total production so far.
+            // Use IDENTICAL formula to the chart's target line: linear interpolation across the shift.
+            // target at time T = totalTarget * (T - shiftStart) / (shiftEnd - shiftStart)
+            // This guarantees the card colours always match the line chart.
             const now = new Date();
             const nowMinutes = now.getHours() * 60 + now.getMinutes();
             
+            // Derive supervisor's earliest start and latest end from originalData (same as chart)
+            let shiftStartMinutes = null;
+            let shiftEndMinutes = null;
+            if (productionData.originalData?.production) {
+                productionData.originalData.production.forEach(prodItem => {
+                    const supervisorData = prodItem.supervisors?.find(s => s.name === currentSupervisor);
+                    if (!supervisorData) return;
+                    const [sh, sm] = supervisorData.startTime.split(':').map(Number);
+                    const [eh, em] = supervisorData.endTime.split(':').map(Number);
+                    const sMin = sh * 60 + sm;
+                    const eMin = eh * 60 + em;
+                    if (shiftStartMinutes === null || sMin < shiftStartMinutes) shiftStartMinutes = sMin;
+                    if (shiftEndMinutes === null || eMin > shiftEndMinutes) shiftEndMinutes = eMin;
+                });
+            }
+            
             let cumTargetSoFar = 0;
-            group.variants.forEach(variant => {
-                const supervisorVariant = group.supervisorData.variants[variant.variant];
-                if (!supervisorVariant) return;
-                const prodItem = productionData.originalData?.production?.find(p => p.id === variant.variant);
-                const supervisorData = prodItem?.supervisors?.find(s => s.name === currentSupervisor);
-                if (!supervisorData) return;
-                
-                if (variant.hourlyTargets && variant.hourlyTargets.length > 0) {
-                    let cumTarget = 0;
-                    variant.hourlyTargets.forEach(slot => {
-                        if (!slot.hour) return;
-                        const [h, m] = slot.hour.split(':').map(Number);
-                        if ((h * 60 + m) <= nowMinutes) cumTarget += (slot.target || 0);
-                    });
-                    const supervisorRatio = (prodItem && prodItem.targets.daily > 0)
-                        ? supervisorVariant.dailyTarget / prodItem.targets.daily : 1;
-                    cumTargetSoFar += Math.round(cumTarget * supervisorRatio);
-                }
-            });
+            if (shiftStartMinutes !== null && shiftEndMinutes !== null && shiftEndMinutes > shiftStartMinutes) {
+                const elapsed = Math.min(nowMinutes, shiftEndMinutes) - shiftStartMinutes;
+                const workDuration = shiftEndMinutes - shiftStartMinutes;
+                const elapsedProportion = Math.max(0, elapsed / workDuration);
+                cumTargetSoFar = Math.round(totalTarget * elapsedProportion);
+            }
             
             // One boolean drives everything: units, boxes, cycle time, legend, progress %
             const isAhead = cumTargetSoFar === 0 || totalProduction >= cumTargetSoFar;
