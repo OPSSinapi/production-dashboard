@@ -2022,9 +2022,18 @@ body {
             document.getElementById('current-boxes').textContent       = totalBoxProd;
             document.getElementById('current-boxes').style.color       = statusColor;
             document.getElementById('target-boxes').textContent        = totalBoxTarget || '—';
-            document.getElementById('actual-cycle-time').textContent   = '—';
-            document.getElementById('actual-cycle-time').style.color   = '';
-            document.getElementById('target-cycle-time').textContent   = '—';
+            // Weighted average cycle time across all member variants
+            let ctActualW = 0, ctPlanW = 0, ctWeight = 0;
+            memberCards.forEach(c => c.variants.forEach(v => {
+                const w = v.target || 1;
+                if (v.actualCT  > 0) ctActualW += v.actualCT  * w;
+                if (v.cycleTime > 0) { ctPlanW  += v.cycleTime * w; ctWeight += w; }
+            }));
+            const grpActualCT = ctWeight > 0 ? parseFloat((ctActualW / ctWeight).toFixed(2)) : '—';
+            const grpPlanCT   = ctWeight > 0 ? parseFloat((ctPlanW   / ctWeight).toFixed(2)) : '—';
+            document.getElementById('actual-cycle-time').textContent   = grpActualCT;
+            document.getElementById('actual-cycle-time').style.color   = statusColor;
+            document.getElementById('target-cycle-time').textContent   = grpPlanCT;
 
             const swatch = document.getElementById('legend-production-color');
             if (swatch) swatch.style.backgroundColor = statusColor;
