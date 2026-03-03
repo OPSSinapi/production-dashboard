@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-03T08:21:02.509Z",
+    "timestamp": "2026-03-03T08:21:50.896Z",
     "date": "2026-03-03",
     "facility": "Main Plant"
   },
@@ -119,7 +119,7 @@
         "fullName": "SCD XL1000S",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 404
+        "actualCycleTime": 346
       },
       "shiftId": "normal-time",
       "targets": {
@@ -128,35 +128,35 @@
         "boxes": 82
       },
       "actual": {
-        "total": 72,
-        "boxes": 6,
-        "progress": 7
+        "total": 84,
+        "boxes": 7,
+        "progress": 8
       },
       "batches": [
         {
           "id": 26022677,
-          "quantity": 72,
-          "boxes": 6
+          "quantity": 84,
+          "boxes": 7
         }
       ],
       "supervisors": [
         {
           "id": "Michaela",
           "name": "Michaela",
-          "production": 72,
+          "production": 84,
           "startTime": "07:30",
           "endTime": "16:30",
           "target": 989,
-          "progress": 7
+          "progress": 8
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
           "target": 122,
-          "actual": 72,
+          "actual": 84,
           "cumTarget": 122,
-          "cumActual": 72,
+          "cumActual": 84,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -233,7 +233,7 @@
         "fullName": "Scalpel PAHS15S",
         "cycleTime": 2.28,
         "devicesPerBox": 500,
-        "actualCycleTime": 29
+        "actualCycleTime": 3
       },
       "shiftId": "normal-time",
       "targets": {
@@ -259,22 +259,79 @@
           "name": "Apelele",
           "production": 1000,
           "startTime": "07:30",
-          "endTime": "16:30",
-          "target": 12763,
-          "progress": 8
+          "endTime": "08:20",
+          "target": 1315,
+          "progress": 76
         }
       ],
       "timeline": [
         {
           "hour": "08:30",
-          "target": 1578,
+          "target": 1315,
           "actual": 0,
-          "cumTarget": 1578,
+          "cumTarget": 1315,
           "cumActual": 0,
-          "transitionTarget": 0,
+          "transitionTarget": 1315,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
+          "currentVariantMinutes": 50
+        }
+      ]
+    },
+    {
+      "id": "Scalpel-PARC10S",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PARC10S",
+        "name": "PARC10S",
+        "fullName": "Scalpel PARC10S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 13
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 12763,
+        "boxes": 25
+      },
+      "actual": {
+        "total": 2000,
+        "boxes": 2,
+        "progress": 16
+      },
+      "batches": [
+        {
+          "id": 26022681,
+          "quantity": 2000,
+          "boxes": 2
+        }
+      ],
+      "supervisors": [
+        {
+          "id": "Apelele",
+          "name": "Apelele",
+          "production": 2000,
+          "startTime": "08:20",
+          "endTime": "16:30",
+          "target": 11447,
+          "progress": 17
+        }
+      ],
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 263,
+          "actual": 2000,
+          "cumTarget": 263,
+          "cumActual": 2000,
+          "transitionTarget": 263,
+          "previousVariant": "Scalpel-PAHS15S",
+          "previousVariantMinutes": 50,
+          "currentVariantMinutes": 10
         }
       ]
     }
@@ -291,9 +348,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 72,
+        "totalProduction": 84,
         "totalTarget": 989,
-        "progress": 7
+        "progress": 8
       },
       {
         "id": "SUM",
@@ -305,28 +362,29 @@
       {
         "id": "Scalpel",
         "name": "Scalpel",
-        "totalProduction": 1000,
-        "totalTarget": 25526,
-        "progress": 4
+        "totalProduction": 3000,
+        "totalTarget": 51052,
+        "progress": 6
       }
     ],
     "supervisors": [
       {
         "id": "Apelele",
         "name": "Apelele",
-        "totalProduction": 1000,
-        "totalTarget": 12763,
-        "progress": 8,
+        "totalProduction": 3000,
+        "totalTarget": 12762,
+        "progress": 24,
         "variants": [
-          "Scalpel-PAHS15S"
+          "Scalpel-PAHS15S",
+          "Scalpel-PARC10S"
         ]
       },
       {
         "id": "Michaela",
         "name": "Michaela",
-        "totalProduction": 72,
+        "totalProduction": 84,
         "totalTarget": 989,
-        "progress": 7,
+        "progress": 8,
         "variants": [
           "SCD-XL1000S"
         ]
