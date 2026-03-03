@@ -2540,16 +2540,60 @@ body {
             
             const actualCycleTime = calculateActualCycleTime(group.variants);
             
-            // Determine production status colour:
-            // Units/Boxes: green when actual >= target, red when behind
-            // Cycle time: green when actual <= target (faster is better), red when slower
-            const unitsAhead   = totalTarget > 0 && totalProduction >= totalTarget;
-            const boxesAhead   = totalBoxTarget > 0 && totalBoxProduction >= totalBoxTarget;
-            const ctGood       = actualCycleTime !== "N/A" && avgCycleTime > 0 && parseFloat(actualCycleTime) <= avgCycleTime;
+            // Determine production status colour.
+            // For units/boxes: compare actual vs the EXPECTED cumulative target at the current time,
+            // not the full daily target — otherwise we're always "behind" until shift end.
+            // We derive expected-so-far by summing the cumTarget of the current (or most recent past) 
+            // timeline slot across all variants for this supervisor.
+            const now = new Date();
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
             
-            const unitsColor  = totalTarget === 0   ? 'var(--production-color)' : (unitsAhead ? 'var(--production-ahead)' : 'var(--production-behind)');
-            const boxesColor  = totalBoxTarget === 0 ? 'var(--production-color)' : (boxesAhead ? 'var(--production-ahead)' : 'var(--production-behind)');
-            const ctColor     = (actualCycleTime === "N/A" || avgCycleTime === 0) ? 'var(--production-color)' : (ctGood ? 'var(--production-ahead)' : 'var(--production-behind)');
+            let expectedSoFarUnits = 0;
+            let expectedSoFarBoxes = 0;
+            
+            group.variants.forEach(variant => {
+                const supervisorVariant = group.supervisorData.variants[variant.variant];
+                if (!supervisorVariant) return;
+                const prodItem = productionData.originalData?.production?.find(p => p.id === variant.variant);
+                const supervisorData = prodItem?.supervisors?.find(s => s.name === currentSupervisor);
+                if (!supervisorData) return;
+                
+                // Find the most recent past timeline slot's cumTarget for this variant
+                if (variant.hourlyTargets && variant.hourlyTargets.length > 0) {
+                    // hourlyTargets stores per-slot target (not cumulative), so accumulate up to now
+                    let cumTarget = 0;
+                    variant.hourlyTargets.forEach(slot => {
+                        if (!slot.hour) return;
+                        const [h, m] = slot.hour.split(':').map(Number);
+                        const slotMinutes = h * 60 + m;
+                        if (slotMinutes <= nowMinutes) {
+                            cumTarget += (slot.target || 0);
+                        }
+                    });
+                    // Scale by supervisor share if multiple supervisors
+                    const supervisorRatio = (prodItem && prodItem.targets.daily > 0)
+                        ? supervisorVariant.dailyTarget / prodItem.targets.daily
+                        : 1;
+                    expectedSoFarUnits += Math.round(cumTarget * supervisorRatio);
+                    
+                    // Box expected-so-far: same ratio applied to box target proportionally
+                    const boxRatio = prodItem && prodItem.targets.daily > 0
+                        ? (variant.dailyBoxTarget || 0) / prodItem.targets.daily
+                        : 0;
+                    expectedSoFarBoxes += Math.round(cumTarget * boxRatio * supervisorRatio);
+                }
+            });
+            
+            // Colour logic:
+            // Units/Boxes: green when actual >= expected-so-far (on or ahead of pace)
+            // Cycle time: green when actual <= target (lower is faster = better)
+            const unitsAhead = expectedSoFarUnits === 0 || totalProduction >= expectedSoFarUnits;
+            const boxesAhead = expectedSoFarBoxes === 0 || totalBoxProduction >= expectedSoFarBoxes;
+            const ctGood     = actualCycleTime !== "N/A" && avgCycleTime > 0 && parseFloat(actualCycleTime) <= avgCycleTime;
+            
+            const unitsColor = unitsAhead ? 'var(--production-ahead)' : 'var(--production-behind)';
+            const boxesColor = boxesAhead ? 'var(--production-ahead)' : 'var(--production-behind)';
+            const ctColor    = (actualCycleTime === "N/A" || avgCycleTime === 0) ? 'var(--production-color)' : (ctGood ? 'var(--production-ahead)' : 'var(--production-behind)');
             
             // Overall status drives the legend swatch and progress %
             const overallColor = unitsColor;
@@ -2993,31 +3037,36 @@ body {
                 xLabelsGroup.appendChild(text);
                 
                 if (minutes < currentTimeMinutes) {
-                    const hourProduction = hourlyData[hourMark] ? hourlyData[hourMark].production : 0;
+                    // Use cumulative actual vs cumulative target at this hour mark
+                    // (not hourly slot production, which would be a delta vs a running total)
                     const dataPoint = filteredData.find(dp => dp.hour === hourMark);
-                    let hourTarget = 0;
+                    let cumActual = 0;
+                    let cumTarget = 0;
                     
                     if (dataPoint) {
-                        hourTarget = dataPoint.target;
+                        cumActual = dataPoint.production;
+                        cumTarget = dataPoint.target;
                     } else {
+                        // Interpolate between surrounding data points
                         const prevPoints = filteredData.filter(dp => dp.minutes <= minutes);
                         const nextPoints = filteredData.filter(dp => dp.minutes > minutes);
                         
                         if (prevPoints.length > 0 && nextPoints.length > 0) {
                             const prevPoint = prevPoints[prevPoints.length - 1];
                             const nextPoint = nextPoints[0];
-                            
                             const ratio = (minutes - prevPoint.minutes) / (nextPoint.minutes - prevPoint.minutes);
-                            hourTarget = Math.round(prevPoint.target + (nextPoint.target - prevPoint.target) * ratio);
+                            cumActual = Math.round(prevPoint.production + (nextPoint.production - prevPoint.production) * ratio);
+                            cumTarget = Math.round(prevPoint.target + (nextPoint.target - prevPoint.target) * ratio);
                         } else if (prevPoints.length > 0) {
-                            hourTarget = prevPoints[prevPoints.length - 1].target;
+                            cumActual = prevPoints[prevPoints.length - 1].production;
+                            cumTarget = prevPoints[prevPoints.length - 1].target;
                         }
                     }
                     
                     let statusSymbol = '';
                     let fillColor = '#94a3b8';
                     
-                    if (hourProduction >= hourTarget) {
+                    if (cumActual >= cumTarget) {
                         statusSymbol = '✓';
                         fillColor = '#0d9488';
                     } else {
