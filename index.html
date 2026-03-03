@@ -1191,57 +1191,6 @@ body {
             setInterval(fetchData, UPDATE_INTERVAL);
         }
 
-        // ── Legacy schema fallback ────────────────────────────────────────────────
-        // Builds lineCards[] from the old data.json (summary.supervisors) when the
-        // new AppsScript (which emits lineCards + lineGroups directly) is not yet deployed.
-        function buildLineCardsFromLegacy(data) {
-            const cards = [];
-            if (!data.production || !data.summary) return cards;
-            const shiftsLookup = {};
-            (data.shifts || []).forEach(s => { shiftsLookup[s.id] = s; });
-
-            (data.summary.supervisors || []).forEach(sup => {
-                const variants = [];
-                let totalProd = 0, totalTarget = 0;
-
-                (sup.variants || []).forEach(vid => {
-                    const item = data.production.find(p => p.id === vid);
-                    if (!item) return;
-                    const shift   = shiftsLookup[item.shiftId] || {};
-                    const supData = (item.supervisors || []).find(s => s.name === sup.name) || {};
-                    const startTime = supData.startTime || shift.startTime || '07:30';
-                    const endTime   = supData.endTime   || shift.endTime   || '16:30';
-                    const target    = supData.target    != null ? supData.target    : (item.targets.daily || 0);
-                    const prod      = supData.production != null ? supData.production : (item.actual.total || 0);
-                    totalProd += prod; totalTarget += target;
-                    variants.push({
-                        combinedId:    item.id,
-                        productName:   item.product.name,
-                        variantName:   item.variant.name || item.variant.id || item.product.name,
-                        variantFull:   item.variant.fullName || item.product.name,
-                        cycleTime:     item.variant.cycleTime  || 0,
-                        actualCT:      item.variant.actualCycleTime || 0,
-                        devicesPerBox: item.variant.devicesPerBox   || 0,
-                        target, production: prod, boxes: item.actual.boxes || 0,
-                        progress: target > 0 ? Math.round(prod / target * 100) : 0,
-                        startTime, endTime, timeline: item.timeline || []
-                    });
-                });
-
-                variants.sort((a, b) => parseMin(a.startTime) - parseMin(b.startTime));
-                const lineStart = variants.length ? variants[0].startTime : '07:30';
-                const lineEnd   = variants.length ? variants[variants.length-1].endTime : '16:30';
-                cards.push({
-                    id: sup.name, productionLine: sup.name, shiftId: null, shiftName: '',
-                    startTime: lineStart, endTime: lineEnd,
-                    totalProduction: totalProd, totalTarget,
-                    progress: totalTarget > 0 ? Math.round(totalProd/totalTarget*100) : 0,
-                    variants
-                });
-            });
-            return cards.sort((a, b) => a.id.localeCompare(b.id));
-        }
-
         // ── Data fetching ─────────────────────────────────────────────────────────
         async function fetchData() {
             try {
@@ -1255,13 +1204,7 @@ body {
                 rawData = data;
 
                 // Use lineCards from AppsScript output
-                // Use lineCards from new AppsScript, or fall back to building from
-                // the old schema (summary.supervisors) for backward compatibility.
-                if (data.lineCards && data.lineCards.length) {
-                    lineCards = data.lineCards.sort((a, b) => a.id.localeCompare(b.id));
-                } else {
-                    lineCards = buildLineCardsFromLegacy(data);
-                }
+                lineCards = (data.lineCards || []).sort((a, b) => a.id.localeCompare(b.id));
                 lineGroups = data.lineGroups || [];
 
                 // Restore or default line selection
@@ -1795,7 +1738,7 @@ body {
             // Left panel: group label + member colour tags
             document.getElementById('supervisor-name').textContent = grp.label;
             document.getElementById('product-name').textContent    = grp.shiftWindow
-                ? grp.shiftWindow.startTime + ' – ' + grp.shiftWindow.endTime : '';
+                ? grp.shiftWindow.startTime + ' - ' + grp.shiftWindow.endTime : '';
 
             const seq = document.getElementById('variant-sequence');
             seq.innerHTML = '';
@@ -1844,7 +1787,7 @@ body {
             if (swatch) swatch.style.backgroundColor = statusColor;
 
             // Show only cumulative chart; hide hourly + nav dots
-            document.getElementById('chart-title').textContent = grp.label + ' — Cumulative Progress';
+            document.getElementById('chart-title').textContent = grp.label + ' - Cumulative Progress';
             const cumEl  = document.getElementById('cumulative-chart');
             const hourEl = document.getElementById('hourly-chart');
             const navEl  = document.querySelector('.chart-nav');
@@ -2057,16 +2000,25 @@ body {
             while (sel.options.length > 1) sel.remove(1);
 
             if (filterType === 'line') {
-                // Individual lines
+                // Build set of lineCard IDs that are fully covered by a group
+                // (these are suppressed from the individual list — only accessible via their group)
+                const groupCoveredIds = new Set();
+                lineGroups.forEach(grp => {
+                    grp.members.forEach(m => groupCoveredIds.add(m.lineCardId));
+                });
+
+                // Individual lines (only those NOT covered by a group)
                 lineCards.forEach(card => {
+                    if (groupCoveredIds.has(card.id)) return;
                     const opt = document.createElement('option');
                     opt.value = opt.textContent = card.id;
                     sel.appendChild(opt);
                 });
-                // Group views (if any) — separated by optgroup
+
+                // Group views
                 if (lineGroups.length > 0) {
                     const grpLabel = document.createElement('optgroup');
-                    grpLabel.label = '── Group Views ──';
+                    grpLabel.label = '-- Group Views --';
                     sel.appendChild(grpLabel);
                     lineGroups.forEach(grp => {
                         const opt = document.createElement('option');
