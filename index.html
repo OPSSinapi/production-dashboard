@@ -1536,17 +1536,20 @@ body {
                 const cumEl2   = document.getElementById('cumulative-chart');
                 const hourlyEl = document.getElementById('hourly-chart');
                 const navEl2   = document.querySelector('.chart-nav');
+                const chartTitle = document.getElementById('chart-title');
                 if (viewingDateIdx > 0) {
                     // Past data — show only cumulative, hide hourly + nav entirely
-                    if (cumEl2)   cumEl2.classList.remove('hidden');
-                    if (hourlyEl) hourlyEl.classList.add('hidden');
-                    if (navEl2)   navEl2.style.display = 'none';
+                    if (cumEl2)    cumEl2.classList.remove('hidden');
+                    if (hourlyEl)  hourlyEl.classList.add('hidden');
+                    if (navEl2)    navEl2.style.display = 'none';
+                    if (chartTitle) chartTitle.textContent = 'PRODUCTION PROGRESS';
                     currentChartIdx = 0;
                 } else {
                     // Live data — always reset to cumulative as default, restore nav
-                    if (cumEl2)   cumEl2.classList.remove('hidden');
-                    if (hourlyEl) hourlyEl.classList.add('hidden');
-                    if (navEl2)   navEl2.style.display = '';
+                    if (cumEl2)    cumEl2.classList.remove('hidden');
+                    if (hourlyEl)  hourlyEl.classList.add('hidden');
+                    if (navEl2)    navEl2.style.display = '';
+                    if (chartTitle) chartTitle.textContent = "TODAY'S PRODUCTION PROGRESS";
                     document.querySelectorAll('.chart-nav-dot').forEach(d => {
                         d.classList.toggle('active', d.getAttribute('data-chart') === 'cumulative');
                     });
@@ -1676,8 +1679,13 @@ body {
                 return;
             }
 
-            const startMin = Math.min(...card.variants.map(v => parseMin(v.startTime)));
-            const endMin   = Math.max(...card.variants.map(v => parseMin(v.endTime)));
+            // card.startTime/endTime are the authoritative shift window (from shift object).
+            // variant.startTime/endTime only differ for mid-shift variant transitions (e.g. PopUp EFB).
+            // Use card times as the chart axis bounds so stale variant.endTime in old archives
+            // never clips the chart.
+            const startMin = parseMin(card.startTime) || Math.min(...card.variants.map(v => parseMin(v.startTime)));
+            const cardEndMin = parseMin(card.endTime);
+            const endMin   = cardEndMin || Math.max(...card.variants.map(v => parseMin(v.endTime)));
             const nm       = nowMin();
 
             // Build cumulative series starting at zero at shiftStart
@@ -1697,8 +1705,9 @@ body {
             if (isPastData) {
                 const lastPt = points[points.length - 1];
                 if (lastPt.minutes < endMin) {
-                    // Extend target to full shift end. Keep prod at last known value (no fake spike).
-                    points.push({ hour: null, minutes: endMin, prod: lastPt.prod, target: totalTarget });
+                    // Extend to shift end: prod stays flat at totalProd (handles overtime),
+                    // target reaches full totalTarget.
+                    points.push({ hour: null, minutes: endMin, prod: totalProd, target: totalTarget });
                 } else {
                     lastPt.target = totalTarget;
                 }
@@ -1738,7 +1747,7 @@ body {
                 const endSlot = `${String(endH).padStart(2,'0')}:${String(endMn).padStart(2,'0')}`;
                 if (!chartHourMarks.includes(endSlot)) chartHourMarks.push(endSlot);
             }
-            drawLineChart(container, points, chartHourMarks, startMin, endMin, totalTarget, nm, 'Units');
+            drawLineChart(container, points, chartHourMarks, startMin, endMin, totalTarget, totalProd, nm, 'Units');
         }
 
         // ── Hourly chart ──────────────────────────────────────────────────────────
@@ -1809,7 +1818,7 @@ body {
             svg.appendChild(g);
         }
 
-        function drawLineChart(container, points, hourMarks, startMin, endMin, totalTarget, nm, yLabel) {
+        function drawLineChart(container, points, hourMarks, startMin, endMin, totalTarget, totalProd, nm, yLabel) {
             const area = container.closest('.chart-area');
             const W = area.clientWidth, H = area.clientHeight;
             if (W <= 0 || H <= 0) { setTimeout(() => { /* will be called again on resize */ }, 100); return; }
@@ -1823,7 +1832,13 @@ body {
             const cW = W - pad.left - pad.right;
             const cH = H - pad.top  - pad.bottom;
 
-            const maxVal = Math.max(...points.map(p => Math.max(p.prod, p.target))) || 100;
+            // Include totalProd and totalTarget as floor values so overtime production
+            // and full-shift target always fit within the y-axis even if points don't contain them yet.
+            const maxVal = Math.max(
+                totalProd || 0,
+                totalTarget || 0,
+                ...points.map(p => Math.max(p.prod || 0, p.target || 0))
+            ) || 100;
             const svg = makeSVG(W, H);
             container.appendChild(svg);
 
