@@ -1697,9 +1697,9 @@ body {
             if (isPastData) {
                 const lastPt = points[points.length - 1];
                 if (lastPt.minutes < endMin) {
-                    points.push({ hour: null, minutes: endMin, prod: totalProd, target: totalTarget });
+                    // Extend target to full shift end. Keep prod at last known value (no fake spike).
+                    points.push({ hour: null, minutes: endMin, prod: lastPt.prod, target: totalTarget });
                 } else {
-                    lastPt.prod   = totalProd;
                     lastPt.target = totalTarget;
                 }
             } else {
@@ -1720,21 +1720,23 @@ body {
             // For past data: generate full hourly marks from startMin to endMin
             // so x-axis shows all timestamps and ticks even if archive is truncated.
             // For live data: only marks up to the last data slot (hours array).
+            // Generate clean hourly tick marks (every 60 min from startMin+60 to endMin).
+            // For live data: only include marks that exist in the data (have production slots).
+            // For past data: generate all marks for the full shift.
             let chartHourMarks = hours;
             if (isPastData) {
-                // Use the actual slot keys from the data if available — they define the real cadence.
-                // Fill in any missing slots up to endMin so ticks appear for the full shift.
-                // Step = 30 min to match the :30 slot cadence used by the AppsScript timeline.
-                const knownSlotMins = new Set(hours.map(h => parseMin(h)));
-                chartHourMarks = [...hours]; // start with real data slots
-                for (let m = startMin + 30; m <= endMin; m += 30) {
-                    if (!knownSlotMins.has(m)) {
-                        const hh = Math.floor(m / 60), mm = m % 60;
-                        chartHourMarks.push(`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`);
-                    }
+                // Show one tick per hour (every 60 min), starting at startMin+60.
+                // Matches cadence: 07:30 start → 08:30, 09:30, 10:30...
+                //                  06:00 start → 07:00, 08:00, 09:00...
+                chartHourMarks = [];
+                for (let m = startMin + 60; m <= endMin; m += 60) {
+                    const hh = Math.floor(m / 60), mm = m % 60;
+                    chartHourMarks.push(`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`);
                 }
-                // Sort by minutes
-                chartHourMarks.sort((a, b) => parseMin(a) - parseMin(b));
+                // Always include the shift end mark
+                const endH = Math.floor(endMin/60), endMn = endMin%60;
+                const endSlot = `${String(endH).padStart(2,'0')}:${String(endMn).padStart(2,'0')}`;
+                if (!chartHourMarks.includes(endSlot)) chartHourMarks.push(endSlot);
             }
             drawLineChart(container, points, chartHourMarks, startMin, endMin, totalTarget, nm, 'Units');
         }
@@ -2198,16 +2200,16 @@ body {
             grp.members.forEach(m => {
                 const tl  = m.timeline || [];
 
-                // Target line (dashed, same colour, lighter)
-                const tgtPts = slots.map((slot, i) => {
-                    const s = tl.find(t => t.hour === slot);
-                    return s != null ? xScale(i) + ',' + yScale(s.cumTarget) : null;
-                }).filter(Boolean);
-                if (tgtPts.length > 1) {
-                    g.appendChild(svgEl('polyline', {
-                        points: tgtPts.join(' '), fill:'none',
-                        stroke: m.colour, 'stroke-width':1.5,
-                        'stroke-dasharray':'5,3', opacity:'0.45'
+                // Target line: straight diagonal from (start,0) to (end, member.target)
+                // Using linear interpolation, not per-slot cumTarget (which can drop at variant transitions)
+                if (m.target > 0) {
+                    const tgtStart = xScale(0) + ',' + yScale(0);
+                    const tgtEnd   = xScale(slots.length - 1) + ',' + yScale(m.target);
+                    g.appendChild(svgEl('line', {
+                        x1: xScale(0), y1: yScale(0),
+                        x2: xScale(slots.length - 1), y2: yScale(m.target),
+                        stroke: m.colour, 'stroke-width': 1.5,
+                        'stroke-dasharray': '5,3', opacity: '0.4'
                     }));
                 }
 
