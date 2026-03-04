@@ -1692,19 +1692,20 @@ body {
                 points.push({ hour: h, minutes: min, prod: cumProd, target });
             });
 
-            // Ensure last point matches reported total
-            if (points.length > 1) points[points.length - 1].prod = totalProd;
-
-            // For past data: always add a final point at shiftEnd so target reaches 100%
+            // For past data: add endpoint at shiftEnd. Do NOT overwrite intermediate points.
+            // For live data: add current-time interpolation point.
             if (isPastData) {
                 const lastPt = points[points.length - 1];
                 if (lastPt.minutes < endMin) {
                     points.push({ hour: null, minutes: endMin, prod: totalProd, target: totalTarget });
                 } else {
+                    lastPt.prod   = totalProd;
                     lastPt.target = totalTarget;
                 }
             } else {
-                // Live: add current-time interpolation point if needed
+                // Live: ensure last point matches reported total
+                if (points.length > 1) points[points.length - 1].prod = totalProd;
+                // Add current-time interpolation point if needed
                 if (nm > startMin && nm <= endMin) {
                     const exact = points.find(p => p.minutes === nm);
                     if (!exact) {
@@ -1716,23 +1717,24 @@ body {
                 }
             }
 
-            // Ensure final point represents totalProd
-            if (points.length > 1) points[points.length - 1].prod = totalProd;
-
             // For past data: generate full hourly marks from startMin to endMin
             // so x-axis shows all timestamps and ticks even if archive is truncated.
             // For live data: only marks up to the last data slot (hours array).
             let chartHourMarks = hours;
             if (isPastData) {
-                chartHourMarks = [];
-                for (let m = startMin + 30; m <= endMin; m += 60) {
-                    const h = Math.floor(m / 60), mn = m % 60;
-                    chartHourMarks.push(`${String(h).padStart(2,'0')}:${String(mn).padStart(2,'0')}`);
+                // Use the actual slot keys from the data if available — they define the real cadence.
+                // Fill in any missing slots up to endMin so ticks appear for the full shift.
+                // Step = 30 min to match the :30 slot cadence used by the AppsScript timeline.
+                const knownSlotMins = new Set(hours.map(h => parseMin(h)));
+                chartHourMarks = [...hours]; // start with real data slots
+                for (let m = startMin + 30; m <= endMin; m += 30) {
+                    if (!knownSlotMins.has(m)) {
+                        const hh = Math.floor(m / 60), mm = m % 60;
+                        chartHourMarks.push(`${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`);
+                    }
                 }
-                // Always include endMin slot
-                const endH = Math.floor(endMin/60), endMn = endMin%60;
-                const endSlot = `${String(endH).padStart(2,'0')}:${String(endMn).padStart(2,'0')}`;
-                if (!chartHourMarks.includes(endSlot)) chartHourMarks.push(endSlot);
+                // Sort by minutes
+                chartHourMarks.sort((a, b) => parseMin(a) - parseMin(b));
             }
             drawLineChart(container, points, chartHourMarks, startMin, endMin, totalTarget, nm, 'Units');
         }
