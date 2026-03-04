@@ -1199,6 +1199,9 @@ body {
         }
 
         function nowMin() {
+            // When viewing past archived data, treat the day as fully complete.
+            // Return 1439 (23:59) so all time-based cutoffs show the full day.
+            if (viewingDateIdx > 0) return 1439;
             const n = new Date();
             return n.getHours() * 60 + n.getMinutes();
         }
@@ -1548,7 +1551,8 @@ body {
 
             sorted.forEach((v, i) => {
                 const start = parseMin(v.startTime), end = parseMin(v.endTime);
-                const status = now < start ? 'upcoming' : now > end ? 'completed' : 'current';
+                const status = (viewingDateIdx > 0 || now > end) ? 'completed'
+                    : now < start ? 'upcoming' : 'current';
 
                 const el = document.createElement('div');
                 el.className = `variant-item ${status}`;
@@ -2445,7 +2449,9 @@ body {
                 const nm = nowMin();
                 const h = Math.floor(nm / 60), m = nm % 60;
                 const slot = m < 30 ? `${String(h).padStart(2,'0')}:30` : `${String(h+1).padStart(2,'0')}:30`;
-                title.textContent = `CURRENT HOUR: ${slot} PRODUCTION`;
+                title.textContent = viewingDateIdx > 0
+                    ? `HOURLY PRODUCTION`
+                    : `CURRENT HOUR: ${slot} PRODUCTION`;
             }
         }
 
@@ -2458,13 +2464,20 @@ body {
         }
 
         function updateCurrentHourInfo() {
+            const el = document.getElementById('current-hour-info');
+            if (viewingDateIdx > 0) {
+                // Past data — shift is complete, current time is irrelevant
+                el.textContent = 'COMPLETED SHIFT';
+                el.style.color = 'var(--production-ahead)';
+                return;
+            }
+            el.style.color = '';
             const now = new Date();
             const h = now.getHours(), m = now.getMinutes();
             const nextSlotH = m < 30 ? h : h + 1;
             const minsLeft  = m < 30 ? 30 - m : 90 - m;
             const slot = `${String(nextSlotH).padStart(2,'0')}:30`;
-            document.getElementById('current-hour-info').textContent =
-                `CURRENT HOUR: ${slot} (${minsLeft} MIN LEFT)`;
+            el.textContent = `CURRENT HOUR: ${slot} (${minsLeft} MIN LEFT)`;
         }
 
         // ── Fullscreen ────────────────────────────────────────────────────────────
