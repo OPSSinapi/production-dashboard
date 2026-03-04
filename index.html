@@ -1491,9 +1491,12 @@ body {
             const showItem = item => {
                 if (item.type === 'group') {
                     activeGroup = item.data;
+                    // Keep filteredCards as the member lineCards so renderBatchTable has data
+                    filteredCards = lineCards.filter(c => item.data.members.some(m => m.lineCardId === c.id));
                     renderGroupCard(item.data);
                 } else {
                     activeGroup = null;
+                    filteredCards = [item.data];
                     const navEl = document.querySelector('.chart-nav');
                     if (navEl) navEl.style.display = '';
                     displayCard(item.data);
@@ -1526,6 +1529,15 @@ body {
             } else {
                 renderLineInfo(card);
                 renderMetrics(card);
+                // Hide hourly bar chart for past/archived data
+                const hourlyEl = document.getElementById('hourly-chart');
+                const navEl2   = document.querySelector('.chart-nav');
+                if (viewingDateIdx > 0) {
+                    if (hourlyEl) hourlyEl.classList.add('hidden');
+                    if (navEl2)   navEl2.style.display = 'none';
+                } else {
+                    if (hourlyEl) hourlyEl.classList.remove('hidden');
+                }
                 setTimeout(() => {
                     renderCumulativeChart(card);
                     renderHourlyChart(card);
@@ -1655,11 +1667,12 @@ body {
             const nm       = nowMin();
 
             // Build cumulative series starting at zero at shiftStart
+            const isPastData = viewingDateIdx > 0;
             const points = [{ hour: null, minutes: startMin, prod: 0, target: 0 }];
             let cumProd = 0;
             hours.forEach(h => {
                 const min = parseMin(h);
-                if (min > nm + 60) return;
+                if (!isPastData && min > nm + 60) return;  // live: skip future slots
                 cumProd += slotMap[h].prod;
                 const target = Math.round(totalTarget * (min - startMin) / (endMin - startMin));
                 points.push({ hour: h, minutes: min, prod: cumProd, target });
@@ -1668,14 +1681,24 @@ body {
             // Ensure last point matches reported total
             if (points.length > 1) points[points.length - 1].prod = totalProd;
 
-            // Add current-time point if not already present
-            if (nm > startMin && nm <= endMin) {
-                const exact = points.find(p => p.minutes === nm);
-                if (!exact) {
-                    const prev = [...points].reverse().find(p => p.minutes < nm);
-                    const target = Math.round(totalTarget * (nm - startMin) / (endMin - startMin));
-                    points.push({ hour: null, minutes: nm, prod: prev ? prev.prod : totalProd, target });
-                    points.sort((a, b) => a.minutes - b.minutes);
+            // For past data: always add a final point at shiftEnd so target reaches 100%
+            if (isPastData) {
+                const lastPt = points[points.length - 1];
+                if (lastPt.minutes < endMin) {
+                    points.push({ hour: null, minutes: endMin, prod: totalProd, target: totalTarget });
+                } else {
+                    lastPt.target = totalTarget;
+                }
+            } else {
+                // Live: add current-time interpolation point if needed
+                if (nm > startMin && nm <= endMin) {
+                    const exact = points.find(p => p.minutes === nm);
+                    if (!exact) {
+                        const prev = [...points].reverse().find(p => p.minutes < nm);
+                        const target = Math.round(totalTarget * (nm - startMin) / (endMin - startMin));
+                        points.push({ hour: null, minutes: nm, prod: prev ? prev.prod : totalProd, target });
+                        points.sort((a, b) => a.minutes - b.minutes);
+                    }
                 }
             }
 
@@ -2118,6 +2141,26 @@ body {
             // One target line per member (dashed, same colour as their production line)
             // BC01 lines share the same target shape but we draw per-member anyway for consistency.
             // For variant groups (PopUp etc.) each variant has its own target curve.
+
+            // For past data: extend each member's last slot to shift end
+            // so target line always reaches full-shift target
+            if (viewingDateIdx > 0 && grp.shiftWindow) {
+                const shiftEndSlot = grp.shiftWindow.endTime;
+                grp.members.forEach(m => {
+                    if (!m.timeline || !m.timeline.length) return;
+                    const last = m.timeline[m.timeline.length - 1];
+                    if (last.hour !== shiftEndSlot) {
+                        m.timeline = [...m.timeline, {
+                            hour: shiftEndSlot,
+                            actual: 0, target: 0,
+                            cumActual: last.cumActual,
+                            cumTarget: m.target  // full shift target
+                        }];
+                    } else {
+                        last.cumTarget = m.target;
+                    }
+                });
+            }
 
             // One line per member: dashed target then solid actual
             grp.members.forEach(m => {
