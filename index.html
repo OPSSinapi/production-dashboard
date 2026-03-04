@@ -1812,12 +1812,16 @@ body {
                 label.textContent = h;
                 xg.appendChild(label);
 
-                if (min <= nm) {
+                // For past data: show ✓/✗ for every slot (shift is complete)
+                // For live data: only show ticks up to current time, with ● for current slot
+                const isPast = viewingDateIdx > 0;
+                if (isPast || min <= nm) {
                     const dp = points.find(p => p.minutes === min) || points.filter(p => p.minutes <= min).pop();
                     const cumA = dp ? dp.prod : 0, cumT = dp ? dp.target : 0;
                     let sym = '✗', color = '#e11d48';
                     if (cumA >= cumT) { sym = '✓'; color = '#0d9488'; }
-                    if (min === (Math.floor(nm / 60) * 60 + 30)) { sym = '●'; color = '#ca8a04'; }
+                    // Only show current-slot orange dot for live data
+                    if (!isPast && min === (Math.floor(nm / 60) * 60 + 30)) { sym = '●'; color = '#ca8a04'; }
                     const st = svgEl('text', { x, y: y + 20, 'text-anchor': 'middle', 'font-size': fs + 4, 'font-weight': 'bold', fill: color });
                     st.textContent = sym;
                     xg.appendChild(st);
@@ -1833,10 +1837,10 @@ body {
                 tPathD += i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
             });
             tg.appendChild(svgEl('path', { d: tPathD, stroke: 'var(--target-color)', 'stroke-width': 3, fill: 'none' }));
-            // Target dots at hour marks
+            // Target dots at hour marks (past data: show all; live: up to nm+60)
             hourMarks.forEach(h => {
                 const min = parseMin(h);
-                if (min > nm + 60) return;
+                if (viewingDateIdx === 0 && min > nm + 60) return;
                 const dp = points.find(p => p.minutes === min) || points.filter(p => p.minutes <= min).pop();
                 if (!dp) return;
                 const x = tx(min), y = ty(dp.target);
@@ -1860,10 +1864,10 @@ body {
                 const col = curr.prod >= curr.target ? 'var(--production-ahead)' : 'var(--production-behind)';
                 pg.appendChild(svgEl('path', { d: `M ${tx(prev.minutes)} ${ty(prev.prod)} L ${tx(curr.minutes)} ${ty(curr.prod)}`, stroke: col, 'stroke-width': 3, fill: 'none' }));
             }
-            // Production dots at hour marks
+            // Production dots at hour marks (past data: show all)
             hourMarks.forEach(h => {
                 const min = parseMin(h);
-                if (min > nm) return;
+                if (viewingDateIdx === 0 && min > nm) return;
                 const dp = points.find(p => p.minutes === min) || points.filter(p => p.minutes <= min).pop();
                 if (!dp) return;
                 const col = dp.prod >= dp.target ? 'var(--production-ahead)' : 'var(--production-behind)';
@@ -2243,15 +2247,24 @@ body {
             const nm = nowMin();
             const rows = [];
 
-            // When a group view is active, pull batches from the group members' lineCards
-            // For shift-windowed groups (BC01 night), only show batches within the shift window
-            const cardsToScan = activeGroup
-                ? lineCards.filter(c => activeGroup.members.some(m => m.lineCardId === c.id))
-                : filteredCards;
-            const grpShiftStart = activeGroup?.shiftWindow
-                ? parseMin(activeGroup.shiftWindow.startTime) : null;
-            const grpShiftEnd   = activeGroup?.shiftWindow
-                ? parseMin(activeGroup.shiftWindow.endTime)   : null;
+            // Build the full set of cards to show in batch table:
+            // - Group active: all member lineCards (with optional shift window filter)
+            // - Single card selected from dropdown: just that card
+            // - "All" / cycling mode: ALL selected lines (not just the currently displayed one)
+            let cardsToScan, grpShiftStart = null, grpShiftEnd = null;
+            if (activeGroup) {
+                cardsToScan  = lineCards.filter(c => activeGroup.members.some(m => m.lineCardId === c.id));
+                grpShiftStart = activeGroup.shiftWindow ? parseMin(activeGroup.shiftWindow.startTime) : null;
+                grpShiftEnd   = activeGroup.shiftWindow ? parseMin(activeGroup.shiftWindow.endTime)   : null;
+            } else if (filterValue === 'all') {
+                // Show batches for every line in selectedLines (the full selection, not just current cycle card)
+                cardsToScan = lineCards.filter(c => selectedLines.includes(c.id) ||
+                    selectedLines.some(s => s.startsWith('group:') &&
+                        lineGroups.find(g => 'group:' + g.groupId === s)
+                            ?.members.some(m => m.lineCardId === c.id)));
+            } else {
+                cardsToScan = filteredCards;
+            }
 
             cardsToScan.forEach(card => {
                 card.variants.forEach(v => {
