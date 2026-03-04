@@ -1371,11 +1371,12 @@ body {
                 if (selectedLines.length === 0) {
                     selectedLines = _defaultSel;
                 } else {
-                    // Keep valid entries only (line IDs still present, or group IDs still present)
+                    // Keep valid entries, but ALWAYS remove individual lines covered by a group.
+                    // This prevents BC01 lines appearing individually when BC01 group exists.
                     selectedLines = selectedLines.filter(sel =>
                         sel.startsWith('group:')
                             ? lineGroups.some(g => 'group:' + g.groupId === sel)
-                            : lineCards.some(c => c.id === sel)
+                            : lineCards.some(c => c.id === sel) && !_groupCovered.has(sel)
                     );
                     if (selectedLines.length === 0) selectedLines = _defaultSel;
                 }
@@ -1536,16 +1537,16 @@ body {
                 const hourlyEl = document.getElementById('hourly-chart');
                 const navEl2   = document.querySelector('.chart-nav');
                 if (viewingDateIdx > 0) {
-                    // Past data — show only cumulative, hide hourly + nav
+                    // Past data — show only cumulative, hide hourly + nav entirely
                     if (cumEl2)   cumEl2.classList.remove('hidden');
                     if (hourlyEl) hourlyEl.classList.add('hidden');
                     if (navEl2)   navEl2.style.display = 'none';
+                    currentChartIdx = 0;
                 } else {
-                    // Live data — reset to cumulative as default, restore nav
+                    // Live data — always reset to cumulative as default, restore nav
                     if (cumEl2)   cumEl2.classList.remove('hidden');
                     if (hourlyEl) hourlyEl.classList.add('hidden');
                     if (navEl2)   navEl2.style.display = '';
-                    // Reset nav dot state to cumulative
                     document.querySelectorAll('.chart-nav-dot').forEach(d => {
                         d.classList.toggle('active', d.getAttribute('data-chart') === 'cumulative');
                     });
@@ -1718,7 +1719,22 @@ body {
             // Ensure final point represents totalProd
             if (points.length > 1) points[points.length - 1].prod = totalProd;
 
-            drawLineChart(container, points, hours, startMin, endMin, totalTarget, nm, 'Units');
+            // For past data: generate full hourly marks from startMin to endMin
+            // so x-axis shows all timestamps and ticks even if archive is truncated.
+            // For live data: only marks up to the last data slot (hours array).
+            let chartHourMarks = hours;
+            if (isPastData) {
+                chartHourMarks = [];
+                for (let m = startMin + 30; m <= endMin; m += 60) {
+                    const h = Math.floor(m / 60), mn = m % 60;
+                    chartHourMarks.push(`${String(h).padStart(2,'0')}:${String(mn).padStart(2,'0')}`);
+                }
+                // Always include endMin slot
+                const endH = Math.floor(endMin/60), endMn = endMin%60;
+                const endSlot = `${String(endH).padStart(2,'0')}:${String(endMn).padStart(2,'0')}`;
+                if (!chartHourMarks.includes(endSlot)) chartHourMarks.push(endSlot);
+            }
+            drawLineChart(container, points, chartHourMarks, startMin, endMin, totalTarget, nm, 'Units');
         }
 
         // ── Hourly chart ──────────────────────────────────────────────────────────
@@ -1803,7 +1819,7 @@ body {
             const cW = W - pad.left - pad.right;
             const cH = H - pad.top  - pad.bottom;
 
-            const maxVal = Math.max(...points.map(p => Math.max(p.prod, p.target))) * 1.1 || 100;
+            const maxVal = Math.max(...points.map(p => Math.max(p.prod, p.target))) || 100;
             const svg = makeSVG(W, H);
             container.appendChild(svg);
 
@@ -1834,7 +1850,12 @@ body {
                     let sym = '✗', color = '#e11d48';
                     if (cumA >= cumT) { sym = '✓'; color = '#0d9488'; }
                     // Only show current-slot orange dot for live data
-                    if (!isPast && min === (Math.floor(nm / 60) * 60 + 30)) { sym = '●'; color = '#ca8a04'; }
+                    // Current in-progress slot: the next :30 boundary after now
+                    if (!isPast) {
+                        const h = Math.floor(nm / 60), m = nm % 60;
+                        const nextSlotMin = m < 30 ? h * 60 + 30 : (h + 1) * 60 + 30;
+                        if (min === nextSlotMin) { sym = '●'; color = '#ca8a04'; }
+                    }
                     const st = svgEl('text', { x, y: y + 20, 'text-anchor': 'middle', 'font-size': fs + 4, 'font-weight': 'bold', fill: color });
                     st.textContent = sym;
                     xg.appendChild(st);
@@ -1915,7 +1936,7 @@ body {
             };
             const cW = W - pad.left - pad.right;
             const cH = H - pad.top  - pad.bottom;
-            const maxVal = Math.max(prodValue, targetValue) * 1.1 || 100;
+            const maxVal = Math.max(prodValue, targetValue) || 100;
             const fs = isFullscreen ? 14 : 12;
 
             const svg = makeSVG(W, H);
@@ -1953,15 +1974,7 @@ body {
             });
             svg.appendChild(bg);
 
-            // Mini legend
-            const lg = svgEl('g', {});
-            [[prodColor, 'Production', pad.left], ['var(--target-color)', 'Target', pad.left + 110]].forEach(([col, lbl, lx]) => {
-                lg.appendChild(svgEl('rect', { x: lx, y: pad.top - 25, width: 12, height: 12, fill: col }));
-                const lt = svgEl('text', { x: lx + 18, y: pad.top - 15, 'font-size': fs, fill: '#666' });
-                lt.textContent = lbl;
-                lg.appendChild(lt);
-            });
-            svg.appendChild(lg);
+            // Legend is shown in page header — no duplicate needed here
         }
 
         // ── Target board ──────────────────────────────────────────────────────────
@@ -2265,16 +2278,19 @@ body {
             // - Single card selected from dropdown: just that card
             // - "All" / cycling mode: ALL selected lines (not just the currently displayed one)
             let cardsToScan, grpShiftStart = null, grpShiftEnd = null;
-            if (activeGroup) {
-                cardsToScan  = lineCards.filter(c => activeGroup.members.some(m => m.lineCardId === c.id));
-                grpShiftStart = activeGroup.shiftWindow ? parseMin(activeGroup.shiftWindow.startTime) : null;
-                grpShiftEnd   = activeGroup.shiftWindow ? parseMin(activeGroup.shiftWindow.endTime)   : null;
-            } else if (filterValue === 'all') {
-                // Show batches for every line in selectedLines (the full selection, not just current cycle card)
+            // Always show batches for ALL selected lines — not just the currently displayed card.
+            // This gives a persistent overview regardless of what's cycling on screen.
+            if (filterValue === 'all') {
+                // Expand selectedLines to all constituent lineCards (including group members)
                 cardsToScan = lineCards.filter(c => selectedLines.includes(c.id) ||
                     selectedLines.some(s => s.startsWith('group:') &&
                         lineGroups.find(g => 'group:' + g.groupId === s)
                             ?.members.some(m => m.lineCardId === c.id)));
+            } else if (activeGroup) {
+                // Specific group selected — show only its members (with shift window filter)
+                cardsToScan   = lineCards.filter(c => activeGroup.members.some(m => m.lineCardId === c.id));
+                grpShiftStart = activeGroup.shiftWindow ? parseMin(activeGroup.shiftWindow.startTime) : null;
+                grpShiftEnd   = activeGroup.shiftWindow ? parseMin(activeGroup.shiftWindow.endTime)   : null;
             } else {
                 cardsToScan = filteredCards;
             }
@@ -2502,6 +2518,8 @@ body {
         }
 
         function showChart(type) {
+            // Disallow switching to hourly chart for past/archived data
+            if (type === 'hourly' && viewingDateIdx > 0) return;
             const cum  = document.getElementById('cumulative-chart');
             const hrly = document.getElementById('hourly-chart');
             const title = document.getElementById('chart-title');
