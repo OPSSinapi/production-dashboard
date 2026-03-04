@@ -1529,14 +1529,27 @@ body {
             } else {
                 renderLineInfo(card);
                 renderMetrics(card);
-                // Hide hourly bar chart for past/archived data
+                // Always reset to cumulative chart when displaying a card.
+                // For past/archived data: hide hourly chart and nav dots entirely.
+                // For live data: ensure cumulative is active and hourly is available.
+                const cumEl2   = document.getElementById('cumulative-chart');
                 const hourlyEl = document.getElementById('hourly-chart');
                 const navEl2   = document.querySelector('.chart-nav');
                 if (viewingDateIdx > 0) {
+                    // Past data — show only cumulative, hide hourly + nav
+                    if (cumEl2)   cumEl2.classList.remove('hidden');
                     if (hourlyEl) hourlyEl.classList.add('hidden');
                     if (navEl2)   navEl2.style.display = 'none';
                 } else {
-                    if (hourlyEl) hourlyEl.classList.remove('hidden');
+                    // Live data — reset to cumulative as default, restore nav
+                    if (cumEl2)   cumEl2.classList.remove('hidden');
+                    if (hourlyEl) hourlyEl.classList.add('hidden');
+                    if (navEl2)   navEl2.style.display = '';
+                    // Reset nav dot state to cumulative
+                    document.querySelectorAll('.chart-nav-dot').forEach(d => {
+                        d.classList.toggle('active', d.getAttribute('data-chart') === 'cumulative');
+                    });
+                    currentChartIdx = 0;
                 }
                 setTimeout(() => {
                     renderCumulativeChart(card);
