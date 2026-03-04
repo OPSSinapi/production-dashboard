@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-04T16:39:06.526",
+    "timestamp": "2026-03-04T16:41:38.459",
     "date": "2026-03-04",
     "facility": "Main Plant"
   },
@@ -80,6 +80,30 @@
         }
       ],
       "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "overtime",
+      "name": "Mo-Thu 10h OT A",
+      "startTime": "07:30",
+      "endTime": "18:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "17:30",
+          "endTime": "17:50"
+        }
+      ],
+      "availableWorkHours": 9.75
     }
   ],
   "production": [
@@ -385,7 +409,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 17.52
+        "actualCycleTime": 17.58
       },
       "shiftId": "day-shift-Line_1",
       "targets": {
@@ -549,7 +573,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 15.93
+        "actualCycleTime": 15.98
       },
       "shiftId": "day-shift-Line_2",
       "targets": {
@@ -713,7 +737,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 20.61
+        "actualCycleTime": 20.68
       },
       "shiftId": "day-shift-Line_4",
       "targets": {
@@ -2013,32 +2037,32 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 27.98
+        "actualCycleTime": 27.56
       },
-      "shiftId": "normal-time",
+      "shiftId": "overtime",
       "targets": {
         "hourly": 136,
         "daily": 1360,
         "boxes": 68
       },
       "actual": {
-        "total": 1040,
-        "boxes": 52,
-        "progress": 76
+        "total": 1080,
+        "boxes": 54,
+        "progress": 79
       },
       "batches": [
         {
           "id": 26030412,
-          "quantity": 1040,
-          "boxes": 52
+          "quantity": 1080,
+          "boxes": 54
         }
       ],
       "lineWindow": {
         "startTime": "07:30",
-        "endTime": "16:30",
-        "target": 1099,
-        "production": 1040,
-        "progress": 95
+        "endTime": "18:30",
+        "target": 1326,
+        "production": 1080,
+        "progress": 81
       },
       "timeline": [
         {
@@ -2135,6 +2159,17 @@
           "actual": 100,
           "cumTarget": 1098,
           "cumActual": 1040,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "17:30",
+          "target": 136,
+          "actual": 40,
+          "cumTarget": 1234,
+          "cumActual": 1080,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -2419,7 +2454,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 17.52,
+          "actualCT": 17.58,
           "devicesPerBox": 100,
           "target": 1371,
           "production": 2000,
@@ -2570,7 +2605,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 15.93,
+          "actualCT": 15.98,
           "devicesPerBox": 100,
           "target": 1371,
           "production": 2200,
@@ -2721,7 +2756,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 20.61,
+          "actualCT": 20.68,
           "devicesPerBox": 100,
           "target": 1371,
           "production": 1700,
@@ -3838,13 +3873,13 @@
     {
       "id": "SUM",
       "productionLine": "SUM",
-      "shiftId": "normal-time",
-      "shiftName": "Mo-Thu 8.25h NT A",
+      "shiftId": "overtime",
+      "shiftName": "Mo-Thu 10h OT A",
       "startTime": "07:30",
-      "endTime": "16:30",
-      "totalProduction": 1040,
-      "totalTarget": 1099,
-      "progress": 95,
+      "endTime": "18:30",
+      "totalProduction": 1080,
+      "totalTarget": 1326,
+      "progress": 81,
       "variants": [
         {
           "combinedId": "SUM-SUM-500V2",
@@ -3852,14 +3887,14 @@
           "variantName": "500V2",
           "variantFull": "SUM SUM500V2",
           "cycleTime": 26.47,
-          "actualCT": 27.98,
+          "actualCT": 27.56,
           "devicesPerBox": 20,
-          "target": 1099,
-          "production": 1040,
-          "boxes": 52,
-          "progress": 95,
+          "target": 1326,
+          "production": 1080,
+          "boxes": 54,
+          "progress": 81,
           "startTime": "07:30",
-          "endTime": "16:30",
+          "endTime": "18:30",
           "timeline": [
             {
               "hour": "08:30",
@@ -3959,6 +3994,17 @@
               "previousVariant": null,
               "previousVariantMinutes": 0,
               "currentVariantMinutes": 60
+            },
+            {
+              "hour": "17:30",
+              "target": 136,
+              "actual": 40,
+              "cumTarget": 1234,
+              "cumActual": 1080,
+              "transitionTarget": 0,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
             }
           ]
         }
@@ -3981,7 +4027,7 @@
           "production": 2000,
           "target": 1371,
           "boxes": 20,
-          "actualCT": 17.52,
+          "actualCT": 17.58,
           "cycleTime": 29.09,
           "devicesPerBox": 100,
           "colour": "#22c55e",
@@ -4115,7 +4161,7 @@
           "production": 2200,
           "target": 1371,
           "boxes": 22,
-          "actualCT": 15.93,
+          "actualCT": 15.98,
           "cycleTime": 29.09,
           "devicesPerBox": 100,
           "colour": "#3b82f6",
@@ -4249,7 +4295,7 @@
           "production": 1700,
           "target": 1371,
           "boxes": 17,
-          "actualCT": 20.61,
+          "actualCT": 20.68,
           "cycleTime": 29.09,
           "devicesPerBox": 100,
           "colour": "#f59e0b",
@@ -4718,9 +4764,9 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 1040,
+        "totalProduction": 1080,
         "totalTarget": 1360,
-        "progress": 76
+        "progress": 79
       }
     ],
     "productionLines": [
@@ -4793,15 +4839,15 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 1040,
-        "totalTarget": 1099,
-        "progress": 95,
+        "totalProduction": 1080,
+        "totalTarget": 1326,
+        "progress": 81,
         "variants": [
           "SUM-SUM-500V2"
         ],
-        "shiftId": "normal-time",
+        "shiftId": "overtime",
         "startTime": "07:30",
-        "endTime": "16:30"
+        "endTime": "18:30"
       },
       {
         "id": "PopUp",
