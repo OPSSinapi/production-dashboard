@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-04T04:26:58.499Z",
+    "timestamp": "2026-03-04T04:30:13.976Z",
     "date": "2026-03-04",
     "facility": "Main Plant"
   },
@@ -61,6 +61,25 @@
         }
       ],
       "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "night-shift",
+      "name": "Mo-Su 11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "20:25",
+          "endTime": "20:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "23:20",
+          "endTime": "23:55"
+        }
+      ],
+      "availableWorkHours": 11.08333333
     }
   ],
   "production": [
@@ -77,7 +96,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 41.73
+        "actualCycleTime": 42
       },
       "shiftId": "night-shift-Line_1",
       "targets": {
@@ -119,7 +138,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 34.15
+        "actualCycleTime": 34.36
       },
       "shiftId": "night-shift-Line_2",
       "targets": {
@@ -161,7 +180,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 46.95
+        "actualCycleTime": 47.25
       },
       "shiftId": "night-shift-Line_4",
       "targets": {
@@ -189,6 +208,48 @@
         "progress": 80
       },
       "timeline": []
+    },
+    {
+      "id": "PopUp-EFB-EFB",
+      "productionLine": "PopUp",
+      "product": {
+        "id": "EFB",
+        "name": "EFB"
+      },
+      "variant": {
+        "id": "EFB",
+        "name": "EFB",
+        "fullName": "EFB EFB",
+        "cycleTime": 30.94,
+        "devicesPerBox": 50,
+        "actualCycleTime": 37.8
+      },
+      "shiftId": "night-shift",
+      "targets": {
+        "hourly": 116,
+        "daily": 959,
+        "boxes": 19
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 20,
+        "progress": 104
+      },
+      "batches": [
+        {
+          "id": 26030309,
+          "quantity": 1000,
+          "boxes": 20
+        }
+      ],
+      "lineWindow": {
+        "startTime": "18:00",
+        "endTime": "06:00",
+        "target": 959,
+        "production": 1000,
+        "progress": 104
+      },
+      "timeline": []
     }
   ],
   "lineCards": [
@@ -209,7 +270,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 41.73,
+          "actualCT": 42,
           "devicesPerBox": 100,
           "target": 999,
           "production": 900,
@@ -238,7 +299,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 34.15,
+          "actualCT": 34.36,
           "devicesPerBox": 100,
           "target": 999,
           "production": 1100,
@@ -267,12 +328,41 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 46.95,
+          "actualCT": 47.25,
           "devicesPerBox": 100,
           "target": 999,
           "production": 800,
           "boxes": 8,
           "progress": 80,
+          "startTime": "18:00",
+          "endTime": "06:00",
+          "timeline": []
+        }
+      ]
+    },
+    {
+      "id": "PopUp",
+      "productionLine": "PopUp",
+      "shiftId": "night-shift",
+      "shiftName": "Mo-Su 11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "totalProduction": 1000,
+      "totalTarget": 959,
+      "progress": 104,
+      "variants": [
+        {
+          "combinedId": "PopUp-EFB-EFB",
+          "productName": "EFB",
+          "variantName": "EFB",
+          "variantFull": "EFB EFB",
+          "cycleTime": 30.94,
+          "actualCT": 37.8,
+          "devicesPerBox": 50,
+          "target": 959,
+          "production": 1000,
+          "boxes": 20,
+          "progress": 104,
           "startTime": "18:00",
           "endTime": "06:00",
           "timeline": []
@@ -296,7 +386,7 @@
           "production": 900,
           "target": 999,
           "boxes": 9,
-          "actualCT": 41.73,
+          "actualCT": 42,
           "cycleTime": 29.09,
           "devicesPerBox": 100,
           "colour": "#22c55e",
@@ -308,7 +398,7 @@
           "production": 1100,
           "target": 999,
           "boxes": 11,
-          "actualCT": 34.15,
+          "actualCT": 34.36,
           "cycleTime": 29.09,
           "devicesPerBox": 100,
           "colour": "#3b82f6",
@@ -320,7 +410,7 @@
           "production": 800,
           "target": 999,
           "boxes": 8,
-          "actualCT": 46.95,
+          "actualCT": 47.25,
           "cycleTime": 29.09,
           "devicesPerBox": 100,
           "colour": "#f59e0b",
@@ -374,6 +464,30 @@
           "timeline": []
         }
       ]
+    },
+    {
+      "groupId": "PopUp",
+      "label": "PopUp - All Variants",
+      "displayMode": "multi-chart",
+      "shiftWindow": {
+        "startTime": "18:00",
+        "endTime": "06:00"
+      },
+      "members": [
+        {
+          "lineCardId": "PopUp",
+          "variantId": "EFB",
+          "label": "EFB",
+          "production": 1000,
+          "target": 959,
+          "boxes": 20,
+          "actualCT": 37.8,
+          "cycleTime": 30.94,
+          "devicesPerBox": 50,
+          "colour": "#22c55e",
+          "timeline": []
+        }
+      ]
     }
   ],
   "summary": {
@@ -384,6 +498,13 @@
         "totalProduction": 2800,
         "totalTarget": 2997,
         "progress": 93
+      },
+      {
+        "id": "EFB",
+        "name": "EFB",
+        "totalProduction": 1000,
+        "totalTarget": 959,
+        "progress": 104
       }
     ],
     "productionLines": [
@@ -423,6 +544,19 @@
           "Line_4-Ellavi_Drape-BC01"
         ],
         "shiftId": "night-shift-Line_4",
+        "startTime": "18:00",
+        "endTime": "06:00"
+      },
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 1000,
+        "totalTarget": 959,
+        "progress": 104,
+        "variants": [
+          "PopUp-EFB-EFB"
+        ],
+        "shiftId": "night-shift",
         "startTime": "18:00",
         "endTime": "06:00"
       }
