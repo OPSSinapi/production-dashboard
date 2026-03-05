@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-05T08:38:29.983",
+    "timestamp": "2026-03-05T08:38:34.842",
     "date": "2026-03-05",
     "facility": "Main Plant"
   },
@@ -92,6 +92,71 @@
       ]
     },
     {
+      "id": "Scalpel_Assembly-Scalpel-PAHS11S",
+      "productionLine": "Scalpel_Assembly",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PAHS11S",
+        "name": "PAHS11S",
+        "fullName": "Scalpel PAHS11S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 4.08
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 13026,
+        "boxes": 26
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 0,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 26030518,
+          "quantity": 1000,
+          "boxes": 0
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "target": 12763,
+        "production": 1000,
+        "progress": 8
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 3156,
+          "cumActual": 1000,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "SCD-SCD-XL1000+",
       "productionLine": "SCD",
       "product": {
@@ -104,7 +169,7 @@
         "fullName": "SCD XL1000+",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 340
+        "actualCycleTime": 170
       },
       "shiftId": "normal-time",
       "targets": {
@@ -113,23 +178,23 @@
         "boxes": 102
       },
       "actual": {
-        "total": 12,
-        "boxes": 1,
-        "progress": 1
+        "total": 24,
+        "boxes": 2,
+        "progress": 2
       },
       "batches": [
         {
           "id": 26030519,
-          "quantity": 12,
-          "boxes": 1
+          "quantity": 24,
+          "boxes": 2
         }
       ],
       "lineWindow": {
         "startTime": "07:30",
         "endTime": "16:30",
         "target": 989,
-        "production": 12,
-        "progress": 1
+        "production": 24,
+        "progress": 2
       },
       "timeline": [
         {
@@ -146,9 +211,9 @@
         {
           "hour": "09:30",
           "target": 122,
-          "actual": 12,
+          "actual": 24,
           "cumTarget": 244,
-          "cumActual": 12,
+          "cumActual": 24,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -276,15 +341,67 @@
       ]
     },
     {
+      "id": "Scalpel_Assembly",
+      "productionLine": "Scalpel_Assembly",
+      "shiftId": "normal-time",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 1000,
+      "totalTarget": 12763,
+      "progress": 8,
+      "variants": [
+        {
+          "combinedId": "Scalpel_Assembly-Scalpel-PAHS11S",
+          "productName": "Scalpel",
+          "variantName": "PAHS11S",
+          "variantFull": "Scalpel PAHS11S",
+          "cycleTime": 2.28,
+          "actualCT": 4.08,
+          "devicesPerBox": 500,
+          "target": 12763,
+          "production": 1000,
+          "boxes": 0,
+          "progress": 8,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 1578,
+              "actual": 0,
+              "cumTarget": 1578,
+              "cumActual": 0,
+              "transitionTarget": 0,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 1578,
+              "actual": 1000,
+              "cumTarget": 3156,
+              "cumActual": 1000,
+              "transitionTarget": 0,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
       "shiftName": "Mo-Thu 8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
-      "totalProduction": 12,
+      "totalProduction": 24,
       "totalTarget": 989,
-      "progress": 1,
+      "progress": 2,
       "variants": [
         {
           "combinedId": "SCD-SCD-XL1000+",
@@ -292,12 +409,12 @@
           "variantName": "XL1000+",
           "variantFull": "SCD XL1000+",
           "cycleTime": 29.41,
-          "actualCT": 340,
+          "actualCT": 170,
           "devicesPerBox": 12,
           "target": 989,
-          "production": 12,
-          "boxes": 1,
-          "progress": 1,
+          "production": 24,
+          "boxes": 2,
+          "progress": 2,
           "startTime": "07:30",
           "endTime": "16:30",
           "timeline": [
@@ -315,9 +432,9 @@
             {
               "hour": "09:30",
               "target": 122,
-              "actual": 12,
+              "actual": 24,
               "cumTarget": 244,
-              "cumActual": 12,
+              "cumActual": 24,
               "transitionTarget": 0,
               "previousVariant": null,
               "previousVariantMinutes": 0,
@@ -391,11 +508,18 @@
         "progress": 10
       },
       {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 1000,
+        "totalTarget": 13026,
+        "progress": 8
+      },
+      {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 12,
+        "totalProduction": 24,
         "totalTarget": 1224,
-        "progress": 1
+        "progress": 2
       },
       {
         "id": "SUM",
@@ -435,11 +559,24 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 12,
+        "totalProduction": 24,
         "totalTarget": 989,
-        "progress": 1,
+        "progress": 2,
         "variants": [
           "SCD-SCD-XL1000+"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "Scalpel_Assembly",
+        "name": "Scalpel_Assembly",
+        "totalProduction": 1000,
+        "totalTarget": 12763,
+        "progress": 8,
+        "variants": [
+          "Scalpel_Assembly-Scalpel-PAHS11S"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
