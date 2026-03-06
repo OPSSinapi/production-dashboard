@@ -1,15 +1,154 @@
 {
   "metadata": {
-    "timestamp": "2026-03-06T07:44:38.575",
+    "timestamp": "2026-03-06T07:44:42.102",
     "date": "2026-03-06",
     "facility": "Main Plant"
   },
-  "shifts": [],
-  "production": [],
-  "lineCards": [],
+  "shifts": [
+    {
+      "id": "normal-time",
+      "name": "Fri 7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 6.833333333
+    }
+  ],
+  "production": [
+    {
+      "id": "SCD-SCD-XL1000+",
+      "productionLine": "SCD",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000+",
+        "name": "XL1000+",
+        "fullName": "SCD XL1000+",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 23.33
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 122,
+        "daily": 1224,
+        "boxes": 102
+      },
+      "actual": {
+        "total": 36,
+        "boxes": 3,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 26030519,
+          "quantity": 36,
+          "boxes": 3
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "15:15",
+        "target": 836,
+        "production": 36,
+        "progress": 4
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 36,
+          "cumTarget": 122,
+          "cumActual": 36,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    }
+  ],
+  "lineCards": [
+    {
+      "id": "SCD",
+      "productionLine": "SCD",
+      "shiftId": "normal-time",
+      "shiftName": "Fri 7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "totalProduction": 36,
+      "totalTarget": 836,
+      "progress": 4,
+      "variants": [
+        {
+          "combinedId": "SCD-SCD-XL1000+",
+          "productName": "SCD",
+          "variantName": "XL1000+",
+          "variantFull": "SCD XL1000+",
+          "cycleTime": 29.41,
+          "actualCT": 23.33,
+          "devicesPerBox": 12,
+          "target": 836,
+          "production": 36,
+          "boxes": 3,
+          "progress": 4,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 122,
+              "actual": 36,
+              "cumTarget": 122,
+              "cumActual": 36,
+              "transitionTarget": 0,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "lineGroups": [],
   "summary": {
-    "products": [],
-    "productionLines": []
+    "products": [
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 36,
+        "totalTarget": 1224,
+        "progress": 3
+      }
+    ],
+    "productionLines": [
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 36,
+        "totalTarget": 836,
+        "progress": 4,
+        "variants": [
+          "SCD-SCD-XL1000+"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "15:15"
+      }
+    ]
   }
 }
