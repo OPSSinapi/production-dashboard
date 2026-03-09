@@ -2731,24 +2731,7 @@ body {
             const minsLeft  = m < 30 ? 30 - m : 90 - m;
             const slot = `${String(nextSlotH).padStart(2,'0')}:30`;
 
-            // Append per-slot targets for the current hour if available
-            let ctSuffix = '';
-            if (currentCard && currentCard.variants) {
-                let supSlotTarget = 0, theoSlotTarget = 0, hasSupSlot = false;
-                currentCard.variants.forEach(v => {
-                    if (!v.timeline) return;
-                    const sl = v.timeline.find(s => s.hour === slot);
-                    if (!sl) return;
-                    theoSlotTarget += sl.target || 0;
-                    if (sl.supervisorTarget != null) { supSlotTarget += sl.supervisorTarget; hasSupSlot = true; }
-                });
-                if (hasSupSlot && supSlotTarget > 0) {
-                    ctSuffix = `  |  SUP: ${supSlotTarget}  THEO: ${theoSlotTarget}`;
-                } else if (theoSlotTarget > 0) {
-                    ctSuffix = `  |  TARGET: ${theoSlotTarget}`;
-                }
-            }
-            el.textContent = `CURRENT HOUR: ${slot} (${minsLeft} MIN LEFT)${ctSuffix}`;
+            el.textContent = `CURRENT HOUR: ${slot} (${minsLeft} MIN LEFT)`;
         }
 
         // ── Fullscreen ────────────────────────────────────────────────────────────
