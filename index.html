@@ -1186,6 +1186,7 @@ body {
         let lastTimestamp    = null;
         let isFullscreen     = false;
         let isTargetBoard    = false;
+        let currentCard      = null;   // currently displayed card — used by updateCurrentHourInfo
 
         // Date navigation state
         const BASE_URL       = 'https://opssinapi.github.io/production-dashboard/';
@@ -1607,6 +1608,7 @@ body {
         }
 
         function renderMetrics(card) {
+            currentCard = card;  // track for updateCurrentHourInfo
             const totalProd    = card.totalProduction || 0;
             // Dual-target: supervisor (primary accountability) vs PE (theoretical ceiling)
             const supTotal     = card.supervisorTotalTarget ?? null;
@@ -1625,16 +1627,20 @@ body {
             });
             const activeBoxTarget = supTotal !== null ? supBoxTarget : theoreticalBoxTarget;
 
-            // Weighted actual & planned cycle time — weight by peTarget
-            // CT target is the theoretical plan; supervisor targets don't alter cycle time expectations.
-            let actualCTW = 0, planCTW = 0, ctWeight = 0;
+            // Weighted cycle times — actual, theoretical plan, and supervisor-implied
+            let actualCTW = 0, planCTW = 0, supCTW = 0, ctWeight = 0, supCTWeight = 0;
             card.variants.forEach(v => {
                 const wt = (v.peTarget != null ? v.peTarget : v.target) || 1;
-                if (v.actualCT > 0)  { actualCTW += v.actualCT * wt; }
-                if (v.cycleTime > 0) { planCTW   += v.cycleTime * wt; ctWeight += wt; }
+                if (v.actualCT  > 0) { actualCTW += v.actualCT  * wt; }
+                if (v.cycleTime > 0) { planCTW   += v.cycleTime * wt; ctWeight    += wt; }
+                if (v.supervisorCT != null && v.supervisorCT > 0) {
+                    supCTW += v.supervisorCT * wt; supCTWeight += wt;
+                }
             });
-            const actualCT = ctWeight > 0 ? parseFloat((actualCTW / ctWeight).toFixed(2)) : 'N/A';
-            const planCT   = ctWeight > 0 ? parseFloat((planCTW   / ctWeight).toFixed(2)) : 0;
+            const actualCT     = ctWeight    > 0 ? parseFloat((actualCTW / ctWeight).toFixed(2))    : 'N/A';
+            const planCT       = ctWeight    > 0 ? parseFloat((planCTW   / ctWeight).toFixed(2))    : 0;
+            const supervisorCT = supCTWeight > 0 ? parseFloat((supCTW    / supCTWeight).toFixed(2)) : null;
+            const activeCT     = supervisorCT !== null ? supervisorCT : planCT;
 
             // Ahead/behind: interpolate against activeTarget across the shift window
             const shiftStart = Math.min(...card.variants.map(v => parseMin(v.startTime || card.startTime)));
@@ -1671,10 +1677,11 @@ body {
 
             document.getElementById('actual-cycle-time').textContent = actualCT;
             document.getElementById('actual-cycle-time').style.color = statusColor;
-            document.getElementById('target-cycle-time').textContent = planCT;
-            document.getElementById('target-cycle-time').style.color = 'var(--target-color)';
+            document.getElementById('target-cycle-time').textContent = activeCT;
+            document.getElementById('target-cycle-time').style.color =
+                supervisorCT !== null ? 'var(--sup-target-color)' : 'var(--target-color)';
             const ctSub = document.getElementById('ct-theoretical-subvalue');
-            if (ctSub) ctSub.textContent = '';  // CT target is always theoretical — no sub-line needed
+            if (ctSub) ctSub.textContent = supervisorCT !== null ? `Theoretical: ${planCT}` : '';
 
             const swatch = document.getElementById('legend-production-color');
             if (swatch) swatch.style.backgroundColor = statusColor;
@@ -1797,7 +1804,7 @@ body {
                 ? `${String(periodHour).padStart(2,'0')}:30`
                 : `${String(periodHour + 1).padStart(2,'0')}:30`;
 
-            let prodValue = 0, targetValue = 0;
+            let prodValue = 0, targetValue = 0, supTargetValue = 0, hasSupTarget = false;
             card.variants.forEach(v => {
                 const vStart = parseMin(v.startTime);
                 const vEnd   = parseMin(v.endTime);
@@ -1806,17 +1813,20 @@ body {
                 if (!v.timeline) return;
                 const slot = v.timeline.find(s => s.hour === periodSlot);
                 if (slot) {
-                    prodValue   += slot.actual  || 0;
-                    targetValue += slot.target  || 0;
+                    prodValue   += slot.actual || 0;
+                    targetValue += slot.target || 0;
+                    if (slot.supervisorTarget != null) { supTargetValue += slot.supervisorTarget; hasSupTarget = true; }
                 }
             });
+            const activeTargetValue = hasSupTarget ? supTargetValue : targetValue;
+            const theoTargetValue   = hasSupTarget ? targetValue : null;
 
             if (prodValue === 0 && targetValue === 0) {
                 container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">No data for current hour</div>';
                 return;
             }
 
-            drawBarChart(container, periodSlot, prodValue, targetValue);
+            drawBarChart(container, periodSlot, prodValue, activeTargetValue, theoTargetValue);
         }
 
         // ── SVG chart primitives ──────────────────────────────────────────────────
@@ -1999,7 +2009,7 @@ body {
             svg.appendChild(pg);
         }
 
-        function drawBarChart(container, periodSlot, prodValue, targetValue) {
+        function drawBarChart(container, periodSlot, prodValue, targetValue, theoTargetValue) {
             const area = container.closest('.chart-area');
             const W = area.clientWidth, H = area.clientHeight;
             if (W <= 0 || H <= 0) return;
@@ -2012,7 +2022,7 @@ body {
             };
             const cW = W - pad.left - pad.right;
             const cH = H - pad.top  - pad.bottom;
-            const maxVal = Math.max(prodValue, targetValue) || 100;
+            const maxVal = Math.max(prodValue, targetValue, theoTargetValue || 0) || 100;
             const fs = isFullscreen ? 14 : 12;
 
             const svg = makeSVG(W, H);
@@ -2083,30 +2093,58 @@ body {
             card.variants.forEach(v => v.timeline && v.timeline.forEach(s => slotSet.add(s.hour)));
             const slots = [...slotSet].sort((a, b) => parseMin(a) - parseMin(b));
 
-            // Build cumulative actuals/targets across variants per slot
-            let cumA = 0, cumT = 0;
+            // Build cumulative actuals/targets per slot.
+            // When supervisor slot targets exist, use them as primary; show theoretical as ghosted sub-row.
+            const boardHasSupTarget = card.variants.some(v =>
+                v.timeline && v.timeline.some(s => s.supervisorTarget != null));
+            let cumA = 0, cumT = 0, cumSupT = 0;
             slots.forEach(h => {
                 const hMin = parseMin(h);
-                let slotA = 0, slotT = 0;
+                let slotA = 0, slotT = 0, slotSupT = 0, slotHasSup = false;
                 card.variants.forEach(v => {
                     const vS = parseMin(v.startTime), vE = parseMin(v.endTime);
                     if (hMin < vS || hMin > vE) return;
                     const sl = v.timeline && v.timeline.find(s => s.hour === h);
-                    if (sl) { slotA += sl.actual || 0; slotT += sl.target || 0; }
+                    if (sl) {
+                        slotA += sl.actual || 0;
+                        slotT += sl.target || 0;
+                        if (sl.supervisorTarget != null) { slotSupT += sl.supervisorTarget; slotHasSup = true; }
+                    }
                 });
                 cumA += slotA; cumT += slotT;
+                if (slotHasSup) cumSupT += slotSupT;
+                const activeCumT = boardHasSupTarget ? cumSupT : cumT;
 
                 const tr = document.createElement('tr');
                 if (h === periodStr) tr.classList.add('current-hour');
 
-                const timeCell = document.createElement('td'); timeCell.className = 'time-cell'; timeCell.textContent = h;
-                const targetCell = document.createElement('td'); targetCell.className = 'target-cell'; targetCell.textContent = cumT;
-                const actualCell = document.createElement('td'); actualCell.className = 'actual-cell';
-                actualCell.textContent = cumA;
-                actualCell.classList.add(hMin > nm ? 'pending' : cumA >= cumT ? 'met' : 'not-met');
+                const timeCell = document.createElement('td');
+                timeCell.className = 'time-cell'; timeCell.textContent = h;
+
+                const targetCell = document.createElement('td');
+                targetCell.className = 'target-cell'; targetCell.textContent = activeCumT;
+                if (boardHasSupTarget) targetCell.style.color = 'var(--sup-target-color)';
+
+                const actualCell = document.createElement('td');
+                actualCell.className = 'actual-cell'; actualCell.textContent = cumA;
+                actualCell.classList.add(hMin > nm ? 'pending' : cumA >= activeCumT ? 'met' : 'not-met');
 
                 tr.appendChild(timeCell); tr.appendChild(targetCell); tr.appendChild(actualCell);
                 tbody.appendChild(tr);
+
+                // Ghosted theoretical sub-row when supervisor target is driving
+                if (boardHasSupTarget) {
+                    const theoTr = document.createElement('tr');
+                    theoTr.style.cssText = 'opacity:0.4; font-size:0.78em;';
+                    const e1 = document.createElement('td');
+                    const theoTd = document.createElement('td');
+                    theoTd.className = 'target-cell';
+                    theoTd.textContent = cumT;
+                    theoTd.style.cssText = 'color:var(--target-color); font-style:italic;';
+                    const e2 = document.createElement('td');
+                    theoTr.appendChild(e1); theoTr.appendChild(theoTd); theoTr.appendChild(e2);
+                    tbody.appendChild(theoTr);
+                }
             });
         }
 
@@ -2180,23 +2218,28 @@ body {
                 supGrpTotal !== null ? 'var(--sup-target-color)' : 'var(--target-color)';
             const grpBoxSub = document.getElementById('boxes-theoretical-subvalue');
             if (grpBoxSub) grpBoxSub.textContent = supGrpTotal !== null ? `Theoretical: ${grpTheoBoxTarget}` : '';
-            // Weighted average CT from members (actualCT only shown if group has production)
-            let ctActualW = 0, ctPlanW = 0, ctWeight = 0;
+            // Weighted average CT from members — actual, theoretical plan, and supervisor-implied
+            let ctActualW = 0, ctPlanW = 0, ctSupW = 0, ctWeight = 0, ctSupWeight = 0;
             grp.members.forEach(m => {
                 const w = (m.peTarget != null ? m.peTarget : m.target) || 1;
                 if (m.actualCT  > 0) ctActualW += m.actualCT  * w;
-                if (m.cycleTime > 0) { ctPlanW  += m.cycleTime * w; ctWeight += w; }
+                if (m.cycleTime > 0) { ctPlanW  += m.cycleTime * w; ctWeight    += w; }
+                if (m.supervisorCT != null && m.supervisorCT > 0) {
+                    ctSupW += m.supervisorCT * w; ctSupWeight += w;
+                }
             });
-            const grpActualCT = (totalProd > 0 && ctWeight > 0)
+            const grpActualCT     = (totalProd > 0 && ctWeight > 0)
                 ? parseFloat((ctActualW / ctWeight).toFixed(2)) : '—';
-            const grpPlanCT   = ctWeight > 0
-                ? parseFloat((ctPlanW   / ctWeight).toFixed(2)) : '—';
+            const grpPlanCT       = ctWeight    > 0 ? parseFloat((ctPlanW  / ctWeight).toFixed(2))    : '—';
+            const grpSupervisorCT = ctSupWeight > 0 ? parseFloat((ctSupW   / ctSupWeight).toFixed(2)) : null;
+            const grpActiveCT     = grpSupervisorCT !== null ? grpSupervisorCT : grpPlanCT;
             document.getElementById('actual-cycle-time').textContent   = grpActualCT;
             document.getElementById('actual-cycle-time').style.color   = totalProd > 0 ? statusColor : '';
-            document.getElementById('target-cycle-time').textContent   = grpPlanCT;
-            document.getElementById('target-cycle-time').style.color   = 'var(--target-color)';
+            document.getElementById('target-cycle-time').textContent   = grpActiveCT;
+            document.getElementById('target-cycle-time').style.color   =
+                grpSupervisorCT !== null ? 'var(--sup-target-color)' : 'var(--target-color)';
             const grpCtSub = document.getElementById('ct-theoretical-subvalue');
-            if (grpCtSub) grpCtSub.textContent = '';  // CT target is always theoretical — no sub-line needed
+            if (grpCtSub) grpCtSub.textContent = grpSupervisorCT !== null ? `Theoretical: ${grpPlanCT}` : '';
 
             const swatch = document.getElementById('legend-production-color');
             if (swatch) swatch.style.backgroundColor = statusColor;
@@ -2670,7 +2713,25 @@ body {
             const nextSlotH = m < 30 ? h : h + 1;
             const minsLeft  = m < 30 ? 30 - m : 90 - m;
             const slot = `${String(nextSlotH).padStart(2,'0')}:30`;
-            el.textContent = `CURRENT HOUR: ${slot} (${minsLeft} MIN LEFT)`;
+
+            // Append per-slot targets for the current hour if available
+            let ctSuffix = '';
+            if (currentCard && currentCard.variants) {
+                let supSlotTarget = 0, theoSlotTarget = 0, hasSupSlot = false;
+                currentCard.variants.forEach(v => {
+                    if (!v.timeline) return;
+                    const sl = v.timeline.find(s => s.hour === slot);
+                    if (!sl) return;
+                    theoSlotTarget += sl.target || 0;
+                    if (sl.supervisorTarget != null) { supSlotTarget += sl.supervisorTarget; hasSupSlot = true; }
+                });
+                if (hasSupSlot && supSlotTarget > 0) {
+                    ctSuffix = `  |  SUP: ${supSlotTarget}  THEO: ${theoSlotTarget}`;
+                } else if (theoSlotTarget > 0) {
+                    ctSuffix = `  |  TARGET: ${theoSlotTarget}`;
+                }
+            }
+            el.textContent = `CURRENT HOUR: ${slot} (${minsLeft} MIN LEFT)${ctSuffix}`;
         }
 
         // ── Fullscreen ────────────────────────────────────────────────────────────
