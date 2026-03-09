@@ -2044,17 +2044,34 @@ body {
             const barW      = barGroupW * 0.42;
             const groupX    = pad.left + (cW - barGroupW) / 2;
 
-            const prodColor = targetValue > 0
+            // When supervisor target is active, target bar is navy; a ghosted grey bar shows theoretical behind it.
+            const isSupActive = theoTargetValue != null;
+            const targetColor = isSupActive ? 'var(--sup-target-color)' : 'var(--target-color)';
+            const prodColor   = targetValue > 0
                 ? (prodValue >= targetValue ? 'var(--production-ahead)' : 'var(--production-behind)')
                 : 'var(--production-color)';
 
             const bg = svgEl('g', {});
-            [[prodValue, prodColor, groupX + barGroupW * 0.08, 'Production'],
-             [targetValue, 'var(--target-color)', groupX + barGroupW * 0.5, 'Target']].forEach(([val, col, bx, lbl]) => {
+
+            // Theoretical ghost bar drawn first (behind supervisor bar) when supervisor is active
+            if (isSupActive && theoTargetValue > 0) {
+                const theoBx = groupX + barGroupW * 0.5;
+                const theoBh = (theoTargetValue / maxVal) * cH;
+                const theoBy = H - pad.bottom - theoBh;
+                bg.appendChild(svgEl('rect', { x: theoBx, y: theoBy, width: barW, height: theoBh,
+                    rx: 2, ry: 2, fill: 'var(--target-color)', opacity: '0.35' }));
+                const theoLbl = svgEl('text', { x: theoBx + barW / 2, y: theoBy - 4,
+                    'text-anchor': 'middle', 'font-size': fs - 1, fill: 'var(--target-color)', opacity: '0.7' });
+                theoLbl.textContent = theoTargetValue;
+                bg.appendChild(theoLbl);
+            }
+
+            [[prodValue, prodColor, groupX + barGroupW * 0.08],
+             [targetValue, targetColor, groupX + barGroupW * 0.5]].forEach(([val, col, bx]) => {
                 const bh = (val / maxVal) * cH;
                 const by = H - pad.bottom - bh;
                 bg.appendChild(svgEl('rect', { x: bx, y: by, width: barW, height: bh, rx: 2, ry: 2, fill: col }));
-                const vl = svgEl('text', { x: bx + barW / 2, y: by - 5, 'text-anchor': 'middle', 'font-size': fs, 'font-weight': 'bold', fill: col });
+                const vl = svgEl('text', { x: bx + barW / 2, y: by - 5, 'text-anchor': 'middle', 'font-size': fs, 'font-weight': 'bold', fill: col }));
                 vl.textContent = val;
                 bg.appendChild(vl);
             });
