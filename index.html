@@ -1061,6 +1061,7 @@ body {
                                 <span class="current-value" id="current-boxes">0</span>/<span class="target-value" id="target-boxes">0</span>
                             </div>
                             <div class="metric-subvalue">completed</div>
+                            <div class="metric-subvalue" id="boxes-theoretical-subvalue" style="font-size:clamp(0.75rem,1vw,1.1rem);color:var(--target-color);margin-top:2px;"></div>
                         </div>
                         
                         <div class="metric-card">
@@ -1069,6 +1070,7 @@ body {
                                 <span class="current-value" id="actual-cycle-time">0</span>/<span class="target-value" id="target-cycle-time">0</span>
                             </div>
                             <div class="metric-subvalue">seconds</div>
+                            <div class="metric-subvalue" id="ct-theoretical-subvalue" style="font-size:clamp(0.75rem,1vw,1.1rem);color:var(--target-color);margin-top:2px;"></div>
                         </div>
                     </div>
                 </div>
@@ -1612,15 +1614,19 @@ body {
             const activeTarget = supTotal !== null ? supTotal : peTotal;
             const progress     = activeTarget > 0 ? Math.round((totalProd / activeTarget) * 100) : 0;
 
-            // Box totals — denominator uses peTarget per variant (stable theoretical basis)
-            let totalBoxProd = 0, totalBoxTarget = 0;
+            // Box totals — supervisor boxes (primary) vs theoretical boxes (sub-line)
+            let totalBoxProd = 0, supBoxTarget = 0, theoreticalBoxTarget = 0;
             card.variants.forEach(v => {
-                totalBoxProd   += v.boxes || 0;
-                const vtgt = (v.peTarget != null ? v.peTarget : v.target) || 0;
-                totalBoxTarget += v.devicesPerBox > 0 ? Math.floor(vtgt / v.devicesPerBox) : 0;
+                totalBoxProd += v.boxes || 0;
+                const peVtgt  = (v.peTarget != null ? v.peTarget : v.target) || 0;
+                const supVtgt = (v.supervisorTarget != null ? v.supervisorTarget : peVtgt);
+                theoreticalBoxTarget += v.devicesPerBox > 0 ? Math.floor(peVtgt  / v.devicesPerBox) : 0;
+                supBoxTarget         += v.devicesPerBox > 0 ? Math.floor(supVtgt / v.devicesPerBox) : 0;
             });
+            const activeBoxTarget = supTotal !== null ? supBoxTarget : theoreticalBoxTarget;
 
             // Weighted actual & planned cycle time — weight by peTarget
+            // CT target is the theoretical plan; supervisor targets don't alter cycle time expectations.
             let actualCTW = 0, planCTW = 0, ctWeight = 0;
             card.variants.forEach(v => {
                 const wt = (v.peTarget != null ? v.peTarget : v.target) || 1;
@@ -1657,11 +1663,18 @@ body {
 
             document.getElementById('current-boxes').textContent = totalBoxProd;
             document.getElementById('current-boxes').style.color = statusColor;
-            document.getElementById('target-boxes').textContent  = totalBoxTarget;
+            document.getElementById('target-boxes').textContent  = activeBoxTarget;
+            document.getElementById('target-boxes').style.color  =
+                supTotal !== null ? 'var(--sup-target-color)' : 'var(--target-color)';
+            const boxesSub = document.getElementById('boxes-theoretical-subvalue');
+            if (boxesSub) boxesSub.textContent = supTotal !== null ? `Theoretical: ${theoreticalBoxTarget}` : '';
 
             document.getElementById('actual-cycle-time').textContent = actualCT;
             document.getElementById('actual-cycle-time').style.color = statusColor;
             document.getElementById('target-cycle-time').textContent = planCT;
+            document.getElementById('target-cycle-time').style.color = 'var(--target-color)';
+            const ctSub = document.getElementById('ct-theoretical-subvalue');
+            if (ctSub) ctSub.textContent = '';  // CT target is always theoretical — no sub-line needed
 
             const swatch = document.getElementById('legend-production-color');
             if (swatch) swatch.style.backgroundColor = statusColor;
@@ -2152,12 +2165,21 @@ body {
             const peSub2 = document.getElementById('pe-target-subvalue');
             if (peSub2) peSub2.textContent = supGrpTotal !== null ? `Theoretical: ${peGrpTotal}` : '';
             // Boxes and CT come from group members directly (shift-scoped, not full-day lineCard totals)
-            const totalBoxProd   = grp.members.reduce((s, m) => s + (m.boxes  || 0), 0);
-            const totalBoxTarget = grp.members.reduce((s, m) =>
+            const totalBoxProd = grp.members.reduce((s, m) => s + (m.boxes || 0), 0);
+            const grpTheoBoxTarget = grp.members.reduce((s, m) =>
                 s + Math.round(((m.peTarget != null ? m.peTarget : m.target) || 0) / (m.devicesPerBox || 1)), 0);
+            const grpSupBoxTarget = grp.members.reduce((s, m) => {
+                const supT = m.supervisorTarget != null ? m.supervisorTarget : (m.peTarget != null ? m.peTarget : m.target) || 0;
+                return s + Math.round(supT / (m.devicesPerBox || 1));
+            }, 0);
+            const activeGrpBoxTarget = supGrpTotal !== null ? grpSupBoxTarget : grpTheoBoxTarget;
             document.getElementById('current-boxes').textContent       = totalBoxProd;
             document.getElementById('current-boxes').style.color       = statusColor;
-            document.getElementById('target-boxes').textContent        = totalBoxTarget || '—';
+            document.getElementById('target-boxes').textContent        = activeGrpBoxTarget || '—';
+            document.getElementById('target-boxes').style.color        =
+                supGrpTotal !== null ? 'var(--sup-target-color)' : 'var(--target-color)';
+            const grpBoxSub = document.getElementById('boxes-theoretical-subvalue');
+            if (grpBoxSub) grpBoxSub.textContent = supGrpTotal !== null ? `Theoretical: ${grpTheoBoxTarget}` : '';
             // Weighted average CT from members (actualCT only shown if group has production)
             let ctActualW = 0, ctPlanW = 0, ctWeight = 0;
             grp.members.forEach(m => {
@@ -2172,6 +2194,9 @@ body {
             document.getElementById('actual-cycle-time').textContent   = grpActualCT;
             document.getElementById('actual-cycle-time').style.color   = totalProd > 0 ? statusColor : '';
             document.getElementById('target-cycle-time').textContent   = grpPlanCT;
+            document.getElementById('target-cycle-time').style.color   = 'var(--target-color)';
+            const grpCtSub = document.getElementById('ct-theoretical-subvalue');
+            if (grpCtSub) grpCtSub.textContent = '';  // CT target is always theoretical — no sub-line needed
 
             const swatch = document.getElementById('legend-production-color');
             if (swatch) swatch.style.backgroundColor = statusColor;
