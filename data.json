@@ -1,20 +1,20 @@
 {
   "metadata": {
-    "timestamp": "2026-03-09T08:35:03.500",
+    "timestamp": "2026-03-09T08:40:38.859",
     "date": "2026-03-09",
     "facility": "Main Plant"
   },
   "shifts": [
     {
       "id": "normal-time",
-      "name": "Mo-Thu 8.25h NT A",
+      "name": "Mo-Thu 8.25h NT B",
       "startTime": "07:30",
       "endTime": "16:30",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:25",
-          "endTime": "10:45"
+          "startTime": "10:00",
+          "endTime": "10:20"
         },
         {
           "type": "lunch",
@@ -26,6 +26,71 @@
     }
   ],
   "production": [
+    {
+      "id": "Scalpel_Packaging-Scalpel-PAHS11S",
+      "productionLine": "Scalpel_Packaging",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PAHS11S",
+        "name": "PAHS11S",
+        "fullName": "Scalpel PAHS11S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 8.4
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "daily": 13026,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 500,
+        "boxes": 1,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 26030518,
+          "quantity": 500,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "target": 12763,
+        "production": 500,
+        "progress": 4
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 500,
+          "cumTarget": 3156,
+          "cumActual": 500,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SCD-SCD-XL1000+",
       "productionLine": "SCD",
@@ -39,7 +104,7 @@
         "fullName": "SCD XL1000+",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 46.43
+        "actualCycleTime": 43.75
       },
       "shiftId": "normal-time",
       "targets": {
@@ -48,23 +113,23 @@
         "boxes": 102
       },
       "actual": {
-        "total": 84,
-        "boxes": 7,
-        "progress": 7
+        "total": 96,
+        "boxes": 8,
+        "progress": 8
       },
       "batches": [
         {
           "id": 26030623,
-          "quantity": 84,
-          "boxes": 7
+          "quantity": 96,
+          "boxes": 8
         }
       ],
       "lineWindow": {
         "startTime": "07:30",
         "endTime": "16:30",
         "target": 989,
-        "production": 84,
-        "progress": 8
+        "production": 96,
+        "progress": 10
       },
       "timeline": [
         {
@@ -73,6 +138,17 @@
           "actual": 84,
           "cumTarget": 122,
           "cumActual": 84,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 122,
+          "actual": 12,
+          "cumTarget": 244,
+          "cumActual": 96,
           "transitionTarget": 0,
           "previousVariant": null,
           "previousVariantMinutes": 0,
@@ -93,7 +169,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 39
+        "actualCycleTime": 35
       },
       "shiftId": "normal-time",
       "targets": {
@@ -102,23 +178,23 @@
         "boxes": 68
       },
       "actual": {
-        "total": 100,
-        "boxes": 5,
-        "progress": 7
+        "total": 120,
+        "boxes": 6,
+        "progress": 9
       },
       "batches": [
         {
           "id": 26030926,
-          "quantity": 100,
-          "boxes": 5
+          "quantity": 120,
+          "boxes": 6
         }
       ],
       "lineWindow": {
         "startTime": "07:30",
         "endTime": "16:30",
         "target": 1099,
-        "production": 100,
-        "progress": 9
+        "production": 120,
+        "progress": 11
       },
       "timeline": [
         {
@@ -131,21 +207,84 @@
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 136,
+          "actual": 20,
+          "cumTarget": 272,
+          "cumActual": 120,
+          "transitionTarget": 0,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
         }
       ]
     }
   ],
   "lineCards": [
     {
+      "id": "Scalpel_Packaging",
+      "productionLine": "Scalpel_Packaging",
+      "shiftId": "normal-time",
+      "shiftName": "Mo-Thu 8.25h NT B",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 500,
+      "totalTarget": 12763,
+      "progress": 4,
+      "variants": [
+        {
+          "combinedId": "Scalpel_Packaging-Scalpel-PAHS11S",
+          "productName": "Scalpel",
+          "variantName": "PAHS11S",
+          "variantFull": "Scalpel PAHS11S",
+          "cycleTime": 2.28,
+          "actualCT": 8.4,
+          "devicesPerBox": 1000,
+          "target": 12763,
+          "production": 500,
+          "boxes": 1,
+          "progress": 4,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 1578,
+              "actual": 0,
+              "cumTarget": 1578,
+              "cumActual": 0,
+              "transitionTarget": 0,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 1578,
+              "actual": 500,
+              "cumTarget": 3156,
+              "cumActual": 500,
+              "transitionTarget": 0,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
-      "shiftName": "Mo-Thu 8.25h NT A",
+      "shiftName": "Mo-Thu 8.25h NT B",
       "startTime": "07:30",
       "endTime": "16:30",
-      "totalProduction": 84,
+      "totalProduction": 96,
       "totalTarget": 989,
-      "progress": 8,
+      "progress": 10,
       "variants": [
         {
           "combinedId": "SCD-SCD-XL1000+",
@@ -153,12 +292,12 @@
           "variantName": "XL1000+",
           "variantFull": "SCD XL1000+",
           "cycleTime": 29.41,
-          "actualCT": 46.43,
+          "actualCT": 43.75,
           "devicesPerBox": 12,
           "target": 989,
-          "production": 84,
-          "boxes": 7,
-          "progress": 8,
+          "production": 96,
+          "boxes": 8,
+          "progress": 10,
           "startTime": "07:30",
           "endTime": "16:30",
           "timeline": [
@@ -172,6 +311,17 @@
               "previousVariant": null,
               "previousVariantMinutes": 0,
               "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 122,
+              "actual": 12,
+              "cumTarget": 244,
+              "cumActual": 96,
+              "transitionTarget": 0,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
             }
           ]
         }
@@ -181,12 +331,12 @@
       "id": "SUM",
       "productionLine": "SUM",
       "shiftId": "normal-time",
-      "shiftName": "Mo-Thu 8.25h NT A",
+      "shiftName": "Mo-Thu 8.25h NT B",
       "startTime": "07:30",
       "endTime": "16:30",
-      "totalProduction": 100,
+      "totalProduction": 120,
       "totalTarget": 1099,
-      "progress": 9,
+      "progress": 11,
       "variants": [
         {
           "combinedId": "SUM-SUM-500V2",
@@ -194,12 +344,12 @@
           "variantName": "500V2",
           "variantFull": "SUM SUM500V2",
           "cycleTime": 26.47,
-          "actualCT": 39,
+          "actualCT": 35,
           "devicesPerBox": 20,
           "target": 1099,
-          "production": 100,
-          "boxes": 5,
-          "progress": 9,
+          "production": 120,
+          "boxes": 6,
+          "progress": 11,
           "startTime": "07:30",
           "endTime": "16:30",
           "timeline": [
@@ -209,6 +359,17 @@
               "actual": 100,
               "cumTarget": 136,
               "cumActual": 100,
+              "transitionTarget": 0,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 136,
+              "actual": 20,
+              "cumTarget": 272,
+              "cumActual": 120,
               "transitionTarget": 0,
               "previousVariant": null,
               "previousVariantMinutes": 0,
@@ -223,27 +384,34 @@
   "summary": {
     "products": [
       {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 500,
+        "totalTarget": 13026,
+        "progress": 4
+      },
+      {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 84,
+        "totalProduction": 96,
         "totalTarget": 1224,
-        "progress": 7
+        "progress": 8
       },
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 100,
+        "totalProduction": 120,
         "totalTarget": 1360,
-        "progress": 7
+        "progress": 9
       }
     ],
     "productionLines": [
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 84,
+        "totalProduction": 96,
         "totalTarget": 989,
-        "progress": 8,
+        "progress": 10,
         "variants": [
           "SCD-SCD-XL1000+"
         ],
@@ -254,11 +422,24 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 100,
+        "totalProduction": 120,
         "totalTarget": 1099,
-        "progress": 9,
+        "progress": 11,
         "variants": [
           "SUM-SUM-500V2"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "Scalpel_Packaging",
+        "name": "Scalpel_Packaging",
+        "totalProduction": 500,
+        "totalTarget": 12763,
+        "progress": 4,
+        "variants": [
+          "Scalpel_Packaging-Scalpel-PAHS11S"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
