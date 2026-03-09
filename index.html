@@ -1027,7 +1027,7 @@ body {
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: var(--target-color); border: 2px dashed #888; box-sizing:border-box;"></div>
-                    <div class="legend-label">PE TARGET</div>
+                    <div class="legend-label">THEORETICAL TARGET</div>
                 </div>
             </div>
             <div class="current-hour-info" id="current-hour-info">CURRENT HOUR: --:-- (-- MIN LEFT)</div>
@@ -1653,7 +1653,7 @@ body {
 
             // Sub-line under units tile: show PE when supervisor target is driving
             const peSub = document.getElementById('pe-target-subvalue');
-            if (peSub) peSub.textContent = supTotal !== null ? `PE: ${peTotal}` : '';
+            if (peSub) peSub.textContent = supTotal !== null ? `Theoretical: ${peTotal}` : '';
 
             document.getElementById('current-boxes').textContent = totalBoxProd;
             document.getElementById('current-boxes').style.color = statusColor;
@@ -2054,7 +2054,7 @@ body {
             const boardLabel = document.getElementById('board-target-label');
             if (boardLabel) boardLabel.textContent = supTotal !== null ? 'SUP TARGET' : 'DAILY TARGET';
             const peLine = document.getElementById('board-pe-target-line');
-            if (peLine) peLine.textContent = supTotal !== null ? `PE: ${peTotal}` : '';
+            if (peLine) peLine.textContent = supTotal !== null ? `Theoretical: ${peTotal}` : '';
 
             const tbody = document.getElementById('target-board-tbody');
             tbody.innerHTML = '';
@@ -2150,7 +2150,7 @@ body {
             document.getElementById('progress-percentage').textContent = progress + '%';
             document.getElementById('progress-percentage').style.color = statusColor;
             const peSub2 = document.getElementById('pe-target-subvalue');
-            if (peSub2) peSub2.textContent = supGrpTotal !== null ? `PE: ${peGrpTotal}` : '';
+            if (peSub2) peSub2.textContent = supGrpTotal !== null ? `Theoretical: ${peGrpTotal}` : '';
             // Boxes and CT come from group members directly (shift-scoped, not full-day lineCard totals)
             const totalBoxProd   = grp.members.reduce((s, m) => s + (m.boxes  || 0), 0);
             const totalBoxTarget = grp.members.reduce((s, m) =>
