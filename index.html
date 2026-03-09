@@ -25,7 +25,8 @@
     --production-color: #111111;
     --production-ahead: #10B981;
     --production-behind: #e74c3c;
-    --target-color: #555555;
+    --target-color: #888888;
+    --sup-target-color: #1e3a5f;
     --current-indicator: #F59E0B;
     --completed-variant: #D1E7DD;
     --current-variant: #FFF3CD;
@@ -1021,8 +1022,12 @@ body {
                     <div class="legend-label">PRODUCTION</div>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: var(--target-color);"></div>
-                    <div class="legend-label">TARGET</div>
+                    <div class="legend-color" style="background-color: var(--sup-target-color);"></div>
+                    <div class="legend-label">SUP TARGET</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: var(--target-color); border: 2px dashed #888; box-sizing:border-box;"></div>
+                    <div class="legend-label">PE TARGET</div>
                 </div>
             </div>
             <div class="current-hour-info" id="current-hour-info">CURRENT HOUR: --:-- (-- MIN LEFT)</div>
@@ -1047,6 +1052,7 @@ body {
                                 <span class="current-value" id="current-units">0</span>/<span class="target-value" id="target-units">0</span>
                             </div>
                             <div class="metric-subvalue" id="progress-percentage">0%</div>
+                            <div class="metric-subvalue" id="pe-target-subvalue" style="font-size:clamp(0.75rem,1vw,1.1rem);color:var(--target-color);margin-top:2px;"></div>
                         </div>
                         
                         <div class="metric-card">
@@ -1110,8 +1116,9 @@ body {
                     </div>
                     
                     <div class="target-summary-box">
-                        <div class="target-summary-label">DAILY TARGET</div>
+                        <div class="target-summary-label" id="board-target-label">DAILY TARGET</div>
                         <div class="target-summary-value" id="board-daily-target">0</div>
+                        <div style="font-size:clamp(0.9rem,1.2vw,1.4rem);color:#94a3b8;margin-top:6px;" id="board-pe-target-line"></div>
                     </div>
                 </div>
                 
@@ -1598,44 +1605,55 @@ body {
         }
 
         function renderMetrics(card) {
-            const totalProd   = card.totalProduction || 0;
-            const totalTarget = card.totalTarget     || 0;
-            const progress    = totalTarget > 0 ? Math.round((totalProd / totalTarget) * 100) : 0;
+            const totalProd    = card.totalProduction || 0;
+            // Dual-target: supervisor (primary accountability) vs PE (theoretical ceiling)
+            const supTotal     = card.supervisorTotalTarget ?? null;
+            const peTotal      = card.peTotalTarget || card.totalTarget || 0;  // totalTarget = legacy fallback
+            const activeTarget = supTotal !== null ? supTotal : peTotal;
+            const progress     = activeTarget > 0 ? Math.round((totalProd / activeTarget) * 100) : 0;
 
-            // Box totals
+            // Box totals — denominator uses peTarget per variant (stable theoretical basis)
             let totalBoxProd = 0, totalBoxTarget = 0;
             card.variants.forEach(v => {
-                totalBoxProd   += v.boxes   || 0;
-                totalBoxTarget += v.devicesPerBox > 0 ? Math.floor((v.target || 0) / v.devicesPerBox) : 0;
+                totalBoxProd   += v.boxes || 0;
+                const vtgt = (v.peTarget != null ? v.peTarget : v.target) || 0;
+                totalBoxTarget += v.devicesPerBox > 0 ? Math.floor(vtgt / v.devicesPerBox) : 0;
             });
 
-            // Weighted actual & planned cycle time
+            // Weighted actual & planned cycle time — weight by peTarget
             let actualCTW = 0, planCTW = 0, ctWeight = 0;
             card.variants.forEach(v => {
-                const wt = v.target || 1;
+                const wt = (v.peTarget != null ? v.peTarget : v.target) || 1;
                 if (v.actualCT > 0)  { actualCTW += v.actualCT * wt; }
                 if (v.cycleTime > 0) { planCTW   += v.cycleTime * wt; ctWeight += wt; }
             });
             const actualCT = ctWeight > 0 ? parseFloat((actualCTW / ctWeight).toFixed(2)) : 'N/A';
             const planCT   = ctWeight > 0 ? parseFloat((planCTW   / ctWeight).toFixed(2)) : 0;
 
-            // Ahead/behind: linear interpolation across the shift window
+            // Ahead/behind: interpolate against activeTarget across the shift window
             const shiftStart = Math.min(...card.variants.map(v => parseMin(v.startTime || card.startTime)));
             const shiftEnd   = Math.max(...card.variants.map(v => parseMin(v.endTime   || card.endTime)));
             const nm = nowMin();
             let cumTargetNow = 0;
             if (shiftEnd > shiftStart) {
                 const elapsed = Math.max(0, Math.min(nm, shiftEnd) - shiftStart);
-                cumTargetNow  = Math.round(totalTarget * elapsed / (shiftEnd - shiftStart));
+                cumTargetNow  = Math.round(activeTarget * elapsed / (shiftEnd - shiftStart));
             }
-            const isAhead  = cumTargetNow === 0 || totalProd >= cumTargetNow;
+            const isAhead     = cumTargetNow === 0 || totalProd >= cumTargetNow;
             const statusColor = isAhead ? 'var(--production-ahead)' : 'var(--production-behind)';
 
-            document.getElementById('current-units').textContent = totalProd;
-            document.getElementById('current-units').style.color = statusColor;
-            document.getElementById('target-units').textContent  = totalTarget;
+            document.getElementById('current-units').textContent    = totalProd;
+            document.getElementById('current-units').style.color    = statusColor;
+            // Show activeTarget in the primary slot; colour indicates which type it is
+            document.getElementById('target-units').textContent     = activeTarget;
+            document.getElementById('target-units').style.color     =
+                supTotal !== null ? 'var(--sup-target-color)' : 'var(--target-color)';
             document.getElementById('progress-percentage').textContent = `${progress}%`;
             document.getElementById('progress-percentage').style.color = statusColor;
+
+            // Sub-line under units tile: show PE when supervisor target is driving
+            const peSub = document.getElementById('pe-target-subvalue');
+            if (peSub) peSub.textContent = supTotal !== null ? `PE: ${peTotal}` : '';
 
             document.getElementById('current-boxes').textContent = totalBoxProd;
             document.getElementById('current-boxes').style.color = statusColor;
@@ -1655,7 +1673,10 @@ body {
             container.innerHTML = '';
 
             const totalProd   = parseInt(document.getElementById('current-units').textContent, 10) || 0;
-            const totalTarget = parseInt(document.getElementById('target-units').textContent, 10)  || 0;
+            // Dual-target: read directly from card (already resolved by renderMetrics)
+            const supTotal    = card.supervisorTotalTarget ?? null;
+            const peTotal     = card.peTotalTarget || card.totalTarget || 0;
+            const totalTarget = supTotal !== null ? supTotal : peTotal;  // active target for chart axis
 
             // Collect all hourly slot data across variants, within each variant's own window
             const slotMap = {};   // "HH:MM" → { prod, minutes }
@@ -1747,7 +1768,9 @@ body {
                 const endSlot = `${String(endH).padStart(2,'0')}:${String(endMn).padStart(2,'0')}`;
                 if (!chartHourMarks.includes(endSlot)) chartHourMarks.push(endSlot);
             }
-            drawLineChart(container, points, chartHourMarks, startMin, endMin, totalTarget, totalProd, nm, 'Units');
+            // Pass peTotal as secondary line only when supervisor target is active
+            drawLineChart(container, points, chartHourMarks, startMin, endMin, totalTarget, totalProd, nm, 'Units',
+                supTotal !== null ? peTotal : null);
         }
 
         // ── Hourly chart ──────────────────────────────────────────────────────────
@@ -1818,7 +1841,7 @@ body {
             svg.appendChild(g);
         }
 
-        function drawLineChart(container, points, hourMarks, startMin, endMin, totalTarget, totalProd, nm, yLabel) {
+        function drawLineChart(container, points, hourMarks, startMin, endMin, totalTarget, totalProd, nm, yLabel, peTargetLine) {
             const area = container.closest('.chart-area');
             const W = area.clientWidth, H = area.clientHeight;
             if (W <= 0 || H <= 0) { setTimeout(() => { /* will be called again on resize */ }, 100); return; }
@@ -1848,6 +1871,26 @@ body {
             const ty = val => pad.top + cH  - cH * (val / maxVal);
 
             const fs = isFullscreen ? 14 : 12;
+
+            // ── PE target line (dashed grey) — drawn first, sits behind supervisor line ──
+            if (peTargetLine && peTargetLine > 0 && endMin > startMin) {
+                const peg = svgEl('g', {});
+                let peD = '';
+                points.forEach((p, i) => {
+                    const x = tx(p.minutes);
+                    const y = ty(Math.round(peTargetLine * (p.minutes - startMin) / (endMin - startMin)));
+                    peD += i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
+                });
+                peg.appendChild(svgEl('path', { d: peD, stroke: 'var(--target-color)', 'stroke-width': 2,
+                    fill: 'none', 'stroke-dasharray': '6,4', opacity: '0.75' }));
+                // End value label
+                const peEndY = ty(peTargetLine);
+                const peEndLbl = svgEl('text', { x: W - pad.right + 4, y: peEndY + 4,
+                    'font-size': fs - 1, fill: 'var(--target-color)', opacity: '0.8' });
+                peEndLbl.textContent = peTargetLine;
+                peg.appendChild(peEndLbl);
+                svg.appendChild(peg);
+            }
 
             // X-axis hour labels + status symbols
             const xg = svgEl('g', {});
@@ -1889,7 +1932,8 @@ body {
                 const x = tx(p.minutes), y = ty(p.target);
                 tPathD += i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
             });
-            tg.appendChild(svgEl('path', { d: tPathD, stroke: 'var(--target-color)', 'stroke-width': 3, fill: 'none' }));
+            const supLineColor = peTargetLine ? 'var(--sup-target-color)' : 'var(--target-color)';
+            tg.appendChild(svgEl('path', { d: tPathD, stroke: supLineColor, 'stroke-width': 3, fill: 'none' }));
             // Target dots at hour marks (past data: show all; live: up to nm+60)
             hourMarks.forEach(h => {
                 const min = parseMin(h);
@@ -1897,15 +1941,15 @@ body {
                 const dp = points.find(p => p.minutes === min) || points.filter(p => p.minutes <= min).pop();
                 if (!dp) return;
                 const x = tx(min), y = ty(dp.target);
-                tg.appendChild(svgEl('circle', { cx: x, cy: y, r: isFullscreen ? 5 : 4, fill: 'var(--target-color)' }));
-                const lbl = svgEl('text', { x, y: y - 8, 'text-anchor': 'middle', 'font-size': fs, 'font-weight': 'bold', fill: 'var(--target-color)' });
+                tg.appendChild(svgEl('circle', { cx: x, cy: y, r: isFullscreen ? 5 : 4, fill: supLineColor }));
+                const lbl = svgEl('text', { x, y: y - 8, 'text-anchor': 'middle', 'font-size': fs, 'font-weight': 'bold', fill: supLineColor });
                 lbl.textContent = dp.target;
                 tg.appendChild(lbl);
             });
             // Final target dot
             const lastT = points[points.length - 1];
-            tg.appendChild(svgEl('circle', { cx: tx(lastT.minutes), cy: ty(lastT.target), r: isFullscreen ? 7 : 6, fill: 'var(--target-color)', stroke: '#fff', 'stroke-width': 2 }));
-            const lastTlbl = svgEl('text', { x: tx(lastT.minutes), y: ty(lastT.target) - 10, 'text-anchor': 'middle', 'font-size': fs + 2, 'font-weight': 'bold', fill: 'var(--target-color)' });
+            tg.appendChild(svgEl('circle', { cx: tx(lastT.minutes), cy: ty(lastT.target), r: isFullscreen ? 7 : 6, fill: supLineColor, stroke: '#fff', 'stroke-width': 2 }));
+            const lastTlbl = svgEl('text', { x: tx(lastT.minutes), y: ty(lastT.target) - 10, 'text-anchor': 'middle', 'font-size': fs + 2, 'font-weight': 'bold', fill: supLineColor });
             lastTlbl.textContent = lastT.target;
             tg.appendChild(lastTlbl);
             svg.appendChild(tg);
@@ -2001,7 +2045,16 @@ body {
             document.getElementById('board-supervisor-name').textContent = card.productionLine;
             document.getElementById('board-product-name').textContent =
                 [...new Set(card.variants.map(v => v.productName))].join(' / ');
-            document.getElementById('board-daily-target').textContent = card.totalTarget || 0;
+            const supTotal = card.supervisorTotalTarget ?? null;
+            const peTotal  = card.peTotalTarget || card.totalTarget || 0;
+            const boardTarget = supTotal !== null ? supTotal : peTotal;
+            document.getElementById('board-daily-target').textContent = boardTarget;
+            document.getElementById('board-daily-target').style.color =
+                supTotal !== null ? 'var(--sup-target-color)' : 'white';
+            const boardLabel = document.getElementById('board-target-label');
+            if (boardLabel) boardLabel.textContent = supTotal !== null ? 'SUP TARGET' : 'DAILY TARGET';
+            const peLine = document.getElementById('board-pe-target-line');
+            if (peLine) peLine.textContent = supTotal !== null ? `PE: ${peTotal}` : '';
 
             const tbody = document.getElementById('target-board-tbody');
             tbody.innerHTML = '';
@@ -2065,7 +2118,12 @@ body {
 
             // Aggregate metrics
             const totalProd   = grp.members.reduce((s, m) => s + (m.production || 0), 0);
-            const totalTarget = grp.members.reduce((s, m) => s + (m.target     || 0), 0);
+            // Group members carry peTarget (new) or target (legacy)
+            const supGrpTotal = grp.members.some(m => m.supervisorTarget != null)
+                ? grp.members.reduce((s, m) => s + (m.supervisorTarget != null ? m.supervisorTarget : (m.peTarget ?? m.target ?? 0)), 0)
+                : null;
+            const peGrpTotal  = grp.members.reduce((s, m) => s + (m.peTarget ?? m.target ?? 0), 0);
+            const totalTarget = supGrpTotal !== null ? supGrpTotal : peGrpTotal;
             const progress    = totalTarget > 0 ? Math.round(totalProd / totalTarget * 100) : 0;
 
             let shiftStartM = 0, shiftEndM = 1440;
@@ -2087,19 +2145,23 @@ body {
             document.getElementById('current-units').textContent       = totalProd;
             document.getElementById('current-units').style.color       = statusColor;
             document.getElementById('target-units').textContent        = totalTarget;
+            document.getElementById('target-units').style.color        =
+                supGrpTotal !== null ? 'var(--sup-target-color)' : 'var(--target-color)';
             document.getElementById('progress-percentage').textContent = progress + '%';
             document.getElementById('progress-percentage').style.color = statusColor;
+            const peSub2 = document.getElementById('pe-target-subvalue');
+            if (peSub2) peSub2.textContent = supGrpTotal !== null ? `PE: ${peGrpTotal}` : '';
             // Boxes and CT come from group members directly (shift-scoped, not full-day lineCard totals)
             const totalBoxProd   = grp.members.reduce((s, m) => s + (m.boxes  || 0), 0);
             const totalBoxTarget = grp.members.reduce((s, m) =>
-                s + Math.round((m.target || 0) / (m.devicesPerBox || 1)), 0);
+                s + Math.round(((m.peTarget != null ? m.peTarget : m.target) || 0) / (m.devicesPerBox || 1)), 0);
             document.getElementById('current-boxes').textContent       = totalBoxProd;
             document.getElementById('current-boxes').style.color       = statusColor;
             document.getElementById('target-boxes').textContent        = totalBoxTarget || '—';
             // Weighted average CT from members (actualCT only shown if group has production)
             let ctActualW = 0, ctPlanW = 0, ctWeight = 0;
             grp.members.forEach(m => {
-                const w = m.target || 1;
+                const w = (m.peTarget != null ? m.peTarget : m.target) || 1;
                 if (m.actualCT  > 0) ctActualW += m.actualCT  * w;
                 if (m.cycleTime > 0) { ctPlanW  += m.cycleTime * w; ctWeight += w; }
             });
