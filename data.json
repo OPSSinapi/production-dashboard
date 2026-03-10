@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-10T17:51:34.417",
+    "timestamp": "2026-03-10T17:52:04.420",
     "date": "2026-03-10",
     "facility": "Main Plant"
   },
@@ -80,6 +80,30 @@
         }
       ],
       "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "overtime",
+      "name": "Mo-Thu 10h OT A",
+      "startTime": "07:30",
+      "endTime": "18:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "17:30",
+          "endTime": "17:50"
+        }
+      ],
+      "availableWorkHours": 9.75
     }
   ],
   "production": [
@@ -442,7 +466,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 11.93
+        "actualCycleTime": 11.95
       },
       "shiftId": "day-shift-Line_1",
       "targets": {
@@ -657,7 +681,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 12.7
+        "actualCycleTime": 12.72
       },
       "shiftId": "day-shift-Line_2",
       "targets": {
@@ -872,7 +896,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 14.58
+        "actualCycleTime": 14.6
       },
       "shiftId": "day-shift-Line_4",
       "targets": {
@@ -1952,36 +1976,36 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 33.07
+        "actualCycleTime": 36.47
       },
-      "shiftId": "normal-time",
+      "shiftId": "overtime",
       "targets": {
         "hourly": 136,
         "peTarget": 1360,
-        "fullShiftSupervisorTarget": 1000,
-        "supervisorTarget": 1000,
-        "supervisorCycleTime": 29.1,
+        "fullShiftSupervisorTarget": 1100,
+        "supervisorTarget": 1100,
+        "supervisorCycleTime": 31.9091,
         "boxes": 68
       },
       "actual": {
-        "total": 880,
-        "boxes": 44,
-        "progress": 88
+        "total": 900,
+        "boxes": 45,
+        "progress": 82
       },
       "batches": [
         {
           "id": 26030931,
-          "quantity": 880,
-          "boxes": 44
+          "quantity": 900,
+          "boxes": 45
         }
       ],
       "lineWindow": {
         "startTime": "07:30",
-        "endTime": "16:30",
-        "peTarget": 1099,
-        "supervisorTarget": 1000,
-        "production": 880,
-        "progress": 88
+        "endTime": "18:30",
+        "peTarget": 1326,
+        "supervisorTarget": 1100,
+        "production": 900,
+        "progress": 82
       },
       "timeline": [
         {
@@ -1990,8 +2014,8 @@
           "actual": 0,
           "cumTarget": 136,
           "cumActual": 0,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 123,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 112,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -2001,11 +2025,11 @@
         {
           "hour": "09:30",
           "target": 136,
-          "actual": 214,
+          "actual": 180,
           "cumTarget": 272,
-          "cumActual": 214,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 246,
+          "cumActual": 180,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 224,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -2015,11 +2039,11 @@
         {
           "hour": "10:30",
           "target": 124,
-          "actual": 24,
+          "actual": 20,
           "cumTarget": 396,
-          "cumActual": 238,
-          "supervisorTarget": 113,
-          "cumSupervisorTarget": 359,
+          "cumActual": 200,
+          "supervisorTarget": 103,
+          "cumSupervisorTarget": 327,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -2029,11 +2053,11 @@
         {
           "hour": "11:30",
           "target": 102,
-          "actual": 143,
+          "actual": 120,
           "cumTarget": 498,
-          "cumActual": 381,
-          "supervisorTarget": 92,
-          "cumSupervisorTarget": 451,
+          "cumActual": 320,
+          "supervisorTarget": 84,
+          "cumSupervisorTarget": 411,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -2043,11 +2067,11 @@
         {
           "hour": "12:30",
           "target": 136,
-          "actual": 71,
+          "actual": 60,
           "cumTarget": 634,
-          "cumActual": 452,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 574,
+          "cumActual": 380,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 523,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -2057,11 +2081,11 @@
         {
           "hour": "13:30",
           "target": 136,
-          "actual": 48,
+          "actual": 40,
           "cumTarget": 770,
-          "cumActual": 500,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 697,
+          "cumActual": 420,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 635,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -2071,11 +2095,11 @@
         {
           "hour": "14:30",
           "target": 56,
-          "actual": 95,
+          "actual": 80,
           "cumTarget": 826,
-          "cumActual": 595,
-          "supervisorTarget": 51,
-          "cumSupervisorTarget": 748,
+          "cumActual": 500,
+          "supervisorTarget": 47,
+          "cumSupervisorTarget": 682,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -2085,11 +2109,11 @@
         {
           "hour": "15:30",
           "target": 136,
-          "actual": 119,
+          "actual": 100,
           "cumTarget": 962,
-          "cumActual": 714,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 871,
+          "cumActual": 600,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 794,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -2099,16 +2123,44 @@
         {
           "hour": "16:30",
           "target": 136,
-          "actual": 166,
+          "actual": 140,
           "cumTarget": 1098,
-          "cumActual": 880,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 994,
+          "cumActual": 740,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 906,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "17:30",
+          "target": 136,
+          "actual": 140,
+          "cumTarget": 1234,
+          "cumActual": 880,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 1018,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "18:30",
+          "target": 90,
+          "actual": 20,
+          "cumTarget": 1324,
+          "cumActual": 900,
+          "supervisorTarget": 75,
+          "cumSupervisorTarget": 1093,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
         }
       ]
     }
@@ -2450,7 +2502,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 11.93,
+          "actualCT": 11.95,
           "supervisorCT": null,
           "devicesPerBox": 100,
           "peTarget": 1371,
@@ -2651,7 +2703,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 12.7,
+          "actualCT": 12.72,
           "supervisorCT": null,
           "devicesPerBox": 100,
           "peTarget": 1371,
@@ -2852,7 +2904,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 14.58,
+          "actualCT": 14.6,
           "supervisorCT": null,
           "devicesPerBox": 100,
           "peTarget": 1371,
@@ -3805,14 +3857,14 @@
     {
       "id": "SUM",
       "productionLine": "SUM",
-      "shiftId": "normal-time",
-      "shiftName": "Mo-Thu 8.25h NT A",
+      "shiftId": "overtime",
+      "shiftName": "Mo-Thu 10h OT A",
       "startTime": "07:30",
-      "endTime": "16:30",
-      "totalProduction": 880,
-      "peTotalTarget": 1099,
-      "supervisorTotalTarget": 1000,
-      "progress": 88,
+      "endTime": "18:30",
+      "totalProduction": 900,
+      "peTotalTarget": 1326,
+      "supervisorTotalTarget": 1100,
+      "progress": 82,
       "variants": [
         {
           "combinedId": "SUM-SUM-500V2",
@@ -3820,16 +3872,16 @@
           "variantName": "500V2",
           "variantFull": "SUM SUM500V2",
           "cycleTime": 26.47,
-          "actualCT": 33.07,
-          "supervisorCT": 29.1,
+          "actualCT": 36.47,
+          "supervisorCT": 31.9091,
           "devicesPerBox": 20,
-          "peTarget": 1099,
-          "supervisorTarget": 1000,
-          "production": 880,
-          "boxes": 44,
-          "progress": 88,
+          "peTarget": 1326,
+          "supervisorTarget": 1100,
+          "production": 900,
+          "boxes": 45,
+          "progress": 82,
           "startTime": "07:30",
-          "endTime": "16:30",
+          "endTime": "18:30",
           "timeline": [
             {
               "hour": "08:30",
@@ -3837,8 +3889,8 @@
               "actual": 0,
               "cumTarget": 136,
               "cumActual": 0,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 123,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 112,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -3848,11 +3900,11 @@
             {
               "hour": "09:30",
               "target": 136,
-              "actual": 214,
+              "actual": 180,
               "cumTarget": 272,
-              "cumActual": 214,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 246,
+              "cumActual": 180,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 224,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -3862,11 +3914,11 @@
             {
               "hour": "10:30",
               "target": 124,
-              "actual": 24,
+              "actual": 20,
               "cumTarget": 396,
-              "cumActual": 238,
-              "supervisorTarget": 113,
-              "cumSupervisorTarget": 359,
+              "cumActual": 200,
+              "supervisorTarget": 103,
+              "cumSupervisorTarget": 327,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -3876,11 +3928,11 @@
             {
               "hour": "11:30",
               "target": 102,
-              "actual": 143,
+              "actual": 120,
               "cumTarget": 498,
-              "cumActual": 381,
-              "supervisorTarget": 92,
-              "cumSupervisorTarget": 451,
+              "cumActual": 320,
+              "supervisorTarget": 84,
+              "cumSupervisorTarget": 411,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -3890,11 +3942,11 @@
             {
               "hour": "12:30",
               "target": 136,
-              "actual": 71,
+              "actual": 60,
               "cumTarget": 634,
-              "cumActual": 452,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 574,
+              "cumActual": 380,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 523,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -3904,11 +3956,11 @@
             {
               "hour": "13:30",
               "target": 136,
-              "actual": 48,
+              "actual": 40,
               "cumTarget": 770,
-              "cumActual": 500,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 697,
+              "cumActual": 420,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 635,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -3918,11 +3970,11 @@
             {
               "hour": "14:30",
               "target": 56,
-              "actual": 95,
+              "actual": 80,
               "cumTarget": 826,
-              "cumActual": 595,
-              "supervisorTarget": 51,
-              "cumSupervisorTarget": 748,
+              "cumActual": 500,
+              "supervisorTarget": 47,
+              "cumSupervisorTarget": 682,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -3932,11 +3984,11 @@
             {
               "hour": "15:30",
               "target": 136,
-              "actual": 119,
+              "actual": 100,
               "cumTarget": 962,
-              "cumActual": 714,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 871,
+              "cumActual": 600,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 794,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -3946,16 +3998,44 @@
             {
               "hour": "16:30",
               "target": 136,
-              "actual": 166,
+              "actual": 140,
               "cumTarget": 1098,
-              "cumActual": 880,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 994,
+              "cumActual": 740,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 906,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
               "previousVariantMinutes": 0,
               "currentVariantMinutes": 60
+            },
+            {
+              "hour": "17:30",
+              "target": 136,
+              "actual": 140,
+              "cumTarget": 1234,
+              "cumActual": 880,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 1018,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "18:30",
+              "target": 90,
+              "actual": 20,
+              "cumTarget": 1324,
+              "cumActual": 900,
+              "supervisorTarget": 75,
+              "cumSupervisorTarget": 1093,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 40
             }
           ]
         }
@@ -3979,7 +4059,7 @@
           "peTarget": 1371,
           "supervisorTarget": null,
           "boxes": 27,
-          "actualCT": 11.93,
+          "actualCT": 11.95,
           "cycleTime": 29.09,
           "supervisorCT": null,
           "devicesPerBox": 100,
@@ -4162,7 +4242,7 @@
           "peTarget": 1371,
           "supervisorTarget": null,
           "boxes": 31,
-          "actualCT": 12.7,
+          "actualCT": 12.72,
           "cycleTime": 29.09,
           "supervisorCT": null,
           "devicesPerBox": 100,
@@ -4345,7 +4425,7 @@
           "peTarget": 1371,
           "supervisorTarget": null,
           "boxes": 27,
-          "actualCT": 14.58,
+          "actualCT": 14.6,
           "cycleTime": 29.09,
           "supervisorCT": null,
           "devicesPerBox": 100,
@@ -4539,7 +4619,7 @@
           "peTarget": 61,
           "supervisorTarget": null,
           "boxes": 21,
-          "actualCT": 11.93,
+          "actualCT": 11.95,
           "cycleTime": 29.09,
           "supervisorCT": null,
           "devicesPerBox": 100,
@@ -4568,7 +4648,7 @@
           "peTarget": 61,
           "supervisorTarget": null,
           "boxes": 21,
-          "actualCT": 12.7,
+          "actualCT": 12.72,
           "cycleTime": 29.09,
           "supervisorCT": null,
           "devicesPerBox": 100,
@@ -4597,7 +4677,7 @@
           "peTarget": 61,
           "supervisorTarget": null,
           "boxes": 18,
-          "actualCT": 14.58,
+          "actualCT": 14.6,
           "cycleTime": 29.09,
           "supervisorCT": null,
           "devicesPerBox": 100,
@@ -5113,9 +5193,9 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 880,
+        "totalProduction": 900,
         "totalTarget": 1360,
-        "progress": 65
+        "progress": 66
       }
     ],
     "productionLines": [
@@ -5208,16 +5288,16 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 880,
-        "peTotalTarget": 1099,
-        "supervisorTotalTarget": 1000,
-        "progress": 88,
+        "totalProduction": 900,
+        "peTotalTarget": 1326,
+        "supervisorTotalTarget": 1100,
+        "progress": 82,
         "variants": [
           "SUM-SUM-500V2"
         ],
-        "shiftId": "normal-time",
+        "shiftId": "overtime",
         "startTime": "07:30",
-        "endTime": "16:30"
+        "endTime": "18:30"
       },
       {
         "id": "3rd_Line",
