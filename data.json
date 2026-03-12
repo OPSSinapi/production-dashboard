@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-12T08:38:49.019",
+    "timestamp": "2026-03-12T08:39:34.192",
     "date": "2026-03-12",
     "facility": "Main Plant"
   },
@@ -64,14 +64,14 @@
     },
     {
       "id": "normal-time",
-      "name": "Mo-Thu 8.25h NT A",
+      "name": "Mo-Thu 8.25h NT B",
       "startTime": "07:30",
       "endTime": "16:30",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:25",
-          "endTime": "10:45"
+          "startTime": "10:00",
+          "endTime": "10:20"
         },
         {
           "type": "lunch",
@@ -267,6 +267,81 @@
       ]
     },
     {
+      "id": "Scalpel_Assembly-Scalpel-PARC10S",
+      "productionLine": "Scalpel_Assembly",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PARC10S",
+        "name": "PARC10S",
+        "fullName": "Scalpel PARC10S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 500,
+        "actualCycleTime": 4.14
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "peTarget": 13026,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 26
+      },
+      "actual": {
+        "total": 1000,
+        "boxes": 0,
+        "progress": 8
+      },
+      "batches": [
+        {
+          "id": 26031033,
+          "quantity": 1000,
+          "boxes": 0
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 12763,
+        "supervisorTarget": null,
+        "production": 1000,
+        "progress": 8
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 1000,
+          "cumTarget": 3156,
+          "cumActual": 1000,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "SCD-SCD-XL1000S",
       "productionLine": "SCD",
       "product": {
@@ -279,7 +354,7 @@
         "fullName": "SCD XL1000S",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 56.67
+        "actualCycleTime": 57.5
       },
       "shiftId": "normal-time",
       "targets": {
@@ -485,10 +560,71 @@
       ]
     },
     {
+      "id": "Scalpel_Assembly",
+      "productionLine": "Scalpel_Assembly",
+      "shiftId": "normal-time",
+      "shiftName": "Mo-Thu 8.25h NT B",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 1000,
+      "peTotalTarget": 12763,
+      "supervisorTotalTarget": null,
+      "progress": 8,
+      "variants": [
+        {
+          "combinedId": "Scalpel_Assembly-Scalpel-PARC10S",
+          "productName": "Scalpel",
+          "variantName": "PARC10S",
+          "variantFull": "Scalpel PARC10S",
+          "cycleTime": 2.28,
+          "actualCT": 4.14,
+          "supervisorCT": null,
+          "devicesPerBox": 500,
+          "peTarget": 12763,
+          "supervisorTarget": null,
+          "production": 1000,
+          "boxes": 0,
+          "progress": 8,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 1578,
+              "actual": 0,
+              "cumTarget": 1578,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 1578,
+              "actual": 1000,
+              "cumTarget": 3156,
+              "cumActual": 1000,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
-      "shiftName": "Mo-Thu 8.25h NT A",
+      "shiftName": "Mo-Thu 8.25h NT B",
       "startTime": "07:30",
       "endTime": "16:30",
       "totalProduction": 72,
@@ -502,7 +638,7 @@
           "variantName": "XL1000S",
           "variantFull": "SCD XL1000S",
           "cycleTime": 29.41,
-          "actualCT": 56.67,
+          "actualCT": 57.5,
           "supervisorCT": 33.2192,
           "devicesPerBox": 12,
           "peTarget": 989,
@@ -709,6 +845,13 @@
         "progress": 63
       },
       {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 1000,
+        "totalTarget": 13026,
+        "progress": 8
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 72,
@@ -768,6 +911,20 @@
         "progress": 8,
         "variants": [
           "SCD-SCD-XL1000S"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "Scalpel_Assembly",
+        "name": "Scalpel_Assembly",
+        "totalProduction": 1000,
+        "peTotalTarget": 12763,
+        "supervisorTotalTarget": null,
+        "progress": 8,
+        "variants": [
+          "Scalpel_Assembly-Scalpel-PARC10S"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
