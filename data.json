@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-13T07:59:32.995",
+    "timestamp": "2026-03-13T08:00:04.947",
     "date": "2026-03-13",
     "facility": "Main Plant"
   },
@@ -27,6 +27,67 @@
   ],
   "production": [
     {
+      "id": "SCD-SCD-XL1000SC",
+      "productionLine": "SCD",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SC",
+        "name": "XL1000SC",
+        "fullName": "SCD XL1000SC",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 150
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 122,
+        "peTarget": 1224,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 102
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 26031247,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "15:15",
+        "peTarget": 836,
+        "supervisorTarget": null,
+        "production": 12,
+        "progress": 1
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 12,
+          "cumTarget": 122,
+          "cumActual": 12,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "SUM-SUM-500V2",
       "productionLine": "SUM",
       "product": {
@@ -39,7 +100,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 87
+        "actualCycleTime": 45
       },
       "shiftId": "normal-time",
       "targets": {
@@ -51,15 +112,15 @@
         "boxes": 68
       },
       "actual": {
-        "total": 20,
-        "boxes": 1,
-        "progress": 1
+        "total": 40,
+        "boxes": 2,
+        "progress": 3
       },
       "batches": [
         {
           "id": 26031245,
-          "quantity": 20,
-          "boxes": 1
+          "quantity": 40,
+          "boxes": 2
         }
       ],
       "lineWindow": {
@@ -67,16 +128,16 @@
         "endTime": "15:15",
         "peTarget": 929,
         "supervisorTarget": null,
-        "production": 20,
-        "progress": 2
+        "production": 40,
+        "progress": 4
       },
       "timeline": [
         {
           "hour": "08:30",
           "target": 136,
-          "actual": 20,
+          "actual": 40,
           "cumTarget": 136,
-          "cumActual": 20,
+          "cumActual": 40,
           "supervisorTarget": null,
           "cumSupervisorTarget": null,
           "transitionTarget": 0,
@@ -90,16 +151,63 @@
   ],
   "lineCards": [
     {
+      "id": "SCD",
+      "productionLine": "SCD",
+      "shiftId": "normal-time",
+      "shiftName": "Fri 7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "totalProduction": 12,
+      "peTotalTarget": 836,
+      "supervisorTotalTarget": null,
+      "progress": 1,
+      "variants": [
+        {
+          "combinedId": "SCD-SCD-XL1000SC",
+          "productName": "SCD",
+          "variantName": "XL1000SC",
+          "variantFull": "SCD XL1000SC",
+          "cycleTime": 29.41,
+          "actualCT": 150,
+          "supervisorCT": null,
+          "devicesPerBox": 12,
+          "peTarget": 836,
+          "supervisorTarget": null,
+          "production": 12,
+          "boxes": 1,
+          "progress": 1,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 122,
+              "actual": 12,
+              "cumTarget": 122,
+              "cumActual": 12,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SUM",
       "productionLine": "SUM",
       "shiftId": "normal-time",
       "shiftName": "Fri 7h NT A",
       "startTime": "07:30",
       "endTime": "15:15",
-      "totalProduction": 20,
+      "totalProduction": 40,
       "peTotalTarget": 929,
       "supervisorTotalTarget": null,
-      "progress": 2,
+      "progress": 4,
       "variants": [
         {
           "combinedId": "SUM-SUM-500V2",
@@ -107,23 +215,23 @@
           "variantName": "500V2",
           "variantFull": "SUM SUM500V2",
           "cycleTime": 26.47,
-          "actualCT": 87,
+          "actualCT": 45,
           "supervisorCT": null,
           "devicesPerBox": 20,
           "peTarget": 929,
           "supervisorTarget": null,
-          "production": 20,
-          "boxes": 1,
-          "progress": 2,
+          "production": 40,
+          "boxes": 2,
+          "progress": 4,
           "startTime": "07:30",
           "endTime": "15:15",
           "timeline": [
             {
               "hour": "08:30",
               "target": 136,
-              "actual": 20,
+              "actual": 40,
               "cumTarget": 136,
-              "cumActual": 20,
+              "cumActual": 40,
               "supervisorTarget": null,
               "cumSupervisorTarget": null,
               "transitionTarget": 0,
@@ -141,23 +249,44 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "totalTarget": 1224,
+        "progress": 1
+      },
+      {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 20,
+        "totalProduction": 40,
         "totalTarget": 1360,
-        "progress": 1
+        "progress": 3
       }
     ],
     "productionLines": [
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 20,
+        "totalProduction": 40,
         "peTotalTarget": 929,
         "supervisorTotalTarget": null,
-        "progress": 2,
+        "progress": 4,
         "variants": [
           "SUM-SUM-500V2"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "15:15"
+      },
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "peTotalTarget": 836,
+        "supervisorTotalTarget": null,
+        "progress": 1,
+        "variants": [
+          "SCD-SCD-XL1000SC"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
