@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-18T16:42:34.452",
+    "timestamp": "2026-03-18T16:43:47.222",
     "date": "2026-03-18",
     "facility": "Main Plant"
   },
@@ -80,6 +80,30 @@
         }
       ],
       "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "overtime",
+      "name": "Mo-Thu 10h OT A",
+      "startTime": "07:30",
+      "endTime": "18:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "17:30",
+          "endTime": "17:50"
+        }
+      ],
+      "availableWorkHours": 9.75
     }
   ],
   "production": [
@@ -803,36 +827,36 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 33.84
+        "actualCycleTime": 33.2
       },
-      "shiftId": "normal-time",
+      "shiftId": "overtime",
       "targets": {
         "hourly": 136,
         "peTarget": 1360,
-        "fullShiftSupervisorTarget": 1000,
-        "supervisorTarget": 1000,
-        "supervisorCycleTime": 29.1,
+        "fullShiftSupervisorTarget": 1100,
+        "supervisorTarget": 1100,
+        "supervisorCycleTime": 31.9091,
         "boxes": 68
       },
       "actual": {
-        "total": 860,
-        "boxes": 43,
-        "progress": 86
+        "total": 900,
+        "boxes": 45,
+        "progress": 82
       },
       "batches": [
         {
           "id": 26031865,
-          "quantity": 860,
-          "boxes": 43
+          "quantity": 900,
+          "boxes": 45
         }
       ],
       "lineWindow": {
         "startTime": "07:30",
-        "endTime": "16:30",
-        "peTarget": 1099,
-        "supervisorTarget": 1000,
-        "production": 860,
-        "progress": 86
+        "endTime": "18:30",
+        "peTarget": 1326,
+        "supervisorTarget": 1100,
+        "production": 900,
+        "progress": 82
       },
       "timeline": [
         {
@@ -841,8 +865,8 @@
           "actual": 0,
           "cumTarget": 136,
           "cumActual": 0,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 123,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 112,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -855,8 +879,8 @@
           "actual": 140,
           "cumTarget": 272,
           "cumActual": 140,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 246,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 224,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -869,8 +893,8 @@
           "actual": 80,
           "cumTarget": 396,
           "cumActual": 220,
-          "supervisorTarget": 113,
-          "cumSupervisorTarget": 359,
+          "supervisorTarget": 103,
+          "cumSupervisorTarget": 327,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -883,8 +907,8 @@
           "actual": 120,
           "cumTarget": 498,
           "cumActual": 340,
-          "supervisorTarget": 92,
-          "cumSupervisorTarget": 451,
+          "supervisorTarget": 84,
+          "cumSupervisorTarget": 411,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -897,8 +921,8 @@
           "actual": 120,
           "cumTarget": 634,
           "cumActual": 460,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 574,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 523,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -911,8 +935,8 @@
           "actual": 100,
           "cumTarget": 770,
           "cumActual": 560,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 697,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 635,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -925,8 +949,8 @@
           "actual": 120,
           "cumTarget": 826,
           "cumActual": 680,
-          "supervisorTarget": 51,
-          "cumSupervisorTarget": 748,
+          "supervisorTarget": 47,
+          "cumSupervisorTarget": 682,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -939,8 +963,8 @@
           "actual": 100,
           "cumTarget": 962,
           "cumActual": 780,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 871,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 794,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -953,8 +977,22 @@
           "actual": 80,
           "cumTarget": 1098,
           "cumActual": 860,
-          "supervisorTarget": 123,
-          "cumSupervisorTarget": 994,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 906,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "17:30",
+          "target": 136,
+          "actual": 40,
+          "cumTarget": 1234,
+          "cumActual": 900,
+          "supervisorTarget": 112,
+          "cumSupervisorTarget": 1018,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -1586,14 +1624,14 @@
     {
       "id": "SUM",
       "productionLine": "SUM",
-      "shiftId": "normal-time",
-      "shiftName": "Mo-Thu 8.25h NT A",
+      "shiftId": "overtime",
+      "shiftName": "Mo-Thu 10h OT A",
       "startTime": "07:30",
-      "endTime": "16:30",
-      "totalProduction": 860,
-      "peTotalTarget": 1099,
-      "supervisorTotalTarget": 1000,
-      "progress": 86,
+      "endTime": "18:30",
+      "totalProduction": 900,
+      "peTotalTarget": 1326,
+      "supervisorTotalTarget": 1100,
+      "progress": 82,
       "variants": [
         {
           "combinedId": "SUM-SUM-500V2",
@@ -1601,16 +1639,16 @@
           "variantName": "500V2",
           "variantFull": "SUM SUM500V2",
           "cycleTime": 26.47,
-          "actualCT": 33.84,
-          "supervisorCT": 29.1,
+          "actualCT": 33.2,
+          "supervisorCT": 31.9091,
           "devicesPerBox": 20,
-          "peTarget": 1099,
-          "supervisorTarget": 1000,
-          "production": 860,
-          "boxes": 43,
-          "progress": 86,
+          "peTarget": 1326,
+          "supervisorTarget": 1100,
+          "production": 900,
+          "boxes": 45,
+          "progress": 82,
           "startTime": "07:30",
-          "endTime": "16:30",
+          "endTime": "18:30",
           "timeline": [
             {
               "hour": "08:30",
@@ -1618,8 +1656,8 @@
               "actual": 0,
               "cumTarget": 136,
               "cumActual": 0,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 123,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 112,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1632,8 +1670,8 @@
               "actual": 140,
               "cumTarget": 272,
               "cumActual": 140,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 246,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 224,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1646,8 +1684,8 @@
               "actual": 80,
               "cumTarget": 396,
               "cumActual": 220,
-              "supervisorTarget": 113,
-              "cumSupervisorTarget": 359,
+              "supervisorTarget": 103,
+              "cumSupervisorTarget": 327,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1660,8 +1698,8 @@
               "actual": 120,
               "cumTarget": 498,
               "cumActual": 340,
-              "supervisorTarget": 92,
-              "cumSupervisorTarget": 451,
+              "supervisorTarget": 84,
+              "cumSupervisorTarget": 411,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1674,8 +1712,8 @@
               "actual": 120,
               "cumTarget": 634,
               "cumActual": 460,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 574,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 523,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1688,8 +1726,8 @@
               "actual": 100,
               "cumTarget": 770,
               "cumActual": 560,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 697,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 635,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1702,8 +1740,8 @@
               "actual": 120,
               "cumTarget": 826,
               "cumActual": 680,
-              "supervisorTarget": 51,
-              "cumSupervisorTarget": 748,
+              "supervisorTarget": 47,
+              "cumSupervisorTarget": 682,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1716,8 +1754,8 @@
               "actual": 100,
               "cumTarget": 962,
               "cumActual": 780,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 871,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 794,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1730,8 +1768,22 @@
               "actual": 80,
               "cumTarget": 1098,
               "cumActual": 860,
-              "supervisorTarget": 123,
-              "cumSupervisorTarget": 994,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 906,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "17:30",
+              "target": 136,
+              "actual": 40,
+              "cumTarget": 1234,
+              "cumActual": 900,
+              "supervisorTarget": 112,
+              "cumSupervisorTarget": 1018,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1929,9 +1981,9 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 860,
+        "totalProduction": 900,
         "totalTarget": 1360,
-        "progress": 63
+        "progress": 66
       }
     ],
     "productionLines": [
@@ -2008,16 +2060,16 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 860,
-        "peTotalTarget": 1099,
-        "supervisorTotalTarget": 1000,
-        "progress": 86,
+        "totalProduction": 900,
+        "peTotalTarget": 1326,
+        "supervisorTotalTarget": 1100,
+        "progress": 82,
         "variants": [
           "SUM-SUM-500V2"
         ],
-        "shiftId": "normal-time",
+        "shiftId": "overtime",
         "startTime": "07:30",
-        "endTime": "16:30"
+        "endTime": "18:30"
       },
       {
         "id": "Scalpel_Assembly",
