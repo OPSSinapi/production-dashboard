@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-25T08:21:26.806",
+    "timestamp": "2026-03-25T08:21:59.947",
     "date": "2026-03-25",
     "facility": "Main Plant"
   },
@@ -26,6 +26,67 @@
     }
   ],
   "production": [
+    {
+      "id": "3rd_Line-SCD-XL200SC",
+      "productionLine": "3rd_Line",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL200SC",
+        "name": "XL200SC",
+        "fullName": "SCD XL200SC",
+        "cycleTime": 60.622499999999995,
+        "devicesPerBox": 15,
+        "actualCycleTime": 102
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 59,
+        "peTarget": 480,
+        "fullShiftSupervisorTarget": 250,
+        "supervisorTarget": 250,
+        "supervisorCycleTime": 116.4,
+        "boxes": 32
+      },
+      "actual": {
+        "total": 30,
+        "boxes": 2,
+        "progress": 12
+      },
+      "batches": [
+        {
+          "id": 26032374,
+          "quantity": 30,
+          "boxes": 2
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 480,
+        "supervisorTarget": 250,
+        "production": 30,
+        "progress": 12
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 59,
+          "actual": 30,
+          "cumTarget": 59,
+          "cumActual": 30,
+          "supervisorTarget": 30,
+          "cumSupervisorTarget": 30,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "SUM-SUM-500V2",
       "productionLine": "SUM",
@@ -90,6 +151,53 @@
   ],
   "lineCards": [
     {
+      "id": "3rd_Line",
+      "productionLine": "3rd_Line",
+      "shiftId": "normal-time",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 30,
+      "peTotalTarget": 480,
+      "supervisorTotalTarget": 250,
+      "progress": 12,
+      "variants": [
+        {
+          "combinedId": "3rd_Line-SCD-XL200SC",
+          "productName": "SCD",
+          "variantName": "XL200SC",
+          "variantFull": "SCD XL200SC",
+          "cycleTime": 60.622499999999995,
+          "actualCT": 102,
+          "supervisorCT": 116.4,
+          "devicesPerBox": 15,
+          "peTarget": 480,
+          "supervisorTarget": 250,
+          "production": 30,
+          "boxes": 2,
+          "progress": 12,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 59,
+              "actual": 30,
+              "cumTarget": 59,
+              "cumActual": 30,
+              "supervisorTarget": 30,
+              "cumSupervisorTarget": 30,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SUM",
       "productionLine": "SUM",
       "shiftId": "normal-time",
@@ -141,6 +249,13 @@
   "summary": {
     "products": [
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 30,
+        "totalTarget": 480,
+        "progress": 6
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 60,
@@ -158,6 +273,20 @@
         "progress": 6,
         "variants": [
           "SUM-SUM-500V2"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "3rd_Line",
+        "name": "3rd_Line",
+        "totalProduction": 30,
+        "peTotalTarget": 480,
+        "supervisorTotalTarget": 250,
+        "progress": 12,
+        "variants": [
+          "3rd_Line-SCD-XL200SC"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
