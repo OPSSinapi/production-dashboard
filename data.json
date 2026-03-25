@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-03-25T17:29:59.645",
+    "timestamp": "2026-03-25T17:31:14.210",
     "date": "2026-03-25",
     "facility": "Main Plant"
   },
@@ -23,6 +23,30 @@
         }
       ],
       "availableWorkHours": 8.083333333
+    },
+    {
+      "id": "overtime",
+      "name": "Mo-Thu 10h OT A",
+      "startTime": "07:30",
+      "endTime": "18:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "17:30",
+          "endTime": "17:50"
+        }
+      ],
+      "availableWorkHours": 9.75
     },
     {
       "id": "night-shift-Line_2",
@@ -80,30 +104,6 @@
         }
       ],
       "availableWorkHours": 11.08333333
-    },
-    {
-      "id": "overtime",
-      "name": "Mo-Thu 10h OT A",
-      "startTime": "07:30",
-      "endTime": "18:30",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:25",
-          "endTime": "10:45"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        },
-        {
-          "type": "otTea",
-          "startTime": "17:30",
-          "endTime": "17:50"
-        }
-      ],
-      "availableWorkHours": 9.75
     }
   ],
   "production": [
@@ -293,36 +293,36 @@
         "fullName": "LEVO XL2200S",
         "cycleTime": 97.06,
         "devicesPerBox": 8,
-        "actualCycleTime": 121.25
+        "actualCycleTime": 120.22
       },
-      "shiftId": "normal-time",
+      "shiftId": "overtime",
       "targets": {
         "hourly": 37,
         "peTarget": 305,
-        "fullShiftSupervisorTarget": 304,
-        "supervisorTarget": 304,
-        "supervisorCycleTime": 95.7237,
+        "fullShiftSupervisorTarget": 451,
+        "supervisorTarget": 451,
+        "supervisorCycleTime": 77.8271,
         "boxes": 38
       },
       "actual": {
-        "total": 240,
-        "boxes": 30,
-        "progress": 79
+        "total": 272,
+        "boxes": 34,
+        "progress": 60
       },
       "batches": [
         {
           "id": 26032172,
-          "quantity": 240,
-          "boxes": 30
+          "quantity": 272,
+          "boxes": 34
         }
       ],
       "lineWindow": {
         "startTime": "07:30",
-        "endTime": "16:30",
-        "peTarget": 299,
-        "supervisorTarget": 304,
-        "production": 240,
-        "progress": 79
+        "endTime": "18:30",
+        "peTarget": 361,
+        "supervisorTarget": 451,
+        "production": 272,
+        "progress": 60
       },
       "timeline": [
         {
@@ -331,8 +331,8 @@
           "actual": 24,
           "cumTarget": 37,
           "cumActual": 24,
-          "supervisorTarget": 37,
-          "cumSupervisorTarget": 37,
+          "supervisorTarget": 46,
+          "cumSupervisorTarget": 46,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -345,8 +345,8 @@
           "actual": 24,
           "cumTarget": 74,
           "cumActual": 48,
-          "supervisorTarget": 37,
-          "cumSupervisorTarget": 74,
+          "supervisorTarget": 46,
+          "cumSupervisorTarget": 92,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -359,8 +359,8 @@
           "actual": 16,
           "cumTarget": 107,
           "cumActual": 64,
-          "supervisorTarget": 34,
-          "cumSupervisorTarget": 108,
+          "supervisorTarget": 42,
+          "cumSupervisorTarget": 134,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -373,8 +373,8 @@
           "actual": 8,
           "cumTarget": 134,
           "cumActual": 72,
-          "supervisorTarget": 28,
-          "cumSupervisorTarget": 136,
+          "supervisorTarget": 34,
+          "cumSupervisorTarget": 168,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -387,8 +387,8 @@
           "actual": 0,
           "cumTarget": 171,
           "cumActual": 72,
-          "supervisorTarget": 37,
-          "cumSupervisorTarget": 173,
+          "supervisorTarget": 46,
+          "cumSupervisorTarget": 214,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -401,8 +401,8 @@
           "actual": 72,
           "cumTarget": 208,
           "cumActual": 144,
-          "supervisorTarget": 37,
-          "cumSupervisorTarget": 210,
+          "supervisorTarget": 46,
+          "cumSupervisorTarget": 260,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -415,8 +415,8 @@
           "actual": 40,
           "cumTarget": 223,
           "cumActual": 184,
-          "supervisorTarget": 15,
-          "cumSupervisorTarget": 225,
+          "supervisorTarget": 19,
+          "cumSupervisorTarget": 279,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -429,8 +429,8 @@
           "actual": 24,
           "cumTarget": 260,
           "cumActual": 208,
-          "supervisorTarget": 37,
-          "cumSupervisorTarget": 262,
+          "supervisorTarget": 46,
+          "cumSupervisorTarget": 325,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -443,13 +443,41 @@
           "actual": 32,
           "cumTarget": 297,
           "cumActual": 240,
-          "supervisorTarget": 37,
-          "cumSupervisorTarget": 299,
+          "supervisorTarget": 46,
+          "cumSupervisorTarget": 371,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "17:30",
+          "target": 37,
+          "actual": 32,
+          "cumTarget": 334,
+          "cumActual": 272,
+          "supervisorTarget": 46,
+          "cumSupervisorTarget": 417,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "18:30",
+          "target": 24,
+          "actual": 0,
+          "cumTarget": 358,
+          "cumActual": 272,
+          "supervisorTarget": 30,
+          "cumSupervisorTarget": 447,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
         }
       ]
     },
@@ -649,7 +677,7 @@
         "fullName": "SCD XL1000SC",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 66.34
+        "actualCycleTime": 61.93
       },
       "shiftId": "overtime",
       "targets": {
@@ -661,15 +689,15 @@
         "boxes": 102
       },
       "actual": {
-        "total": 492,
-        "boxes": 41,
-        "progress": 41
+        "total": 528,
+        "boxes": 44,
+        "progress": 44
       },
       "batches": [
         {
           "id": 26032376,
-          "quantity": 492,
-          "boxes": 41
+          "quantity": 528,
+          "boxes": 44
         }
       ],
       "lineWindow": {
@@ -677,8 +705,8 @@
         "endTime": "18:30",
         "peTarget": 1193,
         "supervisorTarget": 1192,
-        "production": 492,
-        "progress": 41
+        "production": 528,
+        "progress": 44
       },
       "timeline": [
         {
@@ -810,9 +838,9 @@
         {
           "hour": "17:30",
           "target": 122,
-          "actual": 48,
+          "actual": 84,
           "cumTarget": 1108,
-          "cumActual": 492,
+          "cumActual": 528,
           "supervisorTarget": 122,
           "cumSupervisorTarget": 1107,
           "transitionTarget": 0,
@@ -820,6 +848,20 @@
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "18:30",
+          "target": 81,
+          "actual": 0,
+          "cumTarget": 1189,
+          "cumActual": 528,
+          "supervisorTarget": 81,
+          "cumSupervisorTarget": 1188,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
         }
       ]
     },
@@ -836,7 +878,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 31.38
+        "actualCycleTime": 31.44
       },
       "shiftId": "overtime",
       "targets": {
@@ -1012,6 +1054,20 @@
           "previousVariant": null,
           "previousVariantMinutes": 0,
           "currentVariantMinutes": 60
+        },
+        {
+          "hour": "18:30",
+          "target": 90,
+          "actual": 0,
+          "cumTarget": 1324,
+          "cumActual": 1040,
+          "supervisorTarget": 88,
+          "cumSupervisorTarget": 1287,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
         }
       ]
     }
@@ -1179,14 +1235,14 @@
     {
       "id": "LEVO",
       "productionLine": "LEVO",
-      "shiftId": "normal-time",
-      "shiftName": "Mo-Thu 8.25h NT A",
+      "shiftId": "overtime",
+      "shiftName": "Mo-Thu 10h OT A",
       "startTime": "07:30",
-      "endTime": "16:30",
-      "totalProduction": 240,
-      "peTotalTarget": 299,
-      "supervisorTotalTarget": 304,
-      "progress": 79,
+      "endTime": "18:30",
+      "totalProduction": 272,
+      "peTotalTarget": 361,
+      "supervisorTotalTarget": 451,
+      "progress": 60,
       "variants": [
         {
           "combinedId": "LEVO-LEVO-XL2200S",
@@ -1194,16 +1250,16 @@
           "variantName": "XL2200S",
           "variantFull": "LEVO XL2200S",
           "cycleTime": 97.06,
-          "actualCT": 121.25,
-          "supervisorCT": 95.7237,
+          "actualCT": 120.22,
+          "supervisorCT": 77.8271,
           "devicesPerBox": 8,
-          "peTarget": 299,
-          "supervisorTarget": 304,
-          "production": 240,
-          "boxes": 30,
-          "progress": 79,
+          "peTarget": 361,
+          "supervisorTarget": 451,
+          "production": 272,
+          "boxes": 34,
+          "progress": 60,
           "startTime": "07:30",
-          "endTime": "16:30",
+          "endTime": "18:30",
           "timeline": [
             {
               "hour": "08:30",
@@ -1211,8 +1267,8 @@
               "actual": 24,
               "cumTarget": 37,
               "cumActual": 24,
-              "supervisorTarget": 37,
-              "cumSupervisorTarget": 37,
+              "supervisorTarget": 46,
+              "cumSupervisorTarget": 46,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1225,8 +1281,8 @@
               "actual": 24,
               "cumTarget": 74,
               "cumActual": 48,
-              "supervisorTarget": 37,
-              "cumSupervisorTarget": 74,
+              "supervisorTarget": 46,
+              "cumSupervisorTarget": 92,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1239,8 +1295,8 @@
               "actual": 16,
               "cumTarget": 107,
               "cumActual": 64,
-              "supervisorTarget": 34,
-              "cumSupervisorTarget": 108,
+              "supervisorTarget": 42,
+              "cumSupervisorTarget": 134,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1253,8 +1309,8 @@
               "actual": 8,
               "cumTarget": 134,
               "cumActual": 72,
-              "supervisorTarget": 28,
-              "cumSupervisorTarget": 136,
+              "supervisorTarget": 34,
+              "cumSupervisorTarget": 168,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1267,8 +1323,8 @@
               "actual": 0,
               "cumTarget": 171,
               "cumActual": 72,
-              "supervisorTarget": 37,
-              "cumSupervisorTarget": 173,
+              "supervisorTarget": 46,
+              "cumSupervisorTarget": 214,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1281,8 +1337,8 @@
               "actual": 72,
               "cumTarget": 208,
               "cumActual": 144,
-              "supervisorTarget": 37,
-              "cumSupervisorTarget": 210,
+              "supervisorTarget": 46,
+              "cumSupervisorTarget": 260,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1295,8 +1351,8 @@
               "actual": 40,
               "cumTarget": 223,
               "cumActual": 184,
-              "supervisorTarget": 15,
-              "cumSupervisorTarget": 225,
+              "supervisorTarget": 19,
+              "cumSupervisorTarget": 279,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1309,8 +1365,8 @@
               "actual": 24,
               "cumTarget": 260,
               "cumActual": 208,
-              "supervisorTarget": 37,
-              "cumSupervisorTarget": 262,
+              "supervisorTarget": 46,
+              "cumSupervisorTarget": 325,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -1323,13 +1379,41 @@
               "actual": 32,
               "cumTarget": 297,
               "cumActual": 240,
-              "supervisorTarget": 37,
-              "cumSupervisorTarget": 299,
+              "supervisorTarget": 46,
+              "cumSupervisorTarget": 371,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
               "previousVariantMinutes": 0,
               "currentVariantMinutes": 60
+            },
+            {
+              "hour": "17:30",
+              "target": 37,
+              "actual": 32,
+              "cumTarget": 334,
+              "cumActual": 272,
+              "supervisorTarget": 46,
+              "cumSupervisorTarget": 417,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "18:30",
+              "target": 24,
+              "actual": 0,
+              "cumTarget": 358,
+              "cumActual": 272,
+              "supervisorTarget": 30,
+              "cumSupervisorTarget": 447,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 40
             }
           ]
         }
@@ -1483,10 +1567,10 @@
       "shiftName": "Mo-Thu 10h OT A",
       "startTime": "07:30",
       "endTime": "18:30",
-      "totalProduction": 492,
+      "totalProduction": 528,
       "peTotalTarget": 1193,
       "supervisorTotalTarget": 1192,
-      "progress": 41,
+      "progress": 44,
       "variants": [
         {
           "combinedId": "SCD-SCD-XL1000SC",
@@ -1494,14 +1578,14 @@
           "variantName": "XL1000SC",
           "variantFull": "SCD XL1000SC",
           "cycleTime": 29.41,
-          "actualCT": 66.34,
+          "actualCT": 61.93,
           "supervisorCT": 29.4463,
           "devicesPerBox": 12,
           "peTarget": 1193,
           "supervisorTarget": 1192,
-          "production": 492,
-          "boxes": 41,
-          "progress": 41,
+          "production": 528,
+          "boxes": 44,
+          "progress": 44,
           "startTime": "07:30",
           "endTime": "18:30",
           "timeline": [
@@ -1634,9 +1718,9 @@
             {
               "hour": "17:30",
               "target": 122,
-              "actual": 48,
+              "actual": 84,
               "cumTarget": 1108,
-              "cumActual": 492,
+              "cumActual": 528,
               "supervisorTarget": 122,
               "cumSupervisorTarget": 1107,
               "transitionTarget": 0,
@@ -1644,6 +1728,20 @@
               "previousVariant": null,
               "previousVariantMinutes": 0,
               "currentVariantMinutes": 60
+            },
+            {
+              "hour": "18:30",
+              "target": 81,
+              "actual": 0,
+              "cumTarget": 1189,
+              "cumActual": 528,
+              "supervisorTarget": 81,
+              "cumSupervisorTarget": 1188,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 40
             }
           ]
         }
@@ -1667,7 +1765,7 @@
           "variantName": "500V2",
           "variantFull": "SUM SUM500V2",
           "cycleTime": 26.47,
-          "actualCT": 31.38,
+          "actualCT": 31.44,
           "supervisorCT": 27.1672,
           "devicesPerBox": 20,
           "peTarget": 1326,
@@ -1817,6 +1915,20 @@
               "previousVariant": null,
               "previousVariantMinutes": 0,
               "currentVariantMinutes": 60
+            },
+            {
+              "hour": "18:30",
+              "target": 90,
+              "actual": 0,
+              "cumTarget": 1324,
+              "cumActual": 1040,
+              "supervisorTarget": 88,
+              "cumSupervisorTarget": 1287,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 40
             }
           ]
         }
@@ -1981,16 +2093,16 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 627,
+        "totalProduction": 663,
         "totalTarget": 1704,
-        "progress": 37
+        "progress": 39
       },
       {
         "id": "LEVO",
         "name": "LEVO",
-        "totalProduction": 240,
+        "totalProduction": 272,
         "totalTarget": 305,
-        "progress": 79
+        "progress": 89
       },
       {
         "id": "Ellavi_Drape",
@@ -2039,10 +2151,10 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 492,
+        "totalProduction": 528,
         "peTotalTarget": 1193,
         "supervisorTotalTarget": 1192,
-        "progress": 41,
+        "progress": 44,
         "variants": [
           "SCD-SCD-XL1000SC"
         ],
@@ -2053,16 +2165,16 @@
       {
         "id": "LEVO",
         "name": "LEVO",
-        "totalProduction": 240,
-        "peTotalTarget": 299,
-        "supervisorTotalTarget": 304,
-        "progress": 79,
+        "totalProduction": 272,
+        "peTotalTarget": 361,
+        "supervisorTotalTarget": 451,
+        "progress": 60,
         "variants": [
           "LEVO-LEVO-XL2200S"
         ],
-        "shiftId": "normal-time",
+        "shiftId": "overtime",
         "startTime": "07:30",
-        "endTime": "16:30"
+        "endTime": "18:30"
       },
       {
         "id": "Line_2",
