@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-04-01T10:14:18.285",
+    "timestamp": "2026-04-01T10:14:53.895",
     "date": "2026-04-01",
     "facility": "Main Plant"
   },
@@ -107,6 +107,95 @@
           "cumActual": 36,
           "supervisorTarget": 39,
           "cumSupervisorTarget": 125,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ]
+    },
+    {
+      "id": "PopUp-EFB-EFB",
+      "productionLine": "PopUp",
+      "product": {
+        "id": "EFB",
+        "name": "EFB"
+      },
+      "variant": {
+        "id": "EFB",
+        "name": "EFB",
+        "fullName": "EFB EFB",
+        "cycleTime": 30.94,
+        "devicesPerBox": 50,
+        "actualCycleTime": 98.4
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 116,
+        "peTarget": 959,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 19
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 2,
+        "progress": 10
+      },
+      "batches": [
+        {
+          "id": 26033088,
+          "quantity": 100,
+          "boxes": 2
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 940,
+        "supervisorTarget": null,
+        "production": 100,
+        "progress": 11
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 116,
+          "actual": 0,
+          "cumTarget": 116,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 116,
+          "actual": 0,
+          "cumTarget": 232,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 106,
+          "actual": 100,
+          "cumTarget": 338,
+          "cumActual": 100,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -371,6 +460,81 @@
       ]
     },
     {
+      "id": "PopUp",
+      "productionLine": "PopUp",
+      "shiftId": "normal-time",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 100,
+      "peTotalTarget": 940,
+      "supervisorTotalTarget": null,
+      "progress": 11,
+      "variants": [
+        {
+          "combinedId": "PopUp-EFB-EFB",
+          "productName": "EFB",
+          "variantName": "EFB",
+          "variantFull": "EFB EFB",
+          "cycleTime": 30.94,
+          "actualCT": 98.4,
+          "supervisorCT": null,
+          "devicesPerBox": 50,
+          "peTarget": 940,
+          "supervisorTarget": null,
+          "production": 100,
+          "boxes": 2,
+          "progress": 11,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 116,
+              "actual": 0,
+              "cumTarget": 116,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 116,
+              "actual": 0,
+              "cumTarget": 232,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "10:30",
+              "target": 106,
+              "actual": 100,
+              "cumTarget": 338,
+              "cumActual": 100,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 55
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
@@ -521,7 +685,77 @@
       ]
     }
   ],
-  "lineGroups": [],
+  "lineGroups": [
+    {
+      "groupId": "PopUp",
+      "label": "PopUp - All Variants",
+      "displayMode": "multi-chart",
+      "shiftWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      "members": [
+        {
+          "lineCardId": "PopUp",
+          "variantId": "EFB",
+          "label": "EFB",
+          "production": 100,
+          "peTarget": 940,
+          "supervisorTarget": null,
+          "boxes": 2,
+          "actualCT": 98.4,
+          "cycleTime": 30.94,
+          "supervisorCT": null,
+          "devicesPerBox": 50,
+          "colour": "#22c55e",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 116,
+              "actual": 0,
+              "cumTarget": 116,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 116,
+              "actual": 0,
+              "cumTarget": 232,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "10:30",
+              "target": 106,
+              "actual": 100,
+              "cumTarget": 338,
+              "cumActual": 100,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 55
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "summary": {
     "products": [
       {
@@ -530,6 +764,13 @@
         "totalProduction": 36,
         "totalTarget": 305,
         "progress": 12
+      },
+      {
+        "id": "EFB",
+        "name": "EFB",
+        "totalProduction": 100,
+        "totalTarget": 959,
+        "progress": 10
       },
       {
         "id": "SCD",
@@ -584,6 +825,20 @@
         "progress": 10,
         "variants": [
           "LEVO-LEVO-XL1150SCi"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 100,
+        "peTotalTarget": 940,
+        "supervisorTotalTarget": null,
+        "progress": 11,
+        "variants": [
+          "PopUp-EFB-EFB"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
