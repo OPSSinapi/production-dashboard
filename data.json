@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-04-10T07:54:58.271",
+    "timestamp": "2026-04-10T07:56:02.718",
     "date": "2026-04-10",
     "facility": "Main Plant"
   },
@@ -39,7 +39,7 @@
         "fullName": "LEVO XL2200S",
         "cycleTime": 97.06,
         "devicesPerBox": 8,
-        "actualCycleTime": 102.86
+        "actualCycleTime": 111.43
       },
       "shiftId": "normal-time",
       "targets": {
@@ -100,7 +100,7 @@
         "fullName": "SCD XL1000S",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 30
+        "actualCycleTime": 32.5
       },
       "shiftId": "normal-time",
       "targets": {
@@ -147,6 +147,67 @@
           "currentVariantMinutes": 60
         }
       ]
+    },
+    {
+      "id": "SUM-SUM-500V2",
+      "productionLine": "SUM",
+      "product": {
+        "id": "SUM",
+        "name": "SUM"
+      },
+      "variant": {
+        "id": "500V2",
+        "name": "500V2",
+        "fullName": "SUM SUM500V2",
+        "cycleTime": 26.47,
+        "devicesPerBox": 20,
+        "actualCycleTime": 78
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 136,
+        "peTarget": 1360,
+        "fullShiftSupervisorTarget": 879,
+        "supervisorTarget": 879,
+        "supervisorCycleTime": 27.9863,
+        "boxes": 68
+      },
+      "actual": {
+        "total": 20,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 26040917,
+          "quantity": 20,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "15:15",
+        "peTarget": 929,
+        "supervisorTarget": 879,
+        "production": 20,
+        "progress": 2
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 136,
+          "actual": 20,
+          "cumTarget": 136,
+          "cumActual": 20,
+          "supervisorTarget": 128,
+          "cumSupervisorTarget": 128,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
     }
   ],
   "lineCards": [
@@ -168,7 +229,7 @@
           "variantName": "XL2200S",
           "variantFull": "LEVO XL2200S",
           "cycleTime": 97.06,
-          "actualCT": 102.86,
+          "actualCT": 111.43,
           "supervisorCT": 95.7198,
           "devicesPerBox": 8,
           "peTarget": 253,
@@ -215,7 +276,7 @@
           "variantName": "XL1000S",
           "variantFull": "SCD XL1000S",
           "cycleTime": 29.41,
-          "actualCT": 30,
+          "actualCT": 32.5,
           "supervisorCT": 30.3329,
           "devicesPerBox": 12,
           "peTarget": 836,
@@ -243,6 +304,53 @@
           ]
         }
       ]
+    },
+    {
+      "id": "SUM",
+      "productionLine": "SUM",
+      "shiftId": "normal-time",
+      "shiftName": "Fri 7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "totalProduction": 20,
+      "peTotalTarget": 929,
+      "supervisorTotalTarget": 879,
+      "progress": 2,
+      "variants": [
+        {
+          "combinedId": "SUM-SUM-500V2",
+          "productName": "SUM",
+          "variantName": "500V2",
+          "variantFull": "SUM SUM500V2",
+          "cycleTime": 26.47,
+          "actualCT": 78,
+          "supervisorCT": 27.9863,
+          "devicesPerBox": 20,
+          "peTarget": 929,
+          "supervisorTarget": 879,
+          "production": 20,
+          "boxes": 1,
+          "progress": 2,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 136,
+              "actual": 20,
+              "cumTarget": 136,
+              "cumActual": 20,
+              "supervisorTarget": 128,
+              "cumSupervisorTarget": 128,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
     }
   ],
   "lineGroups": [],
@@ -261,6 +369,13 @@
         "totalProduction": 48,
         "totalTarget": 1224,
         "progress": 4
+      },
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 20,
+        "totalTarget": 1360,
+        "progress": 1
       }
     ],
     "productionLines": [
@@ -287,6 +402,20 @@
         "progress": 5,
         "variants": [
           "LEVO-LEVO-XL2200S"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "15:15"
+      },
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 20,
+        "peTotalTarget": 929,
+        "supervisorTotalTarget": 879,
+        "progress": 2,
+        "variants": [
+          "SUM-SUM-500V2"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
