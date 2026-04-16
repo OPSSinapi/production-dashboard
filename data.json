@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-04-16T09:52:58.026",
+    "timestamp": "2026-04-16T09:54:56.778",
     "date": "2026-04-16",
     "facility": "Main Plant"
   },
@@ -82,20 +82,20 @@
       "availableWorkHours": 11.08333333
     },
     {
-      "id": "night-shift-Line_4",
-      "name": "Mo-Su 11h NS",
-      "startTime": "18:00",
-      "endTime": "06:00",
+      "id": "day-shift-Line_4",
+      "name": "Mo-Su 11h DS",
+      "startTime": "06:00",
+      "endTime": "18:00",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "20:25",
-          "endTime": "20:45"
+          "startTime": "10:25",
+          "endTime": "10:45"
         },
         {
           "type": "lunch",
-          "startTime": "23:20",
-          "endTime": "23:55"
+          "startTime": "13:40",
+          "endTime": "14:15"
         }
       ],
       "availableWorkHours": 11.08333333
@@ -115,7 +115,7 @@
         "fullName": "SCD XL200SC",
         "cycleTime": 60.622499999999995,
         "devicesPerBox": 15,
-        "actualCycleTime": 142
+        "actualCycleTime": 144
       },
       "shiftId": "normal-time",
       "targets": {
@@ -204,7 +204,7 @@
         "fullName": "LEVO XL2200S",
         "cycleTime": 97.06,
         "devicesPerBox": 8,
-        "actualCycleTime": 152.14
+        "actualCycleTime": 154.29
       },
       "shiftId": "normal-time",
       "targets": {
@@ -293,7 +293,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 34.8
+        "actualCycleTime": 35.1
       },
       "shiftId": "day-shift-Line_1",
       "targets": {
@@ -396,7 +396,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 27.84
+        "actualCycleTime": 28.08
       },
       "shiftId": "day-shift-Line_2",
       "targets": {
@@ -499,7 +499,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 46.4
+        "actualCycleTime": 46.8
       },
       "shiftId": "day-shift-Line_3",
       "targets": {
@@ -602,9 +602,9 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 432
+        "actualCycleTime": 28.08
       },
-      "shiftId": "night-shift-Line_4",
+      "shiftId": "day-shift-Line_4",
       "targets": {
         "hourly": 123,
         "peTarget": 999,
@@ -614,31 +614,36 @@
         "boxes": 9
       },
       "actual": {
-        "total": 100,
-        "boxes": 1,
-        "progress": 10
+        "total": 500,
+        "boxes": 5,
+        "progress": 50
       },
       "batches": [
         {
           "id": 26041328,
           "quantity": 100,
           "boxes": 1
+        },
+        {
+          "id": 26041639,
+          "quantity": 400,
+          "boxes": 4
         }
       ],
       "lineWindow": {
-        "startTime": "18:00",
-        "endTime": "06:00",
-        "peTarget": 999,
+        "startTime": "06:00",
+        "endTime": "18:00",
+        "peTarget": 1371,
         "supervisorTarget": null,
-        "production": 100,
-        "progress": 10
+        "production": 500,
+        "progress": 36
       },
       "timeline": [
         {
-          "hour": "06:00",
-          "target": 0,
+          "hour": "07:30",
+          "target": 185,
           "actual": 0,
-          "cumTarget": 0,
+          "cumTarget": 185,
           "cumActual": 0,
           "supervisorTarget": null,
           "cumSupervisorTarget": null,
@@ -646,7 +651,49 @@
           "supervisorTransitionTarget": null,
           "previousVariant": null,
           "previousVariantMinutes": 0,
-          "currentVariantMinutes": -720
+          "currentVariantMinutes": 90
+        },
+        {
+          "hour": "08:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 308,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 123,
+          "actual": 0,
+          "cumTarget": 431,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 113,
+          "actual": 500,
+          "cumTarget": 544,
+          "cumActual": 500,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
         }
       ]
     },
@@ -663,7 +710,7 @@
         "fullName": "Scalpel PAMS23S",
         "cycleTime": 2.28,
         "devicesPerBox": 500,
-        "actualCycleTime": 8.52
+        "actualCycleTime": 8.64
       },
       "shiftId": "normal-time",
       "targets": {
@@ -752,7 +799,7 @@
         "fullName": "SCD XL1000SCP",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 44.38
+        "actualCycleTime": 45
       },
       "shiftId": "normal-time",
       "targets": {
@@ -841,7 +888,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 47.33
+        "actualCycleTime": 48
       },
       "shiftId": "normal-time",
       "targets": {
@@ -937,7 +984,7 @@
           "variantName": "XL200SC",
           "variantFull": "SCD XL200SC",
           "cycleTime": 60.622499999999995,
-          "actualCT": 142,
+          "actualCT": 144,
           "supervisorCT": 116.4,
           "devicesPerBox": 15,
           "peTarget": 480,
@@ -1012,7 +1059,7 @@
           "variantName": "XL2200S",
           "variantFull": "LEVO XL2200S",
           "cycleTime": 97.06,
-          "actualCT": 152.14,
+          "actualCT": 154.29,
           "supervisorCT": 95.7237,
           "devicesPerBox": 8,
           "peTarget": 299,
@@ -1087,7 +1134,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 34.8,
+          "actualCT": 35.1,
           "supervisorCT": null,
           "devicesPerBox": 100,
           "peTarget": 1371,
@@ -1176,7 +1223,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 27.84,
+          "actualCT": 28.08,
           "supervisorCT": null,
           "devicesPerBox": 100,
           "peTarget": 1371,
@@ -1265,7 +1312,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 46.4,
+          "actualCT": 46.8,
           "supervisorCT": null,
           "devicesPerBox": 100,
           "peTarget": 1371,
@@ -1339,14 +1386,14 @@
     {
       "id": "Line_4",
       "productionLine": "Line_4",
-      "shiftId": "night-shift-Line_4",
-      "shiftName": "Mo-Su 11h NS",
-      "startTime": "18:00",
-      "endTime": "06:00",
-      "totalProduction": 100,
-      "peTotalTarget": 999,
+      "shiftId": "day-shift-Line_4",
+      "shiftName": "Mo-Su 11h DS",
+      "startTime": "06:00",
+      "endTime": "18:00",
+      "totalProduction": 500,
+      "peTotalTarget": 1371,
       "supervisorTotalTarget": null,
-      "progress": 10,
+      "progress": 36,
       "variants": [
         {
           "combinedId": "Line_4-Ellavi_Drape-BC01",
@@ -1354,22 +1401,22 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 432,
+          "actualCT": 28.08,
           "supervisorCT": null,
           "devicesPerBox": 100,
-          "peTarget": 999,
+          "peTarget": 1371,
           "supervisorTarget": null,
-          "production": 100,
-          "boxes": 1,
-          "progress": 10,
-          "startTime": "18:00",
-          "endTime": "06:00",
+          "production": 500,
+          "boxes": 5,
+          "progress": 36,
+          "startTime": "06:00",
+          "endTime": "18:00",
           "timeline": [
             {
-              "hour": "06:00",
-              "target": 0,
+              "hour": "07:30",
+              "target": 185,
               "actual": 0,
-              "cumTarget": 0,
+              "cumTarget": 185,
               "cumActual": 0,
               "supervisorTarget": null,
               "cumSupervisorTarget": null,
@@ -1377,7 +1424,49 @@
               "supervisorTransitionTarget": null,
               "previousVariant": null,
               "previousVariantMinutes": 0,
-              "currentVariantMinutes": -720
+              "currentVariantMinutes": 90
+            },
+            {
+              "hour": "08:30",
+              "target": 123,
+              "actual": 0,
+              "cumTarget": 308,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 123,
+              "actual": 0,
+              "cumTarget": 431,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "10:30",
+              "target": 113,
+              "actual": 500,
+              "cumTarget": 544,
+              "cumActual": 500,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 55
             }
           ]
         }
@@ -1401,7 +1490,7 @@
           "variantName": "PAMS23S",
           "variantFull": "Scalpel PAMS23S",
           "cycleTime": 2.28,
-          "actualCT": 8.52,
+          "actualCT": 8.64,
           "supervisorCT": null,
           "devicesPerBox": 500,
           "peTarget": 12763,
@@ -1476,7 +1565,7 @@
           "variantName": "XL1000SCP",
           "variantFull": "SCD XL1000SCP",
           "cycleTime": 29.41,
-          "actualCT": 44.38,
+          "actualCT": 45,
           "supervisorCT": 30.3125,
           "devicesPerBox": 12,
           "peTarget": 989,
@@ -1551,7 +1640,7 @@
           "variantName": "500V2",
           "variantFull": "SUM SUM500V2",
           "cycleTime": 26.47,
-          "actualCT": 47.33,
+          "actualCT": 48,
           "supervisorCT": 27.9808,
           "devicesPerBox": 20,
           "peTarget": 1099,
@@ -1626,7 +1715,7 @@
           "peTarget": 1371,
           "supervisorTarget": null,
           "boxes": 4,
-          "actualCT": 34.8,
+          "actualCT": 35.1,
           "cycleTime": 29.09,
           "supervisorCT": null,
           "devicesPerBox": 100,
@@ -1697,7 +1786,7 @@
           "peTarget": 1371,
           "supervisorTarget": null,
           "boxes": 5,
-          "actualCT": 27.84,
+          "actualCT": 28.08,
           "cycleTime": 29.09,
           "supervisorCT": null,
           "devicesPerBox": 100,
@@ -1768,7 +1857,7 @@
           "peTarget": 1371,
           "supervisorTarget": null,
           "boxes": 3,
-          "actualCT": 46.4,
+          "actualCT": 46.8,
           "cycleTime": 29.09,
           "supervisorCT": null,
           "devicesPerBox": 100,
@@ -1835,21 +1924,21 @@
         {
           "lineCardId": "Line_4",
           "label": "Line_4",
-          "production": 100,
-          "peTarget": 999,
+          "production": 500,
+          "peTarget": 1371,
           "supervisorTarget": null,
-          "boxes": 1,
-          "actualCT": 432,
+          "boxes": 5,
+          "actualCT": 28.08,
           "cycleTime": 29.09,
           "supervisorCT": null,
           "devicesPerBox": 100,
           "colour": "#ef4444",
           "timeline": [
             {
-              "hour": "06:00",
-              "target": 0,
+              "hour": "07:30",
+              "target": 185,
               "actual": 0,
-              "cumTarget": 0,
+              "cumTarget": 185,
               "cumActual": 0,
               "supervisorTarget": null,
               "cumSupervisorTarget": null,
@@ -1857,7 +1946,49 @@
               "supervisorTransitionTarget": null,
               "previousVariant": null,
               "previousVariantMinutes": 0,
-              "currentVariantMinutes": -720
+              "currentVariantMinutes": 90
+            },
+            {
+              "hour": "08:30",
+              "target": 123,
+              "actual": 0,
+              "cumTarget": 308,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 123,
+              "actual": 0,
+              "cumTarget": 431,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "10:30",
+              "target": 113,
+              "actual": 500,
+              "cumTarget": 544,
+              "cumActual": 500,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 55
             }
           ]
         }
@@ -1950,9 +2081,9 @@
       {
         "id": "Ellavi_Drape",
         "name": "Ellavi_Drape",
-        "totalProduction": 1300,
+        "totalProduction": 1700,
         "totalTarget": 3996,
-        "progress": 33
+        "progress": 43
       },
       {
         "id": "Scalpel",
@@ -1973,16 +2104,16 @@
       {
         "id": "Line_4",
         "name": "Line_4",
-        "totalProduction": 100,
-        "peTotalTarget": 999,
+        "totalProduction": 500,
+        "peTotalTarget": 1371,
         "supervisorTotalTarget": null,
-        "progress": 10,
+        "progress": 36,
         "variants": [
           "Line_4-Ellavi_Drape-BC01"
         ],
-        "shiftId": "night-shift-Line_4",
-        "startTime": "18:00",
-        "endTime": "06:00"
+        "shiftId": "day-shift-Line_4",
+        "startTime": "06:00",
+        "endTime": "18:00"
       },
       {
         "id": "SCD",
