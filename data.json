@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-04-16T08:28:25.178",
+    "timestamp": "2026-04-16T08:29:17.279",
     "date": "2026-04-16",
     "facility": "Main Plant"
   },
@@ -58,7 +58,7 @@
         "fullName": "SCD XL200SC",
         "cycleTime": 60.622499999999995,
         "devicesPerBox": 15,
-        "actualCycleTime": 232
+        "actualCycleTime": 236
       },
       "shiftId": "normal-time",
       "targets": {
@@ -180,7 +180,7 @@
         "fullName": "SCD XL1000SCP",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 58
+        "actualCycleTime": 49.17
       },
       "shiftId": "normal-time",
       "targets": {
@@ -192,15 +192,15 @@
         "boxes": 102
       },
       "actual": {
-        "total": 60,
-        "boxes": 5,
-        "progress": 6
+        "total": 72,
+        "boxes": 6,
+        "progress": 8
       },
       "batches": [
         {
           "id": 26041534,
-          "quantity": 60,
-          "boxes": 5
+          "quantity": 72,
+          "boxes": 6
         }
       ],
       "lineWindow": {
@@ -208,18 +208,79 @@
         "endTime": "16:30",
         "peTarget": 989,
         "supervisorTarget": 960,
-        "production": 60,
-        "progress": 6
+        "production": 72,
+        "progress": 8
       },
       "timeline": [
         {
           "hour": "08:30",
           "target": 122,
-          "actual": 60,
+          "actual": 72,
           "cumTarget": 122,
-          "cumActual": 60,
+          "cumActual": 72,
           "supervisorTarget": 118,
           "cumSupervisorTarget": 118,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
+      "id": "SUM-SUM-500V2",
+      "productionLine": "SUM",
+      "product": {
+        "id": "SUM",
+        "name": "SUM"
+      },
+      "variant": {
+        "id": "500V2",
+        "name": "500V2",
+        "fullName": "SUM SUM500V2",
+        "cycleTime": 26.47,
+        "devicesPerBox": 20,
+        "actualCycleTime": 177
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 136,
+        "peTarget": 1360,
+        "fullShiftSupervisorTarget": 1040,
+        "supervisorTarget": 1040,
+        "supervisorCycleTime": 27.9808,
+        "boxes": 68
+      },
+      "actual": {
+        "total": 20,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 26041636,
+          "quantity": 20,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 1099,
+        "supervisorTarget": 1040,
+        "production": 20,
+        "progress": 2
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 136,
+          "actual": 20,
+          "cumTarget": 136,
+          "cumActual": 20,
+          "supervisorTarget": 128,
+          "cumSupervisorTarget": 128,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -248,7 +309,7 @@
           "variantName": "XL200SC",
           "variantFull": "SCD XL200SC",
           "cycleTime": 60.622499999999995,
-          "actualCT": 232,
+          "actualCT": 236,
           "supervisorCT": 116.4,
           "devicesPerBox": 15,
           "peTarget": 480,
@@ -331,10 +392,10 @@
       "shiftName": "Mo-Thu 8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
-      "totalProduction": 60,
+      "totalProduction": 72,
       "peTotalTarget": 989,
       "supervisorTotalTarget": 960,
-      "progress": 6,
+      "progress": 8,
       "variants": [
         {
           "combinedId": "SCD-SCD-XL1000SCP",
@@ -342,25 +403,72 @@
           "variantName": "XL1000SCP",
           "variantFull": "SCD XL1000SCP",
           "cycleTime": 29.41,
-          "actualCT": 58,
+          "actualCT": 49.17,
           "supervisorCT": 30.3125,
           "devicesPerBox": 12,
           "peTarget": 989,
           "supervisorTarget": 960,
-          "production": 60,
-          "boxes": 5,
-          "progress": 6,
+          "production": 72,
+          "boxes": 6,
+          "progress": 8,
           "startTime": "07:30",
           "endTime": "16:30",
           "timeline": [
             {
               "hour": "08:30",
               "target": 122,
-              "actual": 60,
+              "actual": 72,
               "cumTarget": 122,
-              "cumActual": 60,
+              "cumActual": 72,
               "supervisorTarget": 118,
               "cumSupervisorTarget": 118,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SUM",
+      "productionLine": "SUM",
+      "shiftId": "normal-time",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 20,
+      "peTotalTarget": 1099,
+      "supervisorTotalTarget": 1040,
+      "progress": 2,
+      "variants": [
+        {
+          "combinedId": "SUM-SUM-500V2",
+          "productName": "SUM",
+          "variantName": "500V2",
+          "variantFull": "SUM SUM500V2",
+          "cycleTime": 26.47,
+          "actualCT": 177,
+          "supervisorCT": 27.9808,
+          "devicesPerBox": 20,
+          "peTarget": 1099,
+          "supervisorTarget": 1040,
+          "production": 20,
+          "boxes": 1,
+          "progress": 2,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 136,
+              "actual": 20,
+              "cumTarget": 136,
+              "cumActual": 20,
+              "supervisorTarget": 128,
+              "cumSupervisorTarget": 128,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -444,9 +552,9 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 75,
+        "totalProduction": 87,
         "totalTarget": 1704,
-        "progress": 4
+        "progress": 5
       },
       {
         "id": "Ellavi_Drape",
@@ -454,6 +562,13 @@
         "totalProduction": 100,
         "totalTarget": 999,
         "progress": 10
+      },
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 20,
+        "totalTarget": 1360,
+        "progress": 1
       }
     ],
     "productionLines": [
@@ -474,10 +589,10 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 60,
+        "totalProduction": 72,
         "peTotalTarget": 989,
         "supervisorTotalTarget": 960,
-        "progress": 6,
+        "progress": 8,
         "variants": [
           "SCD-SCD-XL1000SCP"
         ],
@@ -494,6 +609,20 @@
         "progress": 6,
         "variants": [
           "3rd_Line-SCD-XL200SC"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 20,
+        "peTotalTarget": 1099,
+        "supervisorTotalTarget": 1040,
+        "progress": 2,
+        "variants": [
+          "SUM-SUM-500V2"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
