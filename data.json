@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-04-29T08:12:04.733",
+    "timestamp": "2026-04-29T08:13:40.221",
     "date": "2026-04-29",
     "facility": "Main Plant"
   },
@@ -27,6 +27,67 @@
   ],
   "production": [
     {
+      "id": "3rd_Line-SCD-XL2000SDP",
+      "productionLine": "3rd_Line",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL2000SDP",
+        "name": "XL2000SDP",
+        "fullName": "SCD XL2000SDP",
+        "cycleTime": 117.86,
+        "devicesPerBox": 6,
+        "actualCycleTime": 430
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 30,
+        "peTarget": 251,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 41
+      },
+      "actual": {
+        "total": 6,
+        "boxes": 1,
+        "progress": 2
+      },
+      "batches": [
+        {
+          "id": 26042355,
+          "quantity": 6,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 246,
+        "supervisorTarget": null,
+        "production": 6,
+        "progress": 2
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 30,
+          "actual": 6,
+          "cumTarget": 30,
+          "cumActual": 6,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "SCD-SCD-XL1000SCP",
       "productionLine": "SCD",
       "product": {
@@ -39,7 +100,7 @@
         "fullName": "SCD XL1000SCP",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 70
+        "actualCycleTime": 71.67
       },
       "shiftId": "normal-time",
       "targets": {
@@ -90,6 +151,53 @@
   ],
   "lineCards": [
     {
+      "id": "3rd_Line",
+      "productionLine": "3rd_Line",
+      "shiftId": "normal-time",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 6,
+      "peTotalTarget": 246,
+      "supervisorTotalTarget": null,
+      "progress": 2,
+      "variants": [
+        {
+          "combinedId": "3rd_Line-SCD-XL2000SDP",
+          "productName": "SCD",
+          "variantName": "XL2000SDP",
+          "variantFull": "SCD XL2000SDP",
+          "cycleTime": 117.86,
+          "actualCT": 430,
+          "supervisorCT": null,
+          "devicesPerBox": 6,
+          "peTarget": 246,
+          "supervisorTarget": null,
+          "production": 6,
+          "boxes": 1,
+          "progress": 2,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 30,
+              "actual": 6,
+              "cumTarget": 30,
+              "cumActual": 6,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
@@ -107,7 +215,7 @@
           "variantName": "XL1000SCP",
           "variantFull": "SCD XL1000SCP",
           "cycleTime": 29.41,
-          "actualCT": 70,
+          "actualCT": 71.67,
           "supervisorCT": 30.3125,
           "devicesPerBox": 12,
           "peTarget": 989,
@@ -143,8 +251,8 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 36,
-        "totalTarget": 1224,
+        "totalProduction": 42,
+        "totalTarget": 1475,
         "progress": 3
       }
     ],
@@ -158,6 +266,20 @@
         "progress": 4,
         "variants": [
           "SCD-SCD-XL1000SCP"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "3rd_Line",
+        "name": "3rd_Line",
+        "totalProduction": 6,
+        "peTotalTarget": 246,
+        "supervisorTotalTarget": null,
+        "progress": 2,
+        "variants": [
+          "3rd_Line-SCD-XL2000SDP"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
