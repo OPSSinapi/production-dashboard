@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-04-29T08:16:26.698",
+    "timestamp": "2026-04-29T08:18:15.564",
     "date": "2026-04-29",
     "facility": "Main Plant"
   },
@@ -39,7 +39,7 @@
         "fullName": "SCD XL2000SDP",
         "cycleTime": 117.86,
         "devicesPerBox": 6,
-        "actualCycleTime": 460
+        "actualCycleTime": 480
       },
       "shiftId": "normal-time",
       "targets": {
@@ -88,6 +88,67 @@
       ]
     },
     {
+      "id": "Scalpel_Packaging-Scalpel-PAMS23S",
+      "productionLine": "Scalpel_Packaging",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PAMS23S",
+        "name": "PAMS23S",
+        "fullName": "Scalpel PAMS23S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 5.76
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "peTarget": 13026,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 500,
+        "boxes": 1,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 26042247,
+          "quantity": 500,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 12763,
+        "supervisorTarget": null,
+        "production": 500,
+        "progress": 4
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 500,
+          "cumTarget": 1578,
+          "cumActual": 500,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "SCD-SCD-XL1000SCP",
       "productionLine": "SCD",
       "product": {
@@ -100,7 +161,7 @@
         "fullName": "SCD XL1000SCP",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 76.67
+        "actualCycleTime": 80
       },
       "shiftId": "normal-time",
       "targets": {
@@ -168,7 +229,7 @@
           "variantName": "XL2000SDP",
           "variantFull": "SCD XL2000SDP",
           "cycleTime": 117.86,
-          "actualCT": 460,
+          "actualCT": 480,
           "supervisorCT": null,
           "devicesPerBox": 6,
           "peTarget": 246,
@@ -185,6 +246,53 @@
               "actual": 6,
               "cumTarget": 30,
               "cumActual": 6,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Scalpel_Packaging",
+      "productionLine": "Scalpel_Packaging",
+      "shiftId": "normal-time",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 500,
+      "peTotalTarget": 12763,
+      "supervisorTotalTarget": null,
+      "progress": 4,
+      "variants": [
+        {
+          "combinedId": "Scalpel_Packaging-Scalpel-PAMS23S",
+          "productName": "Scalpel",
+          "variantName": "PAMS23S",
+          "variantFull": "Scalpel PAMS23S",
+          "cycleTime": 2.28,
+          "actualCT": 5.76,
+          "supervisorCT": null,
+          "devicesPerBox": 1000,
+          "peTarget": 12763,
+          "supervisorTarget": null,
+          "production": 500,
+          "boxes": 1,
+          "progress": 4,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 1578,
+              "actual": 500,
+              "cumTarget": 1578,
+              "cumActual": 500,
               "supervisorTarget": null,
               "cumSupervisorTarget": null,
               "transitionTarget": 0,
@@ -215,7 +323,7 @@
           "variantName": "XL1000SCP",
           "variantFull": "SCD XL1000SCP",
           "cycleTime": 29.41,
-          "actualCT": 76.67,
+          "actualCT": 80,
           "supervisorCT": 30.3125,
           "devicesPerBox": 12,
           "peTarget": 989,
@@ -254,6 +362,13 @@
         "totalProduction": 42,
         "totalTarget": 1475,
         "progress": 3
+      },
+      {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 500,
+        "totalTarget": 13026,
+        "progress": 4
       }
     ],
     "productionLines": [
@@ -280,6 +395,20 @@
         "progress": 2,
         "variants": [
           "3rd_Line-SCD-XL2000SDP"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "Scalpel_Packaging",
+        "name": "Scalpel_Packaging",
+        "totalProduction": 500,
+        "peTotalTarget": 12763,
+        "supervisorTotalTarget": null,
+        "progress": 4,
+        "variants": [
+          "Scalpel_Packaging-Scalpel-PAMS23S"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
