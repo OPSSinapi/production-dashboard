@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-04-30T11:36:12.893",
+    "timestamp": "2026-04-30T11:36:15.549",
     "date": "2026-04-30",
     "facility": "Main Plant"
   },
@@ -23,6 +23,44 @@
         }
       ],
       "availableWorkHours": 8.083333333
+    },
+    {
+      "id": "night-shift-Line_1",
+      "name": "Mo-Su 11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "20:25",
+          "endTime": "20:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "23:20",
+          "endTime": "23:55"
+        }
+      ],
+      "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "night-shift-Line_2",
+      "name": "Mo-Su 11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "20:25",
+          "endTime": "20:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "23:20",
+          "endTime": "23:55"
+        }
+      ],
+      "availableWorkHours": 11.08333333
     }
   ],
   "production": [
@@ -261,6 +299,128 @@
       ]
     },
     {
+      "id": "Line_1-Ellavi_Drape-BC01",
+      "productionLine": "Line_1",
+      "product": {
+        "id": "Ellavi_Drape",
+        "name": "Ellavi_Drape"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "Ellavi_Drape BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 54
+      },
+      "shiftId": "night-shift-Line_1",
+      "targets": {
+        "hourly": 123,
+        "peTarget": 999,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 9
+      },
+      "actual": {
+        "total": 800,
+        "boxes": 8,
+        "progress": 80
+      },
+      "batches": [
+        {
+          "id": 26042962,
+          "quantity": 800,
+          "boxes": 8
+        }
+      ],
+      "lineWindow": {
+        "startTime": "18:00",
+        "endTime": "06:00",
+        "peTarget": 999,
+        "supervisorTarget": null,
+        "production": 800,
+        "progress": 80
+      },
+      "timeline": [
+        {
+          "hour": "06:00",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": -720
+        }
+      ]
+    },
+    {
+      "id": "Line_2-Ellavi_Drape-BC01",
+      "productionLine": "Line_2",
+      "product": {
+        "id": "Ellavi_Drape",
+        "name": "Ellavi_Drape"
+      },
+      "variant": {
+        "id": "BC01",
+        "name": "BC01",
+        "fullName": "Ellavi_Drape BC01",
+        "cycleTime": 29.09,
+        "devicesPerBox": 100,
+        "actualCycleTime": 48
+      },
+      "shiftId": "night-shift-Line_2",
+      "targets": {
+        "hourly": 123,
+        "peTarget": 999,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 9
+      },
+      "actual": {
+        "total": 900,
+        "boxes": 9,
+        "progress": 90
+      },
+      "batches": [
+        {
+          "id": 26042962,
+          "quantity": 900,
+          "boxes": 9
+        }
+      ],
+      "lineWindow": {
+        "startTime": "18:00",
+        "endTime": "06:00",
+        "peTarget": 999,
+        "supervisorTarget": null,
+        "production": 900,
+        "progress": 90
+      },
+      "timeline": [
+        {
+          "hour": "06:00",
+          "target": 0,
+          "actual": 0,
+          "cumTarget": 0,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": -720
+        }
+      ]
+    },
+    {
       "id": "SCD-SCD-XL1000SCP",
       "productionLine": "SCD",
       "product": {
@@ -390,7 +550,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 42.38
+        "actualCycleTime": 39.88
       },
       "shiftId": "normal-time",
       "targets": {
@@ -402,15 +562,15 @@
         "boxes": 68
       },
       "actual": {
-        "total": 320,
-        "boxes": 16,
-        "progress": 31
+        "total": 340,
+        "boxes": 17,
+        "progress": 33
       },
       "batches": [
         {
           "id": 26042857,
-          "quantity": 320,
-          "boxes": 16
+          "quantity": 340,
+          "boxes": 17
         }
       ],
       "lineWindow": {
@@ -418,8 +578,8 @@
         "endTime": "16:30",
         "peTarget": 1099,
         "supervisorTarget": 1040,
-        "production": 320,
-        "progress": 31
+        "production": 340,
+        "progress": 33
       },
       "timeline": [
         {
@@ -481,9 +641,9 @@
         {
           "hour": "12:30",
           "target": 136,
-          "actual": 0,
+          "actual": 20,
           "cumTarget": 634,
-          "cumActual": 320,
+          "cumActual": 340,
           "supervisorTarget": 128,
           "cumSupervisorTarget": 597,
           "transitionTarget": 0,
@@ -703,6 +863,100 @@
       ]
     },
     {
+      "id": "Line_1",
+      "productionLine": "Line_1",
+      "shiftId": "night-shift-Line_1",
+      "shiftName": "Mo-Su 11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "totalProduction": 800,
+      "peTotalTarget": 999,
+      "supervisorTotalTarget": null,
+      "progress": 80,
+      "variants": [
+        {
+          "combinedId": "Line_1-Ellavi_Drape-BC01",
+          "productName": "Ellavi_Drape",
+          "variantName": "BC01",
+          "variantFull": "Ellavi_Drape BC01",
+          "cycleTime": 29.09,
+          "actualCT": 54,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "peTarget": 999,
+          "supervisorTarget": null,
+          "production": 800,
+          "boxes": 8,
+          "progress": 80,
+          "startTime": "18:00",
+          "endTime": "06:00",
+          "timeline": [
+            {
+              "hour": "06:00",
+              "target": 0,
+              "actual": 0,
+              "cumTarget": 0,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": -720
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Line_2",
+      "productionLine": "Line_2",
+      "shiftId": "night-shift-Line_2",
+      "shiftName": "Mo-Su 11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "totalProduction": 900,
+      "peTotalTarget": 999,
+      "supervisorTotalTarget": null,
+      "progress": 90,
+      "variants": [
+        {
+          "combinedId": "Line_2-Ellavi_Drape-BC01",
+          "productName": "Ellavi_Drape",
+          "variantName": "BC01",
+          "variantFull": "Ellavi_Drape BC01",
+          "cycleTime": 29.09,
+          "actualCT": 48,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "peTarget": 999,
+          "supervisorTarget": null,
+          "production": 900,
+          "boxes": 9,
+          "progress": 90,
+          "startTime": "18:00",
+          "endTime": "06:00",
+          "timeline": [
+            {
+              "hour": "06:00",
+              "target": 0,
+              "actual": 0,
+              "cumTarget": 0,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": -720
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
@@ -812,10 +1066,10 @@
       "shiftName": "Mo-Thu 8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
-      "totalProduction": 320,
+      "totalProduction": 340,
       "peTotalTarget": 1099,
       "supervisorTotalTarget": 1040,
-      "progress": 31,
+      "progress": 33,
       "variants": [
         {
           "combinedId": "SUM-SUM-500V2",
@@ -823,14 +1077,14 @@
           "variantName": "500V2",
           "variantFull": "SUM SUM500V2",
           "cycleTime": 26.47,
-          "actualCT": 42.38,
+          "actualCT": 39.88,
           "supervisorCT": 27.9808,
           "devicesPerBox": 20,
           "peTarget": 1099,
           "supervisorTarget": 1040,
-          "production": 320,
-          "boxes": 16,
-          "progress": 31,
+          "production": 340,
+          "boxes": 17,
+          "progress": 33,
           "startTime": "07:30",
           "endTime": "16:30",
           "timeline": [
@@ -893,9 +1147,9 @@
             {
               "hour": "12:30",
               "target": 136,
-              "actual": 0,
+              "actual": 20,
               "cumTarget": 634,
-              "cumActual": 320,
+              "cumActual": 340,
               "supervisorTarget": 128,
               "cumSupervisorTarget": 597,
               "transitionTarget": 0,
@@ -909,7 +1163,116 @@
       ]
     }
   ],
-  "lineGroups": [],
+  "lineGroups": [
+    {
+      "groupId": "BC01-Day",
+      "label": "BC01 - Day Shift",
+      "displayMode": "multi-chart",
+      "shiftWindow": {
+        "startTime": "06:00",
+        "endTime": "18:00"
+      },
+      "members": [
+        {
+          "lineCardId": "Line_1",
+          "label": "Line_1",
+          "production": 800,
+          "peTarget": 999,
+          "supervisorTarget": null,
+          "boxes": 8,
+          "actualCT": 54,
+          "cycleTime": 29.09,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "colour": "#22c55e",
+          "timeline": [
+            {
+              "hour": "06:00",
+              "target": 0,
+              "actual": 0,
+              "cumTarget": 0,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": -720
+            }
+          ]
+        },
+        {
+          "lineCardId": "Line_2",
+          "label": "Line_2",
+          "production": 900,
+          "peTarget": 999,
+          "supervisorTarget": null,
+          "boxes": 9,
+          "actualCT": 48,
+          "cycleTime": 29.09,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "colour": "#3b82f6",
+          "timeline": [
+            {
+              "hour": "06:00",
+              "target": 0,
+              "actual": 0,
+              "cumTarget": 0,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": -720
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "groupId": "BC01-Night",
+      "label": "BC01 - Night Shift",
+      "displayMode": "multi-chart",
+      "shiftWindow": {
+        "startTime": "18:00",
+        "endTime": "06:00"
+      },
+      "members": [
+        {
+          "lineCardId": "Line_1",
+          "label": "Line_1",
+          "production": 0,
+          "peTarget": 0,
+          "supervisorTarget": null,
+          "boxes": 0,
+          "actualCT": 0,
+          "cycleTime": 29.09,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "colour": "#22c55e",
+          "timeline": []
+        },
+        {
+          "lineCardId": "Line_2",
+          "label": "Line_2",
+          "production": 0,
+          "peTarget": 0,
+          "supervisorTarget": null,
+          "boxes": 0,
+          "actualCT": 0,
+          "cycleTime": 29.09,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "colour": "#3b82f6",
+          "timeline": []
+        }
+      ]
+    }
+  ],
   "summary": {
     "products": [
       {
@@ -927,11 +1290,18 @@
         "progress": 14
       },
       {
+        "id": "Ellavi_Drape",
+        "name": "Ellavi_Drape",
+        "totalProduction": 1700,
+        "totalTarget": 1998,
+        "progress": 85
+      },
+      {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 320,
+        "totalProduction": 340,
         "totalTarget": 1360,
-        "progress": 24
+        "progress": 25
       }
     ],
     "productionLines": [
@@ -952,10 +1322,10 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 320,
+        "totalProduction": 340,
         "peTotalTarget": 1099,
         "supervisorTotalTarget": 1040,
-        "progress": 31,
+        "progress": 33,
         "variants": [
           "SUM-SUM-500V2"
         ],
@@ -990,6 +1360,34 @@
         "shiftId": "normal-time",
         "startTime": "07:30",
         "endTime": "16:30"
+      },
+      {
+        "id": "Line_1",
+        "name": "Line_1",
+        "totalProduction": 800,
+        "peTotalTarget": 999,
+        "supervisorTotalTarget": null,
+        "progress": 80,
+        "variants": [
+          "Line_1-Ellavi_Drape-BC01"
+        ],
+        "shiftId": "night-shift-Line_1",
+        "startTime": "18:00",
+        "endTime": "06:00"
+      },
+      {
+        "id": "Line_2",
+        "name": "Line_2",
+        "totalProduction": 900,
+        "peTotalTarget": 999,
+        "supervisorTotalTarget": null,
+        "progress": 90,
+        "variants": [
+          "Line_2-Ellavi_Drape-BC01"
+        ],
+        "shiftId": "night-shift-Line_2",
+        "startTime": "18:00",
+        "endTime": "06:00"
       }
     ]
   }
