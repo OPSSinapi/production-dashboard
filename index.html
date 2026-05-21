@@ -987,7 +987,7 @@ body {
             <div class="controls-section">
                 <div class="filter-container">
                     <select id="filter-type-select" class="filter-select">
-                        <option value="supervisor">Filter by Line</option>
+                        <option value="line">Filter by Line</option>
                         <option value="product">Filter by Product</option>
                         <option value="variant">Filter by Variant</option>
                     </select>
@@ -1295,6 +1295,8 @@ body {
                     if (s.filterType)  filterType  = s.filterType;
                     if (s.filterValue) filterValue = s.filterValue;
                 }
+                // Guard against legacy/invalid filter type values (e.g. old 'supervisor')
+                if (!['line', 'product', 'variant'].includes(filterType)) filterType = 'line';
             } catch (_) {}
         }
 
@@ -2576,17 +2578,22 @@ body {
                 });
                 const activeIds = new Set(lineCards.map(c => c.id));
 
-                // Individual lines running today (only those NOT covered by a group)
+                // The dropdown mirrors the "Select Lines to Display" modal: only show
+                // lines/groups the user currently has selected.
+                const inSelection = id => selectedLines.includes(id);
+
+                // Individual lines running today (only those NOT covered by a group, and selected)
                 lineCards.forEach(card => {
                     if (groupCoveredIds.has(card.id)) return;
+                    if (!inSelection(card.id)) return;
                     const opt = document.createElement('option');
                     opt.value = opt.textContent = card.id;
                     sel.appendChild(opt);
                 });
 
-                // Lines seen in the last 90 days but not running today
+                // Lines seen in the last 90 days but not running today (only if selected)
                 (availableLines || [])
-                    .filter(id => !activeIds.has(id) && !groupCoveredIds.has(id))
+                    .filter(id => !activeIds.has(id) && !groupCoveredIds.has(id) && inSelection(id))
                     .sort((a, b) => a.localeCompare(b))
                     .forEach(id => {
                         const opt = document.createElement('option');
@@ -2595,12 +2602,13 @@ body {
                         sel.appendChild(opt);
                     });
 
-                // Group views — ONE separator, rebuilt each call; options nested inside it
-                if (lineGroups.length > 0) {
+                // Group views — ONE separator, rebuilt each call; only selected groups
+                const selectedGroups = lineGroups.filter(grp => inSelection('group:' + grp.groupId));
+                if (selectedGroups.length > 0) {
                     const grpLabel = document.createElement('optgroup');
                     grpLabel.label = '-- Group Views --';
                     sel.appendChild(grpLabel);
-                    lineGroups.forEach(grp => {
+                    selectedGroups.forEach(grp => {
                         const opt = document.createElement('option');
                         opt.value = 'group:' + grp.groupId;
                         opt.textContent = grp.label || grp.groupId;
@@ -2656,6 +2664,7 @@ body {
                 modal.style.display = 'none';
                 saveSelection();
                 updateLineFilterButton();
+                populateFilterDropdown();   // keep the "Filter by Line" dropdown in sync
                 cycleSelectedItems();
             });
             selAll.addEventListener('click', () =>
