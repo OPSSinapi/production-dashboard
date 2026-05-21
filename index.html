@@ -1301,23 +1301,24 @@ body {
         // ── Date discovery: probe GitHub Pages for last 5 dated archives ────────
         async function discoverAvailableDates() {
             // Today is always index 0 (live feed — data.json always exists)
-            const tz   = 'Africa/Johannesburg';
+            const tz    = 'Africa/Johannesburg';
             const today = new Date().toLocaleDateString('en-CA', { timeZone: tz }); // YYYY-MM-DD
             availableDates = [today];
 
-            // Walk backwards through up to 30 calendar days, collect up to 4 more weekdays
-            const d = new Date();
-            let checked = 0;
-            while (availableDates.length < 5 && checked < 30) {
-                d.setDate(d.getDate() - 1);
-                checked++;
-                const dow = d.getDay();
-                if (dow === 0 || dow === 6) continue; // skip weekends
-                const ds = d.toLocaleDateString('en-CA', { timeZone: tz });
-                try {
-                    const probe = await fetch(BASE_URL + 'data-' + ds + '.json', { method: 'HEAD' });
-                    if (probe.ok) availableDates.push(ds);
-                } catch (_) {}
+            // Read the archive manifest written by the Apps Script. This avoids the
+            // old approach of HEAD-probing dozens of dates, which logged a 404 for
+            // every archive that doesn't exist. No probing → clean console.
+            try {
+                const res = await fetch(BASE_URL + 'manifest.json?_=' + Date.now());
+                if (res.ok) {
+                    const m = await res.json();
+                    (m.dates || [])
+                        .filter(d => d && d !== today)
+                        .sort((a, b) => b.localeCompare(a))
+                        .forEach(d => availableDates.push(d));
+                }
+            } catch (_) {
+                // manifest.json not present yet (run maintainArchives once) — show today only
             }
         }
 
@@ -2062,6 +2063,7 @@ body {
             };
             const cW = W - pad.left - pad.right;
             const cH = H - pad.top  - pad.bottom;
+            if (cW <= 0 || cH <= 0) return;   // area collapses during fullscreen/redraw → skip
             const maxVal = Math.max(prodValue, targetValue, theoTargetValue || 0) || 100;
             const fs = isFullscreen ? 14 : 12;
 
@@ -2096,7 +2098,7 @@ body {
             // Theoretical ghost bar drawn first (behind supervisor bar) when supervisor is active
             if (isSupActive && theoTargetValue > 0) {
                 const theoBx = groupX + barGroupW * 0.5;
-                const theoBh = (theoTargetValue / maxVal) * cH;
+                const theoBh = Math.max(0, (Math.max(0, theoTargetValue) / maxVal) * cH);
                 const theoBy = H - pad.bottom - theoBh;
                 bg.appendChild(svgEl('rect', { x: theoBx, y: theoBy, width: barW, height: theoBh,
                     rx: 2, ry: 2, fill: 'var(--target-color)', opacity: '0.35' }));
@@ -2108,7 +2110,7 @@ body {
 
             [[prodValue, prodColor, groupX + barGroupW * 0.08],
              [targetValue, targetColor, groupX + barGroupW * 0.5]].forEach(([val, col, bx]) => {
-                const bh = (val / maxVal) * cH;
+                const bh = Math.max(0, (Math.max(0, val) / maxVal) * cH);
                 const by = H - pad.bottom - bh;
                 bg.appendChild(svgEl('rect', { x: bx, y: by, width: barW, height: bh, rx: 2, ry: 2, fill: col }));
                 const vl = svgEl('text', { x: bx + barW / 2, y: by - 5, 'text-anchor': 'middle', 'font-size': fs, 'font-weight': 'bold', fill: col });
