@@ -70,6 +70,17 @@ body {
     padding: clamp(0.25rem, 0.5vw, 0.5rem);
 }
 
+/* Keep the light background in fullscreen so the dark clock text stays visible */
+.dashboard-container:fullscreen,
+.dashboard-container:-webkit-full-screen,
+.dashboard-container:-moz-full-screen,
+.dashboard-container:-ms-fullscreen,
+.dashboard-container.fullscreen-mode {
+    background-color: var(--light-color);
+}
+/* Belt-and-suspenders: pin the clock colour regardless of backdrop */
+.time, .date { color: var(--primary-color); }
+
 .supervisor-color-banner {
     width: 100%;
     height: clamp(0.5rem, 1vh, 1.25rem);
@@ -1176,6 +1187,7 @@ body {
         let rawData          = null;   // parsed data.json (contains lineCards)
         let lineCards        = [];     // data.json → lineCards array (one per Production_Line)
         let lineGroups       = [];     // data.json → lineGroups array (multi-chart group views)
+        let availableLines   = [];     // every line seen in last 90 days (from metadata.availableLines)
         let selectedLines    = [];     // which line IDs are visible
         let filteredCards    = [];     // cards currently shown after filters
         let activeGroup      = null;   // currently displayed lineGroup (or null for single-card mode)
@@ -1227,10 +1239,12 @@ body {
             document.getElementById('filter-type-select').addEventListener('change', e => {
                 filterType = e.target.value;
                 populateFilterDropdown();
+                saveSelection();
             });
             document.getElementById('filter-value-select').addEventListener('change', e => {
                 filterValue = e.target.value;
                 applyFiltersAndDisplay();
+                saveSelection();
             });
 
             initLineSelection();
@@ -1253,10 +1267,35 @@ body {
             ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange']
                 .forEach(ev => document.addEventListener(ev, onFullscreenChange));
 
+            loadSelection();                                              // restore saved filter + lines
+            document.getElementById('filter-type-select').value = filterType;
+
             await discoverAvailableDates();
             initDateNav();
             fetchData();
             liveInterval = setInterval(fetchData, UPDATE_INTERVAL);
+        }
+
+        // ── Persisted UI state (survives reload / hard reload) ──────────────────────
+        const LS_KEY = 'sinapi-dashboard-ui-v1';
+        function saveSelection() {
+            try {
+                localStorage.setItem(LS_KEY, JSON.stringify({
+                    selectedLines: selectedLines,
+                    filterType:    filterType,
+                    filterValue:   filterValue
+                }));
+            } catch (_) {}
+        }
+        function loadSelection() {
+            try {
+                const s = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+                if (s && Array.isArray(s.selectedLines)) {
+                    selectedLines = s.selectedLines;
+                    if (s.filterType)  filterType  = s.filterType;
+                    if (s.filterValue) filterValue = s.filterValue;
+                }
+            } catch (_) {}
         }
 
         // ── Date discovery: probe GitHub Pages for last 5 dated archives ────────
@@ -1369,6 +1408,7 @@ body {
 
                 lineCards  = (data.lineCards  || []).sort((a, b) => a.id.localeCompare(b.id));
                 lineGroups = data.lineGroups || [];
+                availableLines = data.metadata?.availableLines || [];   // full line universe
 
                 // Build default selectedLines: individual (non-grouped) lines + all groups
                 const _groupCovered = new Set();
@@ -1382,11 +1422,11 @@ body {
                     selectedLines = _defaultSel;
                 } else {
                     // Keep valid entries, but ALWAYS remove individual lines covered by a group.
-                    // This prevents BC01 lines appearing individually when BC01 group exists.
+                    // A persisted line with no data today is retained if it's a known line.
                     selectedLines = selectedLines.filter(sel =>
                         sel.startsWith('group:')
                             ? lineGroups.some(g => 'group:' + g.groupId === sel)
-                            : lineCards.some(c => c.id === sel) && !_groupCovered.has(sel)
+                            : (lineCards.some(c => c.id === sel) || availableLines.includes(sel)) && !_groupCovered.has(sel)
                     );
                     if (selectedLines.length === 0) selectedLines = _defaultSel;
                 }
@@ -2517,8 +2557,13 @@ body {
         // ── Dropdown filters ──────────────────────────────────────────────────────
         function populateFilterDropdown() {
             const sel = document.getElementById('filter-value-select');
-            const cur = sel.value;
-            while (sel.options.length > 1) sel.remove(1);
+            const cur = filterValue || sel.value || 'all';
+
+            // Hard reset: keep ONLY the first "All" option. (The old remove(1) loop left
+            // <optgroup> separators behind, which is why "-- Group Views --" multiplied all day.)
+            const allOpt = sel.querySelector('option');
+            sel.innerHTML = '';
+            if (allOpt) sel.appendChild(allOpt);
 
             if (filterType === 'line') {
                 // Build set of lineCard IDs that are fully covered by a group
@@ -2527,8 +2572,9 @@ body {
                 lineGroups.forEach(grp => {
                     grp.members.forEach(m => groupCoveredIds.add(m.lineCardId));
                 });
+                const activeIds = new Set(lineCards.map(c => c.id));
 
-                // Individual lines (only those NOT covered by a group)
+                // Individual lines running today (only those NOT covered by a group)
                 lineCards.forEach(card => {
                     if (groupCoveredIds.has(card.id)) return;
                     const opt = document.createElement('option');
@@ -2536,7 +2582,18 @@ body {
                     sel.appendChild(opt);
                 });
 
-                // Group views
+                // Lines seen in the last 90 days but not running today
+                (availableLines || [])
+                    .filter(id => !activeIds.has(id) && !groupCoveredIds.has(id))
+                    .sort((a, b) => a.localeCompare(b))
+                    .forEach(id => {
+                        const opt = document.createElement('option');
+                        opt.value = id;
+                        opt.textContent = id + ' (no data today)';
+                        sel.appendChild(opt);
+                    });
+
+                // Group views — ONE separator, rebuilt each call; options nested inside it
                 if (lineGroups.length > 0) {
                     const grpLabel = document.createElement('optgroup');
                     grpLabel.label = '-- Group Views --';
@@ -2544,8 +2601,8 @@ body {
                     lineGroups.forEach(grp => {
                         const opt = document.createElement('option');
                         opt.value = 'group:' + grp.groupId;
-                        opt.textContent = grp.label;
-                        sel.appendChild(opt);
+                        opt.textContent = grp.label || grp.groupId;
+                        grpLabel.appendChild(opt);
                     });
                 }
             } else {
@@ -2595,6 +2652,7 @@ body {
                     ];
                 }
                 modal.style.display = 'none';
+                saveSelection();
                 updateLineFilterButton();
                 cycleSelectedItems();
             });
@@ -2612,13 +2670,22 @@ body {
             const groupCoveredIds = new Set();
             lineGroups.forEach(grp => grp.members.forEach(m => groupCoveredIds.add(m.lineCardId)));
 
-            // Individual lines (not covered by any group)
+            const activeIds = new Set(lineCards.map(c => c.id));
+
+            // Individual lines running today (not covered by any group)
             const individualCards = lineCards.filter(c => !groupCoveredIds.has(c.id));
-            if (individualCards.length > 0) {
+
+            // Lines seen in the last 90 days but NOT running today
+            const inactiveLines = (availableLines || [])
+                .filter(id => !activeIds.has(id) && !groupCoveredIds.has(id))
+                .sort((a, b) => a.localeCompare(b));
+
+            if (individualCards.length || inactiveLines.length) {
                 const hdr = document.createElement('div');
                 hdr.style.cssText = 'font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;padding:4px 0 6px;letter-spacing:0.05em;';
                 hdr.textContent = 'Individual Lines';
                 box.appendChild(hdr);
+
                 individualCards.forEach(card => {
                     const item = document.createElement('div');
                     item.className = 'supervisor-checkbox-item';
@@ -2627,6 +2694,19 @@ body {
                         ' id="line-' + card.id + '" value="line:' + card.id + '"' +
                         (selectedLines.includes(card.id) ? ' checked' : '') + '>' +
                         '<label for="line-' + card.id + '">' + card.id + '</label>';
+                    box.appendChild(item);
+                });
+
+                // No data today — still selectable, shown muted with a tag
+                inactiveLines.forEach(id => {
+                    const item = document.createElement('div');
+                    item.className = 'supervisor-checkbox-item';
+                    item.innerHTML =
+                        '<input type="checkbox" class="supervisor-checkbox line-checkbox"' +
+                        ' id="line-' + id + '" value="line:' + id + '"' +
+                        (selectedLines.includes(id) ? ' checked' : '') + '>' +
+                        '<label for="line-' + id + '" style="color:#9ca3af;">' + id +
+                        ' <span style="font-size:10px;">(no data today)</span></label>';
                     box.appendChild(item);
                 });
             }
@@ -2644,7 +2724,7 @@ body {
                         '<input type="checkbox" class="supervisor-checkbox group-checkbox"' +
                         ' id="grp-' + grp.groupId + '" value="group:' + grp.groupId + '"' +
                         (selectedLines.includes('group:' + grp.groupId) ? ' checked' : '') + '>' +
-                        '<label for="grp-' + grp.groupId + '">' + grp.label + '</label>';
+                        '<label for="grp-' + grp.groupId + '">' + (grp.label || grp.groupId) + '</label>';
                     box.appendChild(item);
                 });
             }
