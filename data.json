@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-05-21T08:23:09.582",
+    "timestamp": "2026-05-21T08:24:33.440",
     "date": "2026-05-21",
     "facility": "Main Plant"
   },
@@ -134,7 +134,7 @@
         "fullName": "LEVO XL1150S",
         "cycleTime": 48.48,
         "devicesPerBox": 14,
-        "actualCycleTime": 227.14
+        "actualCycleTime": 231.43
       },
       "shiftId": "normal-time",
       "targets": {
@@ -427,6 +427,67 @@
       ]
     },
     {
+      "id": "PopUp-FC-FC",
+      "productionLine": "PopUp",
+      "product": {
+        "id": "FC",
+        "name": "FC"
+      },
+      "variant": {
+        "id": "FC",
+        "name": "FC",
+        "fullName": "FC FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 1.2
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "peTarget": 600,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 6
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 26051125,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "08:22",
+        "endTime": "16:30",
+        "peTarget": 524,
+        "supervisorTarget": null,
+        "production": 100,
+        "progress": 19
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 100,
+          "cumTarget": 72,
+          "cumActual": 100,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
+    {
       "id": "PopUp-LEVO-XS100",
       "productionLine": "PopUp",
       "product": {
@@ -439,7 +500,7 @@
         "fullName": "LEVO XS100",
         "cycleTime": 97.06,
         "devicesPerBox": 10,
-        "actualCycleTime": 102
+        "actualCycleTime": 108
       },
       "shiftId": "normal-time",
       "targets": {
@@ -500,7 +561,7 @@
         "fullName": "SCD XL1000SC",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 37.86
+        "actualCycleTime": 38.57
       },
       "shiftId": "normal-time",
       "targets": {
@@ -561,7 +622,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 26.47,
         "devicesPerBox": 20,
-        "actualCycleTime": 107.25
+        "actualCycleTime": 108
       },
       "shiftId": "day-shift",
       "targets": {
@@ -643,7 +704,7 @@
           "variantName": "XL1150S",
           "variantFull": "LEVO XL1150S",
           "cycleTime": 48.48,
-          "actualCT": 227.14,
+          "actualCT": 231.43,
           "supervisorCT": 83.1429,
           "devicesPerBox": 14,
           "peTarget": 600,
@@ -867,18 +928,51 @@
       "shiftName": "Mo-Thu 8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
-      "totalProduction": 10,
-      "peTotalTarget": 277,
+      "totalProduction": 110,
+      "peTotalTarget": 801,
       "supervisorTotalTarget": null,
-      "progress": 4,
+      "progress": 14,
       "variants": [
+        {
+          "combinedId": "PopUp-FC-FC",
+          "productName": "FC",
+          "variantName": "FC",
+          "variantFull": "FC FC",
+          "cycleTime": 49.5,
+          "actualCT": 1.2,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "peTarget": 524,
+          "supervisorTarget": null,
+          "production": 100,
+          "boxes": 1,
+          "progress": 19,
+          "startTime": "08:22",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 72,
+              "actual": 100,
+              "cumTarget": 72,
+              "cumActual": 100,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        },
         {
           "combinedId": "PopUp-LEVO-XS100",
           "productName": "LEVO",
           "variantName": "XS100",
           "variantFull": "LEVO XS100",
           "cycleTime": 97.06,
-          "actualCT": 102,
+          "actualCT": 108,
           "supervisorCT": null,
           "devicesPerBox": 10,
           "peTarget": 277,
@@ -925,7 +1019,7 @@
           "variantName": "XL1000SC",
           "variantFull": "SCD XL1000SC",
           "cycleTime": 29.41,
-          "actualCT": 37.86,
+          "actualCT": 38.57,
           "supervisorCT": 38.8,
           "devicesPerBox": 12,
           "peTarget": 989,
@@ -972,7 +1066,7 @@
           "variantName": "500V2",
           "variantFull": "SUM SUM500V2",
           "cycleTime": 26.47,
-          "actualCT": 107.25,
+          "actualCT": 108,
           "supervisorCT": null,
           "devicesPerBox": 20,
           "peTarget": 1507,
@@ -1222,17 +1316,47 @@
       "members": [
         {
           "lineCardId": "PopUp",
+          "variantId": "FC",
+          "label": "FC",
+          "production": 100,
+          "peTarget": 524,
+          "supervisorTarget": null,
+          "boxes": 1,
+          "actualCT": 1.2,
+          "cycleTime": 49.5,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "colour": "#22c55e",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 72,
+              "actual": 100,
+              "cumTarget": 72,
+              "cumActual": 100,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        },
+        {
+          "lineCardId": "PopUp",
           "variantId": "XS100",
           "label": "XS100",
           "production": 10,
           "peTarget": 277,
           "supervisorTarget": null,
           "boxes": 1,
-          "actualCT": 102,
+          "actualCT": 108,
           "cycleTime": 97.06,
           "supervisorCT": null,
           "devicesPerBox": 10,
-          "colour": "#22c55e",
+          "colour": "#3b82f6",
           "timeline": [
             {
               "hour": "08:30",
@@ -1268,6 +1392,13 @@
         "totalProduction": 7000,
         "totalTarget": 3996,
         "progress": 175
+      },
+      {
+        "id": "FC",
+        "name": "FC",
+        "totalProduction": 100,
+        "totalTarget": 600,
+        "progress": 17
       },
       {
         "id": "SCD",
@@ -1372,12 +1503,13 @@
       {
         "id": "PopUp",
         "name": "PopUp",
-        "totalProduction": 10,
-        "peTotalTarget": 277,
+        "totalProduction": 110,
+        "peTotalTarget": 801,
         "supervisorTotalTarget": null,
-        "progress": 4,
+        "progress": 14,
         "variants": [
-          "PopUp-LEVO-XS100"
+          "PopUp-LEVO-XS100",
+          "PopUp-FC-FC"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
