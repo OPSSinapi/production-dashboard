@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-05-22T07:58:07.304",
+    "timestamp": "2026-05-22T07:58:07.479",
     "date": "2026-05-22",
     "facility": "Main Plant",
     "availableLines": [
@@ -21,25 +21,6 @@
   },
   "shifts": [
     {
-      "id": "day-shift-Line_1",
-      "name": "Mo-Su 11h DS",
-      "startTime": "06:00",
-      "endTime": "18:00",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:25",
-          "endTime": "10:45"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        }
-      ],
-      "availableWorkHours": 11.08333333
-    },
-    {
       "id": "normal-time",
       "name": "Fri 7h NT B",
       "startTime": "07:30",
@@ -57,6 +38,25 @@
         }
       ],
       "availableWorkHours": 6.833333333
+    },
+    {
+      "id": "day-shift-Line_1",
+      "name": "Mo-Su 11h DS",
+      "startTime": "06:00",
+      "endTime": "18:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11.08333333
     },
     {
       "id": "day-shift",
@@ -79,6 +79,67 @@
     }
   ],
   "production": [
+    {
+      "id": "LEVO-LEVO-XL1150S",
+      "productionLine": "LEVO",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL1150S",
+        "name": "XL1150S",
+        "fullName": "LEVO XL1150S",
+        "cycleTime": 48.48,
+        "devicesPerBox": 14,
+        "actualCycleTime": 120
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 74,
+        "peTarget": 612,
+        "fullShiftSupervisorTarget": 304,
+        "supervisorTarget": 304,
+        "supervisorCycleTime": 80.9211,
+        "boxes": 43
+      },
+      "actual": {
+        "total": 14,
+        "boxes": 1,
+        "progress": 5
+      },
+      "batches": [
+        {
+          "id": 26051536,
+          "quantity": 14,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "15:15",
+        "peTarget": 507,
+        "supervisorTarget": 304,
+        "production": 14,
+        "progress": 5
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 74,
+          "actual": 14,
+          "cumTarget": 74,
+          "cumActual": 14,
+          "supervisorTarget": 44,
+          "cumSupervisorTarget": 44,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ]
+    },
     {
       "id": "Line_1-Ellavi_Drape-BC01",
       "productionLine": "Line_1",
@@ -292,6 +353,53 @@
     }
   ],
   "lineCards": [
+    {
+      "id": "LEVO",
+      "productionLine": "LEVO",
+      "shiftId": "normal-time",
+      "shiftName": "Fri 7h NT B",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "totalProduction": 14,
+      "peTotalTarget": 507,
+      "supervisorTotalTarget": 304,
+      "progress": 5,
+      "variants": [
+        {
+          "combinedId": "LEVO-LEVO-XL1150S",
+          "productName": "LEVO",
+          "variantName": "XL1150S",
+          "variantFull": "LEVO XL1150S",
+          "cycleTime": 48.48,
+          "actualCT": 120,
+          "supervisorCT": 80.9211,
+          "devicesPerBox": 14,
+          "peTarget": 507,
+          "supervisorTarget": 304,
+          "production": 14,
+          "boxes": 1,
+          "progress": 5,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 74,
+              "actual": 14,
+              "cumTarget": 74,
+              "cumActual": 14,
+              "supervisorTarget": 44,
+              "cumSupervisorTarget": 44,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
     {
       "id": "Line_1",
       "productionLine": "Line_1",
@@ -546,6 +654,13 @@
   "summary": {
     "products": [
       {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 14,
+        "totalTarget": 612,
+        "progress": 2
+      },
+      {
         "id": "Ellavi_Drape",
         "name": "Ellavi_Drape",
         "totalProduction": 100,
@@ -609,6 +724,20 @@
         "shiftId": "day-shift",
         "startTime": "06:00",
         "endTime": "18:00"
+      },
+      {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 14,
+        "peTotalTarget": 507,
+        "supervisorTotalTarget": 304,
+        "progress": 5,
+        "variants": [
+          "LEVO-LEVO-XL1150S"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "15:15"
       }
     ]
   }
