@@ -1026,7 +1026,9 @@ body {
                 </div>
                 
                 <div class="buttons-container">
-                    <div id="shift-mode-toggle" class="shift-mode-toggle" title="Switch between day and night shift view">
+                    <div id="shift-mode-toggle" class="shift-mode-toggle" title="Toggle shift categories independently. Lines matching any enabled category are shown.">
+                        <button type="button" class="shift-seg" data-mode="normal">Normal</button>
+                        <button type="button" class="shift-seg" data-mode="overtime">OT</button>
                         <button type="button" class="shift-seg" data-mode="day">Day</button>
                         <button type="button" class="shift-seg" data-mode="night">Night</button>
                     </div>
@@ -1221,8 +1223,11 @@ body {
         let lineCards        = [];     // data.json → lineCards array (one per Production_Line)
         let lineGroups       = [];     // data.json → lineGroups array (multi-chart group views)
         let availableLines   = [];     // every line seen in last 90 days (from metadata.availableLines)
-        let shiftLines       = { day: [], night: [] };  // historical day/night line membership
-        let shiftMode        = 'day';  // 'day' | 'night' — driven by the Day/Night toggle button
+        let shiftLines       = { normal: [], overtime: [], day: [], night: [] };  // historical line membership by category
+        // Four independent shift-category toggles. A card/group shows if ANY of the
+        // categories it belongs to is enabled (union). Default = whatever was last
+        // selected (persisted); first-ever load enables Normal Time.
+        let shiftFilters = { normal: false, overtime: false, day: false, night: false };
         let selectedLines    = [];     // which line IDs are visible
         let filteredCards    = [];     // cards currently shown after filters
         let activeGroup      = null;   // currently displayed lineGroup (or null for single-card mode)
@@ -1332,9 +1337,8 @@ body {
 
             document.querySelectorAll('#shift-mode-toggle .shift-seg').forEach(seg => {
                 seg.addEventListener('click', () => {
-                    const mode = seg.getAttribute('data-mode');
-                    if (mode === shiftMode) return;
-                    shiftMode = mode;
+                    const k = seg.getAttribute('data-mode');
+                    if (k in shiftFilters) shiftFilters[k] = !shiftFilters[k];
                     updateShiftModeButton();
                     saveSelection();
                     populateFilterDropdown();
@@ -1356,7 +1360,7 @@ body {
                     selectedLines: selectedLines,
                     filterType:    filterType,
                     filterValue:   filterValue,
-                    shiftMode:     shiftMode
+                    shiftFilters:  shiftFilters
                 }));
             } catch (_) {}
         }
@@ -1367,33 +1371,69 @@ body {
                     selectedLines = s.selectedLines;
                     if (s.filterType)  filterType  = s.filterType;
                     if (s.filterValue) filterValue = s.filterValue;
-                    if (s.shiftMode)   shiftMode   = s.shiftMode;
+                    if (s.shiftFilters && typeof s.shiftFilters === 'object') {
+                        shiftFilters = {
+                            normal:   !!s.shiftFilters.normal,
+                            overtime: !!s.shiftFilters.overtime,
+                            day:      !!s.shiftFilters.day,
+                            night:    !!s.shiftFilters.night
+                        };
+                    } else if (typeof s.dayOn === 'boolean' || typeof s.nightOn === 'boolean') {
+                        // Migrate previous two-toggle state (neither = normal/overtime)
+                        shiftFilters.day   = !!s.dayOn;
+                        shiftFilters.night = !!s.nightOn;
+                        shiftFilters.normal = shiftFilters.overtime = (!s.dayOn && !s.nightOn);
+                    } else if (s.shiftMode) {
+                        shiftFilters.day   = s.shiftMode === 'day';
+                        shiftFilters.night = s.shiftMode === 'night';
+                        shiftFilters.normal = shiftFilters.overtime = (s.shiftMode !== 'day' && s.shiftMode !== 'night');
+                    }
                 } else {
-                    // No saved state → default the shift view by current time (18:00–05:59 = night)
-                    const h = new Date().getHours();
-                    shiftMode = (h >= 18 || h < 6) ? 'night' : 'day';
+                    // First-ever load → show Normal Time (the most common category)
+                    shiftFilters = { normal: true, overtime: false, day: false, night: false };
                 }
-                // Guard against legacy/invalid filter type values (e.g. old 'supervisor')
                 if (!['line', 'product', 'variant'].includes(filterType)) filterType = 'line';
-                if (!['day', 'night'].includes(shiftMode)) shiftMode = 'day';
+                // Never leave all four off (would show nothing) — fall back to Normal
+                if (!shiftFilters.normal && !shiftFilters.overtime && !shiftFilters.day && !shiftFilters.night) {
+                    shiftFilters.normal = true;
+                }
             } catch (_) {}
         }
 
-        // ── Shift-mode helpers ──────────────────────────────────────────────────
-        function isNightCard(card) {
-            return (card && card.shift ? card.shift : 'day').toLowerCase() === 'night';
+        // ── Shift-category helpers ──────────────────────────────────────────────
+        // Classify a card by its shiftId into one of the four categories.
+        function cardShiftType(card) {
+            const s = (card && card.shiftId ? card.shiftId : '').toLowerCase();
+            if (s.indexOf('night') >= 0)    return 'night';
+            if (s.indexOf('day') >= 0)      return 'day';
+            if (s.indexOf('overtime') >= 0) return 'overtime';
+            return 'normal';   // normal-time (and anything else)
         }
-        // A card belongs to the current view if its shift matches the toggle.
-        function cardInMode(card) {
-            return shiftMode === 'night' ? isNightCard(card) : !isNightCard(card);
+        // Classify a group by its shiftWindow. Groups can't distinguish normal vs
+        // overtime, so non day/night groups are treated as 'normal'.
+        function groupShiftType(g) {
+            const w = (g && g.shiftWindow) || {};
+            const st = parseMin(w.startTime), en = parseMin(w.endTime);
+            if (en <= st) return 'night';
+            if (st <= 6 * 60) return 'day';
+            return 'normal';
         }
-        // Groups have no single shift; they're day-side views (BC01 day/night retired).
-        function groupInMode() {
-            return shiftMode === 'day';
+        function typeInMode(type) { return !!shiftFilters[type]; }
+        function cardInMode(card) { return typeInMode(cardShiftType(card)); }
+        function groupInMode(g)   { return typeInMode(groupShiftType(g)); }
+        // Historical line list for the union of enabled categories (Select-Lines list).
+        function histLinesForMode() {
+            const sl = shiftLines || {};
+            let out = [];
+            ['normal', 'overtime', 'day', 'night'].forEach(k => {
+                if (shiftFilters[k] && Array.isArray(sl[k])) out = out.concat(sl[k]);
+            });
+            return out.length ? Array.from(new Set(out)) : (availableLines || []);
         }
         function updateShiftModeButton() {
             document.querySelectorAll('#shift-mode-toggle .shift-seg').forEach(seg => {
-                seg.classList.toggle('active', seg.getAttribute('data-mode') === shiftMode);
+                const k = seg.getAttribute('data-mode');
+                seg.classList.toggle('active', !!shiftFilters[k]);
             });
         }
 
@@ -1509,7 +1549,7 @@ body {
                 lineCards  = (data.lineCards  || []).sort((a, b) => a.id.localeCompare(b.id));
                 lineGroups = data.lineGroups || [];
                 availableLines = data.metadata?.availableLines || [];   // full line universe
-                shiftLines     = data.metadata?.shiftLines || { day: [], night: [] };
+                shiftLines     = data.metadata?.shiftLines || { normal: [], overtime: [], day: [], night: [] };
 
                 // Build default selectedLines: individual (non-grouped) lines + all groups
                 const _groupCovered = new Set();
@@ -1630,9 +1670,8 @@ body {
             const displayQueue = [];
             selectedLines.forEach(sel => {
                 if (sel.startsWith('group:')) {
-                    if (!groupInMode()) return;
                     const grp = lineGroups.find(g => 'group:' + g.groupId === sel);
-                    if (grp) displayQueue.push({ type: 'group', data: grp });
+                    if (grp && groupInMode(grp)) displayQueue.push({ type: 'group', data: grp });
                 } else {
                     const card = lineCards.find(c => c.id === sel);
                     if (card && cardInMode(card)) displayQueue.push({ type: 'card', data: card });
@@ -1640,9 +1679,10 @@ body {
             });
 
             if (!displayQueue.length) {
-                showError(shiftMode === 'night'
-                    ? 'No night-shift lines selected for today.'
-                    : 'No day-shift lines selected for today.');
+                const on = Object.keys(shiftFilters).filter(k => shiftFilters[k]);
+                const labels = { normal: 'normal-time', overtime: 'overtime', day: 'day-shift', night: 'night-shift' };
+                const modeLabel = on.length ? on.map(k => labels[k]).join(' / ') : 'no shift';
+                showError(`No ${modeLabel} lines selected for today.`);
                 return;
             }
 
@@ -1790,14 +1830,17 @@ body {
             const supervisorCT = supCTWeight > 0 ? parseFloat((supCTW    / supCTWeight).toFixed(2)) : null;
             const activeCT     = supervisorCT !== null ? supervisorCT : planCT;
 
-            // Ahead/behind: interpolate against activeTarget across the shift window
-            const shiftStart = Math.min(...card.variants.map(v => parseMin(v.startTime || card.startTime)));
-            const shiftEnd   = Math.max(...card.variants.map(v => parseMin(v.endTime   || card.endTime)));
-            const nm = nowMin();
+            // Ahead/behind: interpolate against activeTarget across the shift window.
+            // Use the card's own shift window, extended across midnight for night shifts,
+            // so a night shift gets a real expected-by-now value (not 0 → always green).
+            const shiftStart = parseMin(card.startTime);
+            const crossesC   = parseMin(card.endTime) <= shiftStart;
+            const shiftEndX  = crossesC ? parseMin(card.endTime) + 1440 : parseMin(card.endTime);
+            const nmX = extMinF(nowMin(), shiftStart, crossesC);
             let cumTargetNow = 0;
-            if (shiftEnd > shiftStart) {
-                const elapsed = Math.max(0, Math.min(nm, shiftEnd) - shiftStart);
-                cumTargetNow  = Math.round(activeTarget * elapsed / (shiftEnd - shiftStart));
+            if (shiftEndX > shiftStart) {
+                const elapsed = Math.max(0, Math.min(nmX, shiftEndX) - shiftStart);
+                cumTargetNow  = Math.round(activeTarget * elapsed / (shiftEndX - shiftStart));
             }
             const isAhead     = cumTargetNow === 0 || totalProd >= cumTargetNow;
             const statusColor = isAhead ? 'var(--production-ahead)' : 'var(--production-behind)';
@@ -2694,7 +2737,7 @@ body {
                 // The dropdown mirrors the "Select Lines to Display" modal: only show
                 // lines/groups that are both currently selected AND in the active shift view.
                 const inSelection = id => selectedLines.includes(id);
-                const histForMode = (shiftLines && shiftLines[shiftMode]) ? shiftLines[shiftMode] : (availableLines || []);
+                const histForMode = histLinesForMode();
 
                 // Individual lines running today (not group-covered, selected, matching shift)
                 lineCards.forEach(card => {
@@ -2718,10 +2761,9 @@ body {
                         sel.appendChild(opt);
                     });
 
-                // Group views — only in day mode, only selected groups
-                const selectedGroups = groupInMode()
-                    ? lineGroups.filter(grp => inSelection('group:' + grp.groupId))
-                    : [];
+                // Group views — only those matching the active shift state, only selected groups
+                const selectedGroups = lineGroups.filter(grp =>
+                    groupInMode(grp) && inSelection('group:' + grp.groupId));
                 if (selectedGroups.length > 0) {
                     const grpLabel = document.createElement('optgroup');
                     grpLabel.label = '-- Group Views --';
@@ -2804,7 +2846,7 @@ body {
             const individualCards = lineCards.filter(c => !groupCoveredIds.has(c.id) && cardInMode(c));
 
             // Lines that historically ran THIS shift but aren't running it today
-            const histForMode = (shiftLines && shiftLines[shiftMode]) ? shiftLines[shiftMode] : (availableLines || []);
+            const histForMode = histLinesForMode();
             const inactiveLines = histForMode
                 .filter(id => !individualCards.some(c => c.id === id) && !groupCoveredIds.has(id))
                 .sort((a, b) => a.localeCompare(b));
@@ -2840,13 +2882,14 @@ body {
                 });
             }
 
-            // Group views
-            if (lineGroups.length > 0 && groupInMode()) {
+            // Group views — only those matching the active shift state
+            const modeGroups = lineGroups.filter(grp => groupInMode(grp));
+            if (modeGroups.length > 0) {
                 const hdr = document.createElement('div');
                 hdr.style.cssText = 'font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;padding:10px 0 6px;letter-spacing:0.05em;';
                 hdr.textContent = 'Group Views';
                 box.appendChild(hdr);
-                lineGroups.forEach(grp => {
+                modeGroups.forEach(grp => {
                     const item = document.createElement('div');
                     item.className = 'supervisor-checkbox-item';
                     item.innerHTML =
