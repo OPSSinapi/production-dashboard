@@ -997,6 +997,9 @@ body {
                 </div>
                 
                 <div class="buttons-container">
+                    <button id="shift-mode-btn" class="supervisor-select-btn" title="Toggle day / night shift view">
+                        Day Shift
+                    </button>
                     <button id="supervisor-select-btn" class="supervisor-select-btn">
                         Select Lines
                     </button>
@@ -1188,6 +1191,8 @@ body {
         let lineCards        = [];     // data.json → lineCards array (one per Production_Line)
         let lineGroups       = [];     // data.json → lineGroups array (multi-chart group views)
         let availableLines   = [];     // every line seen in last 90 days (from metadata.availableLines)
+        let shiftLines       = { day: [], night: [] };  // historical day/night line membership
+        let shiftMode        = 'day';  // 'day' | 'night' — driven by the Day/Night toggle button
         let selectedLines    = [];     // which line IDs are visible
         let filteredCards    = [];     // cards currently shown after filters
         let activeGroup      = null;   // currently displayed lineGroup (or null for single-card mode)
@@ -1269,6 +1274,15 @@ body {
 
             loadSelection();                                              // restore saved filter + lines
             document.getElementById('filter-type-select').value = filterType;
+            updateShiftModeButton();
+
+            document.getElementById('shift-mode-btn').addEventListener('click', () => {
+                shiftMode = (shiftMode === 'night') ? 'day' : 'night';
+                updateShiftModeButton();
+                saveSelection();
+                populateFilterDropdown();
+                applyFiltersAndDisplay();
+            });
 
             await discoverAvailableDates();
             initDateNav();
@@ -1283,7 +1297,8 @@ body {
                 localStorage.setItem(LS_KEY, JSON.stringify({
                     selectedLines: selectedLines,
                     filterType:    filterType,
-                    filterValue:   filterValue
+                    filterValue:   filterValue,
+                    shiftMode:     shiftMode
                 }));
             } catch (_) {}
         }
@@ -1294,10 +1309,33 @@ body {
                     selectedLines = s.selectedLines;
                     if (s.filterType)  filterType  = s.filterType;
                     if (s.filterValue) filterValue = s.filterValue;
+                    if (s.shiftMode)   shiftMode   = s.shiftMode;
+                } else {
+                    // No saved state → default the shift view by current time (18:00–05:59 = night)
+                    const h = new Date().getHours();
+                    shiftMode = (h >= 18 || h < 6) ? 'night' : 'day';
                 }
                 // Guard against legacy/invalid filter type values (e.g. old 'supervisor')
                 if (!['line', 'product', 'variant'].includes(filterType)) filterType = 'line';
+                if (!['day', 'night'].includes(shiftMode)) shiftMode = 'day';
             } catch (_) {}
+        }
+
+        // ── Shift-mode helpers ──────────────────────────────────────────────────
+        function isNightCard(card) {
+            return (card && card.shift ? card.shift : 'day').toLowerCase() === 'night';
+        }
+        // A card belongs to the current view if its shift matches the toggle.
+        function cardInMode(card) {
+            return shiftMode === 'night' ? isNightCard(card) : !isNightCard(card);
+        }
+        // Groups have no single shift; they're day-side views (BC01 day/night retired).
+        function groupInMode() {
+            return shiftMode === 'day';
+        }
+        function updateShiftModeButton() {
+            const btn = document.getElementById('shift-mode-btn');
+            if (btn) btn.textContent = shiftMode === 'night' ? 'Night Shift' : 'Day Shift';
         }
 
         // ── Date discovery: probe GitHub Pages for last 5 dated archives ────────
@@ -1412,6 +1450,7 @@ body {
                 lineCards  = (data.lineCards  || []).sort((a, b) => a.id.localeCompare(b.id));
                 lineGroups = data.lineGroups || [];
                 availableLines = data.metadata?.availableLines || [];   // full line universe
+                shiftLines     = data.metadata?.shiftLines || { day: [], night: [] };
 
                 // Build default selectedLines: individual (non-grouped) lines + all groups
                 const _groupCovered = new Set();
@@ -1527,19 +1566,26 @@ body {
             clearInterval(cycleInterval);
             activeGroup = null;
 
-            // Build ordered display queue: each entry is either a lineCard or a group
+            // Build ordered display queue: each entry is either a lineCard or a group,
+            // limited to items that belong to the current Day/Night view.
             const displayQueue = [];
             selectedLines.forEach(sel => {
                 if (sel.startsWith('group:')) {
+                    if (!groupInMode()) return;
                     const grp = lineGroups.find(g => 'group:' + g.groupId === sel);
                     if (grp) displayQueue.push({ type: 'group', data: grp });
                 } else {
                     const card = lineCards.find(c => c.id === sel);
-                    if (card) displayQueue.push({ type: 'card', data: card });
+                    if (card && cardInMode(card)) displayQueue.push({ type: 'card', data: card });
                 }
             });
 
-            if (!displayQueue.length) { showError('No items selected.'); return; }
+            if (!displayQueue.length) {
+                showError(shiftMode === 'night'
+                    ? 'No night-shift lines selected for today.'
+                    : 'No day-shift lines selected for today.');
+                return;
+            }
 
             let queueIdx = 0;
             const showItem = item => {
@@ -2579,21 +2625,24 @@ body {
                 const activeIds = new Set(lineCards.map(c => c.id));
 
                 // The dropdown mirrors the "Select Lines to Display" modal: only show
-                // lines/groups the user currently has selected.
+                // lines/groups that are both currently selected AND in the active shift view.
                 const inSelection = id => selectedLines.includes(id);
+                const histForMode = (shiftLines && shiftLines[shiftMode]) ? shiftLines[shiftMode] : (availableLines || []);
 
-                // Individual lines running today (only those NOT covered by a group, and selected)
+                // Individual lines running today (not group-covered, selected, matching shift)
                 lineCards.forEach(card => {
                     if (groupCoveredIds.has(card.id)) return;
                     if (!inSelection(card.id)) return;
+                    if (!cardInMode(card)) return;
                     const opt = document.createElement('option');
                     opt.value = opt.textContent = card.id;
                     sel.appendChild(opt);
                 });
 
-                // Lines seen in the last 90 days but not running today (only if selected)
-                (availableLines || [])
-                    .filter(id => !activeIds.has(id) && !groupCoveredIds.has(id) && inSelection(id))
+                // Lines that historically ran this shift but aren't running it today (if selected)
+                histForMode
+                    .filter(id => !lineCards.some(c => c.id === id && cardInMode(c)) &&
+                                  !groupCoveredIds.has(id) && inSelection(id))
                     .sort((a, b) => a.localeCompare(b))
                     .forEach(id => {
                         const opt = document.createElement('option');
@@ -2602,8 +2651,10 @@ body {
                         sel.appendChild(opt);
                     });
 
-                // Group views — ONE separator, rebuilt each call; only selected groups
-                const selectedGroups = lineGroups.filter(grp => inSelection('group:' + grp.groupId));
+                // Group views — only in day mode, only selected groups
+                const selectedGroups = groupInMode()
+                    ? lineGroups.filter(grp => inSelection('group:' + grp.groupId))
+                    : [];
                 if (selectedGroups.length > 0) {
                     const grpLabel = document.createElement('optgroup');
                     grpLabel.label = '-- Group Views --';
@@ -2682,13 +2733,13 @@ body {
             lineGroups.forEach(grp => grp.members.forEach(m => groupCoveredIds.add(m.lineCardId)));
 
             const activeIds = new Set(lineCards.map(c => c.id));
+            // Individual lines running today in the current shift view (not group-covered)
+            const individualCards = lineCards.filter(c => !groupCoveredIds.has(c.id) && cardInMode(c));
 
-            // Individual lines running today (not covered by any group)
-            const individualCards = lineCards.filter(c => !groupCoveredIds.has(c.id));
-
-            // Lines seen in the last 90 days but NOT running today
-            const inactiveLines = (availableLines || [])
-                .filter(id => !activeIds.has(id) && !groupCoveredIds.has(id))
+            // Lines that historically ran THIS shift but aren't running it today
+            const histForMode = (shiftLines && shiftLines[shiftMode]) ? shiftLines[shiftMode] : (availableLines || []);
+            const inactiveLines = histForMode
+                .filter(id => !individualCards.some(c => c.id === id) && !groupCoveredIds.has(id))
                 .sort((a, b) => a.localeCompare(b));
 
             if (individualCards.length || inactiveLines.length) {
@@ -2723,7 +2774,7 @@ body {
             }
 
             // Group views
-            if (lineGroups.length > 0) {
+            if (lineGroups.length > 0 && groupInMode()) {
                 const hdr = document.createElement('div');
                 hdr.style.cssText = 'font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;padding:10px 0 6px;letter-spacing:0.05em;';
                 hdr.textContent = 'Group Views';
