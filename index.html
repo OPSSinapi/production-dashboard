@@ -1664,8 +1664,10 @@ body {
                     const grp = lineGroups.find(g => 'group:' + g.groupId === sel);
                     if (grp && groupInMode(grp)) displayQueue.push({ type: 'group', data: grp });
                 } else {
-                    const card = lineCards.find(c => c.id === sel);
-                    if (card && cardInMode(card)) displayQueue.push({ type: 'card', data: card });
+                    // A line can now have more than one card (e.g. NT+OT and Night);
+                    // show every card for this line that matches the active shift filter.
+                    lineCards.filter(c => c.id === sel && cardInMode(c))
+                             .forEach(card => displayQueue.push({ type: 'card', data: card }));
                 }
             });
 
@@ -2731,10 +2733,13 @@ body {
                 const histForMode = histLinesForMode();
 
                 // Individual lines running today (not group-covered, selected, matching shift)
+                const _seenDd = new Set();
                 lineCards.forEach(card => {
                     if (groupCoveredIds.has(card.id)) return;
                     if (!inSelection(card.id)) return;
                     if (!cardInMode(card)) return;
+                    if (_seenDd.has(card.id)) return;
+                    _seenDd.add(card.id);
                     const opt = document.createElement('option');
                     opt.value = opt.textContent = card.id;
                     sel.appendChild(opt);
@@ -2833,8 +2838,15 @@ body {
             lineGroups.forEach(grp => grp.members.forEach(m => groupCoveredIds.add(m.lineCardId)));
 
             const activeIds = new Set(lineCards.map(c => c.id));
-            // Individual lines running today in the current shift view (not group-covered)
-            const individualCards = lineCards.filter(c => !groupCoveredIds.has(c.id) && cardInMode(c));
+            // Individual lines running today in the current shift view (not group-covered).
+            // Dedup by line id — a line can have multiple shift cards (NT+OT, Night…).
+            const _seenInd = new Set();
+            const individualCards = lineCards.filter(c => {
+                if (groupCoveredIds.has(c.id) || !cardInMode(c)) return false;
+                if (_seenInd.has(c.id)) return false;
+                _seenInd.add(c.id);
+                return true;
+            });
 
             // Lines that historically ran THIS shift but aren't running it today
             const histForMode = histLinesForMode();
