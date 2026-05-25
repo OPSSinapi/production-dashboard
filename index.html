@@ -1026,9 +1026,8 @@ body {
                 </div>
                 
                 <div class="buttons-container">
-                    <div id="shift-mode-toggle" class="shift-mode-toggle" title="Toggle shift categories independently. Lines matching any enabled category are shown.">
-                        <button type="button" class="shift-seg" data-mode="normal">Normal</button>
-                        <button type="button" class="shift-seg" data-mode="overtime">OT</button>
+                    <div id="shift-mode-toggle" class="shift-mode-toggle" title="Toggle shift categories. NT+OT = normal time and overtime.">
+                        <button type="button" class="shift-seg" data-mode="ntot">NT+OT</button>
                         <button type="button" class="shift-seg" data-mode="day">Day</button>
                         <button type="button" class="shift-seg" data-mode="night">Night</button>
                     </div>
@@ -1223,11 +1222,10 @@ body {
         let lineCards        = [];     // data.json → lineCards array (one per Production_Line)
         let lineGroups       = [];     // data.json → lineGroups array (multi-chart group views)
         let availableLines   = [];     // every line seen in last 90 days (from metadata.availableLines)
-        let shiftLines       = { normal: [], overtime: [], day: [], night: [] };  // historical line membership by category
-        // Four independent shift-category toggles. A card/group shows if ANY of the
-        // categories it belongs to is enabled (union). Default = whatever was last
-        // selected (persisted); first-ever load enables Normal Time.
-        let shiftFilters = { normal: false, overtime: false, day: false, night: false };
+        let shiftLines       = { ntot: [], day: [], night: [] };  // historical line membership by category
+        // Three independent shift-category toggles (Normal Time + Overtime combined).
+        // A card/group shows if its category is enabled. Default = last selected.
+        let shiftFilters = { ntot: false, day: false, night: false };
         let selectedLines    = [];     // which line IDs are visible
         let filteredCards    = [];     // cards currently shown after filters
         let activeGroup      = null;   // currently displayed lineGroup (or null for single-card mode)
@@ -1373,59 +1371,52 @@ body {
                     if (s.filterValue) filterValue = s.filterValue;
                     if (s.shiftFilters && typeof s.shiftFilters === 'object') {
                         shiftFilters = {
-                            normal:   !!s.shiftFilters.normal,
-                            overtime: !!s.shiftFilters.overtime,
-                            day:      !!s.shiftFilters.day,
-                            night:    !!s.shiftFilters.night
+                            ntot:  !!(s.shiftFilters.ntot || s.shiftFilters.normal || s.shiftFilters.overtime),
+                            day:   !!s.shiftFilters.day,
+                            night: !!s.shiftFilters.night
                         };
                     } else if (typeof s.dayOn === 'boolean' || typeof s.nightOn === 'boolean') {
-                        // Migrate previous two-toggle state (neither = normal/overtime)
                         shiftFilters.day   = !!s.dayOn;
                         shiftFilters.night = !!s.nightOn;
-                        shiftFilters.normal = shiftFilters.overtime = (!s.dayOn && !s.nightOn);
+                        shiftFilters.ntot  = (!s.dayOn && !s.nightOn);
                     } else if (s.shiftMode) {
                         shiftFilters.day   = s.shiftMode === 'day';
                         shiftFilters.night = s.shiftMode === 'night';
-                        shiftFilters.normal = shiftFilters.overtime = (s.shiftMode !== 'day' && s.shiftMode !== 'night');
+                        shiftFilters.ntot  = (s.shiftMode !== 'day' && s.shiftMode !== 'night');
                     }
                 } else {
-                    // First-ever load → show Normal Time (the most common category)
-                    shiftFilters = { normal: true, overtime: false, day: false, night: false };
+                    // First-ever load → show Normal Time / Overtime (most common)
+                    shiftFilters = { ntot: true, day: false, night: false };
                 }
                 if (!['line', 'product', 'variant'].includes(filterType)) filterType = 'line';
-                // Never leave all four off (would show nothing) — fall back to Normal
-                if (!shiftFilters.normal && !shiftFilters.overtime && !shiftFilters.day && !shiftFilters.night) {
-                    shiftFilters.normal = true;
+                // Never leave all off (would show nothing) — fall back to NT+OT
+                if (!shiftFilters.ntot && !shiftFilters.day && !shiftFilters.night) {
+                    shiftFilters.ntot = true;
                 }
             } catch (_) {}
         }
 
-        // ── Shift-category helpers ──────────────────────────────────────────────
-        // Classify a card by its shiftId into one of the four categories.
+        // ── Shift-category helpers (Normal Time + Overtime combined as 'ntot') ────
         function cardShiftType(card) {
             const s = (card && card.shiftId ? card.shiftId : '').toLowerCase();
-            if (s.indexOf('night') >= 0)    return 'night';
-            if (s.indexOf('day') >= 0)      return 'day';
-            if (s.indexOf('overtime') >= 0) return 'overtime';
-            return 'normal';   // normal-time (and anything else)
+            if (s.indexOf('night') >= 0) return 'night';
+            if (s.indexOf('day') >= 0)   return 'day';
+            return 'ntot';   // normal-time, overtime, anything else
         }
-        // Classify a group by its shiftWindow. Groups can't distinguish normal vs
-        // overtime, so non day/night groups are treated as 'normal'.
         function groupShiftType(g) {
             const w = (g && g.shiftWindow) || {};
             const st = parseMin(w.startTime), en = parseMin(w.endTime);
             if (en <= st) return 'night';
             if (st <= 6 * 60) return 'day';
-            return 'normal';
+            return 'ntot';
         }
         function typeInMode(type) { return !!shiftFilters[type]; }
         function cardInMode(card) { return typeInMode(cardShiftType(card)); }
         function groupInMode(g)   { return typeInMode(groupShiftType(g)); }
-        // Historical line list for the union of enabled categories (Select-Lines list).
         function histLinesForMode() {
             const sl = shiftLines || {};
             let out = [];
-            ['normal', 'overtime', 'day', 'night'].forEach(k => {
+            ['ntot', 'day', 'night'].forEach(k => {
                 if (shiftFilters[k] && Array.isArray(sl[k])) out = out.concat(sl[k]);
             });
             return out.length ? Array.from(new Set(out)) : (availableLines || []);
@@ -1549,7 +1540,7 @@ body {
                 lineCards  = (data.lineCards  || []).sort((a, b) => a.id.localeCompare(b.id));
                 lineGroups = data.lineGroups || [];
                 availableLines = data.metadata?.availableLines || [];   // full line universe
-                shiftLines     = data.metadata?.shiftLines || { normal: [], overtime: [], day: [], night: [] };
+                shiftLines     = data.metadata?.shiftLines || { ntot: [], day: [], night: [] };
 
                 // Build default selectedLines: individual (non-grouped) lines + all groups
                 const _groupCovered = new Set();
@@ -1680,7 +1671,7 @@ body {
 
             if (!displayQueue.length) {
                 const on = Object.keys(shiftFilters).filter(k => shiftFilters[k]);
-                const labels = { normal: 'normal-time', overtime: 'overtime', day: 'day-shift', night: 'night-shift' };
+                const labels = { ntot: 'NT+OT', day: 'day-shift', night: 'night-shift' };
                 const modeLabel = on.length ? on.map(k => labels[k]).join(' / ') : 'no shift';
                 showError(`No ${modeLabel} lines selected for today.`);
                 return;
