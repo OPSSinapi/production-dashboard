@@ -1868,7 +1868,11 @@ body {
             const shiftEndX  = crossesC ? parseMin(card.endTime) + 1440 : parseMin(card.endTime);
             const nmX = extMinF(nowMin(), shiftStart, crossesC);
             let cumTargetNow = 0;
-            if (shiftEndX > shiftStart) {
+            if (cardShiftEnded(card)) {
+                // Shift is over → measure against the FULL target, not a clock-derived pace
+                // (the clock now sits outside the shift window, which would read as 0 elapsed).
+                cumTargetNow = activeTarget;
+            } else if (shiftEndX > shiftStart) {
                 const elapsed = Math.max(0, Math.min(nmX, shiftEndX) - shiftStart);
                 cumTargetNow  = Math.round(activeTarget * elapsed / (shiftEndX - shiftStart));
             }
@@ -2435,8 +2439,11 @@ body {
             }
             const nm = nowMin();
             let cumTargetNow = 0;
-            if (shiftEndM > shiftStartM) {
-                const nmAdj = (nm < shiftStartM) ? nm + 1440 : nm;
+            const nmAdj = (nm < shiftStartM) ? nm + 1440 : nm;
+            const grpEnded = (shiftEndM > shiftStartM) && (nmAdj < shiftStartM || nmAdj >= shiftEndM);
+            if (grpEnded) {
+                cumTargetNow = totalTarget;   // shift over → full target
+            } else if (shiftEndM > shiftStartM) {
                 const elapsed = Math.max(0, Math.min(nmAdj, shiftEndM) - shiftStartM);
                 cumTargetNow  = Math.round(totalTarget * elapsed / (shiftEndM - shiftStartM));
             }
