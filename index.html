@@ -1455,7 +1455,7 @@ body {
                 if (res.ok) {
                     const m = await res.json();
                     (m.dates || [])
-                        .filter(d => d && d !== today)
+                        .filter(d => d && d < today)   // only genuinely past archives (drop today + any skewed/future date)
                         .sort((a, b) => b.localeCompare(a))
                         .forEach(d => availableDates.push(d));
                 }
@@ -1541,7 +1541,18 @@ body {
                     : BASE_URL + 'data-' + availableDates[viewingDateIdx] + '.json?_=' + Date.now();
 
                 const res  = await fetch(url);
-                if (!res.ok) throw new Error('HTTP ' + res.status);
+                if (!res.ok) {
+                    // A listed archive is missing (deleted at source / stale manifest).
+                    // Drop it and fall back to the live feed instead of dead-ending.
+                    if (!isToday) {
+                        const missing = availableDates[viewingDateIdx];
+                        availableDates = availableDates.filter(d => d !== missing);
+                        if (viewingDateIdx >= availableDates.length) viewingDateIdx = 0;
+                        updateDateNav();
+                        return switchToDate(0);
+                    }
+                    throw new Error('HTTP ' + res.status);
+                }
                 const data = await res.json();
 
                 const ts = data.metadata?.timestamp;
