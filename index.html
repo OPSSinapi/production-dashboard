@@ -1281,6 +1281,27 @@ body {
             const s = parseMin(card && card.startTime), e = parseMin(card && card.endTime);
             return e <= s;
         }
+        // Minutes from the current production day's 00:00 to "now". The production
+        // day (data.json metadata.date) does not roll at midnight, so a night shift
+        // running at 05:00 the next morning reads as ~1740, and yesterday's day
+        // shift (ended 16:30 = 990) correctly reads as already complete.
+        function nowAbsMin() {
+            if (viewingDateIdx > 0) return 1439 + 1440;   // archived: fully complete
+            const pd = rawData && rawData.metadata && rawData.metadata.date;
+            const now = new Date();
+            if (!pd) return now.getHours() * 60 + now.getMinutes();
+            const p = pd.split('-').map(Number);
+            const prodMidnight = new Date(p[0], p[1] - 1, p[2], 0, 0, 0, 0);
+            return Math.round((now.getTime() - prodMidnight.getTime()) / 60000);
+        }
+        // True when the card's shift is over for the current production day.
+        function cardShiftEnded(card) {
+            if (!card || !card.startTime || !card.endTime) return false;
+            if (viewingDateIdx > 0) return true;
+            const s = parseMin(card.startTime), e = parseMin(card.endTime);
+            const shiftEndAbs = (e <= s) ? e + 1440 : e;   // night shift crosses midnight
+            return nowAbsMin() > shiftEndAbs;
+        }
         // Label of the slot currently in progress, aligned to the card's boundary.
         function currentSlotLabel(card) {
             const bm = cardBoundaryMin(card);
@@ -1593,23 +1614,37 @@ body {
                 }
             }
 
-            // Specific individual line selected from dropdown → show only that card, no cycling
+            // Specific individual line selected from dropdown → show that line's
+            // card(s) for the ACTIVE shift view (a line may have NT+OT and Night cards).
             if (filterValue !== 'all' && filterType === 'line') {
-                const card = lineCards.find(c => c.id === filterValue);
-                if (card) {
+                const cards = lineCards.filter(c => c.id === filterValue && cardInMode(c));
+                if (cards.length) {
                     clearInterval(cycleInterval);
                     activeGroup = null;
-                    filteredCards = [card];
-                    displayCard(card);
+                    filteredCards = cards;
+                    cycleIndex = 0;
+                    if (cards.length > 1) {
+                        cycleInterval = setInterval(() => {
+                            cycleIndex = (cycleIndex + 1) % filteredCards.length;
+                            displayCard(filteredCards[cycleIndex]);
+                        }, CYCLE_INTERVAL);
+                    }
+                    displayCard(cards[0]);
                     renderBatchTable();
                     return;
                 }
+                // Line is selected but not running in the active shift view.
+                const labels = { ntot: 'NT+OT', day: 'day-shift', night: 'night-shift' };
+                const on = Object.keys(shiftFilters).filter(k => shiftFilters[k]).map(k => labels[k]).join(' / ');
+                showError(`${filterValue} has no ${on || 'selected'} production today.`);
+                return;
             }
 
             // Product/variant filter: show matching cards only, no groups
             if (filterValue !== 'all' && (filterType === 'product' || filterType === 'variant')) {
                 activeGroup = null;
                 filteredCards = lineCards.filter(card => {
+                    if (!cardInMode(card)) return false;
                     if (filterType === 'product') return card.variants.some(v => v.productName === filterValue);
                     return card.variants.some(v => v.variantName === filterValue || v.variantFull === filterValue);
                 });
@@ -1882,18 +1917,23 @@ body {
             const peTotal     = card.peTotalTarget || card.totalTarget || 0;
             const totalTarget = supTotal !== null ? supTotal : peTotal;  // active target for chart axis
 
-            // Collect all hourly slot data across variants, within each variant's own window
+            // Shift window (authoritative) — compute bounds FIRST so slot collection
+            // clips to the shift, not to a variant's transition sub-window.
+            // A variant's start/end may be a short mid-shift transition span (e.g. 07:30–08:37);
+            // clipping the timeline to that would drop every later slot and collapse the chart.
+            const startMin = parseMin(card.startTime) || Math.min(...card.variants.map(v => parseMin(v.startTime)));
+            const crossesC = parseMin(card.endTime) <= startMin;
+            const cardEndMin = parseMin(card.endTime);
+            const endMin   = (crossesC ? cardEndMin + 1440 : cardEndMin) || Math.max(...card.variants.map(v => parseMin(v.endTime)));
+            const nm       = extMinF(nowMin(), startMin, crossesC);
+
+            // Collect all hourly slot data across variants, within the SHIFT window
             const slotMap = {};   // "HH:MM" → { prod, minutes }
-
             card.variants.forEach(v => {
-                const vStart   = parseMin(v.startTime);
-                const crossesV = parseMin(v.endTime) <= vStart;
-                const vEndExt  = crossesV ? parseMin(v.endTime) + 1440 : parseMin(v.endTime);
-
                 if (!v.timeline) return;
                 v.timeline.forEach(slot => {
-                    const slotMinExt = extMinF(parseMin(slot.hour), vStart, crossesV);
-                    if (slotMinExt < vStart || slotMinExt > vEndExt) return;
+                    const slotMinExt = extMinF(parseMin(slot.hour), startMin, crossesC);
+                    if (slotMinExt < startMin || slotMinExt > endMin) return;
                     if (!slotMap[slot.hour]) slotMap[slot.hour] = { prod: 0, minutes: slotMinExt };
                     slotMap[slot.hour].prod += (slot.actual || 0);
                 });
@@ -1905,23 +1945,18 @@ body {
                 return;
             }
 
-            // card.startTime/endTime are the authoritative shift window (from shift object).
-            // variant.startTime/endTime only differ for mid-shift variant transitions (e.g. PopUp EFB).
-            // Use card times as the chart axis bounds so stale variant.endTime in old archives
-            // never clips the chart.
-            const startMin = parseMin(card.startTime) || Math.min(...card.variants.map(v => parseMin(v.startTime)));
-            const crossesC = parseMin(card.endTime) <= startMin;
-            const cardEndMin = parseMin(card.endTime);
-            const endMin   = (crossesC ? cardEndMin + 1440 : cardEndMin) || Math.max(...card.variants.map(v => parseMin(v.endTime)));
-            const nm       = extMinF(nowMin(), startMin, crossesC);
 
             // Build cumulative series starting at zero at shiftStart
             const isPastData = viewingDateIdx > 0;
+            // A shift that has already ended today (e.g. yesterday's day shift seen
+            // during tonight's night window) renders like past data: full timeline,
+            // no "skip future slots", endpoint extended to shift end.
+            const isComplete = isPastData || cardShiftEnded(card);
             const points = [{ hour: null, minutes: startMin, prod: 0, target: 0 }];
             let cumProd = 0;
             hours.forEach(h => {
                 const min = slotMap[h].minutes;   // extended minute (handles night crossing midnight)
-                if (!isPastData && min > nm + 60) return;  // live: skip future slots
+                if (!isComplete && min > nm + 60) return;  // live: skip future slots
                 cumProd += slotMap[h].prod;
                 const target = Math.round(totalTarget * (min - startMin) / (endMin - startMin));
                 points.push({ hour: h, minutes: min, prod: cumProd, target });
@@ -1929,7 +1964,7 @@ body {
 
             // For past data: add endpoint at shiftEnd. Do NOT overwrite intermediate points.
             // For live data: add current-time interpolation point.
-            if (isPastData) {
+            if (isComplete) {
                 const lastPt = points[points.length - 1];
                 if (lastPt.minutes < endMin) {
                     // Extend to shift end: prod stays flat at totalProd (handles overtime),
@@ -1960,7 +1995,7 @@ body {
             // For live data: only include marks that exist in the data (have production slots).
             // For past data: generate all marks for the full shift.
             let chartHourMarks = hours;
-            if (isPastData) {
+            if (isComplete) {
                 // Show one tick per hour (every 60 min), starting at startMin+60.
                 // Matches cadence: 07:30 start → 08:30, 09:30, 10:30...
                 //                  06:00 start → 07:00, 08:00, 09:00...
@@ -1974,8 +2009,10 @@ body {
                 const endSlot = `${String(endH).padStart(2,'0')}:${String(endMn).padStart(2,'0')}`;
                 if (!chartHourMarks.includes(endSlot)) chartHourMarks.push(endSlot);
             }
-            // Pass peTotal as secondary line only when supervisor target is active
-            drawLineChart(container, points, chartHourMarks, startMin, endMin, totalTarget, totalProd, nm, 'Units',
+            // Pass peTotal as secondary line only when supervisor target is active.
+            // For a completed shift, pass a "now" past shift end so no dots are gated out.
+            const nmArg = isComplete ? endMin + 100000 : nm;
+            drawLineChart(container, points, chartHourMarks, startMin, endMin, totalTarget, totalProd, nmArg, 'Units',
                 supTotal !== null ? peTotal : null);
         }
 
@@ -1985,20 +2022,21 @@ body {
             container.innerHTML = '';
 
             const nm = nowMin();
-            const periodSlot = (viewingDateIdx > 0)
-                ? (card.variants[0] && card.variants[0].timeline && card.variants[0].timeline.length
-                    ? card.variants[0].timeline[card.variants[0].timeline.length - 1].hour
-                    : currentSlotLabel(card))
-                : currentSlotLabel(card);
+            const ended = cardShiftEnded(card);
+            const lastSlotOf = c => (c.variants[0] && c.variants[0].timeline && c.variants[0].timeline.length
+                ? c.variants[0].timeline[c.variants[0].timeline.length - 1].hour
+                : currentSlotLabel(c));
+            const periodSlot = (viewingDateIdx > 0 || ended) ? lastSlotOf(card) : currentSlotLabel(card);
+
+            const startMinH = parseMin(card.startTime) || Math.min(...card.variants.map(v => parseMin(v.startTime)));
+            const crossesH  = parseMin(card.endTime) <= startMinH;
+            const endMinH   = crossesH ? parseMin(card.endTime) + 1440 : parseMin(card.endTime);
 
             let prodValue = 0, targetValue = 0, supTargetValue = 0, hasSupTarget = false;
             card.variants.forEach(v => {
-                const vStart   = parseMin(v.startTime);
-                const crossesV = parseMin(v.endTime) <= vStart;
-                const vEndExt  = crossesV ? parseMin(v.endTime) + 1440 : parseMin(v.endTime);
-                const slotMin  = extMinF(parseMin(periodSlot), vStart, crossesV);
-                if (slotMin < vStart || slotMin > vEndExt) return;
                 if (!v.timeline) return;
+                const slotMin = extMinF(parseMin(periodSlot), startMinH, crossesH);
+                if (slotMin < startMinH || slotMin > endMinH) return;
                 const slot = v.timeline.find(s => s.hour === periodSlot);
                 if (slot) {
                     prodValue   += slot.actual || 0;
@@ -2151,7 +2189,7 @@ body {
             tg.appendChild(svgEl('path', { d: tPathD, stroke: supLineColor, 'stroke-width': 3, fill: 'none' }));
             // Target dots at hour marks (past data: show all; live: up to nm+60)
             hourMarks.forEach(h => {
-                const min = parseMin(h);
+                const min = eX(parseMin(h));
                 if (viewingDateIdx === 0 && min > nm + 60) return;
                 const dp = points.find(p => p.minutes === min) || points.filter(p => p.minutes <= min).pop();
                 if (!dp) return;
@@ -2178,7 +2216,7 @@ body {
             }
             // Production dots at hour marks (past data: show all)
             hourMarks.forEach(h => {
-                const min = parseMin(h);
+                const min = eX(parseMin(h));
                 if (viewingDateIdx === 0 && min > nm) return;
                 const dp = points.find(p => p.minutes === min) || points.filter(p => p.minutes <= min).pop();
                 if (!dp) return;
@@ -2637,8 +2675,8 @@ body {
             // - Single card selected from dropdown: just that card
             // - "All" / cycling mode: ALL selected lines (not just the currently displayed one)
             let cardsToScan, grpShiftStart = null, grpShiftEnd = null;
-            // Always show batches for ALL selected lines — not just the currently displayed card.
-            // This gives a persistent overview regardless of what's cycling on screen.
+            // Show batches for all selected lines — but only those matching the
+            // active shift toggle, so the Night view doesn't list NT+OT batches.
             if (filterValue === 'all') {
                 // Expand selectedLines to all constituent lineCards (including group members)
                 cardsToScan = lineCards.filter(c => selectedLines.includes(c.id) ||
@@ -2653,6 +2691,8 @@ body {
             } else {
                 cardsToScan = filteredCards;
             }
+            // Filter to the active shift view (NT+OT / Day / Night) in every branch.
+            cardsToScan = cardsToScan.filter(c => cardInMode(c));
 
             cardsToScan.forEach(card => {
                 card.variants.forEach(v => {
@@ -2955,7 +2995,7 @@ body {
                 currentChartIdx = 1;
                 cum.classList.add('hidden'); hrly.classList.remove('hidden');
                 const slot = currentCard ? currentSlotLabel(currentCard) : '--:--';
-                title.textContent = viewingDateIdx > 0
+                title.textContent = (viewingDateIdx > 0 || cardShiftEnded(currentCard))
                     ? `HOURLY PRODUCTION`
                     : `CURRENT HOUR: ${slot} PRODUCTION`;
             }
@@ -2971,8 +3011,8 @@ body {
 
         function updateCurrentHourInfo() {
             const el = document.getElementById('current-hour-info');
-            if (viewingDateIdx > 0) {
-                // Past data — shift is complete, current time is irrelevant
+            if (viewingDateIdx > 0 || cardShiftEnded(currentCard)) {
+                // Shift is over (archived date, or today's shift has already ended)
                 el.textContent = 'COMPLETED SHIFT';
                 el.style.color = 'var(--production-ahead)';
                 return;
