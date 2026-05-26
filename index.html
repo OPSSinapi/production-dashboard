@@ -1281,26 +1281,17 @@ body {
             const s = parseMin(card && card.startTime), e = parseMin(card && card.endTime);
             return e <= s;
         }
-        // Minutes from the current production day's 00:00 to "now". The production
-        // day (data.json metadata.date) does not roll at midnight, so a night shift
-        // running at 05:00 the next morning reads as ~1740, and yesterday's day
-        // shift (ended 16:30 = 990) correctly reads as already complete.
-        function nowAbsMin() {
-            if (viewingDateIdx > 0) return 1439 + 1440;   // archived: fully complete
-            const pd = rawData && rawData.metadata && rawData.metadata.date;
-            const now = new Date();
-            if (!pd) return now.getHours() * 60 + now.getMinutes();
-            const p = pd.split('-').map(Number);
-            const prodMidnight = new Date(p[0], p[1] - 1, p[2], 0, 0, 0, 0);
-            return Math.round((now.getTime() - prodMidnight.getTime()) / 60000);
-        }
-        // True when the card's shift is over for the current production day.
+        // True when the displayed card is NOT in its live window right now, i.e. it
+        // should render as a COMPLETED shift. The backend already supplies the correct
+        // instance per shift bucket (live one if running, else the most recent), so the
+        // front end only needs to know live-vs-complete from the clock and the window.
         function cardShiftEnded(card) {
             if (!card || !card.startTime || !card.endTime) return false;
             if (viewingDateIdx > 0) return true;
-            const s = parseMin(card.startTime), e = parseMin(card.endTime);
-            const shiftEndAbs = (e <= s) ? e + 1440 : e;   // night shift crosses midnight
-            return nowAbsMin() > shiftEndAbs;
+            const s = parseMin(card.startTime), e = parseMin(card.endTime), nm = nowMin();
+            const live = (e > s) ? (nm >= s && nm < e)        // day / NT shift
+                                 : (nm >= s || nm < e);        // night shift crosses midnight
+            return !live;
         }
         // Label of the slot currently in progress, aligned to the card's boundary.
         function currentSlotLabel(card) {
