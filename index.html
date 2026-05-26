@@ -1223,10 +1223,35 @@ body {
         let lineGroups       = [];     // data.json → lineGroups array (multi-chart group views)
         let availableLines   = [];     // every line seen in last 90 days (from metadata.availableLines)
         let shiftLines       = { ntot: [], day: [], night: [] };  // historical line membership by category
-        // Three independent shift-category toggles (Normal Time + Overtime combined).
-        // A card/group shows if its category is enabled. Default = last selected.
-        let shiftFilters = { ntot: false, day: false, night: false };
-        let selectedLines    = [];     // which line IDs are visible
+
+        // ── Per-TV configuration (the source of truth) ─────────────────────────────
+        // Each TV is its own browser. A TV is configured for a SUBSET of shifts and,
+        // for EACH of those shifts, its own list of lines to display. The shift toggle
+        // shows only the configured shifts and AUTO-SWITCHES to whichever shift the
+        // clock is currently in (re-asserted at every shift boundary). The pills stay
+        // tappable for a manual peek; the next boundary snaps back to the live shift.
+        //   tvConfig.lines[shift] === []  →  "all lines for this shift" (future-proof default)
+        const SHIFT_ORDER = ['ntot', 'day', 'night'];
+        const SHIFT_LABEL = { ntot: 'NT+OT', day: 'Day', night: 'Night' };
+        // Clock windows (minutes from midnight). NT+OT 07:30–16:30, Day 06:00–18:00,
+        // Night 18:00–06:00 (wraps midnight). Used only to decide the LIVE shift.
+        const SHIFT_WIN = {
+            ntot:  { start: 450,  end: 990,  wrap: false },
+            day:   { start: 360,  end: 1080, wrap: false },
+            night: { start: 1080, end: 360,  wrap: true  }
+        };
+        let tvConfig = {
+            shifts: ['ntot', 'day', 'night'],
+            lines:  { ntot: [], day: [], night: [] }
+        };
+        let activeShift    = 'ntot';   // single currently-displayed shift (auto-followed)
+        let lastClockShift = null;     // last shift the CLOCK was in (for boundary detection)
+        let urlConfigActive = false;   // true when config came from URL params (authoritative)
+
+        // Derived mirrors kept in sync with activeShift so existing helpers
+        // (cardInMode / groupInMode / typeInMode / histLinesForMode) work unchanged.
+        let shiftFilters = { ntot: true, day: false, night: false };
+        let selectedLines    = [];     // resolved line IDs for the ACTIVE shift
         let filteredCards    = [];     // cards currently shown after filters
         let activeGroup      = null;   // currently displayed lineGroup (or null for single-card mode)
         let cycleIndex       = 0;      // which card in filteredCards is on screen
@@ -1348,9 +1373,11 @@ body {
             document.querySelectorAll('#shift-mode-toggle .shift-seg').forEach(seg => {
                 seg.addEventListener('click', () => {
                     const k = seg.getAttribute('data-mode');
-                    if (k in shiftFilters) shiftFilters[k] = !shiftFilters[k];
-                    updateShiftModeButton();
-                    saveSelection();
+                    if (!tvConfig.shifts.includes(k) || k === activeShift) return;
+                    // Manual peek: switch now, but DON'T touch lastClockShift, so the
+                    // next shift boundary still auto-snaps back to the live shift.
+                    activeShift = k;
+                    syncActiveShift();
                     populateFilterDropdown();
                     applyFiltersAndDisplay();
                 });
@@ -1362,49 +1389,68 @@ body {
             liveInterval = setInterval(fetchData, UPDATE_INTERVAL);
         }
 
-        // ── Persisted UI state (survives reload / hard reload) ──────────────────────
-        const LS_KEY = 'sinapi-dashboard-ui-v1';
+        // ── Per-TV config persistence (survives reload) ────────────────────────────
+        // URL params are authoritative when present (bake a TV's identity into its
+        // bookmark so it survives a cache wipe / re-image). Otherwise localStorage,
+        // written by the Select-Lines modal.
+        //   URL form: ?shifts=ntot,night&ntot=SCD,LEVO&night=Line_1,group:GRP
+        const LS_KEY = 'sinapi-tv-config-v1';
+        const SHIFT_ALIAS = {
+            ntot:'ntot', nt:'ntot', ot:'ntot', normal:'ntot', overtime:'ntot', normaltime:'ntot',
+            day:'day', ds:'day', dayshift:'day',
+            night:'night', ns:'night', nightshift:'night'
+        };
+        function normShift(s) { return SHIFT_ALIAS[String(s || '').toLowerCase().replace(/[^a-z]/g, '')] || null; }
+        function sanitizeConfig(cfg) {
+            const shifts = Array.from(new Set((cfg.shifts || []).map(normShift).filter(Boolean)));
+            const lines  = { ntot: [], day: [], night: [] };
+            SHIFT_ORDER.forEach(s => { if (Array.isArray(cfg.lines && cfg.lines[s])) lines[s] = cfg.lines[s].slice(); });
+            return { shifts: shifts.length ? shifts : SHIFT_ORDER.slice(), lines };
+        }
+        function parseUrlConfig() {
+            const p = new URLSearchParams(location.search);
+            if (!p.has('shifts')) return null;
+            const shifts = p.get('shifts').split(',').map(normShift).filter(Boolean);
+            const lines = { ntot: [], day: [], night: [] };
+            SHIFT_ORDER.forEach(s => {
+                if (p.has(s)) lines[s] = p.get(s).split(',').map(x => decodeURIComponent(x.trim())).filter(Boolean);
+            });
+            return sanitizeConfig({ shifts, lines });
+        }
         function saveSelection() {
             try {
                 localStorage.setItem(LS_KEY, JSON.stringify({
-                    selectedLines: selectedLines,
-                    filterType:    filterType,
-                    filterValue:   filterValue,
-                    shiftFilters:  shiftFilters
+                    tvConfig:   tvConfig,
+                    filterType: filterType,
+                    filterValue: filterValue
                 }));
             } catch (_) {}
         }
         function loadSelection() {
             try {
-                const s = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
-                if (s && Array.isArray(s.selectedLines)) {
-                    selectedLines = s.selectedLines;
-                    if (s.filterType)  filterType  = s.filterType;
-                    if (s.filterValue) filterValue = s.filterValue;
-                    if (s.shiftFilters && typeof s.shiftFilters === 'object') {
-                        shiftFilters = {
-                            ntot:  !!(s.shiftFilters.ntot || s.shiftFilters.normal || s.shiftFilters.overtime),
-                            day:   !!s.shiftFilters.day,
-                            night: !!s.shiftFilters.night
-                        };
-                    } else if (typeof s.dayOn === 'boolean' || typeof s.nightOn === 'boolean') {
-                        shiftFilters.day   = !!s.dayOn;
-                        shiftFilters.night = !!s.nightOn;
-                        shiftFilters.ntot  = (!s.dayOn && !s.nightOn);
-                    } else if (s.shiftMode) {
-                        shiftFilters.day   = s.shiftMode === 'day';
-                        shiftFilters.night = s.shiftMode === 'night';
-                        shiftFilters.ntot  = (s.shiftMode !== 'day' && s.shiftMode !== 'night');
-                    }
+                const url = parseUrlConfig();
+                if (url) {
+                    tvConfig = url;
+                    urlConfigActive = true;
                 } else {
-                    // First-ever load → show Normal Time / Overtime (most common)
-                    shiftFilters = { ntot: true, day: false, night: false };
+                    const s = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+                    if (s && s.tvConfig && Array.isArray(s.tvConfig.shifts)) {
+                        tvConfig = sanitizeConfig(s.tvConfig);
+                        if (s.filterType)  filterType  = s.filterType;
+                        if (s.filterValue) filterValue = s.filterValue;
+                    } else {
+                        // First-ever load on a fresh TV → run all shifts, all lines,
+                        // auto-following whichever is live now.
+                        tvConfig = { shifts: SHIFT_ORDER.slice(), lines: { ntot: [], day: [], night: [] } };
+                    }
                 }
                 if (!['line', 'product', 'variant'].includes(filterType)) filterType = 'line';
-                // Never leave all off (would show nothing) — fall back to NT+OT
-                if (!shiftFilters.ntot && !shiftFilters.day && !shiftFilters.night) {
-                    shiftFilters.ntot = true;
-                }
+                if (!tvConfig.shifts.length) tvConfig.shifts = SHIFT_ORDER.slice();
+
+                // Set the initial active shift: the live one, else the most-recent.
+                activeShift = shiftByClock() || fallbackShift();
+                lastClockShift = shiftByClock();
+                shiftFilters = { ntot: activeShift === 'ntot', day: activeShift === 'day', night: activeShift === 'night' };
             } catch (_) {}
         }
 
@@ -1434,10 +1480,78 @@ body {
             return out.length ? Array.from(new Set(out)) : (availableLines || []);
         }
         function updateShiftModeButton() {
+            // Show only the pills this TV is configured for; highlight the active one.
             document.querySelectorAll('#shift-mode-toggle .shift-seg').forEach(seg => {
                 const k = seg.getAttribute('data-mode');
-                seg.classList.toggle('active', !!shiftFilters[k]);
+                const configured = tvConfig.shifts.includes(k);
+                seg.style.display = configured ? '' : 'none';
+                seg.classList.toggle('active', k === activeShift);
             });
+        }
+
+        // ── Live-shift resolution & auto-follow ────────────────────────────────────
+        function shiftWindowContains(shift, nm) {
+            const w = SHIFT_WIN[shift];
+            if (!w) return false;
+            return w.wrap ? (nm >= w.start || nm < w.end) : (nm >= w.start && nm < w.end);
+        }
+        // The configured shift whose clock window contains now (null if in a gap).
+        // Priority ntot > night > day so the narrower NT+OT window wins if it overlaps Day.
+        function shiftByClock() {
+            const nm = nowMin();
+            for (const s of ['ntot', 'night', 'day']) {
+                if (tvConfig.shifts.includes(s) && shiftWindowContains(s, nm)) return s;
+            }
+            return null;
+        }
+        // Minutes since a shift's most recent start (handles midnight wrap) — used to
+        // pick a sensible fallback when the clock is between configured shifts.
+        function minsSinceStart(shift) {
+            const nm = nowMin(), st = SHIFT_WIN[shift].start;
+            let d = nm - st;
+            if (d < 0) d += 1440;
+            return d;
+        }
+        function fallbackShift() {
+            const cfg = tvConfig.shifts.length ? tvConfig.shifts : SHIFT_ORDER;
+            return cfg.slice().sort((a, b) => minsSinceStart(a) - minsSinceStart(b))[0];
+        }
+        // Resolve the line IDs to display for the active shift.
+        // Empty config list ⇒ "all": every line/group that belongs to this shift.
+        function resolveSelectedLines() {
+            const want = (tvConfig.lines[activeShift] || []);
+            if (want.length) return want.slice();
+            const groupCovered = new Set();
+            lineGroups.forEach(g => g.members.forEach(m => groupCovered.add(m.lineCardId)));
+            const seen = new Set();
+            const ids = [];
+            lineCards.forEach(c => {
+                if (cardShiftType(c) !== activeShift) return;
+                if (groupCovered.has(c.id) || seen.has(c.id)) return;
+                seen.add(c.id); ids.push(c.id);
+            });
+            lineGroups.forEach(g => { if (groupShiftType(g) === activeShift) ids.push('group:' + g.groupId); });
+            return ids;
+        }
+        // Push activeShift into the derived mirrors the rest of the app reads.
+        function syncActiveShift() {
+            shiftFilters = { ntot: activeShift === 'ntot', day: activeShift === 'day', night: activeShift === 'night' };
+            selectedLines = resolveSelectedLines();
+            updateShiftModeButton();
+            updateLineFilterButton();
+        }
+        // Snap to the live shift when (and only when) a shift boundary is crossed.
+        // Returns true if it changed the active shift. A manual toggle sets activeShift
+        // without touching lastClockShift, so it sticks until the next boundary.
+        function autoFollowShift() {
+            const cs = shiftByClock();
+            let changed = false;
+            if (cs && cs !== lastClockShift) {
+                if (cs !== activeShift) { activeShift = cs; changed = true; }
+                lastClockShift = cs;
+            }
+            if (changed) syncActiveShift();
+            return changed;
         }
 
         // ── Date discovery: probe GitHub Pages for last 5 dated archives ────────
@@ -1565,26 +1679,10 @@ body {
                 availableLines = data.metadata?.availableLines || [];   // full line universe
                 shiftLines     = data.metadata?.shiftLines || { ntot: [], day: [], night: [] };
 
-                // Build default selectedLines: individual (non-grouped) lines + all groups
-                const _groupCovered = new Set();
-                lineGroups.forEach(g => g.members.forEach(m => _groupCovered.add(m.lineCardId)));
-                const _defaultSel = [
-                    ...lineCards.filter(c => !_groupCovered.has(c.id)).map(c => c.id),
-                    ...lineGroups.map(g => 'group:' + g.groupId)
-                ];
-
-                if (selectedLines.length === 0) {
-                    selectedLines = _defaultSel;
-                } else {
-                    // Keep valid entries, but ALWAYS remove individual lines covered by a group.
-                    // A persisted line with no data today is retained if it's a known line.
-                    selectedLines = selectedLines.filter(sel =>
-                        sel.startsWith('group:')
-                            ? lineGroups.some(g => 'group:' + g.groupId === sel)
-                            : (lineCards.some(c => c.id === sel) || availableLines.includes(sel)) && !_groupCovered.has(sel)
-                    );
-                    if (selectedLines.length === 0) selectedLines = _defaultSel;
-                }
+                // Auto-follow the live shift (only on the live feed, not past dates),
+                // then resolve which lines this TV shows for the active shift.
+                if (viewingDateIdx === 0) autoFollowShift();
+                selectedLines = resolveSelectedLines();
 
                 document.getElementById('last-update').textContent =
                     'Last updated: ' + new Date(ts).toLocaleTimeString('en-ZA', { hour12: false });
@@ -2852,106 +2950,137 @@ body {
             window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
 
             apply.addEventListener('click', () => {
-                const checked = [...document.querySelectorAll('.supervisor-checkbox:checked')].map(c => c.value);
-                // Strip the line: prefix for individual lines; keep group: prefix for groups
-                selectedLines = checked.map(v => v.startsWith('line:') ? v.slice(5) : v);
-                if (!selectedLines.length) {
-                    // Default: all individual lines + all groups
-                    selectedLines = [
-                        ...lineCards.filter(c => {
-                            const groupCoveredIds = new Set();
-                            lineGroups.forEach(g => g.members.forEach(m => groupCoveredIds.add(m.lineCardId)));
-                            return !groupCoveredIds.has(c.id);
-                        }).map(c => c.id),
-                        ...lineGroups.map(g => 'group:' + g.groupId)
-                    ];
+                // Which shifts this TV runs
+                const shifts = [...document.querySelectorAll('.tvshift-checkbox:checked')].map(c => c.value);
+                tvConfig.shifts = shifts.length ? shifts : SHIFT_ORDER.slice();
+                // Per-shift line lists. If every available line for a shift is ticked,
+                // store [] ("all") so the TV auto-picks up future new lines.
+                SHIFT_ORDER.forEach(s => {
+                    const boxes = [...document.querySelectorAll('.tvline-checkbox[data-shift="' + s + '"]')];
+                    const checked = boxes.filter(b => b.checked).map(b => b.value);
+                    tvConfig.lines[s] = (boxes.length && checked.length === boxes.length) ? [] : checked;
+                });
+                // Make sure the active shift is still one this TV runs.
+                if (!tvConfig.shifts.includes(activeShift)) {
+                    activeShift = shiftByClock() || fallbackShift();
+                    lastClockShift = shiftByClock();
                 }
                 modal.style.display = 'none';
+                if (urlConfigActive) {
+                    // URL params win on reload; warn that this edit is session-only.
+                    console.warn('TV config is URL-driven; modal changes apply now but the URL wins on reload.');
+                }
                 saveSelection();
-                updateLineFilterButton();
-                populateFilterDropdown();   // keep the "Filter by Line" dropdown in sync
-                cycleSelectedItems();
+                syncActiveShift();
+                populateFilterDropdown();
+                applyFiltersAndDisplay();
             });
+            // Select/Deselect All act on the currently-expanded shift sections.
             selAll.addEventListener('click', () =>
-                document.querySelectorAll('.supervisor-checkbox').forEach(c => c.checked = true));
+                document.querySelectorAll('.tvline-checkbox:not(:disabled)').forEach(c => c.checked = true));
             deselAll.addEventListener('click', () =>
-                document.querySelectorAll('.supervisor-checkbox').forEach(c => c.checked = false));
+                document.querySelectorAll('.tvline-checkbox:not(:disabled)').forEach(c => c.checked = false));
+        }
+
+        // Per-shift line universe: lines running that shift today (active) + lines that
+        // historically ran it (muted) + groups whose window matches that shift.
+        function linesForShift(shift) {
+            const groupCovered = new Set();
+            lineGroups.forEach(g => g.members.forEach(m => groupCovered.add(m.lineCardId)));
+            const seen = new Set(); const lines = [];
+            lineCards.forEach(c => {
+                if (cardShiftType(c) !== shift || groupCovered.has(c.id) || seen.has(c.id)) return;
+                seen.add(c.id); lines.push({ id: c.id, label: c.id, active: true });
+            });
+            (shiftLines[shift] || []).forEach(id => {
+                if (seen.has(id) || groupCovered.has(id)) return;
+                seen.add(id); lines.push({ id: id, label: id, active: false });
+            });
+            lines.sort((a, b) => (a.active === b.active) ? a.id.localeCompare(b.id) : (a.active ? -1 : 1));
+            const groups = [];
+            lineGroups.forEach(g => { if (groupShiftType(g) === shift) groups.push({ id: 'group:' + g.groupId, label: (g.label || g.groupId) }); });
+            return { lines, groups };
         }
 
         function populateLineCheckboxes() {
             const box = document.getElementById('supervisor-checkboxes');
             box.innerHTML = '';
 
-            // Build set of lineCard IDs covered by a group
-            const groupCoveredIds = new Set();
-            lineGroups.forEach(grp => grp.members.forEach(m => groupCoveredIds.add(m.lineCardId)));
+            const hdrCss = 'font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;padding:4px 0 6px;letter-spacing:0.05em;';
 
-            const activeIds = new Set(lineCards.map(c => c.id));
-            // Individual lines running today in the current shift view (not group-covered).
-            // Dedup by line id — a line can have multiple shift cards (NT+OT, Night…).
-            const _seenInd = new Set();
-            const individualCards = lineCards.filter(c => {
-                if (groupCoveredIds.has(c.id) || !cardInMode(c)) return false;
-                if (_seenInd.has(c.id)) return false;
-                _seenInd.add(c.id);
-                return true;
+            // ── Section 1: which shifts this TV runs ──
+            const shiftHdr = document.createElement('div');
+            shiftHdr.style.cssText = hdrCss;
+            shiftHdr.textContent = 'Shifts this TV runs';
+            box.appendChild(shiftHdr);
+
+            const shiftRow = document.createElement('div');
+            shiftRow.style.cssText = 'display:flex;gap:14px;flex-wrap:wrap;padding:0 0 10px;';
+            SHIFT_ORDER.forEach(s => {
+                const item = document.createElement('label');
+                item.className = 'supervisor-checkbox-item';
+                item.style.cssText = 'display:flex;align-items:center;gap:6px;margin:0;';
+                item.innerHTML =
+                    '<input type="checkbox" class="tvshift-checkbox" data-shift="' + s + '" value="' + s + '"' +
+                    (tvConfig.shifts.includes(s) ? ' checked' : '') + '>' +
+                    '<span style="font-weight:600;">' + SHIFT_LABEL[s] + '</span>';
+                shiftRow.appendChild(item);
+            });
+            box.appendChild(shiftRow);
+
+            // ── Section 2: per-shift line lists ──
+            SHIFT_ORDER.forEach(s => {
+                const sec = document.createElement('div');
+                sec.id = 'tvsec-' + s;
+                sec.style.cssText = 'border-top:1px solid #e5e7eb;padding-top:8px;margin-top:4px;';
+
+                const hdr = document.createElement('div');
+                hdr.style.cssText = hdrCss + 'padding-top:6px;';
+                hdr.textContent = SHIFT_LABEL[s] + ' — lines to show';
+                sec.appendChild(hdr);
+
+                const { lines, groups } = linesForShift(s);
+                const wanted = tvConfig.lines[s] || [];
+                const isAll  = wanted.length === 0;   // [] ⇒ all checked
+                const mk = (id, label, muted) => {
+                    const item = document.createElement('div');
+                    item.className = 'supervisor-checkbox-item';
+                    const checked = isAll || wanted.includes(id);
+                    item.innerHTML =
+                        '<input type="checkbox" class="tvline-checkbox" data-shift="' + s + '"' +
+                        ' value="' + id + '"' + (checked ? ' checked' : '') + '>' +
+                        '<label style="' + (muted ? 'color:#9ca3af;' : '') + '">' + label +
+                        (muted ? ' <span style="font-size:10px;">(no data today)</span>' : '') + '</label>';
+                    return item;
+                };
+                if (!lines.length && !groups.length) {
+                    const none = document.createElement('div');
+                    none.style.cssText = 'font-size:12px;color:#9ca3af;padding:2px 0 6px;';
+                    none.textContent = 'No lines have run this shift in the last 90 days.';
+                    sec.appendChild(none);
+                }
+                lines.forEach(l => sec.appendChild(mk(l.id, l.label, !l.active)));
+                if (groups.length) {
+                    const gh = document.createElement('div');
+                    gh.style.cssText = 'font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;padding:6px 0 2px;';
+                    gh.textContent = 'Group views';
+                    sec.appendChild(gh);
+                    groups.forEach(g => sec.appendChild(mk(g.id, g.label, false)));
+                }
+                box.appendChild(sec);
             });
 
-            // Lines that historically ran THIS shift but aren't running it today
-            const histForMode = histLinesForMode();
-            const inactiveLines = histForMode
-                .filter(id => !individualCards.some(c => c.id === id) && !groupCoveredIds.has(id))
-                .sort((a, b) => a.localeCompare(b));
-
-            if (individualCards.length || inactiveLines.length) {
-                const hdr = document.createElement('div');
-                hdr.style.cssText = 'font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;padding:4px 0 6px;letter-spacing:0.05em;';
-                hdr.textContent = 'Individual Lines';
-                box.appendChild(hdr);
-
-                individualCards.forEach(card => {
-                    const item = document.createElement('div');
-                    item.className = 'supervisor-checkbox-item';
-                    item.innerHTML =
-                        '<input type="checkbox" class="supervisor-checkbox line-checkbox"' +
-                        ' id="line-' + card.id + '" value="line:' + card.id + '"' +
-                        (selectedLines.includes(card.id) ? ' checked' : '') + '>' +
-                        '<label for="line-' + card.id + '">' + card.id + '</label>';
-                    box.appendChild(item);
+            // Enable/disable a shift's line section when its shift box is toggled.
+            const refreshEnabled = () => {
+                SHIFT_ORDER.forEach(s => {
+                    const on = box.querySelector('.tvshift-checkbox[data-shift="' + s + '"]').checked;
+                    const sec = document.getElementById('tvsec-' + s);
+                    sec.style.opacity = on ? '1' : '0.4';
+                    sec.querySelectorAll('.tvline-checkbox').forEach(c => c.disabled = !on);
                 });
-
-                // No data today — still selectable, shown muted with a tag
-                inactiveLines.forEach(id => {
-                    const item = document.createElement('div');
-                    item.className = 'supervisor-checkbox-item';
-                    item.innerHTML =
-                        '<input type="checkbox" class="supervisor-checkbox line-checkbox"' +
-                        ' id="line-' + id + '" value="line:' + id + '"' +
-                        (selectedLines.includes(id) ? ' checked' : '') + '>' +
-                        '<label for="line-' + id + '" style="color:#9ca3af;">' + id +
-                        ' <span style="font-size:10px;">(no data today)</span></label>';
-                    box.appendChild(item);
-                });
-            }
-
-            // Group views — only those matching the active shift state
-            const modeGroups = lineGroups.filter(grp => groupInMode(grp));
-            if (modeGroups.length > 0) {
-                const hdr = document.createElement('div');
-                hdr.style.cssText = 'font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;padding:10px 0 6px;letter-spacing:0.05em;';
-                hdr.textContent = 'Group Views';
-                box.appendChild(hdr);
-                modeGroups.forEach(grp => {
-                    const item = document.createElement('div');
-                    item.className = 'supervisor-checkbox-item';
-                    item.innerHTML =
-                        '<input type="checkbox" class="supervisor-checkbox group-checkbox"' +
-                        ' id="grp-' + grp.groupId + '" value="group:' + grp.groupId + '"' +
-                        (selectedLines.includes('group:' + grp.groupId) ? ' checked' : '') + '>' +
-                        '<label for="grp-' + grp.groupId + '">' + (grp.label || grp.groupId) + '</label>';
-                    box.appendChild(item);
-                });
-            }
+            };
+            box.querySelectorAll('.tvshift-checkbox').forEach(c => c.addEventListener('change', refreshEnabled));
+            refreshEnabled();
         }
 
         function updateLineFilterButton() {
@@ -3015,6 +3144,11 @@ body {
             const now = new Date();
             document.getElementById('current-time').textContent =
                 now.toLocaleTimeString('en-ZA', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            // On the live feed, snap to the new shift the instant a boundary is crossed.
+            if (viewingDateIdx === 0 && lineCards.length && autoFollowShift()) {
+                populateFilterDropdown();
+                applyFiltersAndDisplay();
+            }
             updateCurrentHourInfo();
         }
 
