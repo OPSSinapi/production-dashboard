@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-05-26T08:25:00.384",
+    "timestamp": "2026-05-26T08:25:55.878",
     "date": "2026-05-26",
     "facility": "Main Plant",
     "availableLines": [
@@ -375,6 +375,70 @@
       "startMin": 1080,
       "crosses": true,
       "shiftEndExt": 1800
+    },
+    {
+      "id": "LEVO-LEVO-XL2200S::ntot",
+      "productionLine": "LEVO",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL2200S",
+        "name": "XL2200S",
+        "fullName": "LEVO XL2200S",
+        "cycleTime": 48.48,
+        "devicesPerBox": 8,
+        "actualCycleTime": 103.13
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 74,
+        "peTarget": 612,
+        "fullShiftSupervisorTarget": 456,
+        "supervisorTarget": 456,
+        "supervisorCycleTime": 63.8158,
+        "boxes": 76
+      },
+      "actual": {
+        "total": 32,
+        "boxes": 4,
+        "progress": 7
+      },
+      "batches": [
+        {
+          "id": 26052251,
+          "quantity": 32,
+          "boxes": 4
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 600,
+        "supervisorTarget": 456,
+        "production": 32,
+        "progress": 7
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 74,
+          "actual": 32,
+          "cumTarget": 74,
+          "cumActual": 32,
+          "supervisorTarget": 56,
+          "cumSupervisorTarget": 56,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 990
     },
     {
       "id": "SCD-SCD-XL1000S::ntot",
@@ -911,6 +975,54 @@
       ]
     },
     {
+      "id": "LEVO",
+      "productionLine": "LEVO",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 32,
+      "peTotalTarget": 600,
+      "supervisorTotalTarget": 456,
+      "progress": 7,
+      "variants": [
+        {
+          "combinedId": "LEVO-LEVO-XL2200S::ntot",
+          "productName": "LEVO",
+          "variantName": "XL2200S",
+          "variantFull": "LEVO XL2200S",
+          "cycleTime": 48.48,
+          "actualCT": 103.13,
+          "supervisorCT": 63.8158,
+          "devicesPerBox": 8,
+          "peTarget": 600,
+          "supervisorTarget": 456,
+          "production": 32,
+          "boxes": 4,
+          "progress": 7,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 74,
+              "actual": 32,
+              "cumTarget": 74,
+              "cumActual": 32,
+              "supervisorTarget": 56,
+              "cumSupervisorTarget": 56,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
@@ -1179,6 +1291,13 @@
         "progress": 108
       },
       {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 32,
+        "totalTarget": 612,
+        "progress": 5
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 1240,
@@ -1238,6 +1357,20 @@
         "progress": 8,
         "variants": [
           "3rd_Line-SCD-XL200SC::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 32,
+        "peTotalTarget": 600,
+        "supervisorTotalTarget": 456,
+        "progress": 7,
+        "variants": [
+          "LEVO-LEVO-XL2200S::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
