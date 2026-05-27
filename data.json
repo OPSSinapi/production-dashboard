@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-05-27T19:52:48.082",
+    "timestamp": "2026-05-27T19:53:23.474",
     "date": "2026-05-27",
     "facility": "Main Plant",
     "availableLines": [
@@ -67,6 +67,30 @@
         }
       ],
       "availableWorkHours": 8.083333333
+    },
+    {
+      "id": "night-shift",
+      "name": "Mo-Su 11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "02:00",
+          "endTime": "02:35"
+        },
+        {
+          "type": "lunch",
+          "startTime": "22:00",
+          "endTime": "22:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "04:00",
+          "endTime": "04:20"
+        }
+      ],
+      "availableWorkHours": 11.08333333
     },
     {
       "id": "day-shift-Line_1",
@@ -321,6 +345,84 @@
       "startMin": 450,
       "crosses": false,
       "shiftEndExt": 990
+    },
+    {
+      "id": "3rd_Line-UBT-UBT::night",
+      "productionLine": "3rd_Line",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "UBT",
+        "name": "UBT",
+        "fullName": "UBT UBT",
+        "cycleTime": 58.24,
+        "devicesPerBox": 25,
+        "actualCycleTime": 0.8
+      },
+      "shiftId": "night-shift",
+      "targets": {
+        "hourly": 61,
+        "peTarget": 509,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 20
+      },
+      "actual": {
+        "total": 75,
+        "boxes": 3,
+        "progress": 15
+      },
+      "batches": [
+        {
+          "id": 26052555,
+          "quantity": 75,
+          "boxes": 3
+        }
+      ],
+      "lineWindow": {
+        "startTime": "19:52",
+        "endTime": "06:00",
+        "peTarget": 554,
+        "supervisorTarget": null,
+        "production": 75,
+        "progress": 14
+      },
+      "timeline": [
+        {
+          "hour": "19:00",
+          "target": 61,
+          "actual": 0,
+          "cumTarget": 61,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "20:00",
+          "target": 61,
+          "actual": 75,
+          "cumTarget": 122,
+          "cumActual": 75,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 1080,
+      "crosses": true,
+      "shiftEndExt": 1800
     },
     {
       "id": "LEVO-LEVO-XL1150SCi::ntot",
@@ -1885,6 +1987,68 @@
       ]
     },
     {
+      "id": "3rd_Line",
+      "productionLine": "3rd_Line",
+      "shiftId": "night-shift",
+      "shift": "night",
+      "shiftName": "Mo-Su 11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "totalProduction": 75,
+      "peTotalTarget": 554,
+      "supervisorTotalTarget": null,
+      "progress": 14,
+      "variants": [
+        {
+          "combinedId": "3rd_Line-UBT-UBT::night",
+          "productName": "UBT",
+          "variantName": "UBT",
+          "variantFull": "UBT UBT",
+          "cycleTime": 58.24,
+          "actualCT": 0.8,
+          "supervisorCT": null,
+          "devicesPerBox": 25,
+          "peTarget": 554,
+          "supervisorTarget": null,
+          "production": 75,
+          "boxes": 3,
+          "progress": 14,
+          "startTime": "19:52",
+          "endTime": "06:00",
+          "timeline": [
+            {
+              "hour": "19:00",
+              "target": 61,
+              "actual": 0,
+              "cumTarget": 61,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "20:00",
+              "target": 61,
+              "actual": 75,
+              "cumTarget": 122,
+              "cumActual": 75,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "LEVO",
       "productionLine": "LEVO",
       "shiftId": "normal-time",
@@ -3184,6 +3348,13 @@
         "progress": 70
       },
       {
+        "id": "UBT",
+        "name": "UBT",
+        "totalProduction": 75,
+        "totalTarget": 509,
+        "progress": 15
+      },
+      {
         "id": "LEVO",
         "name": "LEVO",
         "totalProduction": 266,
@@ -3317,6 +3488,20 @@
         "shiftId": "normal-time",
         "startTime": "07:30",
         "endTime": "16:30"
+      },
+      {
+        "id": "3rd_Line",
+        "name": "3rd_Line",
+        "totalProduction": 75,
+        "peTotalTarget": 554,
+        "supervisorTotalTarget": null,
+        "progress": 14,
+        "variants": [
+          "3rd_Line-UBT-UBT::night"
+        ],
+        "shiftId": "night-shift",
+        "startTime": "18:00",
+        "endTime": "06:00"
       }
     ]
   }
