@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-05-29T10:38:16.528",
+    "timestamp": "2026-05-29T10:38:51.367",
     "date": "2026-05-29",
     "facility": "Main Plant",
     "availableLines": [
@@ -479,21 +479,21 @@
         "fullName": "LEVO XL1150SCi",
         "cycleTime": 48.48,
         "devicesPerBox": 14,
-        "actualCycleTime": 250
+        "actualCycleTime": 192.86
       },
       "shiftId": "normal-time",
       "targets": {
         "hourly": 74,
         "peTarget": 612,
         "fullShiftSupervisorTarget": 379,
-        "supervisorTarget": 379,
+        "supervisorTarget": 125,
         "supervisorCycleTime": 64.9077,
         "boxes": 43
       },
       "actual": {
         "total": 42,
         "boxes": 3,
-        "progress": 11
+        "progress": 34
       },
       "batches": [
         {
@@ -504,11 +504,11 @@
       ],
       "lineWindow": {
         "startTime": "07:30",
-        "endTime": "15:15",
-        "peTarget": 507,
-        "supervisorTarget": 379,
+        "endTime": "09:45",
+        "peTarget": 167,
+        "supervisorTarget": 125,
         "production": 42,
-        "progress": 11
+        "progress": 34
       },
       "timeline": [
         {
@@ -541,16 +541,122 @@
         },
         {
           "hour": "10:30",
-          "target": 49,
+          "target": 18,
           "actual": 0,
-          "cumTarget": 197,
+          "cumTarget": 166,
           "cumActual": 42,
-          "supervisorTarget": 36,
-          "cumSupervisorTarget": 146,
+          "supervisorTarget": 13,
+          "cumSupervisorTarget": 123,
+          "transitionTarget": 18,
+          "supervisorTransitionTarget": 13,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 15
+        },
+        {
+          "hour": "11:30",
+          "target": 74,
+          "actual": 0,
+          "cumTarget": 240,
+          "cumActual": 42,
+          "supervisorTarget": 55,
+          "cumSupervisorTarget": 178,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
           "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 915
+    },
+    {
+      "id": "LEVO-LEVO-XL2200SW::ntot",
+      "productionLine": "LEVO",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL2200SW",
+        "name": "XL2200SW",
+        "fullName": "LEVO XL2200SW",
+        "cycleTime": 48.48,
+        "devicesPerBox": 8,
+        "actualCycleTime": 42.86
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 74,
+        "peTarget": 612,
+        "fullShiftSupervisorTarget": 379,
+        "supervisorTarget": 254,
+        "supervisorCycleTime": 64.9077,
+        "boxes": 76
+      },
+      "actual": {
+        "total": 56,
+        "boxes": 7,
+        "progress": 22
+      },
+      "batches": [
+        {
+          "id": 26052967,
+          "quantity": 56,
+          "boxes": 7
+        }
+      ],
+      "lineWindow": {
+        "startTime": "09:45",
+        "endTime": "15:15",
+        "peTarget": 340,
+        "supervisorTarget": 254,
+        "production": 56,
+        "progress": 22
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 74,
+          "actual": 0,
+          "cumTarget": 74,
+          "cumActual": 0,
+          "supervisorTarget": 55,
+          "cumSupervisorTarget": 55,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 74,
+          "actual": 0,
+          "cumTarget": 148,
+          "cumActual": 0,
+          "supervisorTarget": 55,
+          "cumSupervisorTarget": 110,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 49,
+          "actual": 56,
+          "cumTarget": 197,
+          "cumActual": 56,
+          "supervisorTarget": 36,
+          "cumSupervisorTarget": 146,
+          "transitionTarget": 49,
+          "supervisorTransitionTarget": 36,
+          "previousVariant": "LEVO-LEVO-XL1150SCi::ntot",
+          "previousVariantMinutes": 15,
           "currentVariantMinutes": 40
         },
         {
@@ -558,7 +664,7 @@
           "target": 74,
           "actual": 0,
           "cumTarget": 271,
-          "cumActual": 42,
+          "cumActual": 56,
           "supervisorTarget": 55,
           "cumSupervisorTarget": 201,
           "transitionTarget": 0,
@@ -1634,10 +1740,10 @@
       "shiftName": "Fri 7h NT A",
       "startTime": "07:30",
       "endTime": "15:15",
-      "totalProduction": 42,
+      "totalProduction": 98,
       "peTotalTarget": 507,
       "supervisorTotalTarget": 379,
-      "progress": 11,
+      "progress": 26,
       "variants": [
         {
           "combinedId": "LEVO-LEVO-XL1150SCi::ntot",
@@ -1645,16 +1751,16 @@
           "variantName": "XL1150SCi",
           "variantFull": "LEVO XL1150SCi",
           "cycleTime": 48.48,
-          "actualCT": 250,
+          "actualCT": 192.86,
           "supervisorCT": 64.9077,
           "devicesPerBox": 14,
-          "peTarget": 507,
-          "supervisorTarget": 379,
+          "peTarget": 167,
+          "supervisorTarget": 125,
           "production": 42,
           "boxes": 3,
-          "progress": 11,
+          "progress": 34,
           "startTime": "07:30",
-          "endTime": "15:15",
+          "endTime": "09:45",
           "timeline": [
             {
               "hour": "08:30",
@@ -1686,16 +1792,91 @@
             },
             {
               "hour": "10:30",
-              "target": 49,
+              "target": 18,
               "actual": 0,
-              "cumTarget": 197,
+              "cumTarget": 166,
               "cumActual": 42,
-              "supervisorTarget": 36,
-              "cumSupervisorTarget": 146,
+              "supervisorTarget": 13,
+              "cumSupervisorTarget": 123,
+              "transitionTarget": 18,
+              "supervisorTransitionTarget": 13,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 15
+            },
+            {
+              "hour": "11:30",
+              "target": 74,
+              "actual": 0,
+              "cumTarget": 240,
+              "cumActual": 42,
+              "supervisorTarget": 55,
+              "cumSupervisorTarget": 178,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
               "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        },
+        {
+          "combinedId": "LEVO-LEVO-XL2200SW::ntot",
+          "productName": "LEVO",
+          "variantName": "XL2200SW",
+          "variantFull": "LEVO XL2200SW",
+          "cycleTime": 48.48,
+          "actualCT": 42.86,
+          "supervisorCT": 64.9077,
+          "devicesPerBox": 8,
+          "peTarget": 340,
+          "supervisorTarget": 254,
+          "production": 56,
+          "boxes": 7,
+          "progress": 22,
+          "startTime": "09:45",
+          "endTime": "15:15",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 74,
+              "actual": 0,
+              "cumTarget": 74,
+              "cumActual": 0,
+              "supervisorTarget": 55,
+              "cumSupervisorTarget": 55,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 74,
+              "actual": 0,
+              "cumTarget": 148,
+              "cumActual": 0,
+              "supervisorTarget": 55,
+              "cumSupervisorTarget": 110,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "10:30",
+              "target": 49,
+              "actual": 56,
+              "cumTarget": 197,
+              "cumActual": 56,
+              "supervisorTarget": 36,
+              "cumSupervisorTarget": 146,
+              "transitionTarget": 49,
+              "supervisorTransitionTarget": 36,
+              "previousVariant": "LEVO-LEVO-XL1150SCi::ntot",
+              "previousVariantMinutes": 15,
               "currentVariantMinutes": 40
             },
             {
@@ -1703,7 +1884,7 @@
               "target": 74,
               "actual": 0,
               "cumTarget": 271,
-              "cumActual": 42,
+              "cumActual": 56,
               "supervisorTarget": 55,
               "cumSupervisorTarget": 201,
               "transitionTarget": 0,
@@ -2433,9 +2614,9 @@
       {
         "id": "LEVO",
         "name": "LEVO",
-        "totalProduction": 42,
-        "totalTarget": 612,
-        "progress": 7
+        "totalProduction": 98,
+        "totalTarget": 1224,
+        "progress": 8
       },
       {
         "id": "Ellavi_Drape",
@@ -2526,12 +2707,13 @@
       {
         "id": "LEVO",
         "name": "LEVO",
-        "totalProduction": 42,
+        "totalProduction": 98,
         "peTotalTarget": 507,
         "supervisorTotalTarget": 379,
-        "progress": 11,
+        "progress": 26,
         "variants": [
-          "LEVO-LEVO-XL1150SCi::ntot"
+          "LEVO-LEVO-XL1150SCi::ntot",
+          "LEVO-LEVO-XL2200SW::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
