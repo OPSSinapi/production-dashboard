@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-06-04T07:51:19.151",
+    "timestamp": "2026-06-04T07:52:21.782",
     "date": "2026-06-04",
     "facility": "Main Plant",
     "availableLines": [
@@ -73,6 +73,25 @@
         }
       ],
       "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "normal-time",
+      "name": "Mo-Thu 8.25h NT B",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:00",
+          "endTime": "10:20"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333
     },
     {
       "id": "night-shift-Line_1",
@@ -169,25 +188,6 @@
         }
       ],
       "availableWorkHours": 11.08333333
-    },
-    {
-      "id": "normal-time",
-      "name": "Mo-Thu 8.25h NT B",
-      "startTime": "07:30",
-      "endTime": "16:30",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
-        }
-      ],
-      "availableWorkHours": 8.083333333
     }
   ],
   "production": [
@@ -408,6 +408,70 @@
       "startMin": 1080,
       "crosses": true,
       "shiftEndExt": 1800
+    },
+    {
+      "id": "LEVO-LEVO-XL1150SCi::ntot",
+      "productionLine": "LEVO",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL1150SCi",
+        "name": "XL1150SCi",
+        "fullName": "LEVO XL1150SCi",
+        "cycleTime": 48.48,
+        "devicesPerBox": 14,
+        "actualCycleTime": 94.29
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 74,
+        "peTarget": 612,
+        "fullShiftSupervisorTarget": 532,
+        "supervisorTarget": 532,
+        "supervisorCycleTime": 54.6992,
+        "boxes": 43
+      },
+      "actual": {
+        "total": 14,
+        "boxes": 1,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 26060207,
+          "quantity": 14,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 600,
+        "supervisorTarget": 532,
+        "production": 14,
+        "progress": 3
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 74,
+          "actual": 14,
+          "cumTarget": 74,
+          "cumActual": 14,
+          "supervisorTarget": 65,
+          "cumSupervisorTarget": 65,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 990
     },
     {
       "id": "Line_1-Ellavi_Drape-BC01::night",
@@ -1294,7 +1358,7 @@
         "fullName": "SCD XL1000SCP",
         "cycleTime": 29.41,
         "devicesPerBox": 12,
-        "actualCycleTime": 26.25
+        "actualCycleTime": 27.5
       },
       "shiftId": "normal-time",
       "targets": {
@@ -1757,6 +1821,54 @@
               "cumActual": 700,
               "supervisorTarget": null,
               "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "LEVO",
+      "productionLine": "LEVO",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Mo-Thu 8.25h NT B",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 14,
+      "peTotalTarget": 600,
+      "supervisorTotalTarget": 532,
+      "progress": 3,
+      "variants": [
+        {
+          "combinedId": "LEVO-LEVO-XL1150SCi::ntot",
+          "productName": "LEVO",
+          "variantName": "XL1150SCi",
+          "variantFull": "LEVO XL1150SCi",
+          "cycleTime": 48.48,
+          "actualCT": 94.29,
+          "supervisorCT": 54.6992,
+          "devicesPerBox": 14,
+          "peTarget": 600,
+          "supervisorTarget": 532,
+          "production": 14,
+          "boxes": 1,
+          "progress": 3,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 74,
+              "actual": 14,
+              "cumTarget": 74,
+              "cumActual": 14,
+              "supervisorTarget": 65,
+              "cumSupervisorTarget": 65,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -2594,7 +2706,7 @@
           "variantName": "XL1000SCP",
           "variantFull": "SCD XL1000SCP",
           "cycleTime": 29.41,
-          "actualCT": 26.25,
+          "actualCT": 27.5,
           "supervisorCT": 30.3125,
           "devicesPerBox": 12,
           "peTarget": 989,
@@ -2837,6 +2949,13 @@
         "progress": 138
       },
       {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 14,
+        "totalTarget": 612,
+        "progress": 2
+      },
+      {
         "id": "Ellavi_Drape",
         "name": "Ellavi_Drape",
         "totalProduction": 3200,
@@ -2952,6 +3071,20 @@
         "progress": 5,
         "variants": [
           "SCD-SCD-XL1000SCP::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 14,
+        "peTotalTarget": 600,
+        "supervisorTotalTarget": 532,
+        "progress": 3,
+        "variants": [
+          "LEVO-LEVO-XL1150SCi::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
