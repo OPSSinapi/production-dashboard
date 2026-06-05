@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-06-05T08:13:21.582",
+    "timestamp": "2026-06-05T08:13:31.368",
     "date": "2026-06-05",
     "facility": "Main Plant",
     "availableLines": [
@@ -1366,6 +1366,70 @@
       "shiftEndExt": 1800
     },
     {
+      "id": "SCD-SCD-XL1000SCP::ntot",
+      "productionLine": "SCD",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SCP",
+        "name": "XL1000SCP",
+        "fullName": "SCD XL1000SCP",
+        "cycleTime": 29.41,
+        "devicesPerBox": 12,
+        "actualCycleTime": 215
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 122,
+        "peTarget": 1224,
+        "fullShiftSupervisorTarget": 811,
+        "supervisorTarget": 811,
+        "supervisorCycleTime": 30.3329,
+        "boxes": 102
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 26060102,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "15:15",
+        "peTarget": 836,
+        "supervisorTarget": 811,
+        "production": 12,
+        "progress": 1
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 122,
+          "actual": 12,
+          "cumTarget": 122,
+          "cumActual": 12,
+          "supervisorTarget": 118,
+          "cumSupervisorTarget": 118,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 915
+    },
+    {
       "id": "SUM-SUM-500V2::night",
       "productionLine": "SUM",
       "product": {
@@ -2644,6 +2708,54 @@
       ]
     },
     {
+      "id": "SCD",
+      "productionLine": "SCD",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Fri 7h NT B",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "totalProduction": 12,
+      "peTotalTarget": 836,
+      "supervisorTotalTarget": 811,
+      "progress": 1,
+      "variants": [
+        {
+          "combinedId": "SCD-SCD-XL1000SCP::ntot",
+          "productName": "SCD",
+          "variantName": "XL1000SCP",
+          "variantFull": "SCD XL1000SCP",
+          "cycleTime": 29.41,
+          "actualCT": 215,
+          "supervisorCT": 30.3329,
+          "devicesPerBox": 12,
+          "peTarget": 836,
+          "supervisorTarget": 811,
+          "production": 12,
+          "boxes": 1,
+          "progress": 1,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 122,
+              "actual": 12,
+              "cumTarget": 122,
+              "cumActual": 12,
+              "supervisorTarget": 118,
+              "cumSupervisorTarget": 118,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SUM",
       "productionLine": "SUM",
       "shiftId": "night-shift",
@@ -2871,6 +2983,13 @@
         "progress": 158
       },
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "totalTarget": 1224,
+        "progress": 1
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 1560,
@@ -2972,6 +3091,20 @@
         "progress": 7,
         "variants": [
           "LEVO-LEVO-XL1150SCi::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "15:15"
+      },
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "peTotalTarget": 836,
+        "supervisorTotalTarget": 811,
+        "progress": 1,
+        "variants": [
+          "SCD-SCD-XL1000SCP::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
