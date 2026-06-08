@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-06-08T08:36:31.093",
+    "timestamp": "2026-06-08T08:36:58.247",
     "date": "2026-06-08",
     "facility": "Main Plant",
     "availableLines": [
@@ -137,6 +137,84 @@
           "cumActual": 15,
           "supervisorTarget": null,
           "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 990
+    },
+    {
+      "id": "LEVO-LEVO-XL1150SCi::ntot",
+      "productionLine": "LEVO",
+      "product": {
+        "id": "LEVO",
+        "name": "LEVO"
+      },
+      "variant": {
+        "id": "XL1150SCi",
+        "name": "XL1150SCi",
+        "fullName": "LEVO XL1150SCi",
+        "cycleTime": 41.55428571428571,
+        "devicesPerBox": 14,
+        "actualCycleTime": 282.86
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 86,
+        "peTarget": 700,
+        "fullShiftSupervisorTarget": 500,
+        "supervisorTarget": 500,
+        "supervisorCycleTime": 58.2,
+        "boxes": 50
+      },
+      "actual": {
+        "total": 14,
+        "boxes": 1,
+        "progress": 3
+      },
+      "batches": [
+        {
+          "id": 26060207,
+          "quantity": 14,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 700,
+        "supervisorTarget": 500,
+        "production": 14,
+        "progress": 3
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 86,
+          "actual": 0,
+          "cumTarget": 86,
+          "cumActual": 0,
+          "supervisorTarget": 61,
+          "cumSupervisorTarget": 61,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 86,
+          "actual": 14,
+          "cumTarget": 172,
+          "cumActual": 14,
+          "supervisorTarget": 61,
+          "cumSupervisorTarget": 122,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -291,6 +369,68 @@
       ]
     },
     {
+      "id": "LEVO",
+      "productionLine": "LEVO",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 14,
+      "peTotalTarget": 700,
+      "supervisorTotalTarget": 500,
+      "progress": 3,
+      "variants": [
+        {
+          "combinedId": "LEVO-LEVO-XL1150SCi::ntot",
+          "productName": "LEVO",
+          "variantName": "XL1150SCi",
+          "variantFull": "LEVO XL1150SCi",
+          "cycleTime": 41.55428571428571,
+          "actualCT": 282.86,
+          "supervisorCT": 58.2,
+          "devicesPerBox": 14,
+          "peTarget": 700,
+          "supervisorTarget": 500,
+          "production": 14,
+          "boxes": 1,
+          "progress": 3,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 86,
+              "actual": 0,
+              "cumTarget": 86,
+              "cumActual": 0,
+              "supervisorTarget": 61,
+              "cumSupervisorTarget": 61,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 86,
+              "actual": 14,
+              "cumTarget": 172,
+              "cumActual": 14,
+              "supervisorTarget": 61,
+              "cumSupervisorTarget": 122,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
@@ -362,6 +502,13 @@
         "totalProduction": 63,
         "totalTarget": 1704,
         "progress": 4
+      },
+      {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 14,
+        "totalTarget": 700,
+        "progress": 2
       }
     ],
     "productionLines": [
@@ -388,6 +535,20 @@
         "progress": 3,
         "variants": [
           "3rd_Line-SCD-XL200SC::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "LEVO",
+        "name": "LEVO",
+        "totalProduction": 14,
+        "peTotalTarget": 700,
+        "supervisorTotalTarget": 500,
+        "progress": 3,
+        "variants": [
+          "LEVO-LEVO-XL1150SCi::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
