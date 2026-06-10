@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-06-10T18:48:30.443",
+    "timestamp": "2026-06-10T18:49:45.280",
     "date": "2026-06-10",
     "facility": "Main Plant",
     "availableLines": [
@@ -164,6 +164,30 @@
           "type": "lunch",
           "startTime": "13:40",
           "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "night-shift",
+      "name": "Mo-Su 11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "02:00",
+          "endTime": "02:35"
+        },
+        {
+          "type": "lunch",
+          "startTime": "22:00",
+          "endTime": "22:15"
+        },
+        {
+          "type": "otTea",
+          "startTime": "04:00",
+          "endTime": "04:20"
         }
       ],
       "availableWorkHours": 11.08333333
@@ -1189,7 +1213,7 @@
         "fullName": "Ellavi_Drape BC01",
         "cycleTime": 29.09,
         "devicesPerBox": 100,
-        "actualCycleTime": 2.62
+        "actualCycleTime": 2.67
       },
       "shiftId": "night-shift-Line_3",
       "targets": {
@@ -2161,6 +2185,70 @@
       "startMin": 450,
       "crosses": false,
       "shiftEndExt": 990
+    },
+    {
+      "id": "SUM-SUM-500V2::night",
+      "productionLine": "SUM",
+      "product": {
+        "id": "SUM",
+        "name": "SUM"
+      },
+      "variant": {
+        "id": "500V2",
+        "name": "500V2",
+        "fullName": "SUM SUM500V2",
+        "cycleTime": 22.5,
+        "devicesPerBox": 20,
+        "actualCycleTime": 147
+      },
+      "shiftId": "night-shift",
+      "targets": {
+        "hourly": 160,
+        "peTarget": 1760,
+        "fullShiftSupervisorTarget": 1540,
+        "supervisorTarget": 1540,
+        "supervisorCycleTime": 25.9091,
+        "boxes": 88
+      },
+      "actual": {
+        "total": 20,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 26061027,
+          "quantity": 20,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "18:00",
+        "endTime": "06:00",
+        "peTarget": 1733,
+        "supervisorTarget": 1540,
+        "production": 20,
+        "progress": 1
+      },
+      "timeline": [
+        {
+          "hour": "19:00",
+          "target": 160,
+          "actual": 20,
+          "cumTarget": 160,
+          "cumActual": 20,
+          "supervisorTarget": 138,
+          "cumSupervisorTarget": 138,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 1080,
+      "crosses": true,
+      "shiftEndExt": 1800
     }
   ],
   "lineCards": [
@@ -3109,7 +3197,7 @@
           "variantName": "BC01",
           "variantFull": "Ellavi_Drape BC01",
           "cycleTime": 29.09,
-          "actualCT": 2.62,
+          "actualCT": 2.67,
           "supervisorCT": null,
           "devicesPerBox": 100,
           "peTarget": 1340,
@@ -3949,6 +4037,54 @@
           ]
         }
       ]
+    },
+    {
+      "id": "SUM",
+      "productionLine": "SUM",
+      "shiftId": "night-shift",
+      "shift": "night",
+      "shiftName": "Mo-Su 11h NS",
+      "startTime": "18:00",
+      "endTime": "06:00",
+      "totalProduction": 20,
+      "peTotalTarget": 1733,
+      "supervisorTotalTarget": 1540,
+      "progress": 1,
+      "variants": [
+        {
+          "combinedId": "SUM-SUM-500V2::night",
+          "productName": "SUM",
+          "variantName": "500V2",
+          "variantFull": "SUM SUM500V2",
+          "cycleTime": 22.5,
+          "actualCT": 147,
+          "supervisorCT": 25.9091,
+          "devicesPerBox": 20,
+          "peTarget": 1733,
+          "supervisorTarget": 1540,
+          "production": 20,
+          "boxes": 1,
+          "progress": 1,
+          "startTime": "18:00",
+          "endTime": "06:00",
+          "timeline": [
+            {
+              "hour": "19:00",
+              "target": 160,
+              "actual": 20,
+              "cumTarget": 160,
+              "cumActual": 20,
+              "supervisorTarget": 138,
+              "cumSupervisorTarget": 138,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
     }
   ],
   "lineGroups": [],
@@ -3981,6 +4117,13 @@
         "totalProduction": 1100,
         "totalTarget": 600,
         "progress": 183
+      },
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 20,
+        "totalTarget": 1760,
+        "progress": 1
       }
     ],
     "productionLines": [
@@ -4109,6 +4252,20 @@
           "Line_3-Ellavi_Drape-BC01::night"
         ],
         "shiftId": "night-shift-Line_3",
+        "startTime": "18:00",
+        "endTime": "06:00"
+      },
+      {
+        "id": "SUM",
+        "name": "SUM",
+        "totalProduction": 20,
+        "peTotalTarget": 1733,
+        "supervisorTotalTarget": 1540,
+        "progress": 1,
+        "variants": [
+          "SUM-SUM-500V2::night"
+        ],
+        "shiftId": "night-shift",
         "startTime": "18:00",
         "endTime": "06:00"
       }
