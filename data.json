@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-06-11T09:41:50.260",
+    "timestamp": "2026-06-11T09:43:38.346",
     "date": "2026-06-11",
     "facility": "Main Plant",
     "availableLines": [
@@ -179,7 +179,7 @@
         "fullName": "SCD XL200SC",
         "cycleTime": 60.6,
         "devicesPerBox": 15,
-        "actualCycleTime": 96
+        "actualCycleTime": 98.67
       },
       "shiftId": "normal-time",
       "targets": {
@@ -489,7 +489,7 @@
         "fullName": "LEVO XL1150SCi",
         "cycleTime": 41.55428571428571,
         "devicesPerBox": 14,
-        "actualCycleTime": 80.2
+        "actualCycleTime": 81.43
       },
       "shiftId": "normal-time",
       "targets": {
@@ -1223,6 +1223,98 @@
       "shiftEndExt": 1800
     },
     {
+      "id": "PopUp-FC-FC::ntot",
+      "productionLine": "PopUp",
+      "product": {
+        "id": "FC",
+        "name": "FC"
+      },
+      "variant": {
+        "id": "FC",
+        "name": "FC",
+        "fullName": "FC FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 39.9
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "peTarget": 600,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 6
+      },
+      "actual": {
+        "total": 200,
+        "boxes": 2,
+        "progress": 33
+      },
+      "batches": [
+        {
+          "id": 26060517,
+          "quantity": 200,
+          "boxes": 2
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 587,
+        "supervisorTarget": null,
+        "production": 200,
+        "progress": 34
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 72,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 144,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 66,
+          "actual": 200,
+          "cumTarget": 210,
+          "cumActual": 200,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 990
+    },
+    {
       "id": "SCD-SCD-XL1000S::ntot",
       "productionLine": "SCD",
       "product": {
@@ -1327,7 +1419,7 @@
         "fullName": "SCD XL1000SCP",
         "cycleTime": 19.392,
         "devicesPerBox": 12,
-        "actualCycleTime": 5
+        "actualCycleTime": 5.63
       },
       "shiftId": "normal-time",
       "targets": {
@@ -1339,15 +1431,15 @@
         "boxes": 125
       },
       "actual": {
-        "total": 84,
-        "boxes": 7,
-        "progress": 12
+        "total": 96,
+        "boxes": 8,
+        "progress": 13
       },
       "batches": [
         {
           "id": 26061131,
-          "quantity": 84,
-          "boxes": 7
+          "quantity": 96,
+          "boxes": 8
         }
       ],
       "lineWindow": {
@@ -1355,8 +1447,8 @@
         "endTime": "16:30",
         "peTarget": 1116,
         "supervisorTarget": 715,
-        "production": 84,
-        "progress": 12
+        "production": 96,
+        "progress": 13
       },
       "timeline": [
         {
@@ -1390,9 +1482,9 @@
         {
           "hour": "10:30",
           "target": 123,
-          "actual": 84,
+          "actual": 96,
           "cumTarget": 493,
-          "cumActual": 84,
+          "cumActual": 96,
           "supervisorTarget": 79,
           "cumSupervisorTarget": 315,
           "transitionTarget": 123,
@@ -1645,7 +1737,7 @@
           "variantName": "XL200SC",
           "variantFull": "SCD XL200SC",
           "cycleTime": 60.6,
-          "actualCT": 96,
+          "actualCT": 98.67,
           "supervisorCT": null,
           "devicesPerBox": 15,
           "peTarget": 421,
@@ -1923,7 +2015,7 @@
           "variantName": "XL1150SCi",
           "variantFull": "LEVO XL1150SCi",
           "cycleTime": 41.55428571428571,
-          "actualCT": 80.2,
+          "actualCT": 81.43,
           "supervisorCT": 58.2,
           "devicesPerBox": 14,
           "peTarget": 700,
@@ -2587,6 +2679,82 @@
       ]
     },
     {
+      "id": "PopUp",
+      "productionLine": "PopUp",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 200,
+      "peTotalTarget": 587,
+      "supervisorTotalTarget": null,
+      "progress": 34,
+      "variants": [
+        {
+          "combinedId": "PopUp-FC-FC::ntot",
+          "productName": "FC",
+          "variantName": "FC",
+          "variantFull": "FC FC",
+          "cycleTime": 49.5,
+          "actualCT": 39.9,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "peTarget": 587,
+          "supervisorTarget": null,
+          "production": 200,
+          "boxes": 2,
+          "progress": 34,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 72,
+              "actual": 0,
+              "cumTarget": 72,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 72,
+              "actual": 0,
+              "cumTarget": 144,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "10:30",
+              "target": 66,
+              "actual": 200,
+              "cumTarget": 210,
+              "cumActual": 200,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 55
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
@@ -2594,10 +2762,10 @@
       "shiftName": "Mo-Thu 8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
-      "totalProduction": 237,
+      "totalProduction": 249,
       "peTotalTarget": 1499,
       "supervisorTotalTarget": 960,
-      "progress": 25,
+      "progress": 26,
       "variants": [
         {
           "combinedId": "SCD-SCD-XL1000S::ntot",
@@ -2666,14 +2834,14 @@
           "variantName": "XL1000SCP",
           "variantFull": "SCD XL1000SCP",
           "cycleTime": 19.392,
-          "actualCT": 5,
+          "actualCT": 5.63,
           "supervisorCT": 30.3125,
           "devicesPerBox": 12,
           "peTarget": 1116,
           "supervisorTarget": 715,
-          "production": 84,
-          "boxes": 7,
-          "progress": 12,
+          "production": 96,
+          "boxes": 8,
+          "progress": 13,
           "startTime": "09:34",
           "endTime": "16:30",
           "timeline": [
@@ -2708,9 +2876,9 @@
             {
               "hour": "10:30",
               "target": 123,
-              "actual": 84,
+              "actual": 96,
               "cumTarget": 493,
-              "cumActual": 84,
+              "cumActual": 96,
               "supervisorTarget": 79,
               "cumSupervisorTarget": 315,
               "transitionTarget": 123,
@@ -2932,7 +3100,7 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 282,
+        "totalProduction": 294,
         "totalTarget": 3480,
         "progress": 8
       },
@@ -2956,6 +3124,13 @@
         "totalProduction": 2900,
         "totalTarget": 2997,
         "progress": 97
+      },
+      {
+        "id": "FC",
+        "name": "FC",
+        "totalProduction": 200,
+        "totalTarget": 600,
+        "progress": 33
       },
       {
         "id": "SUM",
@@ -3039,10 +3214,10 @@
       {
         "id": "SCD",
         "name": "SCD",
-        "totalProduction": 237,
+        "totalProduction": 249,
         "peTotalTarget": 1499,
         "supervisorTotalTarget": 960,
-        "progress": 25,
+        "progress": 26,
         "variants": [
           "SCD-SCD-XL1000S::ntot",
           "SCD-SCD-XL1000SCP::ntot"
@@ -3074,6 +3249,20 @@
         "progress": 11,
         "variants": [
           "3rd_Line-SCD-XL200SC::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 200,
+        "peTotalTarget": 587,
+        "supervisorTotalTarget": null,
+        "progress": 34,
+        "variants": [
+          "PopUp-FC-FC::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
