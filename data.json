@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-06-19T08:20:17.749",
+    "timestamp": "2026-06-19T08:20:48.196",
     "date": "2026-06-19",
     "facility": "Main Plant",
     "availableLines": [
@@ -365,6 +365,70 @@
           "cumActual": 8,
           "supervisorTarget": 61,
           "cumSupervisorTarget": 61,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 915
+    },
+    {
+      "id": "PopUp-FC-FC::ntot",
+      "productionLine": "PopUp",
+      "product": {
+        "id": "FC",
+        "name": "FC"
+      },
+      "variant": {
+        "id": "FC",
+        "name": "FC",
+        "fullName": "FC FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 30
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "peTarget": 600,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 6
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 26060517,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "15:15",
+        "peTarget": 496,
+        "supervisorTarget": null,
+        "production": 100,
+        "progress": 20
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 100,
+          "cumTarget": 72,
+          "cumActual": 100,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -911,6 +975,54 @@
       ]
     },
     {
+      "id": "PopUp",
+      "productionLine": "PopUp",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Fri 7h NT B",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "totalProduction": 100,
+      "peTotalTarget": 496,
+      "supervisorTotalTarget": null,
+      "progress": 20,
+      "variants": [
+        {
+          "combinedId": "PopUp-FC-FC::ntot",
+          "productName": "FC",
+          "variantName": "FC",
+          "variantFull": "FC FC",
+          "cycleTime": 49.5,
+          "actualCT": 30,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "peTarget": 496,
+          "supervisorTarget": null,
+          "production": 100,
+          "boxes": 1,
+          "progress": 20,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 72,
+              "actual": 100,
+              "cumTarget": 72,
+              "cumActual": 100,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
@@ -1179,6 +1291,13 @@
         "progress": 1
       },
       {
+        "id": "FC",
+        "name": "FC",
+        "totalProduction": 100,
+        "totalTarget": 600,
+        "progress": 17
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 96,
@@ -1245,6 +1364,20 @@
         "progress": 2,
         "variants": [
           "LEVO-LEVO-XL2200SD::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "15:15"
+      },
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 100,
+        "peTotalTarget": 496,
+        "supervisorTotalTarget": null,
+        "progress": 20,
+        "variants": [
+          "PopUp-FC-FC::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
