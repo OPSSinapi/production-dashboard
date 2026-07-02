@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-07-02T09:38:29.178",
+    "timestamp": "2026-07-02T09:39:27.387",
     "date": "2026-07-02",
     "facility": "Main Plant",
     "availableLines": [
@@ -77,19 +77,19 @@
     },
     {
       "id": "normal-time",
-      "name": "Mo-Thu 8.25h NT B",
+      "name": "Mo-Thu 8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
+          "startTime": "10:25",
+          "endTime": "10:45"
         },
         {
           "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
+          "startTime": "13:00",
+          "endTime": "13:35"
         }
       ],
       "availableWorkHours": 8.083333333
@@ -411,6 +411,98 @@
       "shiftEndExt": 1800
     },
     {
+      "id": "3rd_Line-UBT-UBT::ntot",
+      "productionLine": "3rd_Line",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "UBT",
+        "name": "UBT",
+        "fullName": "UBT UBT",
+        "cycleTime": 41.55428571428571,
+        "devicesPerBox": 25,
+        "actualCycleTime": 309.6
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 86,
+        "peTarget": 700,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 28
+      },
+      "actual": {
+        "total": 25,
+        "boxes": 1,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 26062967,
+          "quantity": 25,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 700,
+        "supervisorTarget": null,
+        "production": 25,
+        "progress": 4
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 86,
+          "actual": 0,
+          "cumTarget": 86,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 86,
+          "actual": 0,
+          "cumTarget": 172,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 79,
+          "actual": 25,
+          "cumTarget": 251,
+          "cumActual": 25,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 990
+    },
+    {
       "id": "LEVO-LEVO-XL2200SD::ntot",
       "productionLine": "LEVO",
       "product": {
@@ -423,7 +515,7 @@
         "fullName": "LEVO XL2200SD",
         "cycleTime": 41.55428571428571,
         "devicesPerBox": 8,
-        "actualCycleTime": 240
+        "actualCycleTime": 241.88
       },
       "shiftId": "normal-time",
       "targets": {
@@ -1387,7 +1479,7 @@
         "fullName": "Scalpel PAHS10S",
         "cycleTime": 2.28,
         "devicesPerBox": 1000,
-        "actualCycleTime": 7.68
+        "actualCycleTime": 7.74
       },
       "shiftId": "normal-time",
       "targets": {
@@ -1479,7 +1571,7 @@
         "fullName": "SCD XL1000SC",
         "cycleTime": 19.392,
         "devicesPerBox": 12,
-        "actualCycleTime": 42.67
+        "actualCycleTime": 43
       },
       "shiftId": "normal-time",
       "targets": {
@@ -1981,11 +2073,87 @@
       ]
     },
     {
+      "id": "3rd_Line",
+      "productionLine": "3rd_Line",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 25,
+      "peTotalTarget": 700,
+      "supervisorTotalTarget": null,
+      "progress": 4,
+      "variants": [
+        {
+          "combinedId": "3rd_Line-UBT-UBT::ntot",
+          "productName": "UBT",
+          "variantName": "UBT",
+          "variantFull": "UBT UBT",
+          "cycleTime": 41.55428571428571,
+          "actualCT": 309.6,
+          "supervisorCT": null,
+          "devicesPerBox": 25,
+          "peTarget": 700,
+          "supervisorTarget": null,
+          "production": 25,
+          "boxes": 1,
+          "progress": 4,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 86,
+              "actual": 0,
+              "cumTarget": 86,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 86,
+              "actual": 0,
+              "cumTarget": 172,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "10:30",
+              "target": 79,
+              "actual": 25,
+              "cumTarget": 251,
+              "cumActual": 25,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 55
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "LEVO",
       "productionLine": "LEVO",
       "shiftId": "normal-time",
       "shift": "ntot",
-      "shiftName": "Mo-Thu 8.25h NT B",
+      "shiftName": "Mo-Thu 8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
       "totalProduction": 32,
@@ -1999,7 +2167,7 @@
           "variantName": "XL2200SD",
           "variantFull": "LEVO XL2200SD",
           "cycleTime": 41.55428571428571,
-          "actualCT": 240,
+          "actualCT": 241.88,
           "supervisorCT": 58.2,
           "devicesPerBox": 8,
           "peTarget": 700,
@@ -2869,7 +3037,7 @@
       "productionLine": "Scalpel_Packaging",
       "shiftId": "normal-time",
       "shift": "ntot",
-      "shiftName": "Mo-Thu 8.25h NT B",
+      "shiftName": "Mo-Thu 8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
       "totalProduction": 1000,
@@ -2883,7 +3051,7 @@
           "variantName": "PAHS10S",
           "variantFull": "Scalpel PAHS10S",
           "cycleTime": 2.28,
-          "actualCT": 7.68,
+          "actualCT": 7.74,
           "supervisorCT": null,
           "devicesPerBox": 1000,
           "peTarget": 12763,
@@ -2945,7 +3113,7 @@
       "productionLine": "SCD",
       "shiftId": "normal-time",
       "shift": "ntot",
-      "shiftName": "Mo-Thu 8.25h NT B",
+      "shiftName": "Mo-Thu 8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
       "totalProduction": 180,
@@ -2959,7 +3127,7 @@
           "variantName": "XL1000SC",
           "variantFull": "SCD XL1000SC",
           "cycleTime": 19.392,
-          "actualCT": 42.67,
+          "actualCT": 43,
           "supervisorCT": 25.7979,
           "devicesPerBox": 12,
           "peTarget": 1500,
@@ -3225,9 +3393,9 @@
       {
         "id": "UBT",
         "name": "UBT",
-        "totalProduction": 700,
-        "totalTarget": 700,
-        "progress": 100
+        "totalProduction": 725,
+        "totalTarget": 1400,
+        "progress": 52
       },
       {
         "id": "LEVO",
@@ -3387,6 +3555,20 @@
         "progress": 8,
         "variants": [
           "Scalpel_Packaging-Scalpel-PAHS10S::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "3rd_Line",
+        "name": "3rd_Line",
+        "totalProduction": 25,
+        "peTotalTarget": 700,
+        "supervisorTotalTarget": null,
+        "progress": 4,
+        "variants": [
+          "3rd_Line-UBT-UBT::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
