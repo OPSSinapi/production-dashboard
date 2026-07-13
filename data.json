@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-07-13T09:48:41.532",
+    "timestamp": "2026-07-13T09:49:29.236",
     "date": "2026-07-13",
     "facility": "Main Plant",
     "availableLines": [
@@ -105,7 +105,7 @@
         "fullName": "FC FC",
         "cycleTime": 49.5,
         "devicesPerBox": 100,
-        "actualCycleTime": 82.8
+        "actualCycleTime": 83.4
       },
       "shiftId": "normal-time",
       "targets": {
@@ -197,7 +197,7 @@
         "fullName": "Scalpel PAHS11S",
         "cycleTime": 2.28,
         "devicesPerBox": 500,
-        "actualCycleTime": 4560
+        "actualCycleTime": 4580
       },
       "shiftId": "day-shift",
       "targets": {
@@ -289,6 +289,98 @@
       "startMin": 360,
       "crosses": false,
       "shiftEndExt": 1080
+    },
+    {
+      "id": "SCD-SCD-XL1000SC::ntot",
+      "productionLine": "SCD",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SC",
+        "name": "XL1000SC",
+        "fullName": "SCD XL1000SC",
+        "cycleTime": 19.392,
+        "devicesPerBox": 12,
+        "actualCycleTime": 695
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 185,
+        "peTarget": 1500,
+        "fullShiftSupervisorTarget": 1128,
+        "supervisorTarget": 1128,
+        "supervisorCycleTime": 25.7979,
+        "boxes": 125
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 26070920,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 1500,
+        "supervisorTarget": 1128,
+        "production": 12,
+        "progress": 1
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 185,
+          "actual": 0,
+          "cumTarget": 185,
+          "cumActual": 0,
+          "supervisorTarget": 139,
+          "cumSupervisorTarget": 139,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 185,
+          "actual": 0,
+          "cumTarget": 370,
+          "cumActual": 0,
+          "supervisorTarget": 139,
+          "cumSupervisorTarget": 278,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 123,
+          "actual": 12,
+          "cumTarget": 493,
+          "cumActual": 12,
+          "supervisorTarget": 93,
+          "cumSupervisorTarget": 371,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 40
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 990
     }
   ],
   "lineCards": [
@@ -311,7 +403,7 @@
           "variantName": "FC",
           "variantFull": "FC FC",
           "cycleTime": 49.5,
-          "actualCT": 82.8,
+          "actualCT": 83.4,
           "supervisorCT": null,
           "devicesPerBox": 100,
           "peTarget": 587,
@@ -387,7 +479,7 @@
           "variantName": "PAHS11S",
           "variantFull": "Scalpel PAHS11S",
           "cycleTime": 2.28,
-          "actualCT": 4560,
+          "actualCT": 4580,
           "supervisorCT": null,
           "devicesPerBox": 500,
           "peTarget": 17500,
@@ -457,6 +549,82 @@
           ]
         }
       ]
+    },
+    {
+      "id": "SCD",
+      "productionLine": "SCD",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 12,
+      "peTotalTarget": 1500,
+      "supervisorTotalTarget": 1128,
+      "progress": 1,
+      "variants": [
+        {
+          "combinedId": "SCD-SCD-XL1000SC::ntot",
+          "productName": "SCD",
+          "variantName": "XL1000SC",
+          "variantFull": "SCD XL1000SC",
+          "cycleTime": 19.392,
+          "actualCT": 695,
+          "supervisorCT": 25.7979,
+          "devicesPerBox": 12,
+          "peTarget": 1500,
+          "supervisorTarget": 1128,
+          "production": 12,
+          "boxes": 1,
+          "progress": 1,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 185,
+              "actual": 0,
+              "cumTarget": 185,
+              "cumActual": 0,
+              "supervisorTarget": 139,
+              "cumSupervisorTarget": 139,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 185,
+              "actual": 0,
+              "cumTarget": 370,
+              "cumActual": 0,
+              "supervisorTarget": 139,
+              "cumSupervisorTarget": 278,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "10:30",
+              "target": 123,
+              "actual": 12,
+              "cumTarget": 493,
+              "cumActual": 12,
+              "supervisorTarget": 93,
+              "cumSupervisorTarget": 371,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 40
+            }
+          ]
+        }
+      ]
     }
   ],
   "lineGroups": [],
@@ -475,6 +643,13 @@
         "totalProduction": 3,
         "totalTarget": 13026,
         "progress": 0
+      },
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "totalTarget": 1500,
+        "progress": 1
       }
     ],
     "productionLines": [
@@ -505,6 +680,20 @@
         "shiftId": "day-shift",
         "startTime": "06:00",
         "endTime": "18:00"
+      },
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "peTotalTarget": 1500,
+        "supervisorTotalTarget": 1128,
+        "progress": 1,
+        "variants": [
+          "SCD-SCD-XL1000SC::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
       }
     ]
   }
