@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-07-14T07:41:51.302",
+    "timestamp": "2026-07-14T07:42:27.112",
     "date": "2026-07-14",
     "facility": "Main Plant",
     "availableLines": [
@@ -111,7 +111,7 @@
         "fullName": "LEVO XL1150SCi",
         "cycleTime": 41.55428571428571,
         "devicesPerBox": 14,
-        "actualCycleTime": 47.14
+        "actualCycleTime": 51.43
       },
       "shiftId": "normal-time",
       "targets": {
@@ -151,6 +151,70 @@
           "cumActual": 14,
           "supervisorTarget": 61,
           "cumSupervisorTarget": 61,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 990
+    },
+    {
+      "id": "SCD-SCD-XL1000SC::ntot",
+      "productionLine": "SCD",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000SC",
+        "name": "XL1000SC",
+        "fullName": "SCD XL1000SC",
+        "cycleTime": 19.392,
+        "devicesPerBox": 12,
+        "actualCycleTime": 60
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 185,
+        "peTarget": 1500,
+        "fullShiftSupervisorTarget": 1128,
+        "supervisorTarget": 1128,
+        "supervisorCycleTime": 25.7979,
+        "boxes": 125
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 26070920,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 1500,
+        "supervisorTarget": 1128,
+        "production": 12,
+        "progress": 1
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 185,
+          "actual": 12,
+          "cumTarget": 185,
+          "cumActual": 12,
+          "supervisorTarget": 139,
+          "cumSupervisorTarget": 139,
           "transitionTarget": 0,
           "supervisorTransitionTarget": null,
           "previousVariant": null,
@@ -401,7 +465,7 @@
           "variantName": "XL1150SCi",
           "variantFull": "LEVO XL1150SCi",
           "cycleTime": 41.55428571428571,
-          "actualCT": 47.14,
+          "actualCT": 51.43,
           "supervisorCT": 58.2,
           "devicesPerBox": 14,
           "peTarget": 700,
@@ -420,6 +484,54 @@
               "cumActual": 14,
               "supervisorTarget": 61,
               "cumSupervisorTarget": 61,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SCD",
+      "productionLine": "SCD",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Mo-Thu 8.25h NT B",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 12,
+      "peTotalTarget": 1500,
+      "supervisorTotalTarget": 1128,
+      "progress": 1,
+      "variants": [
+        {
+          "combinedId": "SCD-SCD-XL1000SC::ntot",
+          "productName": "SCD",
+          "variantName": "XL1000SC",
+          "variantFull": "SCD XL1000SC",
+          "cycleTime": 19.392,
+          "actualCT": 60,
+          "supervisorCT": 25.7979,
+          "devicesPerBox": 12,
+          "peTarget": 1500,
+          "supervisorTarget": 1128,
+          "production": 12,
+          "boxes": 1,
+          "progress": 1,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 185,
+              "actual": 12,
+              "cumTarget": 185,
+              "cumActual": 12,
+              "supervisorTarget": 139,
+              "cumSupervisorTarget": 139,
               "transitionTarget": 0,
               "supervisorTransitionTarget": null,
               "previousVariant": null,
@@ -644,6 +756,13 @@
         "progress": 2
       },
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "totalTarget": 1500,
+        "progress": 1
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 760,
@@ -675,6 +794,20 @@
         "progress": 3,
         "variants": [
           "LEVO-LEVO-XL1150SCi::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "peTotalTarget": 1500,
+        "supervisorTotalTarget": 1128,
+        "progress": 1,
+        "variants": [
+          "SCD-SCD-XL1000SC::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
