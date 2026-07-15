@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-07-15T07:45:34.701",
+    "timestamp": "2026-07-15T07:46:19.590",
     "date": "2026-07-15",
     "facility": "Main Plant",
     "availableLines": [
@@ -76,6 +76,25 @@
         }
       ],
       "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "normal-time",
+      "name": "Mo-Thu 8.25h NT B",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:00",
+          "endTime": "10:20"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 8.083333333
     }
   ],
   "production": [
@@ -296,6 +315,70 @@
       "startMin": 1080,
       "crosses": true,
       "shiftEndExt": 1800
+    },
+    {
+      "id": "SCD-SCD-XL1000S::ntot",
+      "productionLine": "SCD",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000S",
+        "name": "XL1000S",
+        "fullName": "SCD XL1000S",
+        "cycleTime": 19.392,
+        "devicesPerBox": 12,
+        "actualCycleTime": 80
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 185,
+        "peTarget": 1500,
+        "fullShiftSupervisorTarget": 1128,
+        "supervisorTarget": 1128,
+        "supervisorCycleTime": 25.7979,
+        "boxes": 125
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 26071436,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 1500,
+        "supervisorTarget": 1128,
+        "production": 12,
+        "progress": 1
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 185,
+          "actual": 12,
+          "cumTarget": 185,
+          "cumActual": 12,
+          "supervisorTarget": 139,
+          "cumSupervisorTarget": 139,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 990
     },
     {
       "id": "SUM-SUM-500V2::night",
@@ -720,6 +803,54 @@
       ]
     },
     {
+      "id": "SCD",
+      "productionLine": "SCD",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Mo-Thu 8.25h NT B",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 12,
+      "peTotalTarget": 1500,
+      "supervisorTotalTarget": 1128,
+      "progress": 1,
+      "variants": [
+        {
+          "combinedId": "SCD-SCD-XL1000S::ntot",
+          "productName": "SCD",
+          "variantName": "XL1000S",
+          "variantFull": "SCD XL1000S",
+          "cycleTime": 19.392,
+          "actualCT": 80,
+          "supervisorCT": 25.7979,
+          "devicesPerBox": 12,
+          "peTarget": 1500,
+          "supervisorTarget": 1128,
+          "production": 12,
+          "boxes": 1,
+          "progress": 1,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 185,
+              "actual": 12,
+              "cumTarget": 185,
+              "cumActual": 12,
+              "supervisorTarget": 139,
+              "cumSupervisorTarget": 139,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SUM",
       "productionLine": "SUM",
       "shiftId": "night-shift",
@@ -933,6 +1064,13 @@
         "progress": 79
       },
       {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "totalTarget": 1500,
+        "progress": 1
+      },
+      {
         "id": "SUM",
         "name": "SUM",
         "totalProduction": 1300,
@@ -968,6 +1106,20 @@
         "shiftId": "night-shift",
         "startTime": "18:00",
         "endTime": "06:00"
+      },
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "peTotalTarget": 1500,
+        "supervisorTotalTarget": 1128,
+        "progress": 1,
+        "variants": [
+          "SCD-SCD-XL1000S::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
       }
     ]
   }
