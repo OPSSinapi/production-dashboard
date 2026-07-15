@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-07-15T07:55:53.386",
+    "timestamp": "2026-07-15T07:57:22.502",
     "date": "2026-07-15",
     "facility": "Main Plant",
     "availableLines": [
@@ -79,19 +79,19 @@
     },
     {
       "id": "normal-time",
-      "name": "Mo-Thu 8.25h NT B",
+      "name": "Mo-Thu 8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
       "breaks": [
         {
           "type": "tea",
-          "startTime": "10:00",
-          "endTime": "10:20"
+          "startTime": "10:25",
+          "endTime": "10:45"
         },
         {
           "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
+          "startTime": "13:00",
+          "endTime": "13:35"
         }
       ],
       "availableWorkHours": 8.083333333
@@ -317,6 +317,70 @@
       "shiftEndExt": 1800
     },
     {
+      "id": "PopUp-FC-FC::ntot",
+      "productionLine": "PopUp",
+      "product": {
+        "id": "FC",
+        "name": "FC"
+      },
+      "variant": {
+        "id": "FC",
+        "name": "FC",
+        "fullName": "FC FC",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 16.2
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "peTarget": 600,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 6
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 26070923,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "16:30",
+        "peTarget": 587,
+        "supervisorTarget": null,
+        "production": 100,
+        "progress": 17
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 100,
+          "cumTarget": 72,
+          "cumActual": 100,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 990
+    },
+    {
       "id": "SCD-SCD-XL1000S::ntot",
       "productionLine": "SCD",
       "product": {
@@ -329,7 +393,7 @@
         "fullName": "SCD XL1000S",
         "cycleTime": 19.392,
         "devicesPerBox": 12,
-        "actualCycleTime": 62.5
+        "actualCycleTime": 67.5
       },
       "shiftId": "normal-time",
       "targets": {
@@ -393,7 +457,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 22.5,
         "devicesPerBox": 20,
-        "actualCycleTime": 33.23
+        "actualCycleTime": 32.73
       },
       "shiftId": "night-shift",
       "targets": {
@@ -405,15 +469,15 @@
         "boxes": 88
       },
       "actual": {
-        "total": 1300,
-        "boxes": 65,
-        "progress": 84
+        "total": 1320,
+        "boxes": 66,
+        "progress": 86
       },
       "batches": [
         {
           "id": 26071335,
-          "quantity": 1300,
-          "boxes": 65
+          "quantity": 1320,
+          "boxes": 66
         }
       ],
       "lineWindow": {
@@ -421,8 +485,8 @@
         "endTime": "06:00",
         "peTarget": 1733,
         "supervisorTarget": 1540,
-        "production": 1300,
-        "progress": 84
+        "production": 1320,
+        "progress": 86
       },
       "timeline": [
         {
@@ -442,9 +506,9 @@
         {
           "hour": "20:00",
           "target": 160,
-          "actual": 100,
+          "actual": 102,
           "cumTarget": 320,
-          "cumActual": 100,
+          "cumActual": 102,
           "supervisorTarget": 138,
           "cumSupervisorTarget": 276,
           "transitionTarget": 0,
@@ -456,9 +520,9 @@
         {
           "hour": "21:00",
           "target": 160,
-          "actual": 180,
+          "actual": 183,
           "cumTarget": 480,
-          "cumActual": 280,
+          "cumActual": 285,
           "supervisorTarget": 138,
           "cumSupervisorTarget": 414,
           "transitionTarget": 0,
@@ -470,9 +534,9 @@
         {
           "hour": "22:00",
           "target": 160,
-          "actual": 140,
+          "actual": 142,
           "cumTarget": 640,
-          "cumActual": 420,
+          "cumActual": 427,
           "supervisorTarget": 138,
           "cumSupervisorTarget": 552,
           "transitionTarget": 0,
@@ -484,9 +548,9 @@
         {
           "hour": "23:00",
           "target": 120,
-          "actual": 80,
+          "actual": 81,
           "cumTarget": 760,
-          "cumActual": 500,
+          "cumActual": 508,
           "supervisorTarget": 104,
           "cumSupervisorTarget": 656,
           "transitionTarget": 0,
@@ -498,9 +562,9 @@
         {
           "hour": "00:00",
           "target": 160,
-          "actual": 180,
+          "actual": 183,
           "cumTarget": 920,
-          "cumActual": 680,
+          "cumActual": 691,
           "supervisorTarget": 138,
           "cumSupervisorTarget": 794,
           "transitionTarget": 0,
@@ -512,9 +576,9 @@
         {
           "hour": "01:00",
           "target": 160,
-          "actual": 140,
+          "actual": 142,
           "cumTarget": 1080,
-          "cumActual": 820,
+          "cumActual": 833,
           "supervisorTarget": 138,
           "cumSupervisorTarget": 932,
           "transitionTarget": 0,
@@ -526,9 +590,9 @@
         {
           "hour": "02:00",
           "target": 160,
-          "actual": 40,
+          "actual": 41,
           "cumTarget": 1240,
-          "cumActual": 860,
+          "cumActual": 874,
           "supervisorTarget": 138,
           "cumSupervisorTarget": 1070,
           "transitionTarget": 0,
@@ -540,9 +604,9 @@
         {
           "hour": "03:00",
           "target": 66,
-          "actual": 40,
+          "actual": 41,
           "cumTarget": 1306,
-          "cumActual": 900,
+          "cumActual": 915,
           "supervisorTarget": 57,
           "cumSupervisorTarget": 1127,
           "transitionTarget": 0,
@@ -554,9 +618,9 @@
         {
           "hour": "04:00",
           "target": 160,
-          "actual": 160,
+          "actual": 162,
           "cumTarget": 1466,
-          "cumActual": 1060,
+          "cumActual": 1077,
           "supervisorTarget": 138,
           "cumSupervisorTarget": 1265,
           "transitionTarget": 0,
@@ -568,9 +632,9 @@
         {
           "hour": "05:00",
           "target": 106,
-          "actual": 100,
+          "actual": 102,
           "cumTarget": 1572,
-          "cumActual": 1160,
+          "cumActual": 1179,
           "supervisorTarget": 92,
           "cumSupervisorTarget": 1357,
           "transitionTarget": 0,
@@ -582,9 +646,9 @@
         {
           "hour": "06:00",
           "target": 160,
-          "actual": 140,
+          "actual": 141,
           "cumTarget": 1732,
-          "cumActual": 1300,
+          "cumActual": 1320,
           "supervisorTarget": 138,
           "cumSupervisorTarget": 1495,
           "transitionTarget": 0,
@@ -803,11 +867,59 @@
       ]
     },
     {
+      "id": "PopUp",
+      "productionLine": "PopUp",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Mo-Thu 8.25h NT A",
+      "startTime": "07:30",
+      "endTime": "16:30",
+      "totalProduction": 100,
+      "peTotalTarget": 587,
+      "supervisorTotalTarget": null,
+      "progress": 17,
+      "variants": [
+        {
+          "combinedId": "PopUp-FC-FC::ntot",
+          "productName": "FC",
+          "variantName": "FC",
+          "variantFull": "FC FC",
+          "cycleTime": 49.5,
+          "actualCT": 16.2,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "peTarget": 587,
+          "supervisorTarget": null,
+          "production": 100,
+          "boxes": 1,
+          "progress": 17,
+          "startTime": "07:30",
+          "endTime": "16:30",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 72,
+              "actual": 100,
+              "cumTarget": 72,
+              "cumActual": 100,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
       "shift": "ntot",
-      "shiftName": "Mo-Thu 8.25h NT B",
+      "shiftName": "Mo-Thu 8.25h NT A",
       "startTime": "07:30",
       "endTime": "16:30",
       "totalProduction": 24,
@@ -821,7 +933,7 @@
           "variantName": "XL1000S",
           "variantFull": "SCD XL1000S",
           "cycleTime": 19.392,
-          "actualCT": 62.5,
+          "actualCT": 67.5,
           "supervisorCT": 25.7979,
           "devicesPerBox": 12,
           "peTarget": 1500,
@@ -858,10 +970,10 @@
       "shiftName": "Mo-Su 11h NS",
       "startTime": "18:00",
       "endTime": "06:00",
-      "totalProduction": 1300,
+      "totalProduction": 1320,
       "peTotalTarget": 1733,
       "supervisorTotalTarget": 1540,
-      "progress": 84,
+      "progress": 86,
       "variants": [
         {
           "combinedId": "SUM-SUM-500V2::night",
@@ -869,14 +981,14 @@
           "variantName": "500V2",
           "variantFull": "SUM SUM500V2",
           "cycleTime": 22.5,
-          "actualCT": 33.23,
+          "actualCT": 32.73,
           "supervisorCT": 25.9091,
           "devicesPerBox": 20,
           "peTarget": 1733,
           "supervisorTarget": 1540,
-          "production": 1300,
-          "boxes": 65,
-          "progress": 84,
+          "production": 1320,
+          "boxes": 66,
+          "progress": 86,
           "startTime": "18:00",
           "endTime": "06:00",
           "timeline": [
@@ -897,9 +1009,9 @@
             {
               "hour": "20:00",
               "target": 160,
-              "actual": 100,
+              "actual": 102,
               "cumTarget": 320,
-              "cumActual": 100,
+              "cumActual": 102,
               "supervisorTarget": 138,
               "cumSupervisorTarget": 276,
               "transitionTarget": 0,
@@ -911,9 +1023,9 @@
             {
               "hour": "21:00",
               "target": 160,
-              "actual": 180,
+              "actual": 183,
               "cumTarget": 480,
-              "cumActual": 280,
+              "cumActual": 285,
               "supervisorTarget": 138,
               "cumSupervisorTarget": 414,
               "transitionTarget": 0,
@@ -925,9 +1037,9 @@
             {
               "hour": "22:00",
               "target": 160,
-              "actual": 140,
+              "actual": 142,
               "cumTarget": 640,
-              "cumActual": 420,
+              "cumActual": 427,
               "supervisorTarget": 138,
               "cumSupervisorTarget": 552,
               "transitionTarget": 0,
@@ -939,9 +1051,9 @@
             {
               "hour": "23:00",
               "target": 120,
-              "actual": 80,
+              "actual": 81,
               "cumTarget": 760,
-              "cumActual": 500,
+              "cumActual": 508,
               "supervisorTarget": 104,
               "cumSupervisorTarget": 656,
               "transitionTarget": 0,
@@ -953,9 +1065,9 @@
             {
               "hour": "00:00",
               "target": 160,
-              "actual": 180,
+              "actual": 183,
               "cumTarget": 920,
-              "cumActual": 680,
+              "cumActual": 691,
               "supervisorTarget": 138,
               "cumSupervisorTarget": 794,
               "transitionTarget": 0,
@@ -967,9 +1079,9 @@
             {
               "hour": "01:00",
               "target": 160,
-              "actual": 140,
+              "actual": 142,
               "cumTarget": 1080,
-              "cumActual": 820,
+              "cumActual": 833,
               "supervisorTarget": 138,
               "cumSupervisorTarget": 932,
               "transitionTarget": 0,
@@ -981,9 +1093,9 @@
             {
               "hour": "02:00",
               "target": 160,
-              "actual": 40,
+              "actual": 41,
               "cumTarget": 1240,
-              "cumActual": 860,
+              "cumActual": 874,
               "supervisorTarget": 138,
               "cumSupervisorTarget": 1070,
               "transitionTarget": 0,
@@ -995,9 +1107,9 @@
             {
               "hour": "03:00",
               "target": 66,
-              "actual": 40,
+              "actual": 41,
               "cumTarget": 1306,
-              "cumActual": 900,
+              "cumActual": 915,
               "supervisorTarget": 57,
               "cumSupervisorTarget": 1127,
               "transitionTarget": 0,
@@ -1009,9 +1121,9 @@
             {
               "hour": "04:00",
               "target": 160,
-              "actual": 160,
+              "actual": 162,
               "cumTarget": 1466,
-              "cumActual": 1060,
+              "cumActual": 1077,
               "supervisorTarget": 138,
               "cumSupervisorTarget": 1265,
               "transitionTarget": 0,
@@ -1023,9 +1135,9 @@
             {
               "hour": "05:00",
               "target": 106,
-              "actual": 100,
+              "actual": 102,
               "cumTarget": 1572,
-              "cumActual": 1160,
+              "cumActual": 1179,
               "supervisorTarget": 92,
               "cumSupervisorTarget": 1357,
               "transitionTarget": 0,
@@ -1037,9 +1149,9 @@
             {
               "hour": "06:00",
               "target": 160,
-              "actual": 140,
+              "actual": 141,
               "cumTarget": 1732,
-              "cumActual": 1300,
+              "cumActual": 1320,
               "supervisorTarget": 138,
               "cumSupervisorTarget": 1495,
               "transitionTarget": 0,
@@ -1064,6 +1176,13 @@
         "progress": 79
       },
       {
+        "id": "FC",
+        "name": "FC",
+        "totalProduction": 100,
+        "totalTarget": 600,
+        "progress": 17
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 24,
@@ -1073,19 +1192,19 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 1300,
+        "totalProduction": 1320,
         "totalTarget": 1760,
-        "progress": 74
+        "progress": 75
       }
     ],
     "productionLines": [
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 1300,
+        "totalProduction": 1320,
         "peTotalTarget": 1733,
         "supervisorTotalTarget": 1540,
-        "progress": 84,
+        "progress": 86,
         "variants": [
           "SUM-SUM-500V2::night"
         ],
@@ -1116,6 +1235,20 @@
         "progress": 2,
         "variants": [
           "SCD-SCD-XL1000S::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "16:30"
+      },
+      {
+        "id": "PopUp",
+        "name": "PopUp",
+        "totalProduction": 100,
+        "peTotalTarget": 587,
+        "supervisorTotalTarget": null,
+        "progress": 17,
+        "variants": [
+          "PopUp-FC-FC::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
