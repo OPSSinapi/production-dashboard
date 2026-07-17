@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-07-17T08:58:38.856",
+    "timestamp": "2026-07-17T08:59:28.339",
     "date": "2026-07-17",
     "facility": "Main Plant",
     "availableLines": [
@@ -354,7 +354,7 @@
         "fullName": "LEVO XL1150SCi",
         "cycleTime": 41.55428571428571,
         "devicesPerBox": 14,
-        "actualCycleTime": 53.88
+        "actualCycleTime": 54.49
       },
       "shiftId": "normal-time",
       "targets": {
@@ -638,6 +638,84 @@
       "shiftEndExt": 1800
     },
     {
+      "id": "Scalpel_Packaging-Scalpel-PAHS15S::ntot",
+      "productionLine": "Scalpel_Packaging",
+      "product": {
+        "id": "Scalpel",
+        "name": "Scalpel"
+      },
+      "variant": {
+        "id": "PAHS15S",
+        "name": "PAHS15S",
+        "fullName": "Scalpel PAHS15S",
+        "cycleTime": 2.28,
+        "devicesPerBox": 1000,
+        "actualCycleTime": 10.68
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 1578,
+        "peTarget": 13026,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 13
+      },
+      "actual": {
+        "total": 500,
+        "boxes": 1,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 26071334,
+          "quantity": 500,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "15:15",
+        "peTarget": 10789,
+        "supervisorTarget": null,
+        "production": 500,
+        "progress": 5
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 1578,
+          "actual": 0,
+          "cumTarget": 1578,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 1578,
+          "actual": 500,
+          "cumTarget": 3156,
+          "cumActual": 500,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 915
+    },
+    {
       "id": "SCD-SCD-XL1000SC::ntot",
       "productionLine": "SCD",
       "product": {
@@ -650,7 +728,7 @@
         "fullName": "SCD XL1000SC",
         "cycleTime": 19.392,
         "devicesPerBox": 12,
-        "actualCycleTime": 36.67
+        "actualCycleTime": 37.08
       },
       "shiftId": "normal-time",
       "targets": {
@@ -1156,7 +1234,7 @@
           "variantName": "XL1150SCi",
           "variantFull": "LEVO XL1150SCi",
           "cycleTime": 41.55428571428571,
-          "actualCT": 53.88,
+          "actualCT": 54.49,
           "supervisorCT": 48.5207,
           "devicesPerBox": 14,
           "peTarget": 591,
@@ -1402,6 +1480,68 @@
       ]
     },
     {
+      "id": "Scalpel_Packaging",
+      "productionLine": "Scalpel_Packaging",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Fri 7h NT B",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "totalProduction": 500,
+      "peTotalTarget": 10789,
+      "supervisorTotalTarget": null,
+      "progress": 5,
+      "variants": [
+        {
+          "combinedId": "Scalpel_Packaging-Scalpel-PAHS15S::ntot",
+          "productName": "Scalpel",
+          "variantName": "PAHS15S",
+          "variantFull": "Scalpel PAHS15S",
+          "cycleTime": 2.28,
+          "actualCT": 10.68,
+          "supervisorCT": null,
+          "devicesPerBox": 1000,
+          "peTarget": 10789,
+          "supervisorTarget": null,
+          "production": 500,
+          "boxes": 1,
+          "progress": 5,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 1578,
+              "actual": 0,
+              "cumTarget": 1578,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 1578,
+              "actual": 500,
+              "cumTarget": 3156,
+              "cumActual": 500,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SCD",
       "productionLine": "SCD",
       "shiftId": "normal-time",
@@ -1420,7 +1560,7 @@
           "variantName": "XL1000SC",
           "variantFull": "SCD XL1000SC",
           "cycleTime": 19.392,
-          "actualCT": 36.67,
+          "actualCT": 37.08,
           "supervisorCT": 25.8132,
           "devicesPerBox": 12,
           "peTarget": 1268,
@@ -1691,6 +1831,13 @@
         "progress": 831
       },
       {
+        "id": "Scalpel",
+        "name": "Scalpel",
+        "totalProduction": 500,
+        "totalTarget": 13026,
+        "progress": 4
+      },
+      {
         "id": "SCD",
         "name": "SCD",
         "totalProduction": 144,
@@ -1771,6 +1918,20 @@
         "progress": 15,
         "variants": [
           "SCD-SCD-XL1000SC::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "15:15"
+      },
+      {
+        "id": "Scalpel_Packaging",
+        "name": "Scalpel_Packaging",
+        "totalProduction": 500,
+        "peTotalTarget": 10789,
+        "supervisorTotalTarget": null,
+        "progress": 5,
+        "variants": [
+          "Scalpel_Packaging-Scalpel-PAHS15S::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
