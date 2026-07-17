@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-07-17T10:04:29.878",
+    "timestamp": "2026-07-17T10:05:32.130",
     "date": "2026-07-17",
     "facility": "Main Plant",
     "availableLines": [
@@ -650,6 +650,98 @@
       "startMin": 1080,
       "crosses": true,
       "shiftEndExt": 1800
+    },
+    {
+      "id": "PopUp-CON021.2-CON021.2::ntot",
+      "productionLine": "PopUp",
+      "product": {
+        "id": "CON021.2",
+        "name": "CON021.2"
+      },
+      "variant": {
+        "id": "CON021.2",
+        "name": "CON021.2",
+        "fullName": "CON021.2 CON021.2",
+        "cycleTime": 49.5,
+        "devicesPerBox": 100,
+        "actualCycleTime": 49.5
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 72,
+        "peTarget": 600,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 6
+      },
+      "actual": {
+        "total": 100,
+        "boxes": 1,
+        "progress": 17
+      },
+      "batches": [
+        {
+          "id": 26071644,
+          "quantity": 100,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "10:03",
+        "endTime": "15:15",
+        "peTarget": 2056,
+        "supervisorTarget": null,
+        "production": 100,
+        "progress": 5
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 72,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "09:30",
+          "target": 72,
+          "actual": 0,
+          "cumTarget": 144,
+          "cumActual": 0,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        },
+        {
+          "hour": "10:30",
+          "target": 66,
+          "actual": 100,
+          "cumTarget": 210,
+          "cumActual": 100,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 55
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 915
     },
     {
       "id": "PopUp-FC-FC::ntot",
@@ -1635,11 +1727,72 @@
       "shiftName": "Fri 7h NT B",
       "startTime": "07:30",
       "endTime": "15:15",
-      "totalProduction": 200,
-      "peTotalTarget": 317,
+      "totalProduction": 300,
+      "peTotalTarget": 2373,
       "supervisorTotalTarget": null,
-      "progress": 63,
+      "progress": 13,
       "variants": [
+        {
+          "combinedId": "PopUp-CON021.2-CON021.2::ntot",
+          "productName": "CON021.2",
+          "variantName": "CON021.2",
+          "variantFull": "CON021.2 CON021.2",
+          "cycleTime": 49.5,
+          "actualCT": 49.5,
+          "supervisorCT": null,
+          "devicesPerBox": 100,
+          "peTarget": 2056,
+          "supervisorTarget": null,
+          "production": 100,
+          "boxes": 1,
+          "progress": 5,
+          "startTime": "10:03",
+          "endTime": "15:15",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 72,
+              "actual": 0,
+              "cumTarget": 72,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "09:30",
+              "target": 72,
+              "actual": 0,
+              "cumTarget": 144,
+              "cumActual": 0,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            },
+            {
+              "hour": "10:30",
+              "target": 66,
+              "actual": 100,
+              "cumTarget": 210,
+              "cumActual": 100,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 55
+            }
+          ]
+        },
         {
           "combinedId": "PopUp-FC-FC::ntot",
           "productName": "FC",
@@ -2083,6 +2236,13 @@
         "progress": 1431
       },
       {
+        "id": "CON021.2",
+        "name": "CON021.2",
+        "totalProduction": 100,
+        "totalTarget": 600,
+        "progress": 17
+      },
+      {
         "id": "FC",
         "name": "FC",
         "totalProduction": 200,
@@ -2199,12 +2359,13 @@
       {
         "id": "PopUp",
         "name": "PopUp",
-        "totalProduction": 200,
-        "peTotalTarget": 317,
+        "totalProduction": 300,
+        "peTotalTarget": 2373,
         "supervisorTotalTarget": null,
-        "progress": 63,
+        "progress": 13,
         "variants": [
-          "PopUp-FC-FC::ntot"
+          "PopUp-FC-FC::ntot",
+          "PopUp-CON021.2-CON021.2::ntot"
         ],
         "shiftId": "normal-time",
         "startTime": "07:30",
