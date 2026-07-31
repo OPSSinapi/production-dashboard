@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-07-31T07:44:44.709",
+    "timestamp": "2026-07-31T07:45:29.420",
     "date": "2026-07-31",
     "facility": "Main Plant",
     "availableLines": [
@@ -78,6 +78,25 @@
         }
       ],
       "availableWorkHours": 11.08333333
+    },
+    {
+      "id": "normal-time",
+      "name": "Fri 7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 6.833333333
     }
   ],
   "production": [
@@ -298,6 +317,134 @@
       "startMin": 1080,
       "crosses": true,
       "shiftEndExt": 1800
+    },
+    {
+      "id": "3rd_Line-UBT-UBT::ntot",
+      "productionLine": "3rd_Line",
+      "product": {
+        "id": "UBT",
+        "name": "UBT"
+      },
+      "variant": {
+        "id": "UBT",
+        "name": "UBT",
+        "fullName": "UBT UBT",
+        "cycleTime": 41.55428571428571,
+        "devicesPerBox": 25,
+        "actualCycleTime": 36
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 86,
+        "peTarget": 700,
+        "fullShiftSupervisorTarget": null,
+        "supervisorTarget": null,
+        "supervisorCycleTime": null,
+        "boxes": 28
+      },
+      "actual": {
+        "total": 25,
+        "boxes": 1,
+        "progress": 4
+      },
+      "batches": [
+        {
+          "id": 26072879,
+          "quantity": 25,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "15:15",
+        "peTarget": 591,
+        "supervisorTarget": null,
+        "production": 25,
+        "progress": 4
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 86,
+          "actual": 25,
+          "cumTarget": 86,
+          "cumActual": 25,
+          "supervisorTarget": null,
+          "cumSupervisorTarget": null,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 915
+    },
+    {
+      "id": "SCD-SCD-XL1000S::ntot",
+      "productionLine": "SCD",
+      "product": {
+        "id": "SCD",
+        "name": "SCD"
+      },
+      "variant": {
+        "id": "XL1000S",
+        "name": "XL1000S",
+        "fullName": "SCD XL1000S",
+        "cycleTime": 19.392,
+        "devicesPerBox": 12,
+        "actualCycleTime": 75
+      },
+      "shiftId": "normal-time",
+      "targets": {
+        "hourly": 185,
+        "peTarget": 1500,
+        "fullShiftSupervisorTarget": 1014,
+        "supervisorTarget": 1014,
+        "supervisorCycleTime": 24.2604,
+        "boxes": 125
+      },
+      "actual": {
+        "total": 12,
+        "boxes": 1,
+        "progress": 1
+      },
+      "batches": [
+        {
+          "id": 26072881,
+          "quantity": 12,
+          "boxes": 1
+        }
+      ],
+      "lineWindow": {
+        "startTime": "07:30",
+        "endTime": "15:15",
+        "peTarget": 1268,
+        "supervisorTarget": 1014,
+        "production": 12,
+        "progress": 1
+      },
+      "timeline": [
+        {
+          "hour": "08:30",
+          "target": 185,
+          "actual": 12,
+          "cumTarget": 185,
+          "cumActual": 12,
+          "supervisorTarget": 148,
+          "cumSupervisorTarget": 148,
+          "transitionTarget": 0,
+          "supervisorTransitionTarget": null,
+          "previousVariant": null,
+          "previousVariantMinutes": 0,
+          "currentVariantMinutes": 60
+        }
+      ],
+      "startMin": 450,
+      "crosses": false,
+      "shiftEndExt": 915
     },
     {
       "id": "SUM-SUM-500V2::night",
@@ -722,6 +869,102 @@
       ]
     },
     {
+      "id": "3rd_Line",
+      "productionLine": "3rd_Line",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Fri 7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "totalProduction": 25,
+      "peTotalTarget": 591,
+      "supervisorTotalTarget": null,
+      "progress": 4,
+      "variants": [
+        {
+          "combinedId": "3rd_Line-UBT-UBT::ntot",
+          "productName": "UBT",
+          "variantName": "UBT",
+          "variantFull": "UBT UBT",
+          "cycleTime": 41.55428571428571,
+          "actualCT": 36,
+          "supervisorCT": null,
+          "devicesPerBox": 25,
+          "peTarget": 591,
+          "supervisorTarget": null,
+          "production": 25,
+          "boxes": 1,
+          "progress": 4,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 86,
+              "actual": 25,
+              "cumTarget": 86,
+              "cumActual": 25,
+              "supervisorTarget": null,
+              "cumSupervisorTarget": null,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "SCD",
+      "productionLine": "SCD",
+      "shiftId": "normal-time",
+      "shift": "ntot",
+      "shiftName": "Fri 7h NT A",
+      "startTime": "07:30",
+      "endTime": "15:15",
+      "totalProduction": 12,
+      "peTotalTarget": 1268,
+      "supervisorTotalTarget": 1014,
+      "progress": 1,
+      "variants": [
+        {
+          "combinedId": "SCD-SCD-XL1000S::ntot",
+          "productName": "SCD",
+          "variantName": "XL1000S",
+          "variantFull": "SCD XL1000S",
+          "cycleTime": 19.392,
+          "actualCT": 75,
+          "supervisorCT": 24.2604,
+          "devicesPerBox": 12,
+          "peTarget": 1268,
+          "supervisorTarget": 1014,
+          "production": 12,
+          "boxes": 1,
+          "progress": 1,
+          "startTime": "07:30",
+          "endTime": "15:15",
+          "timeline": [
+            {
+              "hour": "08:30",
+              "target": 185,
+              "actual": 12,
+              "cumTarget": 185,
+              "cumActual": 12,
+              "supervisorTarget": 148,
+              "cumSupervisorTarget": 148,
+              "transitionTarget": 0,
+              "supervisorTransitionTarget": null,
+              "previousVariant": null,
+              "previousVariantMinutes": 0,
+              "currentVariantMinutes": 60
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SUM",
       "productionLine": "SUM",
       "shiftId": "night-shift",
@@ -930,9 +1173,16 @@
       {
         "id": "UBT",
         "name": "UBT",
-        "totalProduction": 700,
-        "totalTarget": 700,
-        "progress": 100
+        "totalProduction": 725,
+        "totalTarget": 1400,
+        "progress": 52
+      },
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "totalTarget": 1500,
+        "progress": 1
       },
       {
         "id": "SUM",
@@ -970,6 +1220,34 @@
         "shiftId": "night-shift",
         "startTime": "18:00",
         "endTime": "06:00"
+      },
+      {
+        "id": "SCD",
+        "name": "SCD",
+        "totalProduction": 12,
+        "peTotalTarget": 1268,
+        "supervisorTotalTarget": 1014,
+        "progress": 1,
+        "variants": [
+          "SCD-SCD-XL1000S::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "15:15"
+      },
+      {
+        "id": "3rd_Line",
+        "name": "3rd_Line",
+        "totalProduction": 25,
+        "peTotalTarget": 591,
+        "supervisorTotalTarget": null,
+        "progress": 4,
+        "variants": [
+          "3rd_Line-UBT-UBT::ntot"
+        ],
+        "shiftId": "normal-time",
+        "startTime": "07:30",
+        "endTime": "15:15"
       }
     ]
   }
