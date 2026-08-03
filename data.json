@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "timestamp": "2026-08-03T20:30:05.250",
+    "timestamp": "2026-08-03T20:31:21.892",
     "date": "2026-08-03",
     "facility": "Main Plant",
     "availableLines": [
@@ -75,6 +75,25 @@
       "availableWorkHours": 8.083333333
     },
     {
+      "id": "day-shift-Line_2",
+      "name": "Mo-Su 11h DS",
+      "startTime": "06:00",
+      "endTime": "18:00",
+      "breaks": [
+        {
+          "type": "tea",
+          "startTime": "10:25",
+          "endTime": "10:45"
+        },
+        {
+          "type": "lunch",
+          "startTime": "13:40",
+          "endTime": "14:15"
+        }
+      ],
+      "availableWorkHours": 11.08333333
+    },
+    {
       "id": "night-shift",
       "name": "Mo-Su 11h NS",
       "startTime": "18:00",
@@ -94,25 +113,6 @@
           "type": "otTea",
           "startTime": "04:00",
           "endTime": "04:20"
-        }
-      ],
-      "availableWorkHours": 11.08333333
-    },
-    {
-      "id": "day-shift-Line_2",
-      "name": "Mo-Su 11h DS",
-      "startTime": "06:00",
-      "endTime": "18:00",
-      "breaks": [
-        {
-          "type": "tea",
-          "startTime": "10:25",
-          "endTime": "10:45"
-        },
-        {
-          "type": "lunch",
-          "startTime": "13:40",
-          "endTime": "14:15"
         }
       ],
       "availableWorkHours": 11.08333333
@@ -299,98 +299,6 @@
       "startMin": 450,
       "crosses": false,
       "shiftEndExt": 990
-    },
-    {
-      "id": "3rd_Line-UBT-UBT::night",
-      "productionLine": "3rd_Line",
-      "product": {
-        "id": "UBT",
-        "name": "UBT"
-      },
-      "variant": {
-        "id": "UBT",
-        "name": "UBT",
-        "fullName": "UBT UBT",
-        "cycleTime": 41.55428571428571,
-        "devicesPerBox": 25,
-        "actualCycleTime": 90
-      },
-      "shiftId": "night-shift",
-      "targets": {
-        "hourly": 86,
-        "peTarget": 700,
-        "fullShiftSupervisorTarget": null,
-        "supervisorTarget": null,
-        "supervisorCycleTime": null,
-        "boxes": 28
-      },
-      "actual": {
-        "total": 100,
-        "boxes": 4,
-        "progress": 14
-      },
-      "batches": [
-        {
-          "id": 26080306,
-          "quantity": 100,
-          "boxes": 4
-        }
-      ],
-      "lineWindow": {
-        "startTime": "18:00",
-        "endTime": "06:00",
-        "peTarget": 938,
-        "supervisorTarget": null,
-        "production": 100,
-        "progress": 11
-      },
-      "timeline": [
-        {
-          "hour": "19:00",
-          "target": 86,
-          "actual": 0,
-          "cumTarget": 86,
-          "cumActual": 0,
-          "supervisorTarget": null,
-          "cumSupervisorTarget": null,
-          "transitionTarget": 0,
-          "supervisorTransitionTarget": null,
-          "previousVariant": null,
-          "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
-        },
-        {
-          "hour": "20:00",
-          "target": 86,
-          "actual": 25,
-          "cumTarget": 172,
-          "cumActual": 25,
-          "supervisorTarget": null,
-          "cumSupervisorTarget": null,
-          "transitionTarget": 0,
-          "supervisorTransitionTarget": null,
-          "previousVariant": null,
-          "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
-        },
-        {
-          "hour": "21:00",
-          "target": 86,
-          "actual": 75,
-          "cumTarget": 258,
-          "cumActual": 100,
-          "supervisorTarget": null,
-          "cumSupervisorTarget": null,
-          "transitionTarget": 0,
-          "supervisorTransitionTarget": null,
-          "previousVariant": null,
-          "previousVariantMinutes": 0,
-          "currentVariantMinutes": 60
-        }
-      ],
-      "startMin": 1080,
-      "crosses": true,
-      "shiftEndExt": 1800
     },
     {
       "id": "LEVO-LEVO-XL2200SD::ntot",
@@ -1679,7 +1587,7 @@
         "fullName": "SUM SUM500V2",
         "cycleTime": 22.5,
         "devicesPerBox": 20,
-        "actualCycleTime": 37.5
+        "actualCycleTime": 34.85
       },
       "shiftId": "night-shift",
       "targets": {
@@ -1691,15 +1599,15 @@
         "boxes": 88
       },
       "actual": {
-        "total": 240,
-        "boxes": 12,
-        "progress": 16
+        "total": 260,
+        "boxes": 13,
+        "progress": 17
       },
       "batches": [
         {
           "id": 26080307,
-          "quantity": 240,
-          "boxes": 12
+          "quantity": 260,
+          "boxes": 13
         }
       ],
       "lineWindow": {
@@ -1707,8 +1615,8 @@
         "endTime": "06:00",
         "peTarget": 1733,
         "supervisorTarget": 1540,
-        "production": 240,
-        "progress": 16
+        "production": 260,
+        "progress": 17
       },
       "timeline": [
         {
@@ -1742,9 +1650,9 @@
         {
           "hour": "21:00",
           "target": 160,
-          "actual": 60,
+          "actual": 80,
           "cumTarget": 480,
-          "cumActual": 240,
+          "cumActual": 260,
           "supervisorTarget": 138,
           "cumSupervisorTarget": 414,
           "transitionTarget": 0,
@@ -1908,82 +1816,6 @@
               "actual": 50,
               "cumTarget": 695,
               "cumActual": 500,
-              "supervisorTarget": null,
-              "cumSupervisorTarget": null,
-              "transitionTarget": 0,
-              "supervisorTransitionTarget": null,
-              "previousVariant": null,
-              "previousVariantMinutes": 0,
-              "currentVariantMinutes": 60
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "3rd_Line",
-      "productionLine": "3rd_Line",
-      "shiftId": "night-shift",
-      "shift": "night",
-      "shiftName": "Mo-Su 11h NS",
-      "startTime": "18:00",
-      "endTime": "06:00",
-      "totalProduction": 100,
-      "peTotalTarget": 938,
-      "supervisorTotalTarget": null,
-      "progress": 11,
-      "variants": [
-        {
-          "combinedId": "3rd_Line-UBT-UBT::night",
-          "productName": "UBT",
-          "variantName": "UBT",
-          "variantFull": "UBT UBT",
-          "cycleTime": 41.55428571428571,
-          "actualCT": 90,
-          "supervisorCT": null,
-          "devicesPerBox": 25,
-          "peTarget": 938,
-          "supervisorTarget": null,
-          "production": 100,
-          "boxes": 4,
-          "progress": 11,
-          "startTime": "18:00",
-          "endTime": "06:00",
-          "timeline": [
-            {
-              "hour": "19:00",
-              "target": 86,
-              "actual": 0,
-              "cumTarget": 86,
-              "cumActual": 0,
-              "supervisorTarget": null,
-              "cumSupervisorTarget": null,
-              "transitionTarget": 0,
-              "supervisorTransitionTarget": null,
-              "previousVariant": null,
-              "previousVariantMinutes": 0,
-              "currentVariantMinutes": 60
-            },
-            {
-              "hour": "20:00",
-              "target": 86,
-              "actual": 25,
-              "cumTarget": 172,
-              "cumActual": 25,
-              "supervisorTarget": null,
-              "cumSupervisorTarget": null,
-              "transitionTarget": 0,
-              "supervisorTransitionTarget": null,
-              "previousVariant": null,
-              "previousVariantMinutes": 0,
-              "currentVariantMinutes": 60
-            },
-            {
-              "hour": "21:00",
-              "target": 86,
-              "actual": 75,
-              "cumTarget": 258,
-              "cumActual": 100,
               "supervisorTarget": null,
               "cumSupervisorTarget": null,
               "transitionTarget": 0,
@@ -3151,10 +2983,10 @@
       "shiftName": "Mo-Su 11h NS",
       "startTime": "18:00",
       "endTime": "06:00",
-      "totalProduction": 240,
+      "totalProduction": 260,
       "peTotalTarget": 1733,
       "supervisorTotalTarget": 1540,
-      "progress": 16,
+      "progress": 17,
       "variants": [
         {
           "combinedId": "SUM-SUM-500V2::night",
@@ -3162,14 +2994,14 @@
           "variantName": "500V2",
           "variantFull": "SUM SUM500V2",
           "cycleTime": 22.5,
-          "actualCT": 37.5,
+          "actualCT": 34.85,
           "supervisorCT": 25.9091,
           "devicesPerBox": 20,
           "peTarget": 1733,
           "supervisorTarget": 1540,
-          "production": 240,
-          "boxes": 12,
-          "progress": 16,
+          "production": 260,
+          "boxes": 13,
+          "progress": 17,
           "startTime": "18:00",
           "endTime": "06:00",
           "timeline": [
@@ -3204,9 +3036,9 @@
             {
               "hour": "21:00",
               "target": 160,
-              "actual": 60,
+              "actual": 80,
               "cumTarget": 480,
-              "cumActual": 240,
+              "cumActual": 260,
               "supervisorTarget": 138,
               "cumSupervisorTarget": 414,
               "transitionTarget": 0,
@@ -3226,9 +3058,9 @@
       {
         "id": "UBT",
         "name": "UBT",
-        "totalProduction": 600,
-        "totalTarget": 1400,
-        "progress": 43
+        "totalProduction": 500,
+        "totalTarget": 700,
+        "progress": 71
       },
       {
         "id": "LEVO",
@@ -3268,9 +3100,9 @@
       {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 240,
+        "totalProduction": 260,
         "totalTarget": 1760,
-        "progress": 14
+        "progress": 15
       }
     ],
     "productionLines": [
@@ -3374,26 +3206,12 @@
         "endTime": "16:30"
       },
       {
-        "id": "3rd_Line",
-        "name": "3rd_Line",
-        "totalProduction": 100,
-        "peTotalTarget": 938,
-        "supervisorTotalTarget": null,
-        "progress": 11,
-        "variants": [
-          "3rd_Line-UBT-UBT::night"
-        ],
-        "shiftId": "night-shift",
-        "startTime": "18:00",
-        "endTime": "06:00"
-      },
-      {
         "id": "SUM",
         "name": "SUM",
-        "totalProduction": 240,
+        "totalProduction": 260,
         "peTotalTarget": 1733,
         "supervisorTotalTarget": 1540,
-        "progress": 16,
+        "progress": 17,
         "variants": [
           "SUM-SUM-500V2::night"
         ],
